@@ -1,0 +1,9 @@
+{'feeder_name':'IEEE4',
+'set_sd':0.15,
+'mean_scale':0.5,
+'box_pts':60,
+'base_file_dir':'C:\\Users\Lily Buechler\Documents\Lily\Stanford\Research\\EV50_v2\\base_glm',
+'player_data_dir':'/home/ec2-user/sim/sim3',
+'load_data_dir':'/home/ec2-user/feeder_pop/',
+'starttime':"'2018-07-01 00:00:00'",
+'endtime':"'2018-07-01 00:59:00'"}
