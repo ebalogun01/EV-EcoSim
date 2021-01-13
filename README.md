@@ -1,6 +1,13 @@
 # EV50 co-simulation platform
 
-Platform for co-simulating power flow and EV charging stations for Stanford EV50 project
+Platform for co-simulating power flow and EV charging stations for Stanford EV50 project. 
+
+
+## Requirements
+
+GiSMo SLAC GridLAB-D installation (master branch): https://github.com/slacgismo/gridlabd
+
+## Folder descriptions
 
 ### feeders
 
@@ -11,3 +18,8 @@ IEEE feeders have spot loads specified at primary distribution level. PNNL taxon
 ### feeder_population
 
 Scripts for population base feeder models with time-varying loads and resources
+
+
+### test_cases
+
+Co-simulation cases
