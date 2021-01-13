@@ -1,54 +1,57 @@
-
 #set minimum_timestep=60
 
 clock {
 	starttime '2018-07-01 00:00:00';
-	stoptime '2018-07-15 23:59:00';
+	stoptime '2018-07-01 00:59:00';
 }
 
-module powerflow{
+module tape;
+
+module sim_functions;
+
+module powerflow {
 	solver_method NR;
 	line_capacitance true;
 	convergence_error_handling IGNORE;
 	solver_profile_enable true;
-	solver_profile_filename "output/solver_nr_out.csv";
-};
+	solver_profile_filename "solver_nr_out.csv";
+}
 
-module tape;
+class dummy {
+	double value;
+}
 
-//==============================
-// Conductor Types
-//==============================
+class player {
+	double value;
+}
 
-//Phase Conductor for 1 thru 8: 336,400 26/7 ACSR
+object player {
+	name dummy_player;
+	file "dummy.player";
+}
+
 object overhead_line_conductor {
 	name "ln_cond_336_400_26/7_ACSR";
 	geometric_mean_radius 0.0244 ft;
-	resistance 0.30600; //ohm/mi @ 60Hz, 50deg C
-	diameter 0.721 in;  // outer diameter for capacitance
-	//Ampacity at 50deg C = 698A
+	resistance 0.30600;
+	diameter 0.721 in;
 }
 
-//Phase Conductor for neutral: 4/0 6/1 ACSR
 object overhead_line_conductor {
 	name "ln_cond_4/0_6/1_ACSR";
 	geometric_mean_radius 0.008140 ;
-	resistance 0.59200; //ohm/mi @ 60Hz, 50deg C
-	diameter 0.563 in;  // outer diameter for capacitance
-	//Ampacity at 50deg C = 340A
+	resistance 0.59200;
+	diameter 0.563 in;
 }
 
-//Phase Conductor for 9 thru 11: 1/0 ACSR
 object overhead_line_conductor {
 	name "ln_cond_1/0_ACSR";
 	geometric_mean_radius 0.004460  ;
-	resistance 1.12000; //ohm/mi @ 60Hz, 50deg C
-	diameter 0.398 in;  // outer diameter for capacitance
-	//Ampacity at 50deg C = 230A
-}	
+	resistance 1.12000;
+	diameter 0.398 in;
+}
 
-// Phase Conductor for 12: 1/0 AA,TS
-object underground_line_conductor { 
+object underground_line_conductor {
 	name "ug_cable_1/0_AA_TS";
 	outer_diameter 1.060000;
 	conductor_gmr 0.011100;
@@ -62,11 +65,6 @@ object underground_line_conductor {
 	shield_resistance 0.000000;
 }
 
-//==============================
-// Overhead line spacing (pole arrangement)
-//==============================
-
-// Overhead Line Spacing Config 1: IEEE Spacing ID 500 with ABCN phasing
 object line_spacing {
 	name "ln_space_1_ieee500_ABCN";
 	distance_AB 2.5;
@@ -77,7 +75,6 @@ object line_spacing {
 	distance_CN 5.0;
 }
 
-// Overhead Line Spacing Config 2: IEEE Spacing ID 500 with CABN phasing
 object line_spacing {
 	name "ln_space_2_ieee500_CABN";
 	distance_AB 4.5;
@@ -88,7 +85,6 @@ object line_spacing {
 	distance_CN 5.656854;
 }
 
-// Overhead Line Spacing Config 3: IEEE Spacing ID 500 with BCAN phasing
 object line_spacing {
 	name "ln_space_3_ieee500_BCAN";
 	distance_AB 7.0;
@@ -99,7 +95,6 @@ object line_spacing {
 	distance_CN 4.272002;
 }
 
-// Overhead Line Spacing Config 4: IEEE Spacing ID 500 with CBAN phasing
 object line_spacing {
 	name "ln_space_4_ieee500_CBAN";
 	distance_AB 4.5;
@@ -110,7 +105,6 @@ object line_spacing {
 	distance_CN 5.656854;
 }
 
-// Overhead Line Spacing Config 5: IEEE Spacing ID 500 with BACN phasing
 object line_spacing {
 	name "ln_space_5_ieee500_BACN";
 	distance_AB 2.5;
@@ -121,7 +115,6 @@ object line_spacing {
 	distance_CN 5.0;
 }
 
-// Overhead Line Spacing Config 6: IEEE Spacing ID 500 with ACBN phasing
 object line_spacing {
 	name "ln_space_6_ieee500_ACBN";
 	distance_AB 7.0;
@@ -132,7 +125,6 @@ object line_spacing {
 	distance_BN 5.0;
 }
 
-// Line Spacing Config 7: IEEE Spacing ID 505 with ACN phasing
 object line_spacing {
 	name "ln_space_7_ieee505_ACN";
 	distance_AB 0.0;
@@ -143,7 +135,6 @@ object line_spacing {
 	distance_CN 5.0;
 }
 
-// Line Spacing Config 8: IEEE Spacing ID 505 with ABN phasing
 object line_spacing {
 	name "ln_space_8_ieee505_ABN";
 	distance_AB 7.0;
@@ -154,7 +145,6 @@ object line_spacing {
 	distance_CN 0.0;
 }
 
-// Line Spacing Config 9: IEEE Spacing ID 510 with AN phasing
 object line_spacing {
 	name "ln_space_9_ieee510_AN";
 	distance_AB 0.0;
@@ -165,7 +155,6 @@ object line_spacing {
 	distance_CN 0.0;
 }
 
-// Line Spacing Config 10: IEEE Spacing ID 510 with BN phasing
 object line_spacing {
 	name "ln_space_10_ieee510_BN";
 	distance_AB 0.0;
@@ -176,7 +165,6 @@ object line_spacing {
 	distance_CN 0.0;
 }
 
-// Line Spacing Config 11: IEEE Spacing ID 510 with CN phasing
 object line_spacing {
 	name "ln_space_11_ieee510_CN";
 	distance_AB 0.0;
@@ -187,7 +175,6 @@ object line_spacing {
 	distance_CN 5.0;
 }
 
-// Underground Line Spacing Config 12: IEEE Spacing ID 515 with ABC phasing
 object line_spacing {
 	name "ln_space_12_ieee515_ABC";
 	distance_AB 0.5;
@@ -198,9 +185,6 @@ object line_spacing {
 	distance_CN 0.0;
 }
 
-//==============================
-// Line Configurations
-//==============================
 object line_configuration {
 	name "oh_line_config_01_ABCN";
 	conductor_A "ln_cond_336_400_26/7_ACSR";
@@ -300,92 +284,88 @@ object line_configuration {
 	spacing "ln_space_12_ieee515_ABC";
 }
 
-
-//==============================
-// Lines
-//==============================
-object overhead_line:  {
+object overhead_line: {
 	phases "BN";
 	name "ohl_1_2";
-	from "load_1";
-	to "load_2";
+	from "meter_1";
+	to "meter_2";
 	length 175;
 	configuration "oh_line_config_10_BN";
 }
 
-object overhead_line:  {
+object overhead_line: {
 	phases "CN";
 	name "ohl_1_3";
-	from "load_1";
+	from "meter_1";
 	to "node_3";
 	length 250;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_1_7";
-	from "load_1";
-	to "load_7";
+	from "meter_1";
+	to "meter_7";
 	length 300;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_3_4";
 	from "node_3";
-	to "load_4";
+	to "meter_4";
 	length 200;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_3_5";
 	from "node_3";
-	to "load_5";
+	to "meter_5";
 	length 325;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_5_6";
-	from "load_5";
-	to "load_6";
+	from "meter_5";
+	to "meter_6";
 	length 250;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_7_8";
-	from "load_7";
+	from "meter_7";
 	to "node_8";
 	length 200;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_8_12";
 	from "node_8";
-	to "load_12";
+	to "meter_12";
 	length 225;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_8_9";
 	from "node_8";
-	to "load_9";
+	to "meter_9";
 	length 225;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_8_13";
 	from "node_8";
@@ -393,8 +373,8 @@ object overhead_line:  {
 	length 300;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_rg9_14";
 	from "node_rg9";
@@ -402,17 +382,17 @@ object overhead_line:  {
 	length 425;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_13_34";
 	from "node_13";
-	to "load_34";
+	to "meter_34";
 	length 150;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_13_18";
 	from "node_13";
@@ -420,53 +400,53 @@ object overhead_line:  {
 	length 825;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_14_11";
 	from "node_14";
-	to "load_11";
+	to "meter_11";
 	length 250;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_14_10";
 	from "node_14";
-	to "load_10";
+	to "meter_10";
 	length 250;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_15_16";
 	from "node_15";
-	to "load_16";
+	to "meter_16";
 	length 375;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_15_17";
 	from "node_15";
-	to "load_17";
+	to "meter_17";
 	length 350;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_18_19";
 	from "node_18";
-	to "load_19";
+	to "meter_19";
 	length 250;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_18_21";
 	from "node_18";
@@ -474,26 +454,26 @@ object overhead_line:  {
 	length 300;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_19_20";
-	from "load_19";
-	to "load_20";
+	from "meter_19";
+	to "meter_20";
 	length 325;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_21_22";
 	from "node_21";
-	to "load_22";
+	to "meter_22";
 	length 525;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_21_23";
 	from "node_21";
@@ -501,17 +481,17 @@ object overhead_line:  {
 	length 250;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_23_24";
 	from "node_23";
-	to "load_24";
+	to "meter_24";
 	length 550;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_23_25";
 	from "node_23";
@@ -519,8 +499,8 @@ object overhead_line:  {
 	length 275;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ACN";
 	name "ohl_rg25_26";
 	from "node_rg25";
@@ -528,17 +508,17 @@ object overhead_line:  {
 	length 350;
 	configuration "oh_line_config_07_ACN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_25_28";
 	from "node_25";
-	to "load_28";
+	to "meter_28";
 	length 200;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ACN";
 	name "ohl_26_27";
 	from "node_26";
@@ -546,251 +526,251 @@ object overhead_line:  {
 	length 275;
 	configuration "oh_line_config_07_ACN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_26_31";
 	from "node_26";
-	to "load_31";
+	to "meter_31";
 	length 225;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_27_33";
 	from "node_27";
-	to "load_33";
+	to "meter_33";
 	length 500;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_28_29";
-	from "load_28";
-	to "load_29";
+	from "meter_28";
+	to "meter_29";
 	length 300;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_29_30";
-	from "load_29";
-	to "load_30";
+	from "meter_29";
+	to "meter_30";
 	length 350;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_30_250";
-	from "load_30";
+	from "meter_30";
 	to "node_250";
 	length 200;
 	configuration "oh_line_config_02_CABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_31_32";
-	from "load_31";
-	to "load_32";
+	from "meter_31";
+	to "meter_32";
 	length 300;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_34_15";
-	from "load_34";
+	from "meter_34";
 	to "node_15";
 	length 100;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABN";
 	name "ohl_35_36";
-	from "load_35";
+	from "meter_35";
 	to "node_36";
 	length 650;
 	configuration "oh_line_config_08_ABN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_35_40";
-	from "load_35";
+	from "meter_35";
 	to "node_40";
 	length 250;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_36_37";
 	from "node_36";
-	to "load_37";
+	to "meter_37";
 	length 300;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_36_38";
 	from "node_36";
-	to "load_38";
+	to "meter_38";
 	length 250;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_38_39";
-	from "load_38";
-	to "load_39";
+	from "meter_38";
+	to "meter_39";
 	length 325;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_40_41";
 	from "node_40";
-	to "load_41";
+	to "meter_41";
 	length 325;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_40_42";
 	from "node_40";
-	to "load_42";
+	to "meter_42";
 	length 250;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_42_43";
-	from "load_42";
-	to "load_43";
+	from "meter_42";
+	to "meter_43";
 	length 500;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_42_44";
-	from "load_42";
+	from "meter_42";
 	to "node_44";
 	length 200;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_44_45";
 	from "node_44";
-	to "load_45";
+	to "meter_45";
 	length 200;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_44_47";
 	from "node_44";
-	to "load_47";
+	to "meter_47";
 	length 250;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_45_46";
-	from "load_45";
-	to "load_46";
+	from "meter_45";
+	to "meter_46";
 	length 300;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_47_48";
-	from "load_47";
-	to "load_48";
+	from "meter_47";
+	to "meter_48";
 	length 150;
 	configuration "oh_line_config_04_CBAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_47_49";
-	from "load_47";
-	to "load_49";
-	length 250;
-	configuration "oh_line_config_04_CBAN";
-}
- 
-object overhead_line:  {
-	phases "ABCN";
-	name "ohl_49_50";
-	from "load_49";
-	to "load_50";
-	length 250;
-	configuration "oh_line_config_04_CBAN";
-}
- 
-object overhead_line:  {
-	phases "ABCN";
-	name "ohl_50_51";
-	from "load_50";
-	to "load_51";
+	from "meter_47";
+	to "meter_49";
 	length 250;
 	configuration "oh_line_config_04_CBAN";
 }
 
-object overhead_line:  {
-	phases "ABCN";			//undefined line segment
+object overhead_line: {
+	phases "ABCN";
+	name "ohl_49_50";
+	from "meter_49";
+	to "meter_50";
+	length 250;
+	configuration "oh_line_config_04_CBAN";
+}
+
+object overhead_line: {
+	phases "ABCN";
+	name "ohl_50_51";
+	from "meter_50";
+	to "meter_51";
+	length 250;
+	configuration "oh_line_config_04_CBAN";
+}
+
+object overhead_line: {
+	phases "ABCN";
 	name "ohl_51_151";
-	from "load_51";
+	from "meter_51";
 	to "node_151";
 	length 700;
 	configuration "oh_line_config_04_CBAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_52_53";
-	from "load_52";
-	to "load_53";
+	from "meter_52";
+	to "meter_53";
 	length 200;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_53_54";
-	from "load_53";
+	from "meter_53";
 	to "node_54";
 	length 125;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_54_55";
 	from "node_54";
-	to "load_55";
+	to "meter_55";
 	length 275;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_54_57";
 	from "node_54";
@@ -798,107 +778,107 @@ object overhead_line:  {
 	length 350;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_55_56";
-	from "load_55";
-	to "load_56";
+	from "meter_55";
+	to "meter_56";
 	length 275;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_57_58";
 	from "node_57";
-	to "load_58";
+	to "meter_58";
 	length 250;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_57_60";
 	from "node_57";
-	to "load_60";
+	to "meter_60";
 	length 750;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_58_59";
-	from "load_58";
-	to "load_59";
+	from "meter_58";
+	to "meter_59";
 	length 250;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_60_61";
-	from "load_60";
+	from "meter_60";
 	to "node_61";
 	length 550;
 	configuration "oh_line_config_05_BACN";
 }
- 
-object underground_line:  {
+
+object underground_line: {
 	phases "ABC";
 	name "ugl_60_62";
-	from "load_60";
-	to "load_62";
+	from "meter_60";
+	to "meter_62";
 	length 250;
 	configuration "ug_line_config_12_ABC";
 }
- 
-object underground_line:  {
+
+object underground_line: {
 	phases "ABC";
 	name "ugl_62_63";
-	from "load_62";
-	to "load_63";
+	from "meter_62";
+	to "meter_63";
 	length 175;
 	configuration "ug_line_config_12_ABC";
 }
- 
-object underground_line:  {
+
+object underground_line: {
 	phases "ABC";
 	name "ugl_63_64";
-	from "load_63";
-	to "load_64";
+	from "meter_63";
+	to "meter_64";
 	length 350;
 	configuration "ug_line_config_12_ABC";
 }
- 
-object underground_line:  {
+
+object underground_line: {
 	phases "ABC";
 	name "ugl_64_65";
-	from "load_64";
-	to "load_65";
+	from "meter_64";
+	to "meter_65";
 	length 425;
 	configuration "ug_line_config_12_ABC";
 }
- 
-object underground_line:  {
+
+object underground_line: {
 	phases "ABC";
 	name "ugl_65_66";
-	from "load_65";
-	to "load_66";
+	from "meter_65";
+	to "meter_66";
 	length 325;
 	configuration "ug_line_config_12_ABC";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_67_68";
 	from "node_67";
-	to "load_68";
+	to "meter_68";
 	length 200;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_67_72";
 	from "node_67";
@@ -906,8 +886,8 @@ object overhead_line:  {
 	length 275;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_67_97";
 	from "node_67";
@@ -915,197 +895,197 @@ object overhead_line:  {
 	length 250;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_68_69";
-	from "load_68";
-	to "load_69";
+	from "meter_68";
+	to "meter_69";
 	length 275;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_69_70";
-	from "load_69";
-	to "load_70";
+	from "meter_69";
+	to "meter_70";
 	length 325;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_70_71";
-	from "load_70";
-	to "load_71";
+	from "meter_70";
+	to "meter_71";
 	length 275;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_72_73";
 	from "node_72";
-	to "load_73";
+	to "meter_73";
 	length 275;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_72_76";
 	from "node_72";
-	to "load_76";
+	to "meter_76";
 	length 200;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_73_74";
-	from "load_73";
-	to "load_74";
+	from "meter_73";
+	to "meter_74";
 	length 350;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_74_75";
-	from "load_74";
-	to "load_75";
+	from "meter_74";
+	to "meter_75";
 	length 400;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_76_77";
-	from "load_76";
-	to "load_77";
+	from "meter_76";
+	to "meter_77";
 	length 400;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_76_86";
-	from "load_76";
-	to "load_86";
+	from "meter_76";
+	to "meter_86";
 	length 700;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_77_78";
-	from "load_77";
+	from "meter_77";
 	to "node_78";
 	length 100;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_78_79";
 	from "node_78";
-	to "load_79";
+	to "meter_79";
 	length 225;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_78_80";
 	from "node_78";
-	to "load_80";
+	to "meter_80";
 	length 475;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_80_81";
-	from "load_80";
+	from "meter_80";
 	to "node_81";
 	length 475;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_81_82";
 	from "node_81";
-	to "load_82";
+	to "meter_82";
 	length 250;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_81_84";
 	from "node_81";
-	to "load_84";
+	to "meter_84";
 	length 675;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_82_83";
-	from "load_82";
-	to "load_83";
+	from "meter_82";
+	to "meter_83";
 	length 250;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_84_85";
-	from "load_84";
-	to "load_85";
+	from "meter_84";
+	to "meter_85";
 	length 475;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_86_87";
-	from "load_86";
-	to "load_87";
+	from "meter_86";
+	to "meter_87";
 	length 450;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_87_88";
-	from "load_87";
-	to "load_88";
+	from "meter_87";
+	to "meter_88";
 	length 175;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_87_89";
-	from "load_87";
+	from "meter_87";
 	to "node_89";
 	length 275;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_89_90";
 	from "node_89";
-	to "load_90";
+	to "meter_90";
 	length 225;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_89_91";
 	from "node_89";
@@ -1113,17 +1093,17 @@ object overhead_line:  {
 	length 225;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_91_92";
 	from "node_91";
-	to "load_92";
+	to "meter_92";
 	length 300;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_91_93";
 	from "node_91";
@@ -1131,80 +1111,80 @@ object overhead_line:  {
 	length 225;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_93_94";
 	from "node_93";
-	to "load_94";
+	to "meter_94";
 	length 275;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_93_95";
 	from "node_93";
-	to "load_95";
+	to "meter_95";
 	length 300;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_95_96";
-	from "load_95";
-	to "load_96";
+	from "meter_95";
+	to "meter_96";
 	length 200;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_97_98";
 	from "node_97";
-	to "load_98";
+	to "meter_98";
 	length 275;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_98_99";
-	from "load_98";
-	to "load_99";
+	from "meter_98";
+	to "meter_99";
 	length 550;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_99_100";
-	from "load_99";
-	to "load_100";
+	from "meter_99";
+	to "meter_100";
 	length 300;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_100_450";
-	from "load_100";
+	from "meter_100";
 	to "node_450";
 	length 800;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_101_102";
 	from "node_101";
-	to "load_102";
+	to "meter_102";
 	length 225;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_101_105";
 	from "node_101";
@@ -1212,35 +1192,35 @@ object overhead_line:  {
 	length 275;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_102_103";
-	from "load_102";
-	to "load_103";
+	from "meter_102";
+	to "meter_103";
 	length 325;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "CN";
 	name "ohl_103_104";
-	from "load_103";
-	to "load_104";
+	from "meter_103";
+	to "meter_104";
 	length 700;
 	configuration "oh_line_config_11_CN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_105_106";
 	from "node_105";
-	to "load_106";
+	to "meter_106";
 	length 225;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_105_108";
 	from "node_105";
@@ -1248,26 +1228,26 @@ object overhead_line:  {
 	length 325;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "BN";
 	name "ohl_106_107";
-	from "load_106";
-	to "load_107";
+	from "meter_106";
+	to "meter_107";
 	length 575;
 	configuration "oh_line_config_10_BN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_108_109";
 	from "node_108";
-	to "load_109";
+	to "meter_109";
 	length 450;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_108_300";
 	from "node_108";
@@ -1275,80 +1255,80 @@ object overhead_line:  {
 	length 1000;
 	configuration "oh_line_config_03_BCAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_109_110";
-	from "load_109";
+	from "meter_109";
 	to "node_110";
 	length 300;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_110_111";
 	from "node_110";
-	to "load_111";
+	to "meter_111";
 	length 575;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_110_112";
 	from "node_110";
-	to "load_112";
+	to "meter_112";
 	length 125;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_112_113";
-	from "load_112";
-	to "load_113";
+	from "meter_112";
+	to "meter_113";
 	length 525;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "AN";
 	name "ohl_113_114";
-	from "load_113";
-	to "load_114";
+	from "meter_113";
+	to "meter_114";
 	length 325;
 	configuration "oh_line_config_09_AN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_135_35";
 	from "node_135";
-	to "load_35";
+	to "meter_35";
 	length 375;
 	configuration "oh_line_config_04_CBAN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_149_1";
 	from "node_149";
-	to "load_1";
+	to "meter_1";
 	length 400;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_152_52";
 	from "node_152";
-	to "load_52";
+	to "meter_52";
 	length 400;
 	configuration "oh_line_config_01_ABCN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_rg160_67";
 	from "node_rg160";
@@ -1356,8 +1336,8 @@ object overhead_line:  {
 	length 350;
 	configuration "oh_line_config_06_ACBN";
 }
- 
-object overhead_line:  {
+
+object overhead_line: {
 	phases "ABCN";
 	name "ohl_197_101";
 	from "node_197";
@@ -1366,28 +1346,24 @@ object overhead_line:  {
 	configuration "oh_line_config_03_BCAN";
 }
 
-
-//==============================
-// (non-load) nodes
-//==============================
 object node {
 	phases "CN";
 	name "node_3";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_8";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_13";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "AN";
 	name "node_14";
@@ -1399,37 +1375,37 @@ object node {
 	name "node_rg9";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "CN";
 	name "node_15";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_18";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_21";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_23";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_25";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ACN";
 	name "node_26";
@@ -1441,49 +1417,49 @@ object node {
 	name "node_rg25";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ACN";
 	name "node_27";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABN";
 	name "node_36";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_40";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_44";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_54";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_57";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_61";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_67";
@@ -1495,79 +1471,79 @@ object node {
 	name "node_rg160";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "ABCN";
 	name "node_72";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_78";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_81";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_89";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_91";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_93";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "ABCN";
 	name "node_97";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "ABCN";
 	name "node_101";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_105";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "ABCN";
 	name "node_108";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "AN";
 	name "node_110";
 	nominal_voltage 2401.7771;
 }
-  
+
 object node {
 	phases "ABCN";
 	name "node_135";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_149";
@@ -1586,7 +1562,7 @@ object node {
 	bustype SWING;
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_151";
@@ -1598,84 +1574,37 @@ object node {
 	name "node_152";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_160";
 	nominal_voltage 2401.7771;
 }
 
-// ---- node195 Removed b/c not used (BSP)
-// It represents an feed from an alternate substation
-// object node {
-//	phases "ABCN";
-//	name "node_195";
-// //	bustype SWING;
-//	voltage_A 2401.7771;
-//	voltage_B -1200.8886-2080.000j;
-//	voltage_C -1200.8886+2080.000j;
-//	nominal_voltage 2401.7771;
-// }
- 
 object node {
 	phases "ABCN";
 	name "node_197";
 	nominal_voltage 2401.7771;
 }
- 
+
 object node {
 	phases "ABCN";
 	name "node_250";
 	nominal_voltage 2401.7771;
 }
 
-// ---- node251 Removed b/c not used (BSP)
-// It represents an feed from an alternate substation
-// object node {
-//	phases "ABCN";
-//	name "node_251";
-// //   bustype SWING;
-//	voltage_A 2401.7771;
-//	voltage_B -1200.8886-2080.000j;
-//	voltage_C -1200.8886+2080.000j;
-//	nominal_voltage 2401.7771;
-// }
- 
 object node {
 	phases "ABCN";
 	name "node_300";
 	nominal_voltage 2401.7771;
 }
- 
-// ---- node350 Removed b/c not used (BSP)
-// It represents an feed from an alternate substation
-// object node {
-//	phases "ABCN";
-//	name "node_350";
-//	voltage_A 2401.7771;
-//	voltage_B -1200.8886-2080.000j;
-//	voltage_C -1200.8886+2080.000j;
-//	nominal_voltage 2401.7771;
-// }
- 
+
 object node {
 	phases "ABCN";
 	name "node_450";
 	nominal_voltage 2401.7771;
 }
- 
-// ---- node451 Removed b/c not used (BSP)
-// It represents an feed from an alternate substation
-// object node {
-//	phases "ABCN";
-//	name "node_451";
-// //   bustype SWING;
-//	voltage_A 2401.7771;
-//	voltage_B -1200.8886-2080.000j;
-//	voltage_C -1200.8886+2080.000j;
-//	nominal_voltage 2401.7771;
-// }
- 
+
 object node {
 	phases "ABCN";
 	name "node_610";
@@ -1691,622 +1620,526 @@ object node {
 	nominal_voltage 2401.7771;
 }
 
+object meter {
+	name "meter_1";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
 
-//==============================
-// Loads
-//==============================
-object load {
-	name "load_1";
-	phases "ABCN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_2";
+object meter {
+	name "meter_2";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_4";
+
+object meter {
+	name "meter_4";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_5";
+
+object meter {
+	name "meter_5";
 	phases "CN";
-	constant_power_C 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_6";
+
+object meter {
+	name "meter_6";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_7";
+
+object meter {
+	name "meter_7";
 	phases "ABCN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_9";
+
+object meter {
+	name "meter_9";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_10";
+
+object meter {
+	name "meter_10";
 	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_11";
+
+object meter {
+	name "meter_11";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_12";
+
+object meter {
+	name "meter_12";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_16";
+
+object meter {
+	name "meter_16";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_17";
+
+object meter {
+	name "meter_17";
 	phases "CN";
-	constant_power_C 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_19";
+
+object meter {
+	name "meter_19";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_20";
+
+object meter {
+	name "meter_20";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_22";
+
+object meter {
+	name "meter_22";
 	phases "BN";
-	constant_power_B 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_24";
+
+object meter {
+	name "meter_24";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_28";
+
+object meter {
+	name "meter_28";
 	phases "ABCN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_29";
+
+object meter {
+	name "meter_29";
 	phases "ABCN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_30";
+
+object meter {
+	name "meter_30";
 	phases "ABCN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_31";
+
+object meter {
+	name "meter_31";
 	phases "CN";
-	constant_power_C 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_32";
+
+object meter {
+	name "meter_32";
 	phases "CN";
-	constant_power_C 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_33";
+
+object meter {
+	name "meter_33";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_34";
+
+object meter {
+	name "meter_34";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_35";
+
+object meter {
+	name "meter_35";
 	phases "ABCD";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_37";
+
+object meter {
+	name "meter_37";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_38";
+
+object meter {
+	name "meter_38";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_39";
+
+object meter {
+	name "meter_39";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_41";
+
+object meter {
+	name "meter_41";
 	phases "CN";
-	constant_power_C 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_42";
+
+object meter {
+	name "meter_42";
 	phases "ABCN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_43";
+
+object meter {
+	name "meter_43";
 	phases "BN";
-	constant_power_B 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_45";
+
+object meter {
+	name "meter_45";
 	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_46";
+
+object meter {
+	name "meter_46";
 	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_47";
+
+object meter {
+	name "meter_47";
 	phases "ABCN";
 	constant_power_A 35000+25000j;
 	constant_power_B 35000+25000j;
-	constant_power_C 35000+25000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_48";
+
+object meter {
+	name "meter_48";
 	phases "ABCN";
 	constant_power_A 70000+50000j;
 	constant_power_B 70000+50000j;
-	constant_power_C 70000+50000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_49";
+
+object meter {
+	name "meter_49";
 	phases "ABCN";
 	constant_power_A 35000+25000j;
 	constant_power_B 70000+50000j;
-	constant_power_C 35000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_50";
+
+object meter {
+	name "meter_50";
 	phases "ABCN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_51";
+
+object meter {
+	name "meter_51";
 	phases "ABCN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_52";
+
+object meter {
+	name "meter_52";
 	phases "ABCN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_53";
+
+object meter {
+	name "meter_53";
 	phases "ABCN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_55";
+
+object meter {
+	name "meter_55";
 	phases "ABCN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_56";
+
+object meter {
+	name "meter_56";
 	phases "ABCN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_58";
+
+object meter {
+	name "meter_58";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_59";
+
+object meter {
+	name "meter_59";
 	phases "BN";
-	constant_power_B 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_60";
+
+object meter {
+	name "meter_60";
 	phases "ABCN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_62";
+
+object meter {
+	name "meter_62";
 	phases "ABC";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_63";
+
+object meter {
+	name "meter_63";
 	phases "ABC";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_64";
+
+object meter {
+	name "meter_64";
 	phases "ABC";
-	constant_power_B 75000+35000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_65";
+
+object meter {
+	name "meter_65";
 	phases "ABCD";
 	constant_power_A 35000+25000j;
 	constant_power_B 35000+25000j;
-	constant_power_C 70000+50000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_66";
+
+object meter {
+	name "meter_66";
 	phases "ABC";
-	constant_power_C 75000+35000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_68";
+
+object meter {
+	name "meter_68";
 	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_69";
+
+object meter {
+	name "meter_69";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_70";
+
+object meter {
+	name "meter_70";
 	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_71";
+
+object meter {
+	name "meter_71";
 	phases "AN";
-	constant_power_A 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_73";
+
+object meter {
+	name "meter_73";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_74";
+
+object meter {
+	name "meter_74";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_75";
+
+object meter {
+	name "meter_75";
 	phases "CN";
-	constant_power_C 40000+20000j;
 	nominal_voltage 2401.7771;
 }
- 
-object load {
-	name "load_76";
+
+object meter {
+	name "meter_76";
 	phases "ABCD";
 	constant_power_A 105000+80000j;
 	constant_power_B 70000+50000j;
-	constant_power_C 70000+50000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_77";
-	phases "ABCN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_79";
-	phases "ABCN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_80";
-	phases "ABCN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_82";
-	phases "ABCN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_83";
-	phases "ABCN";
-	constant_power_C 20000+10000j;
-	// Shunt Capacitors relocated to child capacitor object. See below (BSP)
 	nominal_voltage 2401.7771;
 }
 
-object load {
-	name "load_84";
-	phases "CN";
-	constant_power_C 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_85";
-	phases "CN";
-	constant_power_C 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_86";
+object meter {
+	name "meter_77";
 	phases "ABCN";
-	constant_power_B 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_87";
-	phases "ABCN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_88";
-	phases "AN";
-	constant_power_A 40000+20000j;
-	// Shunt Capacitor relocated to child capacitor object. See below (BSP)
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_90";
-	phases "BN";
-	constant_power_B 40000+20000j;
-	// Shunt Capacitor relocated to child capacitor object. See below (BSP)
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_92";
-	phases "CN";
-	constant_power_C 40000+20000j;
-	// Shunt Capacitor relocated to child capacitor object. See below (BSP)
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_94";
-	phases "AN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_95";
-	phases "ABCN";
-	constant_power_B 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_96";
-	phases "BN";
-	constant_power_B 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_98";
-	phases "ABCN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_99";
-	phases "ABCN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_100";
-	phases "ABCN";
-	constant_power_C 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_102";
-	phases "CN";
-	constant_power_C 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_103";
-	phases "CN";
-	constant_power_C 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_104";
-	phases "CN";
-	constant_power_C 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_106";
-	phases "BN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_107";
-	phases "BN";
-	constant_power_B 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_109";
-	phases "AN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_111";
-	phases "AN";
-	constant_power_A 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_112";
-	phases "AN";
-	constant_power_A 20000+10000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_113";
-	phases "AN";
-	constant_power_A 40000+20000j;
-	nominal_voltage 2401.7771;
-}
- 
-object load {
-	name "load_114";
-	phases "AN";
-	constant_power_A 20000+10000j;
 	nominal_voltage 2401.7771;
 }
 
-//==============================
-// Switches
-//==============================
+object meter {
+	name "meter_79";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_80";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_82";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_83";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_84";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_85";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_86";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_87";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_88";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_90";
+	phases "BN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_92";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_94";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_95";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_96";
+	phases "BN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_98";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_99";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_100";
+	phases "ABCN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_102";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_103";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_104";
+	phases "CN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_106";
+	phases "BN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_107";
+	phases "BN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_109";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_111";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_112";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_113";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
+object meter {
+	name "meter_114";
+	phases "AN";
+	nominal_voltage 2401.7771;
+}
+
 object switch {
 	phases "ABCN";
 	name "sw_13_152";
@@ -2326,7 +2159,7 @@ object switch {
 object switch {
 	phases "ABCN";
 	name "sw_60_160";
-	from "load_60";
+	from "meter_60";
 	to "node_160";
 	status CLOSED;
 }
@@ -2355,31 +2188,11 @@ object switch {
 	status CLOSED;
 }
 
-// ---- Switch 250-251 Removed b/c node251 not used (BSP)
-// It represents an feed from an alternate substation
-// object switch {
-//	phases "ABCN";
-//	name "sw_250_251";
-//	from "node_250";
-//	to "node_251";
-//	status OPEN;
-// }
-
-// ---- Switch 450-451 Removed b/c node451 not used (BSP)
-// It represents an feed from an alternate substation
-// object switch {
-//	phases "ABCN";
-//	name "sw_450_451";
-//	from "node_450";
-//	to "node_451";
-//	status OPEN;
-// }
-
 object switch {
 	phases "AN";
 	name "sw_54_94";
 	from "node_54";
-	to "load_94";
+	to "meter_94";
 	status OPEN;
 }
 
@@ -2391,34 +2204,10 @@ object switch {
 	status OPEN;
 }
 
-// ---- Switch 300-350 Removed b/c node350 not used (BSP)
-// It represents an feed from an alternate substation
-// object switch {
-//	phases "ABCN";
-//	name "sw_300_350";
-//	from "node_300";
-//	to "node_350";
-//	status OPEN;
-// }
-
-// ---- Switch 95-195 Removed b/c node195 not used (BSP)
-// It represents an feed from an alternate substation
-// object switch {
-//	phases "ABCN";
-//	name "sw_95_195";
-//	from "load_95";
-//	to "node_195";
-//	status OPEN;
-// }
-
-
-//==============================
-// Capacitors
-//==============================
 object capacitor {
 	phases ABC;
 	name "cap_83";
-	parent "load_83";
+	parent "meter_83";
 	phases_connected ABC;
 	control MANUAL;
 	capacitor_A 200 kVAr;
@@ -2433,7 +2222,7 @@ object capacitor {
 object capacitor {
 	phases "A";
 	name "cap_88";
-	parent "load_88";
+	parent "meter_88";
 	phases_connected A;
 	capacitor_A 50 kVAr;
 	control MANUAL;
@@ -2444,7 +2233,7 @@ object capacitor {
 object capacitor {
 	phases B;
 	name "cap_90";
-	parent "load_90";
+	parent "meter_90";
 	phases_connected B;
 	capacitor_B 50 kVAr;
 	control MANUAL;
@@ -2455,7 +2244,7 @@ object capacitor {
 object capacitor {
 	phases C;
 	name "cap_92";
-	parent "load_92";
+	parent "meter_92";
 	phases_connected C;
 	capacitor_C 50 kVAr;
 	control MANUAL;
@@ -2463,34 +2252,25 @@ object capacitor {
 	nominal_voltage 2401.7771;
 }
 
-
-//==============================
-// Transformers
-//==============================
 object transformer_configuration {
 	name "xfm_config_1";
 	connect_type DELTA_DELTA;
- 	install_type PADMOUNT;
- 	power_rating 150;
- 	primary_voltage 4160;
- 	secondary_voltage 480;
- 	resistance 0.0127;
- 	reactance 0.0272;
+	install_type PADMOUNT;
+	power_rating 150;
+	primary_voltage 4160;
+	secondary_voltage 480;
+	resistance 0.0127;
+	reactance 0.0272;
 }
-  
+
 object transformer {
- 	phases "ABCN";
- 	name "xfm_1";
- 	from "node_xf610";
- 	to "node_610";
- 	configuration "xfm_config_1";
+	phases "ABCN";
+	name "xfm_1";
+	from "node_xf610";
+	to "node_610";
+	configuration "xfm_config_1";
 }
 
-
-
-//==============================
-// Regulators
-//==============================
 object regulator_configuration {
 	name "reg_config_1";
 	connect_type 1;
@@ -2542,11 +2322,11 @@ object regulator_configuration {
 	tap_pos_B 0;
 	tap_pos_C 0;
 }
-  
+
 object regulator {
 	name "reg_2";
 	phases "A";
-	from "load_9";
+	from "meter_9";
 	to "node_rg9";
 	configuration "reg_config_2";
 }
@@ -2574,7 +2354,7 @@ object regulator_configuration {
 	tap_pos_B 0;
 	tap_pos_C -1;
 }
-  
+
 object regulator {
 	name "reg_3";
 	phases "AC";
@@ -2608,7 +2388,7 @@ object regulator_configuration {
 	tap_pos_B 1;
 	tap_pos_C 5;
 }
-  
+
 object regulator {
 	name "reg_4";
 	phases "ABC";
@@ -2616,3 +2396,18 @@ object regulator {
 	to "node_rg160";
 	configuration "reg_config_4";
 }
+
+object dummy {
+	name dummy_obj;
+	value dummy_player.value;
+}
+
+object voltdump {
+	filemode "a";
+	filename "volt_dump.csv";
+	interval 60;
+	version 1;
+}
+
+script on_term "python3 voltdump2.py";
+
