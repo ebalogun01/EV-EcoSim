@@ -1,1 +1,1 @@
-# EV50_cosimulation
+# EV50 co-simulation platform
