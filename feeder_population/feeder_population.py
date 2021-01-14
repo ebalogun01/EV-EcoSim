@@ -305,7 +305,7 @@ for i in range(len(bus_list)):
         glm_house_dict[key_index]={'name':'tn_'+str(k),
                       'nominal_voltage':'120.00',
                       'phases':str(load_phases[i])+"S",
-                      'power_12':str(spot_load_list[i]).replace('(','').replace(')','')}
+                      'power_12':str(spot_load_list[i]/(num_transformers+3)).replace('(','').replace(')','')}
         obj_type[key_index]={'object':'triplex_node'}
         key_index=key_index+1
         
