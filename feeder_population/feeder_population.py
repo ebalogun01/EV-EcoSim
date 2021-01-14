@@ -37,6 +37,8 @@ spot_load_list=[]
 bus_list=[]
 bus_list_voltage=[]
 prop_voltage=[]
+nominal_voltage=[]
+load_phases=[]
 
 for i in obj_type_base.keys():
     if ('object' in obj_type_base[i].keys()): 
@@ -45,31 +47,36 @@ for i in obj_type_base.keys():
         if 'load' in obj_type_base[i]['object']:
             if 'constant_power_A' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_A']))
-                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))            
+                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))   
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
 
             if 'A' in glm_dict_base[i]['phases']:
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
                 prop_voltage.append('voltage_A')
+                load_phases.append('A')
             
             if 'constant_power_B' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_B']))
-                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
+                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
 
 
             if 'B' in glm_dict_base[i]['phases']:
                 prop_voltage.append('voltage_B')
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
+                load_phases.append('B')
 
             if 'constant_power_C' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_C']))
-                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
+                bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
 
             if 'C' in glm_dict_base[i]['phases']:
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
                 prop_voltage.append('voltage_C')
+                load_phases.append('C')
                 
             
-
         #get rid of regulator control
         elif 'regulator_configuration' in obj_type_base[i]['object']:
             if 'Control' in glm_dict_base[i].keys():
@@ -197,7 +204,6 @@ glm_dict_base[pf_del_index]={'solver_method':'NR',
              'solver_profile_filename':'"solver_nr_out.csv"'}
 
 # write new glm file
-
 print('writing new glm file')
 out_dir=test_case_dir
 file_name=feeder_name+'_populated.glm'
@@ -209,3 +215,83 @@ with open('voltage_obj.txt','wb') as fp:
 with open('voltage_prop.txt','wb') as fp:
     pickle.dump(prop_voltage,fp)
 #print(bus_list_voltage)
+
+
+#write dummy player file....
+
+
+#write load data...
+
+
+#write glm for secondary distribution system
+
+
+#%%
+
+
+
+
+
+
+os.chdir(load_data_dir)
+data_use=pandas.read_csv('data_2015_use_filt.csv')
+
+#%%
+
+import matplotlib.pyplot as plt
+
+data_use_mat=np.asmatrix(data_use[data_use.columns[6:-1]])
+agg_power=np.mean(data_use_mat,axis=1)
+admd=np.max(agg_power)
+plt.plot(agg_power)
+
+#%% generate glm for homes
+
+#Initiatize dictionaries and lists
+glm_house_dict={}
+obj_type={}
+globals_list=[]
+include_list=[]
+sync_list=[]
+
+key_index=0
+
+
+glm_house_dict[key_index]={}
+obj_type[key_index]={'module':'tape'}
+key_index=key_index+1
+
+    
+#Triplex line conductor
+glm_house_dict[key_index]={'name':'''"c1/0 AA triplex"''',
+         'resistance':'0.97',
+         'geometric_mean_radius':'0.0111'}
+
+obj_type[key_index]={'object':'triplex_line_conductor'}
+key_index=key_index+1
+
+#Triplex line configuration
+glm_house_dict[key_index]={'name':'triplex_line_config',
+                    'conductor_1':'''"c1/0 AA triplex"''',
+                    'conductor_2':'''"c1/0 AA triplex"''',
+                    'conductor_N':'''"c1/0 AA triplex"''',
+                    'insulation_thickness':'0.08',
+                    'diameter':'0.368'}
+obj_type[key_index]={'object':'triplex_line_configuration'}
+key_index=key_index+1
+
+    
+#Transformer configuration 
+glm_house_dict[key_index]={'name':'house_transformer',
+                 'connect_type':'SINGLE_PHASE_CENTER_TAPPED',
+                 'install_type':'PADMOUNT',
+                 'primary_voltage':str(np.unique(np.array(nominal_voltage))[0]), #update to include possibly multiple transformer configurations
+                 'secondary_voltage':'120 V',
+                 'power_rating':'25.0',
+                 'resistance':'0.00600',
+                 'reactance':'0.00400',
+                 'shunt_impedance':'339.610+336.934j'}
+obj_type[key_index]={'object':'transformer_configuration'}
+key_index=key_index+1
+
+

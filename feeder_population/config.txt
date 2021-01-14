@@ -4,7 +4,7 @@
 'box_pts':60,
 'base_file_dir':'C:\\Users\Lily Buechler\Documents\Lily\Stanford\Research\\EV50_cosimulation\\feeders',
 'test_case_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\test_cases\\dummy',
-'load_data_dir':'/home/ec2-user/feeder_pop/',
+'load_data_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\\Consumer_seg\\data',
 'starttime':"'2018-07-01 00:00:00'",
 'endtime':"'2018-07-01 00:59:00'",
 'python_module':'sim_functions'}

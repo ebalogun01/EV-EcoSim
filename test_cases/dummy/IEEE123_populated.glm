@@ -17,6 +17,8 @@ module powerflow {
 	solver_profile_filename "solver_nr_out.csv";
 }
 
+#include "IEEE123_secondary.glm";
+
 class dummy {
 	double value;
 }
