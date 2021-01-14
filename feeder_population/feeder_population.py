@@ -312,7 +312,7 @@ for i in range(len(bus_list)):
         #Transformer
         glm_house_dict[key_index]={'name':'trip_trans_'+str(k),
                   'phases':str(load_phases[i])+'S',
-                  'from':'meter_'+str(bus_list[i]),
+                  'from':str(bus_list[i]),
                   'to':'tn_'+str(k),
                   'configuration':'house_transformer'}
         obj_type[key_index]={'object':'transformer'}

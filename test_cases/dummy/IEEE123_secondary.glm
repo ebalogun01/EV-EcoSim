@@ -37,7 +37,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_0;
 	phases AS;
-	from meter_meter_1;
+	from meter_1;
 	to tn_0;
 	configuration house_transformer;
 }
@@ -52,7 +52,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_1;
 	phases AS;
-	from meter_meter_1;
+	from meter_1;
 	to tn_1;
 	configuration house_transformer;
 }
@@ -67,7 +67,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_2;
 	phases BS;
-	from meter_meter_2;
+	from meter_2;
 	to tn_2;
 	configuration house_transformer;
 }
@@ -82,7 +82,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_3;
 	phases CS;
-	from meter_meter_4;
+	from meter_4;
 	to tn_3;
 	configuration house_transformer;
 }
@@ -97,7 +97,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_4;
 	phases CS;
-	from meter_meter_4;
+	from meter_4;
 	to tn_4;
 	configuration house_transformer;
 }
@@ -112,7 +112,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_5;
 	phases CS;
-	from meter_meter_5;
+	from meter_5;
 	to tn_5;
 	configuration house_transformer;
 }
@@ -127,7 +127,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_6;
 	phases CS;
-	from meter_meter_6;
+	from meter_6;
 	to tn_6;
 	configuration house_transformer;
 }
@@ -142,7 +142,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_7;
 	phases CS;
-	from meter_meter_6;
+	from meter_6;
 	to tn_7;
 	configuration house_transformer;
 }
@@ -157,7 +157,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_8;
 	phases AS;
-	from meter_meter_7;
+	from meter_7;
 	to tn_8;
 	configuration house_transformer;
 }
@@ -172,7 +172,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_9;
 	phases AS;
-	from meter_meter_9;
+	from meter_9;
 	to tn_9;
 	configuration house_transformer;
 }
@@ -187,7 +187,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_10;
 	phases AS;
-	from meter_meter_9;
+	from meter_9;
 	to tn_10;
 	configuration house_transformer;
 }
@@ -202,7 +202,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_11;
 	phases AS;
-	from meter_meter_10;
+	from meter_10;
 	to tn_11;
 	configuration house_transformer;
 }
@@ -217,7 +217,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_12;
 	phases AS;
-	from meter_meter_11;
+	from meter_11;
 	to tn_12;
 	configuration house_transformer;
 }
@@ -232,7 +232,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_13;
 	phases AS;
-	from meter_meter_11;
+	from meter_11;
 	to tn_13;
 	configuration house_transformer;
 }
@@ -247,7 +247,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_14;
 	phases BS;
-	from meter_meter_12;
+	from meter_12;
 	to tn_14;
 	configuration house_transformer;
 }
@@ -262,7 +262,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_15;
 	phases CS;
-	from meter_meter_16;
+	from meter_16;
 	to tn_15;
 	configuration house_transformer;
 }
@@ -277,7 +277,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_16;
 	phases CS;
-	from meter_meter_16;
+	from meter_16;
 	to tn_16;
 	configuration house_transformer;
 }
@@ -292,7 +292,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_17;
 	phases CS;
-	from meter_meter_17;
+	from meter_17;
 	to tn_17;
 	configuration house_transformer;
 }
@@ -307,7 +307,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_18;
 	phases AS;
-	from meter_meter_19;
+	from meter_19;
 	to tn_18;
 	configuration house_transformer;
 }
@@ -322,7 +322,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_19;
 	phases AS;
-	from meter_meter_19;
+	from meter_19;
 	to tn_19;
 	configuration house_transformer;
 }
@@ -337,7 +337,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_20;
 	phases AS;
-	from meter_meter_20;
+	from meter_20;
 	to tn_20;
 	configuration house_transformer;
 }
@@ -352,7 +352,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_21;
 	phases AS;
-	from meter_meter_20;
+	from meter_20;
 	to tn_21;
 	configuration house_transformer;
 }
@@ -367,7 +367,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_22;
 	phases BS;
-	from meter_meter_22;
+	from meter_22;
 	to tn_22;
 	configuration house_transformer;
 }
@@ -382,7 +382,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_23;
 	phases BS;
-	from meter_meter_22;
+	from meter_22;
 	to tn_23;
 	configuration house_transformer;
 }
@@ -397,7 +397,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_24;
 	phases CS;
-	from meter_meter_24;
+	from meter_24;
 	to tn_24;
 	configuration house_transformer;
 }
@@ -412,7 +412,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_25;
 	phases CS;
-	from meter_meter_24;
+	from meter_24;
 	to tn_25;
 	configuration house_transformer;
 }
@@ -427,7 +427,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_26;
 	phases AS;
-	from meter_meter_28;
+	from meter_28;
 	to tn_26;
 	configuration house_transformer;
 }
@@ -442,7 +442,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_27;
 	phases AS;
-	from meter_meter_28;
+	from meter_28;
 	to tn_27;
 	configuration house_transformer;
 }
@@ -457,7 +457,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_28;
 	phases AS;
-	from meter_meter_29;
+	from meter_29;
 	to tn_28;
 	configuration house_transformer;
 }
@@ -472,7 +472,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_29;
 	phases AS;
-	from meter_meter_29;
+	from meter_29;
 	to tn_29;
 	configuration house_transformer;
 }
@@ -487,7 +487,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_30;
 	phases CS;
-	from meter_meter_30;
+	from meter_30;
 	to tn_30;
 	configuration house_transformer;
 }
@@ -502,7 +502,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_31;
 	phases CS;
-	from meter_meter_30;
+	from meter_30;
 	to tn_31;
 	configuration house_transformer;
 }
@@ -517,7 +517,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_32;
 	phases CS;
-	from meter_meter_31;
+	from meter_31;
 	to tn_32;
 	configuration house_transformer;
 }
@@ -532,7 +532,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_33;
 	phases CS;
-	from meter_meter_32;
+	from meter_32;
 	to tn_33;
 	configuration house_transformer;
 }
@@ -547,7 +547,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_34;
 	phases AS;
-	from meter_meter_33;
+	from meter_33;
 	to tn_34;
 	configuration house_transformer;
 }
@@ -562,7 +562,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_35;
 	phases AS;
-	from meter_meter_33;
+	from meter_33;
 	to tn_35;
 	configuration house_transformer;
 }
@@ -577,7 +577,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_36;
 	phases CS;
-	from meter_meter_34;
+	from meter_34;
 	to tn_36;
 	configuration house_transformer;
 }
@@ -592,7 +592,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_37;
 	phases CS;
-	from meter_meter_34;
+	from meter_34;
 	to tn_37;
 	configuration house_transformer;
 }
@@ -607,7 +607,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_38;
 	phases AS;
-	from meter_meter_35;
+	from meter_35;
 	to tn_38;
 	configuration house_transformer;
 }
@@ -622,7 +622,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_39;
 	phases AS;
-	from meter_meter_35;
+	from meter_35;
 	to tn_39;
 	configuration house_transformer;
 }
@@ -637,7 +637,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_40;
 	phases AS;
-	from meter_meter_37;
+	from meter_37;
 	to tn_40;
 	configuration house_transformer;
 }
@@ -652,7 +652,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_41;
 	phases AS;
-	from meter_meter_37;
+	from meter_37;
 	to tn_41;
 	configuration house_transformer;
 }
@@ -667,7 +667,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_42;
 	phases BS;
-	from meter_meter_38;
+	from meter_38;
 	to tn_42;
 	configuration house_transformer;
 }
@@ -682,7 +682,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_43;
 	phases BS;
-	from meter_meter_39;
+	from meter_39;
 	to tn_43;
 	configuration house_transformer;
 }
@@ -697,7 +697,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_44;
 	phases CS;
-	from meter_meter_41;
+	from meter_41;
 	to tn_44;
 	configuration house_transformer;
 }
@@ -712,7 +712,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_45;
 	phases AS;
-	from meter_meter_42;
+	from meter_42;
 	to tn_45;
 	configuration house_transformer;
 }
@@ -727,7 +727,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_46;
 	phases BS;
-	from meter_meter_43;
+	from meter_43;
 	to tn_46;
 	configuration house_transformer;
 }
@@ -742,7 +742,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_47;
 	phases BS;
-	from meter_meter_43;
+	from meter_43;
 	to tn_47;
 	configuration house_transformer;
 }
@@ -757,7 +757,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_48;
 	phases AS;
-	from meter_meter_45;
+	from meter_45;
 	to tn_48;
 	configuration house_transformer;
 }
@@ -772,7 +772,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_49;
 	phases AS;
-	from meter_meter_46;
+	from meter_46;
 	to tn_49;
 	configuration house_transformer;
 }
@@ -787,7 +787,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_50;
 	phases AS;
-	from meter_meter_47;
+	from meter_47;
 	to tn_50;
 	configuration house_transformer;
 }
@@ -802,7 +802,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_51;
 	phases BS;
-	from meter_meter_47;
+	from meter_47;
 	to tn_51;
 	configuration house_transformer;
 }
@@ -817,7 +817,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_52;
 	phases CS;
-	from meter_meter_47;
+	from meter_47;
 	to tn_52;
 	configuration house_transformer;
 }
@@ -832,7 +832,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_53;
 	phases AS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_53;
 	configuration house_transformer;
 }
@@ -847,7 +847,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_54;
 	phases AS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_54;
 	configuration house_transformer;
 }
@@ -862,7 +862,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_55;
 	phases AS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_55;
 	configuration house_transformer;
 }
@@ -877,7 +877,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_56;
 	phases BS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_56;
 	configuration house_transformer;
 }
@@ -892,7 +892,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_57;
 	phases BS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_57;
 	configuration house_transformer;
 }
@@ -907,7 +907,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_58;
 	phases BS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_58;
 	configuration house_transformer;
 }
@@ -922,7 +922,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_59;
 	phases CS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_59;
 	configuration house_transformer;
 }
@@ -937,7 +937,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_60;
 	phases CS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_60;
 	configuration house_transformer;
 }
@@ -952,7 +952,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_61;
 	phases CS;
-	from meter_meter_48;
+	from meter_48;
 	to tn_61;
 	configuration house_transformer;
 }
@@ -967,7 +967,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_62;
 	phases AS;
-	from meter_meter_49;
+	from meter_49;
 	to tn_62;
 	configuration house_transformer;
 }
@@ -982,7 +982,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_63;
 	phases BS;
-	from meter_meter_49;
+	from meter_49;
 	to tn_63;
 	configuration house_transformer;
 }
@@ -997,7 +997,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_64;
 	phases BS;
-	from meter_meter_49;
+	from meter_49;
 	to tn_64;
 	configuration house_transformer;
 }
@@ -1012,7 +1012,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_65;
 	phases BS;
-	from meter_meter_49;
+	from meter_49;
 	to tn_65;
 	configuration house_transformer;
 }
@@ -1027,7 +1027,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_66;
 	phases CS;
-	from meter_meter_49;
+	from meter_49;
 	to tn_66;
 	configuration house_transformer;
 }
@@ -1042,7 +1042,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_67;
 	phases CS;
-	from meter_meter_50;
+	from meter_50;
 	to tn_67;
 	configuration house_transformer;
 }
@@ -1057,7 +1057,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_68;
 	phases CS;
-	from meter_meter_50;
+	from meter_50;
 	to tn_68;
 	configuration house_transformer;
 }
@@ -1072,7 +1072,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_69;
 	phases AS;
-	from meter_meter_51;
+	from meter_51;
 	to tn_69;
 	configuration house_transformer;
 }
@@ -1087,7 +1087,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_70;
 	phases AS;
-	from meter_meter_52;
+	from meter_52;
 	to tn_70;
 	configuration house_transformer;
 }
@@ -1102,7 +1102,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_71;
 	phases AS;
-	from meter_meter_52;
+	from meter_52;
 	to tn_71;
 	configuration house_transformer;
 }
@@ -1117,7 +1117,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_72;
 	phases AS;
-	from meter_meter_53;
+	from meter_53;
 	to tn_72;
 	configuration house_transformer;
 }
@@ -1132,7 +1132,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_73;
 	phases AS;
-	from meter_meter_53;
+	from meter_53;
 	to tn_73;
 	configuration house_transformer;
 }
@@ -1147,7 +1147,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_74;
 	phases AS;
-	from meter_meter_55;
+	from meter_55;
 	to tn_74;
 	configuration house_transformer;
 }
@@ -1162,7 +1162,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_75;
 	phases BS;
-	from meter_meter_56;
+	from meter_56;
 	to tn_75;
 	configuration house_transformer;
 }
@@ -1177,7 +1177,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_76;
 	phases BS;
-	from meter_meter_58;
+	from meter_58;
 	to tn_76;
 	configuration house_transformer;
 }
@@ -1192,7 +1192,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_77;
 	phases BS;
-	from meter_meter_59;
+	from meter_59;
 	to tn_77;
 	configuration house_transformer;
 }
@@ -1207,7 +1207,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_78;
 	phases AS;
-	from meter_meter_60;
+	from meter_60;
 	to tn_78;
 	configuration house_transformer;
 }
@@ -1222,7 +1222,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_79;
 	phases CS;
-	from meter_meter_62;
+	from meter_62;
 	to tn_79;
 	configuration house_transformer;
 }
@@ -1237,7 +1237,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_80;
 	phases CS;
-	from meter_meter_62;
+	from meter_62;
 	to tn_80;
 	configuration house_transformer;
 }
@@ -1252,7 +1252,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_81;
 	phases AS;
-	from meter_meter_63;
+	from meter_63;
 	to tn_81;
 	configuration house_transformer;
 }
@@ -1267,7 +1267,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_82;
 	phases AS;
-	from meter_meter_63;
+	from meter_63;
 	to tn_82;
 	configuration house_transformer;
 }
@@ -1282,7 +1282,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_83;
 	phases BS;
-	from meter_meter_64;
+	from meter_64;
 	to tn_83;
 	configuration house_transformer;
 }
@@ -1297,7 +1297,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_84;
 	phases BS;
-	from meter_meter_64;
+	from meter_64;
 	to tn_84;
 	configuration house_transformer;
 }
@@ -1312,7 +1312,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_85;
 	phases BS;
-	from meter_meter_64;
+	from meter_64;
 	to tn_85;
 	configuration house_transformer;
 }
@@ -1327,7 +1327,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_86;
 	phases AS;
-	from meter_meter_65;
+	from meter_65;
 	to tn_86;
 	configuration house_transformer;
 }
@@ -1342,7 +1342,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_87;
 	phases BS;
-	from meter_meter_65;
+	from meter_65;
 	to tn_87;
 	configuration house_transformer;
 }
@@ -1357,7 +1357,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_88;
 	phases CS;
-	from meter_meter_65;
+	from meter_65;
 	to tn_88;
 	configuration house_transformer;
 }
@@ -1372,7 +1372,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_89;
 	phases CS;
-	from meter_meter_65;
+	from meter_65;
 	to tn_89;
 	configuration house_transformer;
 }
@@ -1387,7 +1387,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_90;
 	phases CS;
-	from meter_meter_65;
+	from meter_65;
 	to tn_90;
 	configuration house_transformer;
 }
@@ -1402,7 +1402,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_91;
 	phases CS;
-	from meter_meter_66;
+	from meter_66;
 	to tn_91;
 	configuration house_transformer;
 }
@@ -1417,7 +1417,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_92;
 	phases CS;
-	from meter_meter_66;
+	from meter_66;
 	to tn_92;
 	configuration house_transformer;
 }
@@ -1432,7 +1432,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_93;
 	phases CS;
-	from meter_meter_66;
+	from meter_66;
 	to tn_93;
 	configuration house_transformer;
 }
@@ -1447,7 +1447,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_94;
 	phases AS;
-	from meter_meter_68;
+	from meter_68;
 	to tn_94;
 	configuration house_transformer;
 }
@@ -1462,7 +1462,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_95;
 	phases AS;
-	from meter_meter_69;
+	from meter_69;
 	to tn_95;
 	configuration house_transformer;
 }
@@ -1477,7 +1477,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_96;
 	phases AS;
-	from meter_meter_69;
+	from meter_69;
 	to tn_96;
 	configuration house_transformer;
 }
@@ -1492,7 +1492,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_97;
 	phases AS;
-	from meter_meter_70;
+	from meter_70;
 	to tn_97;
 	configuration house_transformer;
 }
@@ -1507,7 +1507,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_98;
 	phases AS;
-	from meter_meter_71;
+	from meter_71;
 	to tn_98;
 	configuration house_transformer;
 }
@@ -1522,7 +1522,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_99;
 	phases AS;
-	from meter_meter_71;
+	from meter_71;
 	to tn_99;
 	configuration house_transformer;
 }
@@ -1537,7 +1537,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_100;
 	phases CS;
-	from meter_meter_73;
+	from meter_73;
 	to tn_100;
 	configuration house_transformer;
 }
@@ -1552,7 +1552,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_101;
 	phases CS;
-	from meter_meter_73;
+	from meter_73;
 	to tn_101;
 	configuration house_transformer;
 }
@@ -1567,7 +1567,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_102;
 	phases CS;
-	from meter_meter_74;
+	from meter_74;
 	to tn_102;
 	configuration house_transformer;
 }
@@ -1582,7 +1582,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_103;
 	phases CS;
-	from meter_meter_74;
+	from meter_74;
 	to tn_103;
 	configuration house_transformer;
 }
@@ -1597,7 +1597,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_104;
 	phases CS;
-	from meter_meter_75;
+	from meter_75;
 	to tn_104;
 	configuration house_transformer;
 }
@@ -1612,7 +1612,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_105;
 	phases CS;
-	from meter_meter_75;
+	from meter_75;
 	to tn_105;
 	configuration house_transformer;
 }
@@ -1627,7 +1627,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_106;
 	phases AS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_106;
 	configuration house_transformer;
 }
@@ -1642,7 +1642,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_107;
 	phases AS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_107;
 	configuration house_transformer;
 }
@@ -1657,7 +1657,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_108;
 	phases AS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_108;
 	configuration house_transformer;
 }
@@ -1672,7 +1672,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_109;
 	phases AS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_109;
 	configuration house_transformer;
 }
@@ -1687,7 +1687,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_110;
 	phases AS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_110;
 	configuration house_transformer;
 }
@@ -1702,7 +1702,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_111;
 	phases BS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_111;
 	configuration house_transformer;
 }
@@ -1717,7 +1717,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_112;
 	phases BS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_112;
 	configuration house_transformer;
 }
@@ -1732,7 +1732,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_113;
 	phases BS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_113;
 	configuration house_transformer;
 }
@@ -1747,7 +1747,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_114;
 	phases CS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_114;
 	configuration house_transformer;
 }
@@ -1762,7 +1762,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_115;
 	phases CS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_115;
 	configuration house_transformer;
 }
@@ -1777,7 +1777,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_116;
 	phases CS;
-	from meter_meter_76;
+	from meter_76;
 	to tn_116;
 	configuration house_transformer;
 }
@@ -1792,7 +1792,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_117;
 	phases BS;
-	from meter_meter_77;
+	from meter_77;
 	to tn_117;
 	configuration house_transformer;
 }
@@ -1807,7 +1807,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_118;
 	phases BS;
-	from meter_meter_77;
+	from meter_77;
 	to tn_118;
 	configuration house_transformer;
 }
@@ -1822,7 +1822,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_119;
 	phases AS;
-	from meter_meter_79;
+	from meter_79;
 	to tn_119;
 	configuration house_transformer;
 }
@@ -1837,7 +1837,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_120;
 	phases AS;
-	from meter_meter_79;
+	from meter_79;
 	to tn_120;
 	configuration house_transformer;
 }
@@ -1852,7 +1852,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_121;
 	phases BS;
-	from meter_meter_80;
+	from meter_80;
 	to tn_121;
 	configuration house_transformer;
 }
@@ -1867,7 +1867,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_122;
 	phases BS;
-	from meter_meter_80;
+	from meter_80;
 	to tn_122;
 	configuration house_transformer;
 }
@@ -1882,7 +1882,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_123;
 	phases AS;
-	from meter_meter_82;
+	from meter_82;
 	to tn_123;
 	configuration house_transformer;
 }
@@ -1897,7 +1897,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_124;
 	phases AS;
-	from meter_meter_82;
+	from meter_82;
 	to tn_124;
 	configuration house_transformer;
 }
@@ -1912,7 +1912,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_125;
 	phases CS;
-	from meter_meter_83;
+	from meter_83;
 	to tn_125;
 	configuration house_transformer;
 }
@@ -1927,7 +1927,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_126;
 	phases CS;
-	from meter_meter_84;
+	from meter_84;
 	to tn_126;
 	configuration house_transformer;
 }
@@ -1942,7 +1942,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_127;
 	phases CS;
-	from meter_meter_85;
+	from meter_85;
 	to tn_127;
 	configuration house_transformer;
 }
@@ -1957,7 +1957,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_128;
 	phases CS;
-	from meter_meter_85;
+	from meter_85;
 	to tn_128;
 	configuration house_transformer;
 }
@@ -1972,7 +1972,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_129;
 	phases BS;
-	from meter_meter_86;
+	from meter_86;
 	to tn_129;
 	configuration house_transformer;
 }
@@ -1987,7 +1987,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_130;
 	phases BS;
-	from meter_meter_87;
+	from meter_87;
 	to tn_130;
 	configuration house_transformer;
 }
@@ -2002,7 +2002,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_131;
 	phases BS;
-	from meter_meter_87;
+	from meter_87;
 	to tn_131;
 	configuration house_transformer;
 }
@@ -2017,7 +2017,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_132;
 	phases AS;
-	from meter_meter_88;
+	from meter_88;
 	to tn_132;
 	configuration house_transformer;
 }
@@ -2032,7 +2032,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_133;
 	phases AS;
-	from meter_meter_88;
+	from meter_88;
 	to tn_133;
 	configuration house_transformer;
 }
@@ -2047,7 +2047,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_134;
 	phases BS;
-	from meter_meter_90;
+	from meter_90;
 	to tn_134;
 	configuration house_transformer;
 }
@@ -2062,7 +2062,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_135;
 	phases BS;
-	from meter_meter_90;
+	from meter_90;
 	to tn_135;
 	configuration house_transformer;
 }
@@ -2077,7 +2077,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_136;
 	phases CS;
-	from meter_meter_92;
+	from meter_92;
 	to tn_136;
 	configuration house_transformer;
 }
@@ -2092,7 +2092,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_137;
 	phases CS;
-	from meter_meter_92;
+	from meter_92;
 	to tn_137;
 	configuration house_transformer;
 }
@@ -2107,7 +2107,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_138;
 	phases AS;
-	from meter_meter_94;
+	from meter_94;
 	to tn_138;
 	configuration house_transformer;
 }
@@ -2122,7 +2122,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_139;
 	phases AS;
-	from meter_meter_94;
+	from meter_94;
 	to tn_139;
 	configuration house_transformer;
 }
@@ -2137,7 +2137,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_140;
 	phases BS;
-	from meter_meter_95;
+	from meter_95;
 	to tn_140;
 	configuration house_transformer;
 }
@@ -2152,7 +2152,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_141;
 	phases BS;
-	from meter_meter_96;
+	from meter_96;
 	to tn_141;
 	configuration house_transformer;
 }
@@ -2167,7 +2167,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_142;
 	phases AS;
-	from meter_meter_98;
+	from meter_98;
 	to tn_142;
 	configuration house_transformer;
 }
@@ -2182,7 +2182,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_143;
 	phases AS;
-	from meter_meter_98;
+	from meter_98;
 	to tn_143;
 	configuration house_transformer;
 }
@@ -2197,7 +2197,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_144;
 	phases BS;
-	from meter_meter_99;
+	from meter_99;
 	to tn_144;
 	configuration house_transformer;
 }
@@ -2212,7 +2212,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_145;
 	phases BS;
-	from meter_meter_99;
+	from meter_99;
 	to tn_145;
 	configuration house_transformer;
 }
@@ -2227,7 +2227,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_146;
 	phases CS;
-	from meter_meter_100;
+	from meter_100;
 	to tn_146;
 	configuration house_transformer;
 }
@@ -2242,7 +2242,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_147;
 	phases CS;
-	from meter_meter_100;
+	from meter_100;
 	to tn_147;
 	configuration house_transformer;
 }
@@ -2257,7 +2257,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_148;
 	phases CS;
-	from meter_meter_102;
+	from meter_102;
 	to tn_148;
 	configuration house_transformer;
 }
@@ -2272,7 +2272,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_149;
 	phases CS;
-	from meter_meter_103;
+	from meter_103;
 	to tn_149;
 	configuration house_transformer;
 }
@@ -2287,7 +2287,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_150;
 	phases CS;
-	from meter_meter_103;
+	from meter_103;
 	to tn_150;
 	configuration house_transformer;
 }
@@ -2302,7 +2302,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_151;
 	phases CS;
-	from meter_meter_104;
+	from meter_104;
 	to tn_151;
 	configuration house_transformer;
 }
@@ -2317,7 +2317,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_152;
 	phases CS;
-	from meter_meter_104;
+	from meter_104;
 	to tn_152;
 	configuration house_transformer;
 }
@@ -2332,7 +2332,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_153;
 	phases BS;
-	from meter_meter_106;
+	from meter_106;
 	to tn_153;
 	configuration house_transformer;
 }
@@ -2347,7 +2347,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_154;
 	phases BS;
-	from meter_meter_106;
+	from meter_106;
 	to tn_154;
 	configuration house_transformer;
 }
@@ -2362,7 +2362,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_155;
 	phases BS;
-	from meter_meter_107;
+	from meter_107;
 	to tn_155;
 	configuration house_transformer;
 }
@@ -2377,7 +2377,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_156;
 	phases BS;
-	from meter_meter_107;
+	from meter_107;
 	to tn_156;
 	configuration house_transformer;
 }
@@ -2392,7 +2392,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_157;
 	phases AS;
-	from meter_meter_109;
+	from meter_109;
 	to tn_157;
 	configuration house_transformer;
 }
@@ -2407,7 +2407,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_158;
 	phases AS;
-	from meter_meter_109;
+	from meter_109;
 	to tn_158;
 	configuration house_transformer;
 }
@@ -2422,7 +2422,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_159;
 	phases AS;
-	from meter_meter_111;
+	from meter_111;
 	to tn_159;
 	configuration house_transformer;
 }
@@ -2437,7 +2437,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_160;
 	phases AS;
-	from meter_meter_112;
+	from meter_112;
 	to tn_160;
 	configuration house_transformer;
 }
@@ -2452,7 +2452,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_161;
 	phases AS;
-	from meter_meter_113;
+	from meter_113;
 	to tn_161;
 	configuration house_transformer;
 }
@@ -2467,7 +2467,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_162;
 	phases AS;
-	from meter_meter_113;
+	from meter_113;
 	to tn_162;
 	configuration house_transformer;
 }
@@ -2482,7 +2482,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_163;
 	phases AS;
-	from meter_meter_114;
+	from meter_114;
 	to tn_163;
 	configuration house_transformer;
 }
