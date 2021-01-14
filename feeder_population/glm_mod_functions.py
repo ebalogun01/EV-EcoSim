@@ -188,7 +188,7 @@ def write_clock_dict(file,gld_dict):
     file.write('}\n\n')
 
 
-def replace_load_w_meter(glm_dict,match_str,rep_str,obj_type):
+def replace_load_w_meter_old(glm_dict,match_str,rep_str,obj_type):
     '''Replace all instances of property in glm_dict'''
     replace_prop_list=list()
     for i in glm_dict.keys():
@@ -205,4 +205,26 @@ def replace_load_w_meter(glm_dict,match_str,rep_str,obj_type):
         if obj_type[i]['object']=='load':
             obj_type[i]['object']='meter'
     del glm_dict[delete_index][delete_prop]            
+    return glm_dict
+
+def replace_load_w_meter(glm_dict,match_str,rep_str,obj_type):
+    '''Replace all instances of property in glm_dict'''
+    replace_prop_list=list()
+    for i in glm_dict.keys():
+        if match_str in glm_dict[i].values():
+            replace_prop_list.append(i)
+    delete_index_list=[]
+    delete_prop_list=[]
+    for i in replace_prop_list:
+        for prop in glm_dict[i].keys():
+            if glm_dict[i][prop]==match_str:
+                glm_dict[i][prop]=rep_str
+            if obj_type[i]['object']=='load' and prop[0:8]=='constant':
+                delete_index_list.append(i)
+                delete_prop_list.append(prop)
+                
+        if obj_type[i]['object']=='load':
+            obj_type[i]['object']='meter'
+    for i in range(len(delete_index_list)):
+        del glm_dict[delete_index_list[i]][delete_prop_list[i]]            
     return glm_dict

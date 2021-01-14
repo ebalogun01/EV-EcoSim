@@ -1817,24 +1817,18 @@ object meter {
 object meter {
 	name "meter_47";
 	phases "ABCN";
-	constant_power_A 35000+25000j;
-	constant_power_B 35000+25000j;
 	nominal_voltage 2401.7771;
 }
 
 object meter {
 	name "meter_48";
 	phases "ABCN";
-	constant_power_A 70000+50000j;
-	constant_power_B 70000+50000j;
 	nominal_voltage 2401.7771;
 }
 
 object meter {
 	name "meter_49";
 	phases "ABCN";
-	constant_power_A 35000+25000j;
-	constant_power_B 70000+50000j;
 	nominal_voltage 2401.7771;
 }
 
@@ -1913,8 +1907,6 @@ object meter {
 object meter {
 	name "meter_65";
 	phases "ABCD";
-	constant_power_A 35000+25000j;
-	constant_power_B 35000+25000j;
 	nominal_voltage 2401.7771;
 }
 
@@ -1969,8 +1961,6 @@ object meter {
 object meter {
 	name "meter_76";
 	phases "ABCD";
-	constant_power_A 105000+80000j;
-	constant_power_B 70000+50000j;
 	nominal_voltage 2401.7771;
 }
 

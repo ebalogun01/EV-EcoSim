@@ -3,7 +3,7 @@
 import glm_mod_functions
 import os
 import pandas
-import datetime
+#import datetime
 import sklearn.preprocessing
 import numpy as np
 import ast
@@ -49,32 +49,32 @@ for i in obj_type_base.keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_A']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))   
                 nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                load_phases.append('A')
 
             if 'A' in glm_dict_base[i]['phases']:
-                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
+                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
                 prop_voltage.append('voltage_A')
-                load_phases.append('A')
             
             if 'constant_power_B' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_B']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
                 nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                load_phases.append('B')
 
 
             if 'B' in glm_dict_base[i]['phases']:
                 prop_voltage.append('voltage_B')
-                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
-                load_phases.append('B')
+                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
 
             if 'constant_power_C' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_C']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
                 nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                load_phases.append('C')
 
             if 'C' in glm_dict_base[i]['phases']:
-                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
+                bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
                 prop_voltage.append('voltage_C')
-                load_phases.append('C')
                 
             
         #get rid of regulator control
@@ -115,6 +115,9 @@ for i in obj_type_base.keys():
         if 'load' in obj_type_base[i]['object']:
 
             glm_dict_base=glm_mod_functions.replace_load_w_meter(glm_dict_base,glm_dict_base[i]['name'],glm_dict_base[i]['name'].replace('load','meter'),obj_type_base)
+
+
+include_list_base.append('#include "'+feeder_name+'_secondary.glm'+'";')
 
 # delete existing recorders
 rec_del_index=[]
@@ -287,11 +290,42 @@ glm_house_dict[key_index]={'name':'house_transformer',
                  'install_type':'PADMOUNT',
                  'primary_voltage':str(np.unique(np.array(nominal_voltage))[0]), #update to include possibly multiple transformer configurations
                  'secondary_voltage':'120 V',
-                 'power_rating':'25.0',
+                 'power_rating':'20.0',
                  'resistance':'0.00600',
                  'reactance':'0.00400',
                  'shunt_impedance':'339.610+336.934j'}
 obj_type[key_index]={'object':'transformer_configuration'}
 key_index=key_index+1
+
+k=0
+for i in range(len(bus_list)):
+    num_transformers=int(np.floor(np.real(spot_load_list[i])/(20*1000)))
+    for j in range(num_transformers):
+        #Triplex node
+        glm_house_dict[key_index]={'name':'tn_'+str(k),
+                      'nominal_voltage':'120.00',
+                      'phases':str(load_phases[i])+"S",
+                      'power_12':str(spot_load_list[i]).replace('(','').replace(')','')}
+        obj_type[key_index]={'object':'triplex_node'}
+        key_index=key_index+1
+        
+        #Transformer
+        glm_house_dict[key_index]={'name':'trip_trans_'+str(k),
+                  'phases':str(load_phases[i])+'S',
+                  'from':'meter_'+str(bus_list[i]),
+                  'to':'tn_'+str(k),
+                  'configuration':'house_transformer'}
+        obj_type[key_index]={'object':'transformer'}
+        key_index=key_index+1
+        k=k+1
+    
+#%%
+
+out_dir=test_case_dir
+file_name=feeder_name+'_secondary.glm'
+glm_mod_functions.write_base_glm(glm_house_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list)
+
+
+
 
 
