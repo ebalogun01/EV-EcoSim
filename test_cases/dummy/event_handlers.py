@@ -20,6 +20,8 @@ def on_init(t):
 def on_precommit(t):
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
+    print(gblvar.trans_To0)
+    print(type(gblvar.trans_To0))
 
     # record voltage magnitude and phase from previous timestep
     vm_array=np.zeros((len(gblvar.voltage_obj),))
@@ -88,21 +90,22 @@ def on_precommit(t):
     #propagate transformer thermal state 
     #if first timestep, initialize state
     if gblvar.it==0:
-        trans_To_temp=np.ones(1,len(gblvar.trans_list))*gblvar.trans_To0
-        trans_Th_temp=np.ones(1,len(gblvar.trans_list))*gblvar.trans_Th0
+        print(len(gblvar.trans_list))
+        trans_To_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
+        trans_Th_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
     else:
         if gblvar.trans_int_method=='euler':
             pass
             
 
     #calculate base_power and pf quantities to set for this timestep
-    name_list_base_power=list(gblvar.base_power.columns)
-    name_list_pf=list(gblvar.base_power_pf.columns)
+    name_list_base_power=list(gblvar.p_df.columns)
+    #name_list_pf=list(gblvar.base_power_pf.columns)
 
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
     #set_power_pf_vec=np.zeros((len(name_list_base_power),))
     for i in range(len(name_list_base_power)):
-        set_power_vec[i]=gblvar.real_power[name_list_base_power[i]][gblvar.it]+gblvar.reactive_power[name_list_base_power[i]][gblvar.it]*1j
+        set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j
         #set_power_pf_vec[i]=gblvar.base_power_pf[name_list_pf[i]][gblvar.it]
 
 
@@ -111,7 +114,7 @@ def on_precommit(t):
         name=name_list_base_power[i]
         #name=name_prop[0]
         prop='power_12'
-        gridlabd.set_value(name,prop,str(set_power_vec[i]))
+        gridlabd.set_value(name,prop,str(set_power_vec[i]).replace('(','').replace(')',''))
         #data = gridlabd.get_object(name)
 
     #set power factor properties for this timestep
