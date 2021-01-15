@@ -218,17 +218,9 @@ with open('voltage_obj.txt','wb') as fp:
     pickle.dump(bus_list_voltage,fp)
 with open('voltage_prop.txt','wb') as fp:
     pickle.dump(prop_voltage,fp)
-#print(bus_list_voltage)
 
 
-#write dummy player file....
-
-
-#write load data...
-
-
-
-#%% load residential load data
+#% load residential load data
 
 os.chdir(load_data_dir)
 data_use=pandas.read_csv('data_2015_use_filt.csv')
@@ -254,7 +246,7 @@ agg_power=np.mean(data_use_mat,axis=1)
 admd=np.max(agg_power)
 admd=3
 
-#%% generate glm for homes
+#% generate glm for homes
 
 #Initiatize dictionaries and lists
 glm_house_dict={}
@@ -346,8 +338,7 @@ file_name=feeder_name+'_secondary.glm'
 glm_mod_functions.write_base_glm(glm_house_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list)
 
 
-#%%
-
+#save load data
 os.chdir(test_case_dir)
 real_power_df.to_csv('real_power.csv',index=False)
 reactive_power_df.to_csv('reactive_power.csv',index=False)

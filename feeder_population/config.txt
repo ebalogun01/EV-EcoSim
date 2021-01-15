@@ -7,5 +7,5 @@
 'load_data_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\\Consumer_seg\\data',
 'starttime':"'2018-07-01 00:00:00'",
 'endtime':"'2018-07-01 23:59:00'",
-'python_module':'sim_functions',
+'python_module':'event_handlers',
 'safety_factor':0.5}
