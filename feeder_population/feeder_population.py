@@ -241,10 +241,10 @@ end_time=datetime.datetime(int(endtime_str[1:5]),int(endtime_str[6:8]),int(endti
 data_use_filt=data_use[data_use.index>=start_time]
 data_use_filt=data_use_filt[data_use_filt.index<end_time]
 
-data_use_mat=np.asarray(data_use_filt[data_use.columns[6:-1]])
+data_use_mat=np.asarray(data_use_filt[data_use.columns[6:-1]])*1000
 agg_power=np.mean(data_use_mat,axis=1)
 admd=np.max(agg_power)
-admd=2.5
+admd=3
 
 #% generate glm for homes
 
