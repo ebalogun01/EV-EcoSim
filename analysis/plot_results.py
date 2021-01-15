@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 
-os.chdir('/home/ec2-user/EV50_cosimulation/test_cases/dummy/')
+os.chdir('/home/ec2-user/EV50_cosimulation/test_cases/base_case/')
 voltages = pd.read_csv('voltages.csv')
 
 #process voltages
