@@ -22,39 +22,40 @@ def on_precommit(t):
     print('****  '+str(clock)+'  ****')
 
     # record voltage magnitude and phase from previous timestep
-    vm_array=np.zeros((len(gblvar.voltage_obj),))
-    vp_array=np.zeros((len(gblvar.voltage_prop),))
-    for i in range(len(gblvar.voltage_obj)):
-        name=gblvar.voltage_obj[i]
-        prop=gblvar.voltage_prop[i]
-        data = gridlabd.get_object(name)
-        if 'e-' in data[prop]:
-            if 'd' in data[prop]:
-                data[prop]=data[prop].replace('e-','(')
-                #print(data[prop])
-                vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
-                if '(' in vl[1]:
-                    vl[1]=vl[1].replace('(','e-')
-                else:
-                    pass
-                if '(' in vl[2]:
-                    vl[2]=vl[2].replace('(','e-')
-                else:
-                    pass
-                vm_array[i]=float(vl[1])
-                vp_array[i]=float(vl[2])     
-            else:
-                x        
-        elif 'd' in data[prop]:
-             vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
-             vm_array[i]=float(vl[1])
-             vp_array[i]=float(vl[2])     
- 
-        else:
-             vl=data[prop].rstrip('j V').replace('+',',+').replace('-',',-').split(',')
-               
-             vm_array[i]=(float(vl[1])**2+float(vl[2])**2)**0.5     
-             vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
+#    vm_array=np.zeros((len(gblvar.voltage_obj),))
+#    vp_array=np.zeros((len(gblvar.voltage_prop),))
+#    for i in range(len(gblvar.voltage_obj)):
+#        name=gblvar.voltage_obj[i]
+#        prop=gblvar.voltage_prop[i]
+#        data = gridlabd.get_object(name)
+#        if 'e-' in data[prop]:
+#            if 'd' in data[prop]:
+#                data[prop]=data[prop].replace('e-','(')
+#                #print(data[prop])
+#                vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
+#                if '(' in vl[1]:
+#                    vl[1]=vl[1].replace('(','e-')
+#                else:
+#                    pass
+#                if '(' in vl[2]:
+#                    vl[2]=vl[2].replace('(','e-')
+#                else:
+#                    pass
+#                vm_array[i]=float(vl[1])
+#                vp_array[i]=float(vl[2])     
+#            else:
+#                x        
+#        elif 'd' in data[prop]:
+#             vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
+#             vm_array[i]=float(vl[1])
+#             vp_array[i]=float(vl[2])     
+# 
+#        else:
+#             vl=data[prop].rstrip('j V').replace('+',',+').replace('-',',-').split(',')
+#               
+#             vm_array[i]=(float(vl[1])**2+float(vl[2])**2)**0.5     
+#             vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
+    vm_array,vp_array=get_voltage()
 
     if gblvar.it==0:
         gblvar.nom_vmag=vm_array
@@ -152,3 +153,39 @@ def find(criteria) :
                 result.append("%s:%s" % (item["class"],item["id"]))
     return result
 
+def get_voltage():
+    
+    vm_array=np.zeros((len(gblvar.voltage_obj),))
+    vp_array=np.zeros((len(gblvar.voltage_prop),))
+    for i in range(len(gblvar.voltage_obj)):
+        name=gblvar.voltage_obj[i]
+        prop=gblvar.voltage_prop[i]
+        data = gridlabd.get_object(name)
+        if 'e-' in data[prop]:
+            if 'd' in data[prop]:
+                data[prop]=data[prop].replace('e-','(')
+                #print(data[prop])
+                vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
+                if '(' in vl[1]:
+                    vl[1]=vl[1].replace('(','e-')
+                else:
+                    pass
+                if '(' in vl[2]:
+                    vl[2]=vl[2].replace('(','e-')
+                else:
+                    pass
+                vm_array[i]=float(vl[1])
+                vp_array[i]=float(vl[2])     
+            else:
+                x        
+        elif 'd' in data[prop]:
+             vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
+             vm_array[i]=float(vl[1])
+             vp_array[i]=float(vl[2])     
+ 
+        else:
+             vl=data[prop].rstrip('j V').replace('+',',+').replace('-',',-').split(',')
+               
+             vm_array[i]=(float(vl[1])**2+float(vl[2])**2)**0.5     
+             vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
+    return vm_array,vp_array
