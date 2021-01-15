@@ -41,7 +41,7 @@ v_pred=np.zeros((1,len(voltage_obj)))
 
 # initialize RLSF parameters
 
-lam=0.95
+lam=0.99
 N=x_array_scaled.shape[1]
 #weight matrix, shape: (num powers,num voltages)
 w=np.random.random((x_array_scaled.shape[1],int(len(voltage_obj))*1))
