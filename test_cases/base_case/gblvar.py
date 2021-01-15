@@ -38,18 +38,3 @@ vm=np.zeros((1,len(voltage_obj)))
 vp=np.zeros((1,len(voltage_obj)))
 v_pred=np.zeros((1,len(voltage_obj)))
 
-
-# transformer properties
-
-trans_dt=10.0  #integration timestep
-trans_Ta=20.0 #ambient temperature[C]
-trans_R=5.0
-trans_tau_o=2*60*60.0
-trans_tau_h=6*60.0
-trans_n=0.9
-trans_m=0.8
-trans_To0=30.0 #initial oil temperature [C]
-trans_Th0=60.0 #initial hot spot temperature [C]
-trans_int_method='euler' #integration method ['euler' or 'RK4']
-
-

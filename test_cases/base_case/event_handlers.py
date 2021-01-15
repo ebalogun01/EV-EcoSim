@@ -34,34 +34,6 @@ def on_precommit(t):
         gblvar.vp=np.concatenate((gblvar.vp,vp_array.reshape(1,-1)),axis=0)
     print(vm_array[-1])
 
-
-
-    #get transformer ratings and possibly other properties if first timestep
-    if gblvar.it==0:
-        gblvar.trans_rated_s=[]
-        for i in range(len(gblvar.trans_list)):
-            name=gblvar.trans_list[i]
-            data = gridlabd.get_object(name)
-            trans_config_name=data['configuration']
-            data = gridlabd.get_object(trans_config_name)
-            gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-        print(gblvar.trans_rated_s)
-
-    #get transformer power and voltage
-    for i in range(len(gblvar.trans_list)):
-        name=gblvar.trans_list[i]
-        data = gridlabd.get_object(name)
-        #extract data here
-        #calculate transformer current
-
-    #propagate transformer thermal state 
-    #if first timestep, initialize state
-    if gblvar.it==0:
-        trans_To_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
-        trans_Th_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
-    else:
-        if gblvar.trans_int_method=='euler':
-            pass
             
 
     #calculate base_power and pf quantities to set for this timestep
