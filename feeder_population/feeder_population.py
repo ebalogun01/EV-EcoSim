@@ -244,7 +244,7 @@ data_use_filt=data_use_filt[data_use_filt.index<end_time]
 data_use_mat=np.asarray(data_use_filt[data_use.columns[6:-1]])
 agg_power=np.mean(data_use_mat,axis=1)
 admd=np.max(agg_power)
-admd=3
+admd=2.5
 
 #% generate glm for homes
 

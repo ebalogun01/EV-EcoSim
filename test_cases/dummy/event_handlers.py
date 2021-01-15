@@ -20,8 +20,6 @@ def on_init(t):
 def on_precommit(t):
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
-    print(gblvar.trans_To0)
-    print(type(gblvar.trans_To0))
 
     # record voltage magnitude and phase from previous timestep
     vm_array=np.zeros((len(gblvar.voltage_obj),))
@@ -33,7 +31,7 @@ def on_precommit(t):
         if 'e-' in data[prop]:
             if 'd' in data[prop]:
                 data[prop]=data[prop].replace('e-','(')
-                print(data[prop])
+                #print(data[prop])
                 vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
                 if '(' in vl[1]:
                     vl[1]=vl[1].replace('(','e-')
@@ -66,6 +64,7 @@ def on_precommit(t):
     elif gblvar.it>1:
         gblvar.vm=np.concatenate((gblvar.vm,vm_array.reshape(1,-1)),axis=0)
         gblvar.vp=np.concatenate((gblvar.vp,vp_array.reshape(1,-1)),axis=0)
+    print(vm_array[-1])
 
 
 
@@ -90,7 +89,7 @@ def on_precommit(t):
     #propagate transformer thermal state 
     #if first timestep, initialize state
     if gblvar.it==0:
-        print(len(gblvar.trans_list))
+        #print(len(gblvar.trans_list))
         trans_To_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
         trans_Th_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
     else:
