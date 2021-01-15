@@ -3,7 +3,7 @@
 import glm_mod_functions
 import os
 import pandas
-#import datetime
+import datetime
 import sklearn.preprocessing
 import numpy as np
 import ast
@@ -26,6 +26,7 @@ box_pts=param_dict['box_pts']
 starttime_str=param_dict['starttime']
 endtime_str=param_dict['endtime']
 python_module=param_dict['python_module']
+safety_factor=param_dict['safety_factor']
 
 base_glm_file=feeder_name+'.glm'
 print('Loading original glm')
@@ -226,27 +227,32 @@ with open('voltage_prop.txt','wb') as fp:
 #write load data...
 
 
-#write glm for secondary distribution system
 
-
-#%%
-
-
-
-
-
+#%% load residential load data
 
 os.chdir(load_data_dir)
 data_use=pandas.read_csv('data_2015_use_filt.csv')
 
-#%%
+year=2018
 
-import matplotlib.pyplot as plt
+timestamp_list=[[] for k in range(len(data_use.month))]
+for i in range(len(timestamp_list)):
+    timestamp_list[i]=datetime.datetime(year,data_use.month[i],
+                                    data_use.day[i],data_use.hour[i],
+                                    data_use.minute[i])
+data_use['timestamp']=[datetime.datetime.strftime(k,"%m-%d-%Y %H:%M:%S") for k in timestamp_list]
+data_use=data_use.set_index(pandas.DatetimeIndex(data_use.timestamp))
 
-data_use_mat=np.asmatrix(data_use[data_use.columns[6:-1]])
+start_time=datetime.datetime(int(starttime_str[1:5]),int(starttime_str[6:8]),int(starttime_str[9:11]),int(starttime_str[12:14]),int(starttime_str[15:17]))
+end_time=datetime.datetime(int(endtime_str[1:5]),int(endtime_str[6:8]),int(endtime_str[9:11]),int(endtime_str[12:14]),int(endtime_str[15:17]))+datetime.timedelta(minutes=1)
+
+data_use_filt=data_use[data_use.index>=start_time]
+data_use_filt=data_use_filt[data_use_filt.index<end_time]
+
+data_use_mat=np.asarray(data_use_filt[data_use.columns[6:-1]])
 agg_power=np.mean(data_use_mat,axis=1)
 admd=np.max(agg_power)
-plt.plot(agg_power)
+admd=3
 
 #%% generate glm for homes
 
@@ -297,11 +303,25 @@ glm_house_dict[key_index]={'name':'house_transformer',
 obj_type[key_index]={'object':'transformer_configuration'}
 key_index=key_index+1
 
+num_transformers_list=[]
 k=0
 for i in range(len(bus_list)):
-    num_transformers=int(np.floor(np.real(spot_load_list[i])/(20*1000)))
+    num_transformers=int(np.floor(abs(spot_load_list[i])/(20*1000)))
+    num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
         #Triplex node
+        num_houses=int(np.floor(20*0.85)*safety_factor/admd)
+        real_power_trans=np.sum(data_use_mat[:,np.random.choice(np.arange(data_use_mat.shape[1]),size=(num_houses,))],axis=1)
+        pf_trans=np.random.uniform(0.85,1.0,size=real_power_trans.shape)
+        reactive_power_trans=np.multiply(real_power_trans,np.tan(np.arccos(pf_trans)))
+        
+        if k==0:
+            real_power_df=pandas.DataFrame({'tn_'+str(k):np.ndarray.flatten(real_power_trans)})
+            reactive_power_df=pandas.DataFrame({'tn_'+str(k):reactive_power_trans})
+        else:
+            real_power_df['tn_'+str(k)]=real_power_trans
+            reactive_power_df['tn_'+str(k)]=reactive_power_trans
+
         glm_house_dict[key_index]={'name':'tn_'+str(k),
                       'nominal_voltage':'120.00',
                       'phases':str(load_phases[i])+"S",
@@ -319,13 +339,16 @@ for i in range(len(bus_list)):
         key_index=key_index+1
         k=k+1
     
-#%%
 
+#write out glm file for secondary distribution
 out_dir=test_case_dir
 file_name=feeder_name+'_secondary.glm'
 glm_mod_functions.write_base_glm(glm_house_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list)
 
 
+#%%
 
-
+os.chdir(test_case_dir)
+real_power_df.to_csv('real_power.csv',index=False)
+reactive_power_df.to_csv('reactive_power.csv',index=False)
 

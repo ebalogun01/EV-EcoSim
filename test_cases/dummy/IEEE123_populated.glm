@@ -2,12 +2,12 @@
 
 clock {
 	starttime '2018-07-01 00:00:00';
-	stoptime '2018-07-01 00:59:00';
+	stoptime '2018-07-01 23:59:00';
 }
 
 module tape;
 
-//module sim_functions;
+module sim_functions;
 
 module powerflow {
 	solver_method NR;
