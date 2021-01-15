@@ -7,7 +7,7 @@ clock {
 
 module tape;
 
-module sim_functions;
+//module sim_functions;
 
 module powerflow {
 	solver_method NR;
