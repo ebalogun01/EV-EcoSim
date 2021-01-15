@@ -17,9 +17,9 @@ IEEE feeders have spot loads specified at primary distribution level. PNNL taxon
 
 ### feeder_population
 
-Scripts for population base feeder models with time-varying loads and resources
+Scripts for populating base feeder models with time-varying loads and resources. feeder_population.py generates the necessary files for a co-simulation run based on the parameters specified in config.txt.
 
 
 ### test_cases
 
-Co-simulation cases
+Co-simulation cases.

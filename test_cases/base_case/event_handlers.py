@@ -21,40 +21,7 @@ def on_precommit(t):
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
 
-    # record voltage magnitude and phase from previous timestep
-#    vm_array=np.zeros((len(gblvar.voltage_obj),))
-#    vp_array=np.zeros((len(gblvar.voltage_prop),))
-#    for i in range(len(gblvar.voltage_obj)):
-#        name=gblvar.voltage_obj[i]
-#        prop=gblvar.voltage_prop[i]
-#        data = gridlabd.get_object(name)
-#        if 'e-' in data[prop]:
-#            if 'd' in data[prop]:
-#                data[prop]=data[prop].replace('e-','(')
-#                #print(data[prop])
-#                vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
-#                if '(' in vl[1]:
-#                    vl[1]=vl[1].replace('(','e-')
-#                else:
-#                    pass
-#                if '(' in vl[2]:
-#                    vl[2]=vl[2].replace('(','e-')
-#                else:
-#                    pass
-#                vm_array[i]=float(vl[1])
-#                vp_array[i]=float(vl[2])     
-#            else:
-#                x        
-#        elif 'd' in data[prop]:
-#             vl=data[prop].rstrip('d V').replace('+',',+').replace('-',',-').split(',')
-#             vm_array[i]=float(vl[1])
-#             vp_array[i]=float(vl[2])     
-# 
-#        else:
-#             vl=data[prop].rstrip('j V').replace('+',',+').replace('-',',-').split(',')
-#               
-#             vm_array[i]=(float(vl[1])**2+float(vl[2])**2)**0.5     
-#             vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
+    #get voltage from GridLAB-D
     vm_array,vp_array=get_voltage()
 
     if gblvar.it==0:
@@ -90,7 +57,6 @@ def on_precommit(t):
     #propagate transformer thermal state 
     #if first timestep, initialize state
     if gblvar.it==0:
-        #print(len(gblvar.trans_list))
         trans_To_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
         trans_Th_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
     else:
@@ -100,31 +66,15 @@ def on_precommit(t):
 
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
-    #name_list_pf=list(gblvar.base_power_pf.columns)
-
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
-    #set_power_pf_vec=np.zeros((len(name_list_base_power),))
     for i in range(len(name_list_base_power)):
         set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j
-        #set_power_pf_vec[i]=gblvar.base_power_pf[name_list_pf[i]][gblvar.it]
-
 
     #set base_power properties for this timestep
     for i in range(len(name_list_base_power)):
         name=name_list_base_power[i]
-        #name=name_prop[0]
         prop='power_12'
         gridlabd.set_value(name,prop,str(set_power_vec[i]).replace('(','').replace(')',''))
-        #data = gridlabd.get_object(name)
-
-    #set power factor properties for this timestep
-
-#    for i in range(len(name_list_pf)):
-#        name_prop=name_list_pf[i].split('.')
-#        name=name_prop[0]
-#        prop=name_prop[1]
-#        gridlabd.set_value(name,prop,str(set_power_pf_vec[i]))
-#        data = gridlabd.get_object(name)
 
     #increment timestep
     gblvar.it=gblvar.it+1

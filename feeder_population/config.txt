@@ -3,7 +3,7 @@
 'mean_scale':0.5,
 'box_pts':60,
 'base_file_dir':'C:\\Users\Lily Buechler\Documents\Lily\Stanford\Research\\EV50_cosimulation\\feeders',
-'test_case_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\test_cases\\dummy',
+'test_case_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\test_cases\\base_case',
 'load_data_dir':'C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\\Consumer_seg\\data',
 'starttime':"'2018-07-01 00:00:00'",
 'endtime':"'2018-07-01 23:59:00'",
