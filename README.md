@@ -5,7 +5,7 @@ Platform for co-simulating power flow and EV charging stations for Stanford EV50
 
 ## Requirements
 
-GiSMo SLAC GridLAB-D installation (master branch): https://github.com/slacgismo/gridlabd. Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
+GiSMo SLAC GridLAB-D installation (master branch): https://github.com/slacgismo/gridlabd. This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
 
 ## Folder descriptions
 
