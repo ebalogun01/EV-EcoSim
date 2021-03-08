@@ -42,27 +42,45 @@ def on_precommit(t):
         for i in range(len(gblvar.trans_list)):
             name=gblvar.trans_list[i]
             data = gridlabd.get_object(name)
+            print(data)
             trans_config_name=data['configuration']
             data = gridlabd.get_object(trans_config_name)
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
         print(gblvar.trans_rated_s)
 
-    #get transformer power and voltage
+    #get transformer power
+    gblvar.trans_power=[]
     for i in range(len(gblvar.trans_list)):
         name=gblvar.trans_list[i]
         data = gridlabd.get_object(name)
-        #extract data here
-        #calculate transformer current
+        trans_power_str=data['power_in']
+        #print(trans_power_str)
+        pmag,pdeg=get_trans_power(trans_power_str)
+        gblvar.trans_power.append(pmag/1000) # in units kVA
+
 
     #propagate transformer thermal state 
     #if first timestep, initialize state
     if gblvar.it==0:
-        trans_To_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
-        trans_Th_temp=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
+        gblvar.trans_To=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
+        gblvar.trans_Th=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
     else:
         if gblvar.trans_int_method=='euler':
-            pass
-            
+
+            trans_To_new=gblvar.trans_To[gblvar.it-1,:]
+            trans_Th_new=gblvar.trans_Th[gblvar.it-1,:]
+
+            # loop through transformers
+
+            for i in range(len(gblvar.trans_list)):
+                #integrate across powerflow timestep
+                for j in range(int(gblvar.pf_dt/gblvar.trans_dt)):
+                    trans_To_new[i]=trans_To_new[i]+gblvar.trans_dt*(((gblvar.trans_R*(gblvar.trans_power[i]/gblvar.trans_rated_s[i])**2+1)/(gblvar.trans_R+1))*((gblvar.trans_delta_theta_oil_rated**(1/gblvar.trans_n))/gblvar.trans_tau_o)-(1/gblvar.trans_tau_o)*(max(trans_To_new[i]-gblvar.trans_Ta,0))**(1/gblvar.trans_n))
+                    trans_Th_new[i]=trans_Th_new[i]+gblvar.trans_dt*(((gblvar.trans_power[i]/gblvar.trans_rated_s[i])**2)*((gblvar.trans_delta_theta_hs_rated**(1/gblvar.trans_m))/(gblvar.trans_tau_h))-(1/gblvar.trans_tau_h)*(max(trans_Th_new[i]-trans_To_new[i],0))**(1/gblvar.trans_m))
+            #append to full data array of temperatures
+            gblvar.trans_To=np.concatenate((gblvar.trans_To,trans_To_new.reshape(1,-1)),axis=0)
+            gblvar.trans_Th=np.concatenate((gblvar.trans_Th,trans_Th_new.reshape(1,-1)),axis=0)
+
 
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
@@ -85,6 +103,8 @@ def on_term(t):
     np.savetxt('volt_mag.txt',gblvar.vm)
     np.savetxt('volt_phase.txt',gblvar.vp)
     np.savetxt('nom_vmag.txt',gblvar.nom_vmag)
+    np.savetxt('trans_To.txt',gblvar.trans_To)
+    np.savetxt('trans_Th.txt',gblvar.trans_Th)
 
 
 
@@ -139,3 +159,37 @@ def get_voltage():
              vm_array[i]=(float(vl[1])**2+float(vl[2])**2)**0.5     
              vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
     return vm_array,vp_array
+
+def get_trans_power(trans_power_str):
+
+    trans_power_str=trans_power_str.rstrip(' VA')
+    if 'e-' in trans_power_str:
+        if 'd' in trans_power_str:
+            trans_power_str=trans_power_str.replace('e-','(')
+            strtemp=trans_power_str.rstrip('d').replace('+',',+').replace('-',',-').split(',')
+            if '(' in strtemp[1]:
+                strtemp[1]=strtemp[1].replace('(','e-')
+            else:
+                pass
+            if '(' in strtemp[2]:
+                strtemp[2]=strtemp[2].replace('(','e-')
+            else:
+                pass
+            pmag=float(strtemp[1])
+            pdeg=float(strtemp[2])     
+        else:
+            x        
+    elif 'd' in trans_power_str:
+         strtemp=trans_power_str.rstrip('d').replace('+',',+').replace('-',',-').split(',')
+         pmag=float(strtemp[1])
+         pdeg=float(strtemp[2])     
+
+    else:
+         strtemp=trans_power_str.rstrip('j').replace('+',',+').replace('-',',-').split(',')
+              
+         pmag=(float(strtemp[1])**2+float(strtemp[2])**2)**0.5     
+         pdeg=np.rad2deg(np.angle(float(strtemp[1])+float(strtemp[2])*1j))
+
+    #print(str(pmag)+'  '+str(pdeg))
+
+    return pmag,pdeg
