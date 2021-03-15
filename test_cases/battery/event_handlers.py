@@ -8,6 +8,7 @@ import opt
 import sim
 
 def on_init(t):
+    '''Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd'''
 
     #get object lists from GridLAB-D
     gridlabd.output("timestamp,x")
@@ -80,13 +81,16 @@ def on_precommit(t):
     xxx=opt.opt_dummy()
 
 
-    ################################# SEND TO GRIDLABD ##########################################
+    ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
     for i in range(len(name_list_base_power)):
         set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j
+
+
+    ################################## SEND TO GRIDLABD ################################################
 
     #set base_power properties for this timestep
     for i in range(len(name_list_base_power)):
@@ -100,6 +104,8 @@ def on_precommit(t):
     return True
 
 def on_term(t):
+    '''Stuff to do at the very end of the whole simulation, like saving data'''
+
     np.savetxt('volt_mag.txt',gblvar.vm)
     np.savetxt('volt_phase.txt',gblvar.vp)
     np.savetxt('nom_vmag.txt',gblvar.nom_vmag)
@@ -108,7 +114,10 @@ def on_term(t):
 
 
 
-def find(criteria) :
+def find(criteria):
+    '''Finding objects in gridlabd that satisfy certain criteria'''
+
+
     finder = criteria.split("=")
     if len(finder) < 2 :
         raise Exception("find(criteria='key=value'): criteria syntax error")
@@ -124,7 +133,8 @@ def find(criteria) :
     return result
 
 def get_voltage():
-    
+    '''Get voltage string from GridLAB-D and process it into float'''    
+
     vm_array=np.zeros((len(gblvar.voltage_obj),))
     vp_array=np.zeros((len(gblvar.voltage_prop),))
     for i in range(len(gblvar.voltage_obj)):
@@ -160,7 +170,10 @@ def get_voltage():
              vp_array[i]=np.rad2deg(np.angle(float(vl[1])+float(vl[2])*1j))
     return vm_array,vp_array
 
+
+
 def get_trans_power(trans_power_str):
+    '''Get power at transformer as a string and process it into a float'''
 
     trans_power_str=trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:
