@@ -4,6 +4,7 @@ import gridlabd
 import time
 import gblvar
 import re
+import opt
 
 def on_init(t):
 
@@ -18,23 +19,30 @@ def on_init(t):
     return True
 
 def on_precommit(t):
+
+    ########################## UPDATES FROM GRIDLABD ##################################
+
+    # get clock from GridLAB-D
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
 
-    #get voltage from GridLAB-D
+    #get voltage from previous timestep from GridLAB-D
     vm_array,vp_array=get_voltage()
 
+    #get nominal voltages if first timestep
     if gblvar.it==0:
         gblvar.nom_vmag=vm_array
+
+    #initialize voltage vector
     if gblvar.it==1:
         gblvar.vm=vm_array.reshape(1,-1)
         gblvar.vp=vp_array.reshape(1,-1)
+
+    #concatenace new voltage vector onto voltage history
     elif gblvar.it>1:
         gblvar.vm=np.concatenate((gblvar.vm,vm_array.reshape(1,-1)),axis=0)
         gblvar.vp=np.concatenate((gblvar.vp,vp_array.reshape(1,-1)),axis=0)
-    print(vm_array[-1])
-
-
+    #print(vm_array[-1])
 
     #get transformer ratings and possibly other properties if first timestep
     if gblvar.it==0:
@@ -48,7 +56,7 @@ def on_precommit(t):
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
         print(gblvar.trans_rated_s)
 
-    #get transformer power
+    #get transformer power from previous timestep
     gblvar.trans_power=[]
     for i in range(len(gblvar.trans_list)):
         name=gblvar.trans_list[i]
@@ -59,11 +67,17 @@ def on_precommit(t):
         gblvar.trans_power.append(pmag/1000) # in units kVA
 
 
-    #propagate transformer thermal state 
-    #if first timestep, initialize state
+
+
+    ####################### SIMULATE ##################################
+
+
+    #if first timestep, initialize state of transformer
     if gblvar.it==0:
         gblvar.trans_To=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_To0)
         gblvar.trans_Th=np.ones((1,len(gblvar.trans_list)))*float(gblvar.trans_Th0)
+
+    # Propagate transformer thermal state from previous timestep to current timestep
     else:
         if gblvar.trans_int_method=='euler':
 
@@ -81,6 +95,8 @@ def on_precommit(t):
             gblvar.trans_To=np.concatenate((gblvar.trans_To,trans_To_new.reshape(1,-1)),axis=0)
             gblvar.trans_Th=np.concatenate((gblvar.trans_Th,trans_Th_new.reshape(1,-1)),axis=0)
 
+
+    ################################# SEND TO GRIDLABD ##########################################
 
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
