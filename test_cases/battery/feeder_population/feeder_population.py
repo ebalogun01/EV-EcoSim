@@ -10,7 +10,7 @@ import ast
 import pickle
 
 #read config file
-os.chdir('C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\feeder_population')
+os.chdir('C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\test_cases\\battery\\feeder_population')
 f=open('config.txt','r')
 param_dict=f.read()
 f.close()
@@ -27,6 +27,7 @@ starttime_str=param_dict['starttime']
 endtime_str=param_dict['endtime']
 python_module=param_dict['python_module']
 safety_factor=param_dict['safety_factor']
+num_batteries=param_dict['num_batteries']
 
 base_glm_file=feeder_name+'.glm'
 print('Loading original glm')
@@ -214,6 +215,7 @@ file_name=feeder_name+'_populated.glm'
 glm_mod_functions.write_base_glm(glm_dict_base,obj_type_base,globals_list_base,include_list_base,out_dir,file_name,sync_list_base)
 
 # write voltage objects and property lists
+os.chdir(test_case_dir)
 with open('voltage_obj.txt','wb') as fp:
     pickle.dump(bus_list_voltage,fp)
 with open('voltage_prop.txt','wb') as fp:
@@ -330,7 +332,19 @@ for i in range(len(bus_list)):
         obj_type[key_index]={'object':'transformer'}
         key_index=key_index+1
         k=k+1
-    
+
+#select triplex nodes to put batteries
+total_trans=k
+bat_buses=np.random.choice(np.arange(total_trans),num_batteries)
+
+bat_bus_obj=[]
+for i in range(num_batteries):
+    bat_bus_obj.append('tn_'+str(bat_buses[i]))
+
+os.chdir(test_case_dir)
+with open('bat_bus.txt','wb') as fp:
+    pickle.dump(bat_bus_obj,fp)
+
 
 #write out glm file for secondary distribution
 out_dir=test_case_dir
