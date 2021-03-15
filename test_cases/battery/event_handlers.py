@@ -50,11 +50,11 @@ def on_precommit(t):
         for i in range(len(gblvar.trans_list)):
             name=gblvar.trans_list[i]
             data = gridlabd.get_object(name)
-            print(data)
+            #print(data)
             trans_config_name=data['configuration']
             data = gridlabd.get_object(trans_config_name)
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-        print(gblvar.trans_rated_s)
+        #print(gblvar.trans_rated_s)
 
     #get transformer power from previous timestep
     gblvar.trans_power=[]
@@ -94,6 +94,10 @@ def on_precommit(t):
             #append to full data array of temperatures
             gblvar.trans_To=np.concatenate((gblvar.trans_To,trans_To_new.reshape(1,-1)),axis=0)
             gblvar.trans_Th=np.concatenate((gblvar.trans_Th,trans_Th_new.reshape(1,-1)),axis=0)
+
+    ########################### OPTIMIZE #####################################################
+
+    xxx=opt.opt_dummy()
 
 
     ################################# SEND TO GRIDLABD ##########################################
