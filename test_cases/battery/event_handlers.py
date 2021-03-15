@@ -76,6 +76,9 @@ def on_precommit(t):
     #propagage transformer state
     sim.sim_transformer()
 
+
+    ### add in battery simulation here
+
     ########################### OPTIMIZE #####################################################
 
     xxx=opt.opt_dummy()
@@ -88,7 +91,7 @@ def on_precommit(t):
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
     for i in range(len(name_list_base_power)):
         set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j
-
+   
 
     ################################## SEND TO GRIDLABD ################################################
 
