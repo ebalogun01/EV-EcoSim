@@ -26,7 +26,8 @@ Co-simulation cases.
 
 base_case - Reads voltage from GridLAB-D and writes power injections at each timestep.  
 rlsf - base_case plus implements a recursive least squares filter to estimate network model online.  
-transformer - base_base plus simulation of transformer thermal model for each transformer in GridLAB-D model.
+transformer - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model.
+battery - base_case plus transformer model plus battery model (not finished yet)
 
 Start simulation by running master_sim.py.
 
