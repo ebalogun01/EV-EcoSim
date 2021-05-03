@@ -1,0 +1,13 @@
+# ignores files of these types
+*.csv
+*.mat
+*.glm
+*.dss
+*.xlsx
+*.xml
+*.xls
+*.npy
+BatteryData
+CP_ProjectData
+Datasets-CP
+Datasets
