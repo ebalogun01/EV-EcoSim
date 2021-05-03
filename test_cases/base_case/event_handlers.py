@@ -4,6 +4,9 @@ import gridlabd
 import time
 import gblvar
 import re
+from EVCharging import ChargingSim
+
+EV_charging_sim = ChargingSim(1)    # Initialize Charging Simulation Class
 
 def on_init(t):
 
@@ -20,7 +23,9 @@ def on_init(t):
 def on_precommit(t):
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
-
+    EV_charging_sim.setup()     # Sets up the simulation module with Charging sites and batteries
+    num_steps = 1
+    charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
     #get voltage from GridLAB-D
     vm_array,vp_array=get_voltage()
 
@@ -39,8 +44,9 @@ def on_precommit(t):
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
-    for i in range(len(name_list_base_power)):
-        set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j
+    for i in range(len(name_list_base_power)): # add EV simulation net load for each location
+        set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j +\
+                         charging_net_loads_per_loc[i]
 
     #set base_power properties for this timestep
     for i in range(len(name_list_base_power)):
