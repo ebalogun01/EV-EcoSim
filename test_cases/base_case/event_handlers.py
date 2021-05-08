@@ -1,10 +1,15 @@
 import os
+import sys
 import numpy as np
 import gridlabd
 import time
 import gblvar
 import re
+
+sys.path.append('/home/ec2-user/EV50_cosimulation/charging_sim')
 from EVCharging import ChargingSim
+
+
 
 EV_charging_sim = ChargingSim(1)    # Initialize Charging Simulation Class
 
