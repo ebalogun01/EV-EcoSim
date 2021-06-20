@@ -1,13 +1,19 @@
 import os
 import sys
+print("os import")
 import numpy as np
 import gridlabd
+print("gridlab imported")
 import time
 import gblvar
+print("glbvar importedgbl")
 import re
 
+print("initial imports ok")
 sys.path.append('/home/ec2-user/EV50_cosimulation/charging_sim')
+print('ok append')
 from EVCharging import ChargingSim
+print("*****EV Charging Station Simulation Imported Successfully*****")
 
 
 
