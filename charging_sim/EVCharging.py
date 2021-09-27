@@ -1,6 +1,7 @@
 from chargingStation import ChargingStation
 print('station')
 import numpy as np
+import random
 from config import energy_prices_TOU, add_power_profile_to_object, show_results, solar_gen
 print('ok')
 from plots import plot_results
@@ -32,7 +33,8 @@ class ChargingSim:
         self.control_shift = 0
         self.test_data = test_data
         self.num_charging_sites = num_charging_sites
-        self.charging_locs = []
+        self.charging_locs = None
+        self.charging_sites = {}
         self.stations_list = []
         self.battery_objects = []
         self.site_net_loads = []
@@ -49,26 +51,35 @@ class ChargingSim:
         scaler.fit(onestep_data)
         self.scaled_test_data_onestep = [scaler.transform(np.reshape(test_data, (test_data.size, 1))), scaler]
 
-    def create_battery_objects(self):
+    def create_battery_object(self, Q_initial, loc):
          # this stores all battery objects in the network
-        Q_initial = 3.5
-        for idx in range(self.num_charging_sites):
-            buffer_battery = Battery("Tesla Model 3", Q_initial)
-            buffer_battery.track_SOC(4)  # does not do anything for now
-            self.battery_objects.append(buffer_battery)
-            buffer_battery.id = idx
-            buffer_battery.num_cells = buffer_battery.battery_setup(voltage=375, capacity=8000,
-                                                     cell_params=(buffer_battery.nominal_voltage, 4.85))
+         #  change architecture to include battery size distribution from battery.config file
+        buffer_battery = Battery("Tesla Model 3", Q_initial)
+        buffer_battery.track_SOC(4)  # does not do anything for now
+        self.battery_objects.append(buffer_battery)
+        buffer_battery.id = loc
+        buffer_battery.num_cells = buffer_battery.battery_setup(voltage=375, capacity=8000,
+                                                 cell_params=(buffer_battery.nominal_voltage, 4.85))
+        return buffer_battery
 
-    def create_charging_stations(self):
-        loc_list = list(range(self.num_charging_sites))  # This will be obtained from Lily's dist models.
+    def create_charging_stations(self, power_nodes_list):
+        # add flexibility for multiple units at one charging node?
+        # No need, can aggregate them and have a different arrival sampling method
+        self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
+        # loc_idx = np.random.randint(0, len(power_nodes_list), self.num_charging_sites)
+        # print(loc_idx)
+        loc_list = random.sample(power_nodes_list, self.num_charging_sites)
+        print("loc list is", loc_list)
         print(len(self.battery_objects))
         print(loc_list)
-        power_cap = 100  # kW
+        power_cap = 100  # kW This should eventually be optional as well
         for i in range(self.num_charging_sites):
-            print(i)
-            charging_station = ChargingStation(self.battery_objects[i], loc_list[i], power_cap, i)
-            self.stations_list.append(charging_station)
+            battery = self.create_battery_object(3.5, loc_list[i])
+            assert isinstance(battery, object)  # checks that battery is an obj
+            charging_station = ChargingStation(battery, loc_list[i], power_cap, i)
+            self.charging_sites[loc_list[i]] = charging_station
+        self.stations_list = list(self.charging_sites.values())
+        self.charging_locs = list(self.charging_sites.keys())
 
     def initialize_aging_sim(self):
         # TODO: make the number of steps a passed in variable
@@ -80,10 +91,12 @@ class ChargingSim:
     def get_charging_sites(self):
         return self.charging_locs
 
-    def setup(self):
-        self.create_battery_objects()
-        self.create_charging_stations()
-        self.initialize_aging_sim()
+    def get_charger_obj_by_loc(self, loc):
+        return self.charging_sites[loc]
+
+    def setup(self, power_nodes_list):
+        self.create_charging_stations(power_nodes_list)
+        self.initialize_aging_sim() # Battery aging
 
     def step(self, num_steps):
         """Step forward once. Run MPC controller and take one time-step action.."""
@@ -113,6 +126,7 @@ class ChargingSim:
                 # to update MPC last observed load
                 controls.append(control_action[0] - control_action[1])
                 net_load = todays_load - (control_action[0] - control_action[1])
+                charging_station.set_current_load(net_load) # set current load for charging station
                 self.control_start_index += 1
                 self.control_shift += 1
                 self.site_net_loads.append(net_load) # Global Load Monitor for all the loads for this time-step
