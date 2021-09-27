@@ -37,7 +37,7 @@ def on_init(t):
     gblvar.transconfig_list = find("class=transformer_configuration")
 
     # Configure EV charging simulation
-    EV_charging_sim.setup(gblvar.node_list)
+    EV_charging_sim.setup(list(gblvar.p_df.columns))
     return True
 
 
@@ -64,23 +64,25 @@ def on_precommit(t):
     # get loads from EV charging station
     num_steps = 1
     charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
-    print("net load is:", charging_net_loads_per_loc)
 
     for i in range(len(name_list_base_power)):  # add EV simulation net load for each location
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
-    print('Timestep 1 done')
+    print(gblvar.it, '1 done')
 
     # set base_power properties for this timestep
     charging_nodes = EV_charging_sim.get_charging_sites()
+    print('charging nodes is', charging_nodes)
     for i in range(len(name_list_base_power)):
         # here
         name = name_list_base_power[i]
+        print("NAME", name)
         prop = 'power_12'
         # if ev node is power node, add ev_charging power to the set value for power vec.
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             charger_load = charger.get_current_load()
+            print('load is', charger_load)
             gridlabd.set_value(name, prop, str(set_power_vec[i] + charger_load).replace('(', '').replace(')', ''))
         else:
             gridlabd.set_value(name, prop, str(set_power_vec[i] + 0).replace('(', '').replace(')', ''))

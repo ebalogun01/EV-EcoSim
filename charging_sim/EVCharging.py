@@ -31,6 +31,7 @@ class ChargingSim:
         self.stop = 0
         self.control_start_index = 0
         self.control_shift = 0
+        self.time = 0
         self.test_data = test_data
         self.num_charging_sites = num_charging_sites
         self.charging_locs = None
@@ -99,6 +100,7 @@ class ChargingSim:
         self.initialize_aging_sim() # Battery aging
 
     def step(self, num_steps):
+        # NEED TO ADD STEPPING THROUGH DAYS
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
         for charging_station in self.stations_list:
@@ -125,7 +127,8 @@ class ChargingSim:
                 control.load = np.append(control.load, todays_load[i])  # update load with the true load, not prediction,
                 # to update MPC last observed load
                 controls.append(control_action[0] - control_action[1])
-                net_load = todays_load - (control_action[0] - control_action[1])
+                print(control_action[0], control_action[1])
+                net_load = todays_load[self.time, 0] - (control_action[0] - control_action[1])
                 charging_station.set_current_load(net_load) # set current load for charging station
                 self.control_start_index += 1
                 self.control_shift += 1
@@ -160,6 +163,7 @@ class ChargingSim:
                                  buffer_battery.power_discharge.value[0:num_steps+1,] - solar_gen[start_time:start_time + num_steps]
             add_power_profile_to_object(buffer_battery, day_year_count, EV_power_profile)  # update power profile
             print("SOH is: ", buffer_battery.SOH)
+        self.time += 1
         self.day_year_count += 1
         plt.plot(buffer_battery.track_true_aging)
         plt.plot(np.array(buffer_battery.track_linear_aging)/0.2)
