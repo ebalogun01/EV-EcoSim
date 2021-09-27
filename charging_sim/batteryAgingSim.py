@@ -5,6 +5,8 @@ from maps import BatteryMaps
 # from data import raw_data_NMC25degC
 import matplotlib.pyplot as plt
 
+print('batterysim ok')
+
 """Will likely import all batteries with their respective power profiles to update the SOH for each of them"""
 
 # TODO: How to model power delivery as a function of time, temperature, SOC and SOH at every time step. Cap as a...
@@ -70,10 +72,10 @@ class BatterySim:
         for i in range(battery.SOC.value.shape[0]-1):
             current = battery.current.value[i,0]
             if current < 0:     # Discharge Dynamics
-                print(current, SOC)
+                # print(current, SOC)
                 true_voltage = self.response_surface([abs(current), SOC])[0]
             else:   # Charge Dynamics
-                print(current, SOC)
+                # print(current, SOC)
                 true_voltage = self.response_surface([0, SOC])[0] + current * 0.076 # estimated as OCV + bias for now...RC is low so not t
             if round(current, 8) == 0:
                 battery.true_voltage[i+1] = battery.OCV.value[i,0]
@@ -101,7 +103,7 @@ class BatterySim:
         real_voltage = battery.true_voltage
         avg_voltage = np.sqrt(np.average(real_voltage**2))  # quadratic mean voltage for aging
         beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.667)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
-        print('Beta Cap is, ', beta_cap)
+        # print('Beta Cap is, ', beta_cap)
         beta_res = 2.153 * 10**-4 * (avg_voltage - 3.725)**2 - 1.521 * 10**-5 + 2.798 * 10**-4 * del_DOD
         beta_minimum = 1.5 * 10**-5
         if beta_res < beta_minimum:

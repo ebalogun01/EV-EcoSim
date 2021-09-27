@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import truncnorm
+print('truncnorm')
 
 
 def sample_solar():
@@ -11,7 +12,8 @@ def sample_solar():
     # associated with each prediction.
 
     # read in data
-    data = pd.read_excel('Datasets/Mountain View Rooftop Solar.xlsx', sheet_name='Normalized Power')
+    data = pd.read_excel('/home/ec2-user/EV50_cosimulation/Datasets/Mountain View Rooftop Solar.xlsx', sheet_name='Normalized Power')
+    print('yes, no')
     pvpower = data.Frac_Power.to_list()
     sigma = data.Sigma.to_list()
 

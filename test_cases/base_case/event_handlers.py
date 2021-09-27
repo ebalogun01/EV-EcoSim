@@ -11,32 +11,32 @@ import re
 
 print("initial imports ok")
 sys.path.append('/home/ec2-user/EV50_cosimulation/charging_sim')
+# sys.path.append("../../charging_sim")
 print('ok append')
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
-
-
-EV_charging_sim = ChargingSim(1)    # Initialize Charging Simulation Class
+EV_charging_sim = ChargingSim(181)  # Initialize Charging Simulation Class with one charging site
+EV_charging_sim.setup()  # Sets up the simulation module with Charging sites and batteries
 
 def on_init(t):
 
     #get object lists from GridLAB-D
     gridlabd.output("timestamp,x")
     gblvar.node_list=find("class=node")
+    EV_charging_sim.nodes = gblvar.node_list    # add node names into ev_simulation
+    print(gblvar.node_list)
     gblvar.load_list=find("class=load")
     gblvar.tn_list=find("class=triplex_node")
     gblvar.trans_list=find("class=transformer")
     gblvar.transconfig_list=find("class=transformer_configuration")
 
+    # Configure EV charging simulation
     return True
 
 def on_precommit(t):
     clock=gridlabd.get_global("clock")
     print('****  '+str(clock)+'  ****')
-    EV_charging_sim.setup()     # Sets up the simulation module with Charging sites and batteries
-    num_steps = 1
-    charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
     #get voltage from GridLAB-D
     vm_array,vp_array=get_voltage()
 
@@ -55,15 +55,28 @@ def on_precommit(t):
     #calculate base_power and pf quantities to set for this timestep
     name_list_base_power=list(gblvar.p_df.columns)
     set_power_vec=np.zeros((len(name_list_base_power),),dtype=complex)
+
+    # get loads from EV charging station
+    num_steps = 1
+    charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
+    print("net load is:", charging_net_loads_per_loc)
+
     for i in range(len(name_list_base_power)): # add EV simulation net load for each location
         set_power_vec[i]=gblvar.p_df[name_list_base_power[i]][gblvar.it]+gblvar.q_df[name_list_base_power[i]][gblvar.it]*1j +\
-                         charging_net_loads_per_loc[i]
+                         charging_net_loads_per_loc[i][0]
+    print('Timestep 1 done')
 
-    #set base_power properties for this timestep
+    # set base_power properties for this timestep
+    charging_sites = EV_charging_sim.get_charging_sites()
     for i in range(len(name_list_base_power)):
-        name=name_list_base_power[i]
-        prop='power_12'
-        gridlabd.set_value(name,prop,str(set_power_vec[i]).replace('(','').replace(')',''))
+        # here
+        name = name_list_base_power[i]
+        prop = 'power_12'
+        # if ev node is power node, add ev_charging power to the set value for power vec.
+        if name in charging_sites:
+            charger =
+
+        gridlabd.set_value(name, prop, str(set_power_vec[i] +).replace('(', '').replace(')', ''))
 
     #increment timestep
     gblvar.it=gblvar.it+1

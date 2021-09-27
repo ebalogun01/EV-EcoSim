@@ -2,7 +2,7 @@ import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 
 import matplotlib.pyplot as plt
-import plotly.io as pio
+# import plotly.io as pio
 
 # Specify if we would like to load existing data or pull fresh data
 load_existing_data = True
@@ -15,7 +15,7 @@ if not load_existing_data:
 # import plotly.express as px
 # import plotly.graph_objects as go
 
-pio.renderers.default = "browser"
+# pio.renderers.default = "browser"
 # SOC = np.linspace(0, 1, 25)
 # amps = np.linspace(0, 8, 5)
 # temp = np.linspace(0, 50, 6)
@@ -77,10 +77,10 @@ class BatteryMaps:
         """Data processing for response surface. for discharge
         Discharge is limited by minimum discharge voltage imposed by battery manufacturer."""
         if load_existing_data:
-            power_matrix_2D = np.load('BatteryData/power_2d_discharge.npy')
-            value_matrix2D = np.load('BatteryData/voltage_2d_discharge.npy')
-            currents = np.load('BatteryData/amp_rows_discharge.npy')
-            SOC_eval = np.load('BatteryData/SOC_cols_discharge.npy')
+            power_matrix_2D = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/power_2d_discharge.npy')
+            value_matrix2D = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/voltage_2d_discharge.npy')
+            currents = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/amp_rows_discharge.npy')
+            SOC_eval = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/SOC_cols_discharge.npy')
             return power_matrix_2D, value_matrix2D, currents, SOC_eval
 
         else:
@@ -98,10 +98,10 @@ class BatteryMaps:
                 value_matrix2D[i, :] = voltage_values
                 power_matrix_2D[i, :] = voltage_values * currents[i]
                 i += 1
-            np.save('BatteryData/power_2d_discharge.npy', power_matrix_2D)
-            np.save('BatteryData/voltage_2d_discharge.npy', value_matrix2D)
-            np.save('BatteryData/amp_rows_discharge.npy', currents)
-            np.save('BatteryData/SOC_cols_discharge.npy', SOC_eval)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/power_2d_discharge.npy', power_matrix_2D)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/voltage_2d_discharge.npy', value_matrix2D)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/amp_rows_discharge.npy', currents)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/SOC_cols_discharge.npy', SOC_eval)
             return power_matrix_2D, value_matrix2D, currents, SOC_eval
 
     @staticmethod
@@ -109,10 +109,10 @@ class BatteryMaps:
         """Data processing for response surface for charging.
         Charge is limited by maximum c-rate imposed (only 1C data available) by battery manufacturer."""
         if load_existing_data:
-            power_matrix_2D = np.load('BatteryData/power_2d_charge.npy')
-            value_matrix2D = np.load('BatteryData/voltage_2d_charge.npy')
-            currents = np.load('BatteryData/amp_rows_charge.npy')
-            SOC_eval = np.load('BatteryData/SOC_cols_charge.npy')
+            power_matrix_2D = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/power_2d_charge.npy')
+            value_matrix2D = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/voltage_2d_charge.npy')
+            currents = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/amp_rows_charge.npy')
+            SOC_eval = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/SOC_cols_charge.npy')
             return power_matrix_2D, value_matrix2D, currents, SOC_eval
 
         else:
@@ -130,10 +130,10 @@ class BatteryMaps:
                 value_matrix2D[i, :] = voltage_values
                 power_matrix_2D[i, :] = voltage_values * currents[i]
                 i += 1
-            np.save('BatteryData/power_2d_charge.npy', power_matrix_2D)
-            np.save('BatteryData/voltage_2d_charge.npy', value_matrix2D)
-            np.save('BatteryData/amp_rows_charge.npy', currents)
-            np.save('BatteryData/SOC_cols_charge.npy', SOC_eval)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/power_2d_charge.npy', power_matrix_2D)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/voltage_2d_charge.npy', value_matrix2D)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/amp_rows_charge.npy', currents)
+            np.save('/home/ec2-user/EV50_cosimulation/BatteryData/SOC_cols_charge.npy', SOC_eval)
             return power_matrix_2D, value_matrix2D, currents, SOC_eval
 
 # BM = BatteryMaps()

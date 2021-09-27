@@ -1,10 +1,16 @@
 from chargingStation import ChargingStation
+print('station')
 import numpy as np
 from config import energy_prices_TOU, add_power_profile_to_object, show_results, solar_gen
+print('ok')
 from plots import plot_results
+print('plots done')
 from battery import Battery
+print('battery')
 from batteryAgingSim import BatterySim
+print('aging done')
 from controller import MPC
+print('controller done')
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
@@ -12,10 +18,10 @@ from sklearn.preprocessing import MinMaxScaler
 class ChargingSim:
     def __init__(self, num_charging_sites):
 
-        data2015 = np.genfromtxt('CP_ProjectData/power_data_2015.csv')  # Need to update these dirs.
-        data2016 = np.genfromtxt('CP_ProjectData/power_data_2016.csv')
-        data2017 = np.genfromtxt('CP_ProjectData/power_data_2017.csv')
-        data2018 = np.genfromtxt('CP_ProjectData/power_data_2018.csv')
+        data2015 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2015.csv')  # Need to update these dirs.
+        data2016 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2016.csv')
+        data2017 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2017.csv')
+        data2018 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
         charge_data = np.vstack([data2015[7:, ], data2016, data2017])/10
         test_data = data2018[:-1, ]/10  # removing bad data
         self.charge_data = charge_data
@@ -26,6 +32,7 @@ class ChargingSim:
         self.control_shift = 0
         self.test_data = test_data
         self.num_charging_sites = num_charging_sites
+        self.charging_locs = []
         self.stations_list = []
         self.battery_objects = []
         self.site_net_loads = []
@@ -35,6 +42,7 @@ class ChargingSim:
         self.std_y[self.std_y == 0] = 1
         self.mean_y = np.mean(y, 0)
         self.scaled_test_data = (y - self.mean_y)/self.std_y  # network output
+        self._nodes = []
 
         scaler = MinMaxScaler()
         onestep_data = np.reshape(charge_data, (charge_data.size, 1))
@@ -53,27 +61,33 @@ class ChargingSim:
                                                      cell_params=(buffer_battery.nominal_voltage, 4.85))
 
     def create_charging_stations(self):
-        loc_list = list(range(10, 20))  # This will be obtained from Lily's dist models.
+        loc_list = list(range(self.num_charging_sites))  # This will be obtained from Lily's dist models.
+        print(len(self.battery_objects))
+        print(loc_list)
         power_cap = 100  # kW
         for i in range(self.num_charging_sites):
+            print(i)
             charging_station = ChargingStation(self.battery_objects[i], loc_list[i], power_cap, i)
             self.stations_list.append(charging_station)
 
     def initialize_aging_sim(self):
+        # TODO: make the number of steps a passed in variable
         self.aging_sim = BatterySim(0, 96)
 
     def reset_loads(self):
         self.site_net_loads = []
 
-    def setup(self):
-        self.create_charging_stations()
-        self.create_battery_objects()
-        self.initialize_aging_sim()
+    def get_charging_sites(self):
+        return self.charging_locs
 
+    def setup(self):
+        self.create_battery_objects()
+        self.create_charging_stations()
+        self.initialize_aging_sim()
 
     def step(self, num_steps):
         """Step forward once. Run MPC controller and take one time-step action.."""
-        self.reset_loads() #    reset the loads from old time-step
+        self.reset_loads()  # reset the loads from old time-step
         for charging_station in self.stations_list:
             buffer_battery = charging_station.storage
             control = MPC(self.charge_data, self.scaled_test_data,
@@ -102,7 +116,8 @@ class ChargingSim:
                 self.control_start_index += 1
                 self.control_shift += 1
                 self.site_net_loads.append(net_load) # Global Load Monitor for all the loads for this time-step
-            day_year_count += 1
+                print("site net loads shape is: ", len(self.site_net_loads))
+
             stop += 1  # shifts to the next day
             self.control_shift = 0
             print("MSE is ", (np.average(control.full_day_prediction - todays_load)**2)**0.5, "for day ", stop)
@@ -113,22 +128,25 @@ class ChargingSim:
             # update season based on run_count (assumes start_time was set to 0)
             run_count += 1
             print("Number of cycles is {}".format(run_count))
-            total_savings = show_results(total_savings, buffer_battery, energy_prices_TOU, todays_load)
+            # total_savings = show_results(total_savings, buffer_battery, energy_prices_TOU, todays_load)
 
             # check whether one year has passed
             if self.day_year_count % 365 == 0:  # it has already run for 365 days (This is wrt sampling Solar Generation)
                 self.day_year_count = 0
-                buffer_battery.start = -96
+                buffer_battery.start = 0
 
             buffer_battery.update_capacity()  # updates the capacity to include aging for previous run
             self.aging_sim.run(buffer_battery)  # run battery response to actions\
             buffer_battery.Q_initial = buffer_battery.Q.value[1][0]  # this is for the entire battery
-            plot_results(todays_load, buffer_battery, solar_gen[buffer_battery.start:buffer_battery.start + num_steps])
+            # plot_results(todays_load, buffer_battery, solar_gen[buffer_battery.start:buffer_battery.start + num_steps])
             start_time = buffer_battery.start
-            EV_power_profile = todays_load + buffer_battery.power_charge - \
-                                 buffer_battery.power_discharge - solar_gen[start_time:start_time + num_steps]
-            add_power_profile_to_object(buffer_battery, day_year_count, EV_power_profile.value)  # update power profile
+            print(num_steps, start_time)
+            print(todays_load.shape, buffer_battery.power_charge.shape, buffer_battery.power_discharge.shape, solar_gen[start_time:start_time + num_steps].shape)
+            EV_power_profile = todays_load[0:num_steps+1,] + buffer_battery.power_charge.value[0:num_steps+1,] - \
+                                 buffer_battery.power_discharge.value[0:num_steps+1,] - solar_gen[start_time:start_time + num_steps]
+            add_power_profile_to_object(buffer_battery, day_year_count, EV_power_profile)  # update power profile
             print("SOH is: ", buffer_battery.SOH)
+        self.day_year_count += 1
         plt.plot(buffer_battery.track_true_aging)
         plt.plot(np.array(buffer_battery.track_linear_aging)/0.2)
         plt.title("true aging and Linear aging")

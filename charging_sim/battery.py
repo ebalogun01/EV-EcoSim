@@ -1,11 +1,13 @@
 import cvxpy as cp
 import numpy as np
 from config import start_time, num_steps, solar_gen
+print('initial imports done')
 
 seconds_in_year = 31556952
 seconds_in_min = 60
 resolution = 15
-OCV_SOC_linear_params = np.load('BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+OCV_SOC_linear_params = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+print('ocv done')
 # Need to understand charging dynamics as well. Cannot assume symmetry
 
 
@@ -62,6 +64,7 @@ class Battery:
         self.SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
         self.SOH = self.properties["SOH"]
         self.Q_initial = Q_initial
+        self.control_current = np.array([])
 
         self.power_charge = cp.Variable((num_steps, 1))
         self.power_discharge = cp.Variable((num_steps, 1))
@@ -165,6 +168,10 @@ class Battery:
         pass
 
     def get_constraints(self, EV_load):
+        # print(EV_load)
+        print("ev load shape", EV_load.shape)
+        print(self.start, self.start+num_steps)
+        print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
         eps = 1e-6 # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
         # num_cells_series = self.topology[0]
         # num_modules_parallel = self.topology[1]

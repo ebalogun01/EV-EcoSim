@@ -8,8 +8,8 @@ print(tf.__version__)
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 # Get the load predictive models
-LSTM1 = tf.keras.models.load_model("DLMODELS/LSTM_01.h5")
-LSTM2 = tf.keras.models.load_model("DLMODELS/LSTM_ONE_STEP.h5")
+LSTM1 = tf.keras.models.load_model("/home/ec2-user/EV50_cosimulation/DLMODELS/LSTM_01.h5")
+LSTM2 = tf.keras.models.load_model("/home/ec2-user/EV50_cosimulation/DLMODELS/LSTM_ONE_STEP.h5")
 
 """Build different MPC classes for different horizons maybe? It's hard to do one MPC for all horizons due to ML-side"""
 
@@ -32,6 +32,7 @@ class MPC:
 
     def compute_control(self, start, shift, stop, battery_size):
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
+        # print(predicted_load)
         constraints = self.storage.get_constraints(predicted_load)  # battery constraints
         objective_mode = "All"  # Need to update objective modes to include cost function design
         simple_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
@@ -56,9 +57,10 @@ class MPC:
         self.storage.update_capacity()  # to track linear estimated aging
         # obtain the true state of charge from the batteryAgingSim (How frequently though?)
         if len(self.storage.control_current) < num_steps: # UPDATING ALL POWER TO CURRENTS
-            self.storage.control_current = np.append(self.storage.control_current, self.storage.current)
+            self.storage.control_current = np.append(self.storage.control_current, self.storage.current.value[0])
         else:
-            self.storage.control_current = self.storage.current
+            self.storage.control_current = self.storage.current.value[0] # it should be only updating one but then
+            # I am showing results after each step I think. Need to also fix the compute current scheme currently being used
 
         #  need to get all the states here after the first action is taken
         return control_actions, predicted_load

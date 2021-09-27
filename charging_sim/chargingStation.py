@@ -1,4 +1,5 @@
 from config import num_steps
+print('numsteps')
 import numpy as np
 
 

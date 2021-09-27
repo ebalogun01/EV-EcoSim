@@ -1,8 +1,12 @@
 """Maybe stores general configurations and general functions"""
 import cvxpy as cp
+print('cvx')
 import pandas as pd
+print('pandas')
 from electricityPrices import *
+print('elec')
 from solarData import sample_solar
+print('solardone')
 
 
 
@@ -30,7 +34,7 @@ objectives = {'Transformer Aging': [0, 0, 1],
 class EnergyData:
     def __init__(self):
         self._season = "Winter"
-        self._home_data_file = "Datasets/15minute_data_california.csv"
+        self._home_data_file = "/home/ec2-user/EV50_cosimulation/Datasets/15minute_data_california.csv"
 
     def get_tou_vector(self):
         if self._season == "Summer":
@@ -41,15 +45,14 @@ class EnergyData:
     # Returns 35040xnum_homes matrix of home energy consumption (kWh)
     @staticmethod
     def get_charging_data():
-        load_data = pd.read_csv('Datasets/USA_CA_San.Francisco.724940_TMY2.csv')['Electricity:Facility [kWh](Hourly)'].\
+        load_data = pd.read_csv('/home/ec2-user/EV50_cosimulation/Datasets/USA_CA_San.Francisco.724940_TMY2.csv')['Electricity:Facility [kWh](Hourly)'].\
             to_numpy()
         load_data = np.reshape(np.repeat(load_data, 60 / resolution), (365*num_steps, 1))
         home_data = np.tile(load_data, (1, num_homes))
         return home_data
 
-    @staticmethod
-    def get_pecan_home_data():
-        load_data = pd.read_csv('Datasets/15minute_data_california.csv')['grid'].to_numpy()  # not done yet
+    def get_pecan_home_data(self):
+        load_data = pd.read_csv(self._home_data_file)['grid'].to_numpy()  # not done yet
         load_data = np.reshape(np.repeat(load_data, 60 / resolution), (365 * num_steps, 1))
         home_data = np.tile(load_data, (1, num_homes))
         return home_data
@@ -130,11 +133,15 @@ def show_results(savings_total, battery_object, energy_price, EV_load):
     battery_object.savings = savings_total
     return savings_total
 
-
+print('prev')
 power_data = EnergyData()  # Residential energy consumption
+print('prev')
 # EV_load = power_data.get_charging_data()  # EV_load data consumption prediction for 1 year (35040x1 array) needs
 # to be changed to one day
 energy_prices_TOU = np.reshape(power_data.get_tou_vector(), (num_steps, 1))  # TOU rates for 1 day (96x1 array)
+print('tou')
 solar_rating = num_homes  # 1 kW rating per num_charging_stations
+print('almost')
 solar_gen = solar_rating * power_data.get_solar_gen()  # Solar generation at 15 min intervals (35040x1 array)
 
+print('prev3')

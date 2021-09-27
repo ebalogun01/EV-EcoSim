@@ -22,7 +22,7 @@ class Optimization:
         """runs an instance of the problem"""
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
         self.problem = problem
-        result = problem.solve(solver=cp.MOSEK, verbose=False)
+        result = problem.solve(verbose=False)
         print(problem.status)
 
     @staticmethod
