@@ -72,15 +72,14 @@ class MPC:
         begin = stop * 96 - 48 + shift  # shift at each time-step, then reset after a day is done
         end = begin + 48
         test_input_onestep = np.reshape(self.scaled_onestep_data[begin:end], (1, 48, 1))
-        if not self.full_day_prediction.any(): # This checks if a full day is done
+        if not self.full_day_prediction.any():   # This checks if a full day is done
             test_input_fullday = np.reshape(self.reshaped_data[start:start + days_length * num_steps],
                                             (1, days_length, num_steps))
             # print(test_input_fullday.shape)
             self.full_day_prediction = LSTM1.predict(test_input_fullday) * self.std_test + self.mean_test
             self.full_day_prediction.shape = (num_steps, 1)
         prediction_next_step = self.scaler_onestep.inverse_transform(LSTM2.predict(test_input_onestep))
-        # print("prediction is:", prediction_next_step)
-        index = len(self.load) + 1 # this is tracking what time step we are at
+        index = len(self.load) + 1  # this is tracking what time step we are at
         prediction = np.append(self.load, prediction_next_step)
         prediction = np.append(prediction, self.full_day_prediction[index:, :])
         # print(prediction.shape)
@@ -90,8 +89,6 @@ class MPC:
         """This is done after one full day is done."""
         self.load = []
         self.full_day_prediction = np.array([])
-
-    # def predict_load_nexttimestep(self):
 
 
 class MPC2:
