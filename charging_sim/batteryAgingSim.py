@@ -52,6 +52,7 @@ class BatterySim:
         # self.battery_objects = battery_objects  # storing all battery objects in a list maintained by sim
         self.time = 1  # seconds in a day
         self.ambient_temp = 35 + 273  # absolute temp in K
+        self.aging_params = {}  # to be updated later
 
         self.res = res
         self.cap = 4.85  # Ah
@@ -90,15 +91,16 @@ class BatterySim:
         plt.plot(battery.discharge_voltage.value)
         plt.ylabel('Voltage (V)')
         plt.legend(['True Voltage', 'Controller Estimated Voltage'])
+        plt.savefig('voltage_plot_{}_Sim.png'.format(battery.id))
         plt.show()
 
     def get_cyc_aging(self, battery):
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
         self.infer_voltage(battery)
         SOC_vector = battery.true_SOC
-        del_DOD =  SOC_vector[0:self.num_steps] - SOC_vector[1:]
+        del_DOD = SOC_vector[0:self.num_steps] - SOC_vector[1:]
         del_DOD[del_DOD < 0] = 0 # remove the charging parts in profile to get DOD
-        del_DOD = np.sum(del_DOD) # total discah
+        del_DOD = np.sum(del_DOD) # total discharge depth
         # del_DOD = np.max(SOC_vector) - np.min(SOC_vector) # this is not entirely accurate
         real_voltage = battery.true_voltage
         avg_voltage = np.sqrt(np.average(real_voltage**2))  # quadratic mean voltage for aging
@@ -107,25 +109,27 @@ class BatterySim:
         beta_res = 2.153 * 10**-4 * (avg_voltage - 3.725)**2 - 1.521 * 10**-5 + 2.798 * 10**-4 * del_DOD
         beta_minimum = 1.5 * 10**-5
         if beta_res < beta_minimum:
-            beta_res = beta_minimum
+            beta_res = beta_minimum     # there is a minimum aging factor that needs to be fixed
         charge_thrput = np.abs(battery.current.value * self.res/60)  # in Ah
         capacity_fade = beta_cap * charge_thrput**0.5 * 2.15/self.cap  # time is one day for both
         resistance_growth = beta_res * charge_thrput * 2.15/self.cap
         battery.true_capacity_loss = capacity_fade
+        plt.figure()
         plt.plot(capacity_fade)
         plt.title("plot of capacity loss vs time")
-        plt.show()
+        # plt.show()
+        plt.close()
 
         return np.sum(capacity_fade), np.sum(resistance_growth)
 
     def update_capacity(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         cap_fade = self.get_aging_value(battery)[0]
-        battery.properties["SOH"] -= cap_fade/4.85
+        battery.properties["SOH"] -= cap_fade/4.85   # change this to nom rating
         battery.SOH = battery.properties["SOH"]
         battery.Qmax = battery.properties["SOC_max"] * battery.properties["energy_nom"] * battery.SOH
         battery.true_capacity_loss += cap_fade
-        battery.track_true_aging.append(cap_fade)
+        battery.true_aging.append(cap_fade)
 
     def update_resistance(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""

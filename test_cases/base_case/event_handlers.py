@@ -28,8 +28,6 @@ def on_init(t):
     # get object lists from GridLAB-D
     gridlabd.output("timestamp,x")
     gblvar.node_list = find("class=node")
-    # EV_charging_sim.nodes = gblvar.node_list  # add node names into ev_simulation
-    # print(gblvar.node_list)
     gblvar.load_list = find("class=load")
     print(gblvar.load_list)
     gblvar.tn_list = find("class=triplex_node")
@@ -37,7 +35,7 @@ def on_init(t):
     gblvar.transconfig_list = find("class=transformer_configuration")
 
     # Configure EV charging simulation
-    EV_charging_sim.setup(list(gblvar.p_df.columns))
+    EV_charging_sim.setup(list(gblvar.tn_list))
     return True
 
 
@@ -82,7 +80,7 @@ def on_precommit(t):
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             charger_load = charger.get_current_load()
-            print('load is', charger_load)
+            print('load is', charger_load, "kW")
             gridlabd.set_value(name, prop, str(set_power_vec[i] + charger_load).replace('(', '').replace(')', ''))
         else:
             gridlabd.set_value(name, prop, str(set_power_vec[i] + 0).replace('(', '').replace(')', ''))

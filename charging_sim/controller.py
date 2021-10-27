@@ -28,18 +28,19 @@ class MPC:
         self.scaled_onestep_data = scaled_onestep_data[0]
         self.scaler_onestep = scaled_onestep_data[1]
         self.full_day_prediction = np.array([])
+        self.resolution = 15    # minutes
         # self.LSTM_model = tf.keras.models.load_model("LSTM_01.h5")
 
     def compute_control(self, start, shift, stop, battery_size):
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
         # print(predicted_load)
-        constraints = self.storage.get_constraints(predicted_load)  # battery constraints
+        battery_constraints = self.storage.get_constraints(predicted_load)  # battery constraints
         objective_mode = "All"  # Need to update objective modes to include cost function design
-        simple_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
+        linear_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
         electricity_cost = build_electricity_cost(self.storage, predicted_load)  # based on prediction as well
         # transformer_cost not included here for now
-        objective = build_objective(objective_mode, electricity_cost, simple_aging_cost)
-        opt_problem = Optimization(objective_mode, objective, constraints, predicted_load, resolution, None,
+        objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
+        opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, resolution, None,
                                    self.storage, time=0, name="Test_Case_" + str(self.storage.id))
         opt_problem.run()
 
