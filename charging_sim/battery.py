@@ -31,18 +31,11 @@ class Battery:
     """
 
     def __init__(self, battery_type, Q_initial, node=None, config=None):
-        batteries = {
-            "Tesla Model 3": {"energy_nom": 0.01746, "SOH": 1, "energy_usable": 0, "round-trip_efficiency": 0.95,
-                              "daily_self-discharge": 1 - 0.0002 / 96,
-                              "SOC_min": 0.4, "SOC_max": 0.99, "life_cal": 13 * 5, "life_FEC": 4500 * 5,
-                              "max_c_rate": 4.85 / 1000, "resistance": 1},
-            "Nissan Leaf": {"energy_nom": 65, "round-trip_efficiency": 0.00, "daily_self-discharge": 0.0000,
-                            "SOC_min": 0.00, "SOC_max": 0.00, "life_cal": 15, "life_FEC": 0000,
-                            "max_c_rate": 20.6}}
 
         self._node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
-        self.cap = config["nominal_cap"]  # Ah
+        self.cap = config["cell_nominal_cap"]  # Ah
+        self.nominal_cap = config["cell_nominal_cap"]
         self.cell_resistance = config["resistance"]  # TO be updated
         self._eff = config["round-trip_efficiency"]
         self.ECM_params = config["ECM_params"]["Ro"]
@@ -58,12 +51,13 @@ class Battery:
         self.nominal_energy = config["battery_nominal_energy"]
         self.Qmax = config["SOC_max"] * self.cap
         self.Qmin = config["SOC_min"] * self.cap
+        self.min_SOC = config["SOC_min"]
+        self.max_SOC = config["SOC_max"]
         self.SOH = config["SOH"]
         self.daily_self_discharge = config["daily_self_discharge"]
-        self.topology = None  # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
+        # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
 
         self.SOC_track = []
-        self.state_of_charge = None
         self.control_power = np.array([])
         self.OCV = cp.Variable((num_steps, 1))
         self.discharge_current = cp.Variable((num_steps, 1))  # current
@@ -72,7 +66,7 @@ class Battery:
         self.Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
         self.SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
 
-        self.Q_initial = Q_initial
+        self.Q_initial = Q_initial  # include the units here
         self.control_current = np.array([])
 
         self.power_charge = cp.Variable((num_steps, 1))
@@ -83,20 +77,27 @@ class Battery:
         self.MPC_Control = {'Q': [], 'P': []}  # tracks the control actions for the MPC control
         self.size = 100  # what does this mean?
         self.cell_count = 0
-        self.id = None  # Use Charging Station ID for this
-        self.savings = None
+
         self.total_aging = 0
         self.true_capacity_loss = 0
         self.resistance_growth = 0
         self.true_SOC = np.empty((num_steps + 1, 1))  #  BatterySim updates this with the true SOC different from Optimization
         self.true_aging = []  # want to keep track to observe trends based on degradation models
         self.linear_aging = []  # linear model per Hesse Et. Al
-        self.constraints = None
+
         self.ambient_temp = 25  # Celsius
         self.charging_costs = 0
         self.power_profile = {'Jan': [], 'Feb': [], 'Mar': [], 'Apr': [], 'May': [], 'Jun': [], 'Jul': [], 'Aug': [],
                               'Sep': [], 'Oct': [], 'Nov': [], 'Dec': []}
         self.Ro = self.get_Ro()
+
+        self.topology = None
+        self.constraints = None
+        self.id = None  # Use Charging Station ID for this
+        self.savings = None
+        self.state_of_charge = None
+        self.nominal_pack_voltage = None    # to be initialized later
+        self.nominal_pack_cap = None
 
     def get_true_power(self):
         return np.array(self.true_power)
@@ -114,6 +115,8 @@ class Battery:
         no_modules_parallel = capacity // cell_amp_hrs
         total_cells = no_cells_series * no_modules_parallel
         self.topology = (no_cells_series, no_modules_parallel, total_cells)
+        self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
+        self.nominal_pack_cap = no_modules_parallel * self.cap
         print("***** Battery initialized. *****\n",
               "Capacity is {} Ah".format(capacity),
               "Total number of cells is: {} .".format(total_cells))
@@ -121,15 +124,15 @@ class Battery:
 
     def est_calendar_aging(self):
         """Estimates the constant calendar aging of the battery. this is solely time-dependent."""
-        life_cal_years = self.properties["life_cal"]
+        life_cal_years = 10
         aging_cal = (resolution * seconds_in_min) / (life_cal_years * seconds_in_year)
         aging_cal *= np.ones((num_steps, 1))
         return np.sum(aging_cal)
 
     def est_cyc_aging(self):
         """Creates linear battery ageing model per hesse. et al, and returns its cvx object."""
-        life_cyc = self.properties["life_FEC"]
-        nominal_energy = self.properties["energy_nom"]  # kWh
+        life_cyc = 4500
+        nominal_energy = 8000
         aging_cyc = (0.5 * (cp.sum(self.power_charge + self.power_discharge)
                             * resolution / seconds_in_min)) / (life_cyc / 0.2 * nominal_energy)
         return aging_cyc
@@ -172,31 +175,32 @@ class Battery:
 
     def get_constraints(self, EV_load):
         # print(EV_load)
-        print("ev load shape", EV_load.shape)
+        print("ev load", EV_load)
+        print("Q initial", self.Q_initial)
         print(self.start, self.start + num_steps)
         print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
         eps = 1e-6  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
-        # num_cells_series = self.topology[0]
-        # num_modules_parallel = self.topology[1]
+        num_cells_series = self.topology[0]
+        num_modules_parallel = self.topology[1]
         num_cells = self.topology[2]
-        """Need to convexify constraints"""
         self.constraints = [self.Q[0] == self.Q_initial,
                             self.OCV == OCV_SOC_linear_params[0] * self.SOC[0:num_steps] + OCV_SOC_linear_params[1],
                             self.discharge_voltage == self.OCV + cp.multiply(self.current, 0.076),
-                            self.Q[1:num_steps + 1] == resolution / 60 * self.current * self.discharge_voltage +
-                                                    self.Q[0:num_steps],
-                            self.power_charge - self.power_discharge == cp.multiply(self.nominal_voltage,self.current) / 1000,  # kw
-                            self.Q >= self.cap / 3,  # why did I do this?
-                            self.Q <= self.cap,
+                            # self.Q[1:num_steps + 1] == resolution / 60 * cp.multiply(self.current, self.discharge_voltage) +
+                            #                         self.Q[0:num_steps],
+                            self.power_charge - self.power_discharge ==
+                            cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
+                            self.Q >= self.Qmin,  # why did I do this?
+                            self.Q <= self.Qmax,
                             self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
                             + (resolution / 60 * self.current)/self.cap,
-                            self.soc == self.Q / self.cap,
                             self.power_charge >= 0,
                             self.power_discharge >= 0,
-                            # cp.abs(self.current) <= self.properties["max_c_rate"],
-                            # self.power_discharge <= self.properties["max_c_rate"],
-                            EV_load + num_cells * (self.power_charge - self.power_discharge) -
-                            solar_gen[self.start:self.start + num_steps] >= eps
+                            self.SOC >= self.min_SOC,
+                            self.SOC <= self.max_SOC,
+                            EV_load + (self.power_charge - self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps
                             # no injecting back to the grid; should try unconstrained. This could be infeasible.
                             ]
         return self.constraints
+
+    # START THINKING ABOUT THE SEPARATION OF OPTIMIZATION FROM BATTERY

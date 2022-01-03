@@ -87,17 +87,20 @@ class BatterySim:
             SOC = (self.cap * SOC + current * self.res/60)/self.cap  # Current can be (+) or (-)
             battery.true_SOC[i+1] = SOC
         battery.true_power = np.multiply(battery.true_voltage[1:], battery.current.value)/1000
+        plt.figure()
         plt.plot(battery.true_voltage)
         plt.plot(battery.discharge_voltage.value)
         plt.ylabel('Voltage (V)')
         plt.legend(['True Voltage', 'Controller Estimated Voltage'])
         plt.savefig('voltage_plot_{}_Sim.png'.format(battery.id))
-        plt.show()
+        plt.close()
 
     def get_cyc_aging(self, battery):
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
         self.infer_voltage(battery)
         SOC_vector = battery.true_SOC
+        print("SOC vector is: ", SOC_vector)
+        print(self.num_steps)
         del_DOD = SOC_vector[0:self.num_steps] - SOC_vector[1:]
         del_DOD[del_DOD < 0] = 0 # remove the charging parts in profile to get DOD
         del_DOD = np.sum(del_DOD) # total discharge depth
@@ -125,9 +128,9 @@ class BatterySim:
     def update_capacity(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         cap_fade = self.get_aging_value(battery)[0]
-        battery.properties["SOH"] -= cap_fade/4.85   # change this to nom rating
-        battery.SOH = battery.properties["SOH"]
-        battery.Qmax = battery.properties["SOC_max"] * battery.properties["energy_nom"] * battery.SOH
+        battery.SOH -= cap_fade/battery.nominal_cap # change this to nom rating
+        battery.cap -= cap_fade
+        battery.Qmax = battery.max_SOC * battery.cap * battery.SOH
         battery.true_capacity_loss += cap_fade
         battery.true_aging.append(cap_fade)
 

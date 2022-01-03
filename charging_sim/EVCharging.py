@@ -1,5 +1,5 @@
 from chargingStation import ChargingStation
-
+import json
 print('station')
 import numpy as np
 import random
@@ -29,13 +29,14 @@ class ChargingSim:
 
         data2015 = np.genfromtxt(
             '/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2015.csv')  # Need to update these dirs.
-        data2016 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2016.csv')
+        data2016 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2016.csv') # MOVE TO TO CONFIG
         data2017 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2017.csv')
         data2018 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
         charge_data = np.vstack([data2015[7:, ], data2016, data2017]) / 10
         test_data = data2018[:-1, ] / 10  # removing bad data
         self.charge_data = charge_data
         self.battery_config = None
+        self.charging_config = None
         self.battery_specs_per_loc = None  # Could be used later to specify varying batteries for various nodes
         self.day_year_count = 0
         self.stop = 0
@@ -51,7 +52,7 @@ class ChargingSim:
         self.battery_objects = []
         self.site_net_loads = []
         self.resolution = resolution
-        self.num_steps = minute_in_day / resolution
+        self.num_steps = int(minute_in_day / resolution)
         self.aging_sim = None  # This gets updated later
         y = self.test_data
         self.std_y = np.std(y, 0)
@@ -66,9 +67,12 @@ class ChargingSim:
         self.scaled_test_data_onestep = [scaler.transform(np.reshape(test_data, (test_data.size, 1))), scaler]
 
     def load_config(self):
-        with open("battery_config.json", "r") as f:
+        with open("/home/ec2-user/EV50_cosimulation/charging_sim/battery_config.json", "r") as f:
             battery_config = json.load(f)
+        with open("/home/ec2-user/EV50_cosimulation/charging_sim/charging_config.json", "r") as f:
+            charging_config = json.load(f)
         self.battery_config = battery_config
+        self.charging_config = charging_config
 
     def create_battery_object(self, Q_initial, loc):
         #  this stores all battery objects in the network
@@ -92,6 +96,7 @@ class ChargingSim:
             assert isinstance(battery, object)  # checks that battery is an obj
             charging_station = ChargingStation(battery, loc_list[i], power_cap, i)
             self.charging_sites[loc_list[i]] = charging_station
+            self.battery_objects.append(battery)    # add to list of battery objects
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
@@ -120,23 +125,28 @@ class ChargingSim:
         if self.steps == minute_in_day / self.resolution:
             self.day_year_count += 1
 
+    @staticmethod
+    def get_action(self):
+        """returns only the control current"""
+        return 0
+
     def step(self, num_steps):
-        # NEED TO ADD STEPPING THROUGH DAYS # shouldd this be done in some controller master sim?
+        # NEED TO ADD STEPPING THROUGH DAYS # should this be done in some controller master sim?
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
         # each charging station is using an instantiation of an MPC controller. I think we should add controller object
         for charging_station in self.stations_list:
             buffer_battery = charging_station.storage
             charging_station.controller = MPC(self.charge_data, self.scaled_test_data,
-                          self.scaled_test_data_onestep, buffer_battery, self.std_y, self.mean_y)
+                          self.scaled_test_data_onestep, buffer_battery, self.std_y, self.mean_y)   # inefficient
             run_count = 0
             controls = []
             self.control_start_index = num_steps * self.day_year_count
-            stop = self.day_year_count+ 14  # get today's load from test data
+            stop = self.day_year_count + 14  # get today's load from test data
             self.control_shift = 0
             todays_load = self.test_data[stop]
             assert todays_load.size == 96
-            todays_load.shape = (96, 1)
+            todays_load.shape = (todays_load.size, 1)
             loads = []
             for i in range(num_steps):
                 control_action, predicted_load = charging_station.controller.compute_control(self.control_start_index,
@@ -182,9 +192,11 @@ class ChargingSim:
             print("SOH is: ", buffer_battery.SOH)
             buffer_battery.start += 1
         self.time += 1
-        plt.plot(buffer_battery.track_true_aging)
-        plt.plot(np.array(buffer_battery.track_linear_aging) / 0.2)
+        plt.figure()
+        plt.plot(buffer_battery.true_aging)
+        plt.plot(np.array(buffer_battery.linear_aging) / 1)
         plt.title("true aging and Linear aging")
         plt.legend(["True aging", "Linear aging"])
         plt.savefig("aging_plot.png")
+        plt.close()
         return self.site_net_loads

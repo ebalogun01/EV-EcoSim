@@ -66,7 +66,7 @@ def build_electricity_cost(battery, load):
     """Need to update from home load right now; maybe this can be useful in future opt."""
     lam = 10  # this needs to be guided
     battery_size = battery.topology[2]
-    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + battery_size *
+    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load +
                                                            (battery.power_charge - battery.power_discharge) -
                                                            solar_gen[battery.start:battery.start + num_steps]))))
     # cost_electricity_dem_charge = lam * cp.max((EV_load[battery.start:battery.start + num_steps] +

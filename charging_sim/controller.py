@@ -48,7 +48,7 @@ class MPC:
             print('Unable to service travel')
         if electricity_cost.value < 0:
             print('Negative Electricity Cost')
-            print(electricity_cost.value)
+            print(electricity_cost.value, self.storage.current.value)
         control_actions = np.hstack([self.storage.power_charge.value[0], self.storage.power_discharge.value[0]])
 
         # only take first action
@@ -90,49 +90,7 @@ class MPC:
         self.load = []
         self.full_day_prediction = np.array([])
 
-
 class MPC2:
     """this uses a different prediction and control mechanism..to be developed later"""
     pass
-
-# def MPC(control_actions, battery_state, station_state, predictor, storage):
-#     num_steps = 96
-#     past_data =
-#     """Battery objects will be obtained and based on the current states, predicted future load, Voltages, SOC,
-#     grid state, station state, and unit state, a discharge profile will be set, and then for each time-step,
-#      a new prediction for the horizon is made."""
-#
-#     # TODO:
-#     #  Perhaps each battery will run it's own MPC; we need battery thermal model.
-#     #  Is it possible to do a Station/Unit based approach or hybrid? Yes
-#     #  Some considerations for design: Power cables based on topology variances (thorough design analyses,
-#     #  talking to the actual people: where does their boundary and where do other's domain start?
-#     LSTM_model = tf.keras.models.load_model("LSTM_01.h5")
-#     predictor = LSTM_model
-#     test_input = test_norm[138:152]
-#     test_input = np.reshape(test_norm[138:152], (1, 14, 96))
-#     load = predictor(past_data)  # predict new future load based on past true data, which is used for cost function
-#     constraints = storage.get_constraints  # battery constraints
-#     objective_mode = 'Battery Degradation'  # Need to update objective modes to include cost function design
-#     simple_aging_cost = storage.get_total_aging()  # based on simple model and predicted control actions
-#     electricity_cost = build_electricity_cost(storage)  # based on prediction as well
-#     transformer_cost = 0  # will need some help here
-#     objective = build_objective(objective_mode, storage, electricity_cost, simple_aging_cost, transformer_cost)
-#     opt_problem = Optimization(objective_mode, objective, constraints, load, resolution, None, storage, time=0,
-#                                name="Test_Case_" + str(storage.id))
-#     opt_problem.run()
-#     control_actions = np.hstack([storage.power_charge.value[0], storage.power_discharge.value[0]])
-#     # only take first action
-#     storage.Q_initial = storage.Q.value[1]  # estimated new SOC or Battery Capacity left
-#     storage.SOC = storage.SOC.append(storage.Q.value[1]/storage.Qmax)  # obtain the true state of charge from the
-#     # batteryAgingSim (How frequently though?)
-#     if len(storage.control_current) < num_steps:
-#         storage.control_current.append(storage.power_charge[0] - storage.power_discharge[0])
-#     else:
-#         storage.control_current = storage.power_charge[0] - storage.power_discharge[0]
-#
-#     #  need to get all the states here after the first action is taken
-#     return control_actions
-
-
 

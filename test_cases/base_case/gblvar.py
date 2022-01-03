@@ -2,14 +2,12 @@ import os
 import numpy as np
 import pandas as pd
 import pickle
-print('ok ok')
 from sklearn.preprocessing import StandardScaler
-print('Ok5')
 
 #define global python simulation variables and default initial values
 
 #iteration number
-it=0
+it=0# what does this mean?
 
 #power flow timestep
 pf_dt=60
