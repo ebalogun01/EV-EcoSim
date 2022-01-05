@@ -2,14 +2,10 @@ import cvxpy as cp
 import numpy as np
 from config import start_time, num_steps, solar_gen
 
-print('initial imports done')
-
 seconds_in_year = 31556952
 seconds_in_min = 60
 resolution = 15
 OCV_SOC_linear_params = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
-print('ocv done')
-
 
 # Need to understand charging dynamics as well. Cannot assume symmetry
 
@@ -51,6 +47,7 @@ class Battery:
         self.nominal_energy = config["battery_nominal_energy"]
         self.Qmax = config["SOC_max"] * self.cap
         self.Qmin = config["SOC_min"] * self.cap
+        self.initial_SOC = config["SOC"]
         self.min_SOC = config["SOC_min"]
         self.max_SOC = config["SOC_max"]
         self.SOH = config["SOH"]
@@ -71,6 +68,7 @@ class Battery:
 
         self.power_charge = cp.Variable((num_steps, 1))
         self.power_discharge = cp.Variable((num_steps, 1))
+        self.power = cp.Variable((num_steps, 1))
         self.current = cp.Variable((num_steps, 1))
         self.true_power = np.array([])
         self.start = start_time
@@ -175,30 +173,32 @@ class Battery:
 
     def get_constraints(self, EV_load):
         # print(EV_load)
-        print("ev load", EV_load)
-        print("Q initial", self.Q_initial)
-        print(self.start, self.start + num_steps)
-        print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
+        # print("ev load", EV_load)
+        # print("Q initial", self.Q_initial)
+        # print(self.start, self.start + num_steps)
+        # print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
         eps = 1e-6  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
         num_cells_series = self.topology[0]
         num_modules_parallel = self.topology[1]
         num_cells = self.topology[2]
-        self.constraints = [self.Q[0] == self.Q_initial,
+        self.constraints = [self.SOC[0] == self.initial_SOC,
                             self.OCV == OCV_SOC_linear_params[0] * self.SOC[0:num_steps] + OCV_SOC_linear_params[1],
                             self.discharge_voltage == self.OCV + cp.multiply(self.current, 0.076),
                             # self.Q[1:num_steps + 1] == resolution / 60 * cp.multiply(self.current, self.discharge_voltage) +
                             #                         self.Q[0:num_steps],
-                            self.power_charge - self.power_discharge ==
-                            cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
+                            self.power == cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
                             self.Q >= self.Qmin,  # why did I do this?
                             self.Q <= self.Qmax,
                             self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
                             + (resolution / 60 * self.current)/self.cap,
-                            self.power_charge >= 0,
-                            self.power_discharge >= 0,
+                            self.power_charge >= cp.maximum(self.power, 0),
+                            self.power_discharge - cp.minimum(self.power, 0) <= 0,
+                            # self.current <= 8.2,
+                            # self.power_discharge >= 0,
+                            # self.power_charge >= 0,
                             self.SOC >= self.min_SOC,
                             self.SOC <= self.max_SOC,
-                            EV_load + (self.power_charge - self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps
+                            EV_load + (self.power_charge + self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps
                             # no injecting back to the grid; should try unconstrained. This could be infeasible.
                             ]
         return self.constraints

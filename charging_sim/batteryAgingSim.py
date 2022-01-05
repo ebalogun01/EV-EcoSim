@@ -30,7 +30,7 @@ print('batterysim ok')
 #  How does solution improve with horizon length (how far is looking ahead important (for MPC no point but computation
 #  can become expensive. Horizon length 'N' vs. optimal savings analysis.
 #  I see how RL can be used here to learn a policy with time. Opt. Algo with improve itself based on feedback from aging
-#  sim module. SHOULD I INCLUDE UNCERTAINTY IN VOLTAGE??
+#  sim module.
 
 
 class BatterySim:
@@ -66,14 +66,15 @@ class BatterySim:
          # First estimate the SOC
         # for battery in self.battery_objects:
         SOC = battery.SOC.value[0, 0]
-        print(SOC)
+        print("TRUE SOC: ", SOC)
         battery.true_SOC[0] = SOC
         battery.true_voltage[0] = self.response_surface([0,  SOC])[0]
         Q = battery.Q.value[0,0]
         for i in range(battery.SOC.value.shape[0]-1):
+            SOC = battery.SOC.value[i, 0]
             current = battery.current.value[i,0]
             if current < 0:     # Discharge Dynamics
-                # print(current, SOC)
+                print(current, SOC)
                 true_voltage = self.response_surface([abs(current), SOC])[0]
             else:   # Charge Dynamics
                 # print(current, SOC)
@@ -84,8 +85,8 @@ class BatterySim:
                 continue
             battery.true_voltage[i+1] = true_voltage
             Q = Q + (true_voltage + battery.true_voltage[i])/2 * current * self.res/60  # averaging over the voltage drop
-            SOC = (self.cap * SOC + current * self.res/60)/self.cap  # Current can be (+) or (-)
-            battery.true_SOC[i+1] = SOC
+            # SOC = (battery.cap * SOC + current * self.res/60)/battery.cap  # Current can be (+) or (-)
+            battery.true_SOC[i+1] = (battery.cap * SOC + current * self.res/60)/battery.cap  # Current can be (+) or (-)
         battery.true_power = np.multiply(battery.true_voltage[1:], battery.current.value)/1000
         plt.figure()
         plt.plot(battery.true_voltage)
@@ -100,7 +101,6 @@ class BatterySim:
         self.infer_voltage(battery)
         SOC_vector = battery.true_SOC
         print("SOC vector is: ", SOC_vector)
-        print(self.num_steps)
         del_DOD = SOC_vector[0:self.num_steps] - SOC_vector[1:]
         del_DOD[del_DOD < 0] = 0 # remove the charging parts in profile to get DOD
         del_DOD = np.sum(del_DOD) # total discharge depth

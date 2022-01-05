@@ -45,7 +45,7 @@ class Optimization:
 
     @staticmethod
     def get_final_states(battery):
-        print(battery.getSOC())
+        print("SOC battery: ", battery.getSOC())
         return battery.getSOC()
 
 

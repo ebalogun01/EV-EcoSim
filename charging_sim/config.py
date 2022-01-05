@@ -66,8 +66,7 @@ def build_electricity_cost(battery, load):
     """Need to update from home load right now; maybe this can be useful in future opt."""
     lam = 10  # this needs to be guided
     battery_size = battery.topology[2]
-    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load +
-                                                           (battery.power_charge - battery.power_discharge) -
+    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + battery.power -
                                                            solar_gen[battery.start:battery.start + num_steps]))))
     # cost_electricity_dem_charge = lam * cp.max((EV_load[battery.start:battery.start + num_steps] +
     #                                             battery.power_charge -
@@ -133,15 +132,7 @@ def show_results(savings_total, battery_object, energy_price, EV_load):
     battery_object.savings = savings_total
     return savings_total
 
-print('prev')
 power_data = EnergyData()  # Residential energy consumption
-print('prev')
-# EV_load = power_data.get_charging_data()  # EV_load data consumption prediction for 1 year (35040x1 array) needs
-# to be changed to one day
 energy_prices_TOU = np.reshape(power_data.get_tou_vector(), (num_steps, 1))  # TOU rates for 1 day (96x1 array)
-print('tou')
 solar_rating = num_homes  # 1 kW rating per num_charging_stations
-print('almost')
 solar_gen = solar_rating * power_data.get_solar_gen()  # Solar generation at 15 min intervals (35040x1 array)
-
-print('prev3')

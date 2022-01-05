@@ -4,8 +4,9 @@ import json
 
 class ChargingStation:
     """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
-    def __init__(self, storage, loc, cap, ID, status='idle'):
-        self.id = ID
+    def __init__(self, storage, loc, cap, config, status='idle'):
+        self.config = config
+        self.id = self.config["locator_index"]
         self.storage = storage
         if self.storage:
             self.storage.id = self.id

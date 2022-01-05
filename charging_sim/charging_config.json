@@ -1,4 +1,7 @@
 {
   "data_path": "/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2015.csv",
-  "charge_types": "normal"
+  "charge_types": "normal",
+  "ambient_temp": 25,
+  "power_rating": 100,
+  "locator_index": 1
 }

@@ -1,23 +1,12 @@
 from chargingStation import ChargingStation
 import json
-print('station')
 import numpy as np
 import random
 from config import energy_prices_TOU, add_power_profile_to_object, show_results
-
-print('ok')
 from plots import plot_results
-
-print('plots done')
 from battery import Battery
-
-print('battery')
 from batteryAgingSim import BatterySim
-
-print('aging done')
 from controller import MPC
-
-print('controller done')
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
@@ -89,12 +78,13 @@ class ChargingSim:
         # No need, can aggregate them and have a different arrival sampling method
         self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
         loc_list = random.sample(power_nodes_list, self.num_charging_sites)
-        print("There are", len(self.battery_objects), "battery objects initialized")
+        # print("There are", len(self.battery_objects), "battery objects initialized")
         power_cap = 100  # kW This should eventually be optional as well
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(3.5, loc_list[i])
             assert isinstance(battery, object)  # checks that battery is an obj
-            charging_station = ChargingStation(battery, loc_list[i], power_cap, i)
+            self.charging_config["locator_index"] = i
+            charging_station = ChargingStation(battery, loc_list[i], power_cap, self.charging_config)
             self.charging_sites[loc_list[i]] = charging_station
             self.battery_objects.append(battery)    # add to list of battery objects
         self.stations_list = list(self.charging_sites.values())
@@ -155,9 +145,9 @@ class ChargingSim:
                 charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
                 # update load with the true load, not prediction,
                 # to update MPC last observed load
-                controls.append(control_action[0] - control_action[1])
-                print(control_action[0], control_action[1])
-                net_load = todays_load[self.time, 0] - (control_action[0] - control_action[1])
+                controls.append(control_action[0] + control_action[1])
+                print("CONTROL: ", control_action[0], control_action[1])
+                net_load = todays_load[self.time, 0] + (control_action[0] + control_action[1])
                 charging_station.update_load(net_load)  # set current load for charging station
                 self.control_start_index += 1
                 self.control_shift += 1
@@ -194,7 +184,7 @@ class ChargingSim:
         self.time += 1
         plt.figure()
         plt.plot(buffer_battery.true_aging)
-        plt.plot(np.array(buffer_battery.linear_aging) / 1)
+        plt.plot(np.array(buffer_battery.linear_aging) / 0.2)
         plt.title("true aging and Linear aging")
         plt.legend(["True aging", "Linear aging"])
         plt.savefig("aging_plot.png")

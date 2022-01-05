@@ -1,10 +1,8 @@
 from optimization import Optimization
-from config import energy_prices_TOU, build_objective, build_electricity_cost, \
-    resolution, num_steps
+from config import build_objective, build_electricity_cost, resolution, num_steps
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-print(tf.__version__)
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 # Get the load predictive models
@@ -29,13 +27,14 @@ class MPC:
         self.scaler_onestep = scaled_onestep_data[1]
         self.full_day_prediction = np.array([])
         self.resolution = 15    # minutes
+        self.action = 0
         # self.LSTM_model = tf.keras.models.load_model("LSTM_01.h5")
 
     def compute_control(self, start, shift, stop, battery_size):
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
         # print(predicted_load)
         battery_constraints = self.storage.get_constraints(predicted_load)  # battery constraints
-        objective_mode = "All"  # Need to update objective modes to include cost function design
+        objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
         linear_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
         electricity_cost = build_electricity_cost(self.storage, predicted_load)  # based on prediction as well
         # transformer_cost not included here for now
@@ -43,6 +42,7 @@ class MPC:
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, resolution, None,
                                    self.storage, time=0, name="Test_Case_" + str(self.storage.id))
         opt_problem.run()
+        print("PPPP: ", self.storage.SOC.value)
 
         if opt_problem.problem.status != 'optimal':
             print('Unable to service travel')
@@ -53,7 +53,6 @@ class MPC:
 
         # only take first action
         self.storage.Q_initial = self.storage.Q.value[1]  # estimated new SOC or Battery Capacity left
-        print(self.storage.Q_initial)
         self.storage.SOC_track.append(self.storage.Q.value[1] / self.storage.Qmax)
         self.storage.update_capacity()  # to track linear estimated aging
         # obtain the true state of charge from the batteryAgingSim (How frequently though?)
