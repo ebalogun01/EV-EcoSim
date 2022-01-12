@@ -1,5 +1,0 @@
-{
-  "ev_charging_data": "",
-  "battery_data": "",
-  "predictive_model": "/home/ec2-user/EV50_cosimulation/charging_sim/charging_config.json"
-}

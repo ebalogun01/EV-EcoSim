@@ -30,6 +30,7 @@ class Battery:
 
         self._node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
+        self.resolution = config["resolution"]
         self.cap = config["cell_nominal_cap"]  # Ah
         self.nominal_cap = config["cell_nominal_cap"]
         self.cell_resistance = config["resistance"]  # TO be updated
@@ -59,7 +60,8 @@ class Battery:
         self.OCV = cp.Variable((num_steps, 1))
         self.discharge_current = cp.Variable((num_steps, 1))  # current
         self.discharge_voltage = cp.Variable((num_steps, 1))
-        self.true_voltage = np.empty((num_steps + 1, 1))  # discharge/charge voltage per time-step
+        self.current_voltage = 0
+        self.true_voltage = np.array([])  # discharge/charge voltage per time-step
         self.Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
         self.SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
 
@@ -70,7 +72,7 @@ class Battery:
         self.power_discharge = cp.Variable((num_steps, 1))
         self.power = cp.Variable((num_steps, 1))
         self.current = cp.Variable((num_steps, 1))
-        self.true_power = np.array([])
+        self.true_power = list()
         self.start = start_time
         self.MPC_Control = {'Q': [], 'P': []}  # tracks the control actions for the MPC control
         self.size = 100  # what does this mean?
@@ -96,6 +98,8 @@ class Battery:
         self.state_of_charge = None
         self.nominal_pack_voltage = None    # to be initialized later
         self.nominal_pack_cap = None
+        self.predicted_voltages = list()
+        self.operating_voltages = list()
 
     def get_true_power(self):
         return np.array(self.true_power)
@@ -111,14 +115,14 @@ class Battery:
         cell_voltage = cell_params[1]
         no_cells_series = voltage // cell_voltage
         no_modules_parallel = capacity // cell_amp_hrs
-        total_cells = no_cells_series * no_modules_parallel
-        self.topology = (no_cells_series, no_modules_parallel, total_cells)
+        self.cell_count = no_cells_series * no_modules_parallel
+        self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
         self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
         self.nominal_pack_cap = no_modules_parallel * self.cap
         print("***** Battery initialized. *****\n",
               "Capacity is {} Ah".format(capacity),
-              "Total number of cells is: {} .".format(total_cells))
-        return total_cells
+              "Total number of cells is: {} .".format(self.cell_count))
+        return self.cell_count
 
     def est_calendar_aging(self):
         """Estimates the constant calendar aging of the battery. this is solely time-dependent."""
@@ -135,8 +139,11 @@ class Battery:
                             * resolution / seconds_in_min)) / (life_cyc / 0.2 * nominal_energy)
         return aging_cyc
 
-    def get_power_profile(self, month):
-        return self.power_profile[month]
+    def get_power_profile(self, months):
+        power_profiles_dict = {}
+        for month in months:
+            power_profiles_dict[month] = self.power_profile[month]
+        return power_profiles_dict
 
     def get_total_aging(self):
         return self.est_cyc_aging() + self.est_calendar_aging()
@@ -165,8 +172,16 @@ class Battery:
     def track_SOC(self, SOC):
         pass
 
+    def update_voltage(self, voltage):
+        self.current_voltage = voltage
+        self.predicted_voltages.append(voltage)
+        print("Current voltage estimate is: ", voltage)
+
     def get_properties(self):
         return self.properties
+
+    def visualize_voltages(self):
+        pass
 
     def learn_params(self):
         pass
@@ -177,7 +192,7 @@ class Battery:
         # print("Q initial", self.Q_initial)
         # print(self.start, self.start + num_steps)
         # print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
-        eps = 1e-6  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
+        eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
         num_cells_series = self.topology[0]
         num_modules_parallel = self.topology[1]
         num_cells = self.topology[2]
@@ -187,15 +202,16 @@ class Battery:
                             # self.Q[1:num_steps + 1] == resolution / 60 * cp.multiply(self.current, self.discharge_voltage) +
                             #                         self.Q[0:num_steps],
                             self.power == cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
-                            self.Q >= self.Qmin,  # why did I do this?
-                            self.Q <= self.Qmax,
+                            self.power == self.power_charge + self.power_discharge,
+                            # self.Q >= self.Qmin,  # why did I do this?
+                            # self.Q <= self.Qmax,
                             self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
                             + (resolution / 60 * self.current)/self.cap,
-                            self.power_charge >= cp.maximum(self.power, 0),
-                            self.power_discharge - cp.minimum(self.power, 0) <= 0,
+                            # self.power_charge >= cp.maximum(self.power, 0),
+                            # self.power_discharge - cp.minimum(self.power, 0) <= 0,
                             # self.current <= 8.2,
-                            # self.power_discharge >= 0,
-                            # self.power_charge >= 0,
+                            self.power_discharge <= 0,
+                            self.power_charge >= 0,
                             self.SOC >= self.min_SOC,
                             self.SOC <= self.max_SOC,
                             EV_load + (self.power_charge + self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps

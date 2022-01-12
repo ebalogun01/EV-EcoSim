@@ -3,5 +3,8 @@
   "charge_types": "normal",
   "ambient_temp": 25,
   "power_rating": 100,
-  "locator_index": 1
+  "locator_index": 1,
+  "power_cap": 100,
+  "location": "None",
+  "notes": "location will be replaced by randomly sampled location during instantiation"
 }

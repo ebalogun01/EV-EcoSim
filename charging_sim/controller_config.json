@@ -1,9 +1,0 @@
-{
-  "class": "MPC model-based",
-  "resolution": 15,
-  "horizon_length": 96,
-  "num_forecasters": 2,
-  "forecaster_horizon": [96, 48],
-  "autoregression_input_len": 0,
-  "forecaster": "insert path here or model"
-}

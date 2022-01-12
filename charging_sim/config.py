@@ -1,24 +1,15 @@
 """Maybe stores general configurations and general functions"""
 import cvxpy as cp
-print('cvx')
 import pandas as pd
-print('pandas')
-from electricityPrices import *
-print('elec')
+from electricityPrices import PriceLoader
+import numpy as np
 from solarData import sample_solar
-print('solardone')
 
-
-
-Min_Oper_Voltage = 210  # place holder
-Max_Oper_Voltage = 350
-power_max_0 = 0
-
-num_homes = 1  # Define number of homes in the network
 start_time = 0
 day_hours = 24
 day_minutes = day_hours * 60
 resolution = 15  # minutes
+num_homes = 1
 num_steps = int(day_minutes / resolution)  # number of time intervals in a day = 96
 month_days = {"January": 31, "February": 28, "March": 31, "April": 30, "May": 31, "June": 30, "July": 31,
               "August": 31, "September": 30, "October": 30, "November": 30, "December": 31}
@@ -62,12 +53,16 @@ class EnergyData:
         return np.reshape(sample_solar(), (365*96, 1))
 
 
-def build_electricity_cost(battery, load):
+def build_electricity_cost(battery, load, energy_prices_TOU):
     """Need to update from home load right now; maybe this can be useful in future opt."""
+    # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
     lam = 10  # this needs to be guided
     battery_size = battery.topology[2]
-    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + battery.power -
-                                                           solar_gen[battery.start:battery.start + num_steps]))))
+    sparsity_cost_factor = 0.1 # dynamically determine this in future based on load * cost
+    sparsity_cost = cp.norm(battery.power_charge, 1) + cp.norm(battery.power_discharge, 1)
+    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + (battery.power_charge + battery.power_discharge) -
+                                                           solar_gen[battery.start:battery.start + num_steps])))) +\
+                                                            sparsity_cost_factor * sparsity_cost
     # cost_electricity_dem_charge = lam * cp.max((EV_load[battery.start:battery.start + num_steps] +
     #                                             battery.power_charge -
     #                                             battery.power_discharge -
@@ -111,6 +106,12 @@ def add_power_profile_to_object(battery, index, battery_power_profile):
         battery.power_profile['Dec'].append(battery_power_profile)
 
 
+def plot_control_actions(controller):
+    actions = controller.actions
+
+
+
+
 def show_results(savings_total, battery_object, energy_price, EV_load):
     """This is for calculating cost savings etc"""
     num_cells = battery_object.topology[2]
@@ -132,7 +133,7 @@ def show_results(savings_total, battery_object, energy_price, EV_load):
     battery_object.savings = savings_total
     return savings_total
 
+
 power_data = EnergyData()  # Residential energy consumption
-energy_prices_TOU = np.reshape(power_data.get_tou_vector(), (num_steps, 1))  # TOU rates for 1 day (96x1 array)
 solar_rating = num_homes  # 1 kW rating per num_charging_stations
 solar_gen = solar_rating * power_data.get_solar_gen()  # Solar generation at 15 min intervals (35040x1 array)

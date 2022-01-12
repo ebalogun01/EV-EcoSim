@@ -40,7 +40,7 @@ class Optimization:
         self.aggregate_constraints()    # aggregate constraints
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
         self.problem = problem
-        result = problem.solve(verbose=False)
+        result = problem.solve(solver=cp.GUROBI, verbose=False)
         print(problem.status)
 
     @staticmethod

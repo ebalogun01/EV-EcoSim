@@ -1,0 +1,16 @@
+# FUTURE WORK - USERS CAN SELECT DESIRED LOCATION AND WE CAN GENERATE REPRESENTATIVE LOADS
+from dataclasses import dataclass
+
+
+@dataclass
+class Generator:
+    location: int
+    frequency: int
+    resolution: int
+
+    def __post_init__(self):
+        pass
+
+    def get_load(self):
+        """Generates charging station load for simulation"""
+        pass

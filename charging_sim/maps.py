@@ -92,6 +92,7 @@ class BatteryMaps:
             value_matrix2D = np.zeros((len(currents), len(SOC_eval)))
             power_matrix_2D = np.zeros((len(currents), len(SOC_eval)))
             for key, value in data.items():
+                print("DATA", data)
                 SOC_values = np.hstack((0, np.flip(value[:-1, 0])))  # insert 0 percent SOC
                 V_values = np.hstack((2.5, np.flip(value[1:, 1])))  # insert final cutoff voltage
                 voltage_values = np.interp(SOC_eval, SOC_values, V_values)
@@ -136,6 +137,6 @@ class BatteryMaps:
             np.save('/home/ec2-user/EV50_cosimulation/BatteryData/SOC_cols_charge.npy', SOC_eval)
             return power_matrix_2D, value_matrix2D, currents, SOC_eval
 
-# BM = BatteryMaps()
-# BM = BM.get_response_surface(raw_data_NMC25degC)
-# print(BM[0]([5, 0.8]))  # testing to ensure accuracy for response surface
+BM = BatteryMaps()
+BM = BM.get_response_surface()[0]
+print(BM([0, 0.989]))  # testing to ensure accuracy for response surface

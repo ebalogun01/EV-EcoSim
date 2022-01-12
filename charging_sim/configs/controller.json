@@ -1,0 +1,11 @@
+{
+  "class": "MPC model-based",
+  "resolution": 15,
+  "horizon_length": 96,
+  "num_forecasters": 2,
+  "forecaster_horizon": [96, 48],
+  "autoregression_input_len": 0,
+  "load_history": "/home/ec2-user/EV50_cosimulation/CP_ProjectData/CP_historical_data_2015_2017.csv",
+  "simulation_load": "/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv",
+  "forecaster": "insert path here or model"
+}

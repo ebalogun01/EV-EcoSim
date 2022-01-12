@@ -11,7 +11,8 @@ from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
 EV_charging_sim = ChargingSim(3)  # Initialize Charging Simulation Class with 3 charging site
-  # Sets up the simulation module with Charging sites and batteries
+print("EV_charging_initialized")
+# Sets up the simulation module with Charging sites and batteries
 
 
 def on_init(t):
@@ -55,6 +56,7 @@ def on_precommit(t):
     if gblvar.it % EV_charging_sim.resolution == 0:
         """only step when controller time matches pf..based on resolution"""
         charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
+        # print("Net load at {} is".format())
 
     for i in range(len(name_list_base_power)):  # add EV simulation net load for each location
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
@@ -71,7 +73,7 @@ def on_precommit(t):
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             charger_load = charger.get_current_load()
-            print('load is', charger_load, "kW")
+            # print('load is', charger_load, "kW")
             gridlabd.set_value(name, prop, str(set_power_vec[i] + charger_load).replace('(', '').replace(')', ''))
         else:
             gridlabd.set_value(name, prop, str(set_power_vec[i] + 0).replace('(', '').replace(')', ''))
@@ -83,6 +85,7 @@ def on_precommit(t):
 
 
 def on_term(t):
+    EV_charging_sim.load_results_summary()
     np.savetxt('volt_mag.txt', gblvar.vm)
     np.savetxt('volt_phase.txt', gblvar.vp)
     np.savetxt('nom_vmag.txt', gblvar.nom_vmag)

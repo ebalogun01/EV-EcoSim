@@ -5,9 +5,8 @@ from maps import BatteryMaps
 # from data import raw_data_NMC25degC
 import matplotlib.pyplot as plt
 
-print('batterysim ok')
-
 """Will likely import all batteries with their respective power profiles to update the SOH for each of them"""
+
 
 # TODO: How to model power delivery as a function of time, temperature, SOC and SOH at every time step. Cap as a...
 #  function of discharge rate Fixed capacity
@@ -47,13 +46,14 @@ class BatterySim:
         Constant temperature profile in vicinity of battery
         SOC is observable with no error (this is important for other state approximation (voltage)
         """
+
     def __init__(self, datetime, num_steps, res=15):
         self.num_steps = num_steps
         # self.battery_objects = battery_objects  # storing all battery objects in a list maintained by sim
-        self.time = 1  # seconds in a day
+        self.time = 1  # because calendar aging is in days, so for each num time_steps for resolution
         self.ambient_temp = 35 + 273  # absolute temp in K
         self.aging_params = {}  # to be updated later
-
+        self.num_daily_steps = 96  # to be configured later
         self.res = res
         self.cap = 4.85  # Ah
         BM = BatteryMaps()
@@ -63,73 +63,72 @@ class BatterySim:
     def infer_voltage(self, battery):
         """This method is used to estimate the voltage from estimated SOC, temp, and current. Do this before
         simulating the degradation."""
-         # First estimate the SOC
+        # First estimate the SOC
         # for battery in self.battery_objects:
         SOC = battery.SOC.value[0, 0]
-        print("TRUE SOC: ", SOC)
-        battery.true_SOC[0] = SOC
-        battery.true_voltage[0] = self.response_surface([0,  SOC])[0]
-        Q = battery.Q.value[0,0]
-        for i in range(battery.SOC.value.shape[0]-1):
+        # print("TRUE SOC: ", SOC)
+        # battery.true_SOC[0] = SOC
+        # battery.true_voltage[0] = self.response_surface([0,  SOC])[0]
+        # Q = battery.Q.value[0,0]
+        # for i in range(battery.SOC.value.shape[0]-1):
+        for i in range(1):
             SOC = battery.SOC.value[i, 0]
-            current = battery.current.value[i,0]
-            if current < 0:     # Discharge Dynamics
-                print(current, SOC)
-                true_voltage = self.response_surface([abs(current), SOC])[0]
-            else:   # Charge Dynamics
+            current = battery.current.value[i, 0]
+            print("BATTERY CURRENT IS: ", current)
+            if current < 0:  # Discharge Dynamics
                 # print(current, SOC)
-                true_voltage = self.response_surface([0, SOC])[0] + current * 0.076 # estimated as OCV + bias for now...RC is low so not t
+                true_voltage = self.response_surface([abs(current), SOC])[0]
+            else:  # Charge Dynamics
+                # print(current, SOC)
+                true_voltage = self.response_surface([0, SOC])[
+                                   0] + current * 0.076  # estimated as OCV + bias for now...RC is low so not t
             if round(current, 8) == 0:
-                battery.true_voltage[i+1] = battery.OCV.value[i,0]
-                battery.true_SOC[i + 1] = SOC
+                true_voltage = battery.OCV.value[i, 0]
+                battery.true_voltage = np.append(battery.true_voltage, battery.OCV.value[i, 0])
+                battery.current_voltage = battery.OCV.value[i, 0]
+                # battery.true_SOC.append(SOC)
                 continue
-            battery.true_voltage[i+1] = true_voltage
-            Q = Q + (true_voltage + battery.true_voltage[i])/2 * current * self.res/60  # averaging over the voltage drop
-            # SOC = (battery.cap * SOC + current * self.res/60)/battery.cap  # Current can be (+) or (-)
-            battery.true_SOC[i+1] = (battery.cap * SOC + current * self.res/60)/battery.cap  # Current can be (+) or (-)
-        battery.true_power = np.multiply(battery.true_voltage[1:], battery.current.value)/1000
-        plt.figure()
-        plt.plot(battery.true_voltage)
-        plt.plot(battery.discharge_voltage.value)
-        plt.ylabel('Voltage (V)')
-        plt.legend(['True Voltage', 'Controller Estimated Voltage'])
-        plt.savefig('voltage_plot_{}_Sim.png'.format(battery.id))
-        plt.close()
+            battery.true_voltage = np.append(battery.true_voltage, true_voltage)
+            battery.current_voltage = true_voltage
+            #   knowledge of battery degradation is somewhat assumed here, making opt problem more optimal than will really be
+        battery.true_power.append(np.multiply(battery.true_voltage[1:], battery.current.value) / 1000)
 
     def get_cyc_aging(self, battery):
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
         self.infer_voltage(battery)
-        SOC_vector = battery.true_SOC
-        print("SOC vector is: ", SOC_vector)
-        del_DOD = SOC_vector[0:self.num_steps] - SOC_vector[1:]
-        del_DOD[del_DOD < 0] = 0 # remove the charging parts in profile to get DOD
-        del_DOD = np.sum(del_DOD) # total discharge depth
+        SOC_vector = battery.SOC.value[0:2]
+        print("SOC is: ", SOC_vector)
+        del_DOD = np.round(SOC_vector[0:self.num_steps] - SOC_vector[1:], 4) # just for numerical convenience
+        print("del DOD: ", del_DOD)
+        print("Current Voltage is ", battery.current_voltage)
+        del_DOD[del_DOD < 0] = 0  # remove the charging parts in profile to get DOD
+        del_DOD = np.sum(del_DOD)  # total discharge depth
         # del_DOD = np.max(SOC_vector) - np.min(SOC_vector) # this is not entirely accurate
-        real_voltage = battery.true_voltage
-        avg_voltage = np.sqrt(np.average(real_voltage**2))  # quadratic mean voltage for aging
-        beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.667)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
+        real_voltage = battery.current_voltage
+        avg_voltage = np.sqrt(np.average(real_voltage ** 2))  # quadratic mean voltage for aging
+        beta_cap = 7.348 * 10 ** -3 * (avg_voltage - 3.667) ** 2 + 7.6 * 10 ** -4 + 4.081 * 10 ** -3 * del_DOD
         # print('Beta Cap is, ', beta_cap)
-        beta_res = 2.153 * 10**-4 * (avg_voltage - 3.725)**2 - 1.521 * 10**-5 + 2.798 * 10**-4 * del_DOD
-        beta_minimum = 1.5 * 10**-5
+        beta_res = 2.153 * 10 ** -4 * (avg_voltage - 3.725) ** 2 - 1.521 * 10 ** -5 + 2.798 * 10 ** -4 * del_DOD
+        beta_minimum = 1.5 * 10 ** -5
         if beta_res < beta_minimum:
-            beta_res = beta_minimum     # there is a minimum aging factor that needs to be fixed
-        charge_thrput = np.abs(battery.current.value * self.res/60)  # in Ah
-        capacity_fade = beta_cap * charge_thrput**0.5 * 2.15/self.cap  # time is one day for both
-        resistance_growth = beta_res * charge_thrput * 2.15/self.cap
+            beta_res = beta_minimum  # there is a minimum aging factor that needs to be fixed
+        charge_thrput = np.abs(battery.current.value[0:1] * self.res / 60)  # in Ah
+        capacity_fade = beta_cap * charge_thrput ** 0.5 * 2.15 / self.cap  # time is one day for both
+        resistance_growth = beta_res * charge_thrput * 2.15 / self.cap
         battery.true_capacity_loss = capacity_fade
-        plt.figure()
-        plt.plot(capacity_fade)
-        plt.title("plot of capacity loss vs time")
-        # plt.show()
-        plt.close()
+        # plt.figure()
+        # plt.plot(capacity_fade)
+        # plt.title("plot of capacity loss vs time")
+        # # plt.show()
+        # plt.close()
 
         return np.sum(capacity_fade), np.sum(resistance_growth)
 
     def update_capacity(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         cap_fade = self.get_aging_value(battery)[0]
-        battery.SOH -= cap_fade/battery.nominal_cap # change this to nom rating
-        battery.cap -= cap_fade
+        battery.SOH -= cap_fade  # change this to nom rating
+        battery.cap -= cap_fade * battery.nominal_cap
         battery.Qmax = battery.max_SOC * battery.cap * battery.SOH
         battery.true_capacity_loss += cap_fade
         battery.true_aging.append(cap_fade)
@@ -144,11 +143,17 @@ class BatterySim:
         # TODO: This currently runs the aging for an entire day after each iteration run. Will need to formulate
         #  learning architecture
         """Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)"""
-        alpha_cap = (7.543 * battery.true_voltage - 23.75) * 10**6 * math.exp(-6976/self.ambient_temp)  # aging factors
-        alpha_res = (5.270 * battery.true_voltage - 16.32) * 10**5 * math.exp(-5986/self.ambient_temp)  # temp in K
-        capacity_fade = alpha_cap * (self.time/96)**0.75 * 2.15/self.cap # for each time-step (this is scaled up for current cell)
-        resistance_growth = alpha_res * (self.time/96)**0.75 * 2.15/self.cap # for each time-step (this is scaled up for current cell)
+        alpha_cap = (7.543 * battery.current_voltage - 23.75) * 10 ** 6 * math.exp(
+            -6976 / self.ambient_temp)  # aging factors
+        alpha_res = (5.270 * battery.current_voltage - 16.32) * 10 ** 5 * math.exp(
+            -5986 / self.ambient_temp)  # temp in K
+        capacity_fade = alpha_cap * (
+                    self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.nominal_cap  # for each time-step (this is scaled up for current cell)
+        resistance_growth = alpha_res * (
+                    self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.nominal_cap  # for each time-step (this is scaled up for current cell)
         battery.true_capacity_loss = capacity_fade
+        if isinstance(capacity_fade, float):
+            return capacity_fade, resistance_growth  # due to interval which degradation is implemented
         return sum(capacity_fade), sum(resistance_growth)
 
     def get_total_aging(self, battery):
@@ -156,7 +161,7 @@ class BatterySim:
 
     def get_aging_value(self, battery):
         """returns the actual aging value lost after a cvxpy run..."""
-        cap_fade_cycle, res_growth_cycle = self.get_cyc_aging(battery)
+        cap_fade_cycle, res_growth_cycle = self.get_cyc_aging(battery)  # this infers first
         cap_fade_calendar, res_growth_cal = self.get_calendar_aging(battery)
         capacity_fade = cap_fade_cycle + cap_fade_calendar
         res_growth = res_growth_cal + res_growth_cycle
