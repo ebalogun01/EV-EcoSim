@@ -54,7 +54,8 @@ def on_precommit(t):
     num_steps = 1
     print("Global time is: ", gblvar.it)
     if gblvar.it % EV_charging_sim.resolution == 0:
-        """only step when controller time matches pf..based on resolution"""
+        """only step when controller time matches pf..based on resolution.
+        This ensures varying resolution for ev-charging vs pf solver"""
         charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
         # print("Net load at {} is".format())
 

@@ -9,7 +9,7 @@ OCV_SOC_linear_params = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/OC
 
 # Need to understand charging dynamics as well. Cannot assume symmetry
 
-
+# TODO: add battery simulation resolution control so can be different from control as well...
 class Battery:
     """
      Properties:
