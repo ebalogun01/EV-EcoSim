@@ -14,9 +14,12 @@ EV_charging_sim = ChargingSim(3)  # Initialize Charging Simulation Class with 3 
 print("EV_charging_initialized")
 # Sets up the simulation module with Charging sites and batteries
 
-
+global tic, toc
+tic = time.time()
 def on_init(t):
     # get object lists from GridLAB-D
+    # global tic
+    # tic = time.time()
     gridlabd.output("timestamp,x")
     gblvar.node_list = find("class=node")
     gblvar.load_list = find("class=load")
@@ -60,8 +63,10 @@ def on_precommit(t):
         # print("Net load at {} is".format())
 
     for i in range(len(name_list_base_power)):  # add EV simulation net load for each location
+        print("No error")
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
+        print('NOENE')
     print(gblvar.it, 'Time done')
 
     # set base_power properties for this timestep
@@ -86,10 +91,13 @@ def on_precommit(t):
 
 
 def on_term(t):
+    global tic
     EV_charging_sim.load_results_summary()
     np.savetxt('volt_mag.txt', gblvar.vm)
     np.savetxt('volt_phase.txt', gblvar.vp)
     np.savetxt('nom_vmag.txt', gblvar.nom_vmag)
+    toc = time.time()
+    print("Total run time: ", (toc - tic)/60, "minutes")
 
 
 def find(criteria):

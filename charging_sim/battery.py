@@ -56,6 +56,7 @@ class Battery:
         # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
 
         self.SOC_track = []
+        self.SOH_trach = [] # to be finished later
         self.control_power = np.array([])
         self.OCV = cp.Variable((num_steps, 1))
         self.discharge_current = cp.Variable((num_steps, 1))  # current

@@ -27,7 +27,7 @@ class ChargingSim:
         self.prices_config = None
         self.price_loader = None
         self.battery_specs_per_loc = None  # Could be used later to specify varying batteries for various nodes
-        self.day_year_count = 0
+        self.day_year_count = -1
         self.stop = 0
         self.steps = 0
         self.control_start_index = 0
@@ -150,33 +150,46 @@ class ChargingSim:
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
-        plt.plot(elec_price_vec)
-        plt.savefig("price_vector")
-        plt.close()
+        # plt.plot(elec_price_vec)
+        # plt.savefig("price_vector")
+        # plt.close()
         for charging_station in self.stations_list:
+            if self.time % 96 == 0:
+                print("reset")
+                charging_station.controller.reset_load()
+                self.time = 0  # reset time
+                self.day_year_count += 1
+
             buffer_battery = charging_station.storage
             run_count = 0
             controls = []
             self.control_start_index = num_steps * self.day_year_count
-            stop = self.day_year_count + 14  # get today's load from test data
+            stop = self.day_year_count + 14  # get today's load from test data; move to load generator
             self.control_shift = 0
             todays_load = self.test_data[stop]
+            print(todays_load.shape, "load shape")
+            print("today's load", todays_load)
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
             loads = []
             for i in range(num_steps):
+                # print(todays_load[i], "loadcheck")
+                print(charging_station.controller.load, "controller load check")
                 control_action, predicted_load = charging_station.controller.compute_control(self.control_start_index,
                                                          self.control_shift, stop, buffer_battery.size, elec_price_vec)
                 loads.append(predicted_load[i, 0])
+
+
                 charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
+                # print(charging_station.controller.load, "loascheck")
                 # update load with the true load, not prediction,
                 # to update MPC last observed load
                 controls.append(control_action[0] + control_action[1])
                 # print("CONTROL: ", control_action[0], control_action[1])
                 net_load = todays_load[self.time, 0] + (control_action[0] + control_action[1])
                 charging_station.update_load(net_load)  # set current load for charging station
-                self.control_start_index += 1
-                self.control_shift += 1
+                # self.control_start_index += 1
+                # self.control_shift += 1
                 self.update_site_loads(net_load)  # Global Load Monitor for all the loads for this time-step
                 # print("site net loads shape is: ", len(self.site_net_loads))
 
@@ -184,10 +197,6 @@ class ChargingSim:
             self.control_shift = 0
             # print("MSE is ", (np.average(charging_station.controller.full_day_prediction - todays_load) ** 2) ** 0.5,
             #       "for day ", stop)
-            if self.control_shift == 96:
-                print("reset")
-                charging_station.controller.reset_load()
-                self.stop += 1
 
             # update season based on run_count (assumes start_time was set to 0)
             run_count += 1

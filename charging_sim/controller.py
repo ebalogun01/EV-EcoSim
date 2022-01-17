@@ -51,6 +51,7 @@ class MPC:
 
     def compute_control(self, start, shift, stop, battery_size, price_vector):
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
+
         # print(predicted_load)
         battery_constraints = self.storage.get_constraints(predicted_load)  # battery constraints
         objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
@@ -60,6 +61,7 @@ class MPC:
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, resolution, None,
                                    self.storage, time=0, name="Test_Case_" + str(self.storage.id))
         opt_problem.run()
+        print("Charge ", "Discharge ", self.storage.power_charge.value[0], self.storage.power_discharge.value[0])
         # print("POWER: ", self.storage.power.value)
         if opt_problem.problem.status != 'optimal':
             print('Unable to service travel')
@@ -104,7 +106,9 @@ class MPC:
             self.full_day_prediction.shape = (num_steps, 1)
         prediction_next_step = self.scaler_onestep.inverse_transform(LSTM2.predict(test_input_onestep))
         index = len(self.load) + 1  # this is tracking what time step we are at
-        prediction = np.append(self.load, prediction_next_step)
+        print("controller load is: ", self.load)
+        prediction = np.append(self.load, prediction_next_step)     # include previous day's known load
+        print("pred", len(prediction))
         prediction = np.append(prediction, self.full_day_prediction[index:, :])
         # print(prediction.shape)
         return prediction
@@ -114,7 +118,7 @@ class MPC:
 
     def reset_load(self):
         """This is done after one full day is done."""
-        self.load = []
+        self.load = np.array([])
         self.full_day_prediction = np.array([])
 
 class MPC2:
