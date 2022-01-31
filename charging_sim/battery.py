@@ -1,6 +1,7 @@
 import cvxpy as cp
 import numpy as np
-from config import start_time, num_steps, solar_gen
+from utils import start_time, num_steps, solar_gen
+import matplotlib.pyplot as plt
 
 seconds_in_year = 31556952
 seconds_in_min = 60
@@ -27,15 +28,18 @@ class Battery:
     """
 
     def __init__(self, battery_type, Q_initial, node=None, config=None):
-
+        """should I make in terms of rc pairs or how should I call dynamics..data-driven vs ECM"""
         self._node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
         self.resolution = config["resolution"]
+        self.dt = config["resolution"] / 60
         self.cap = config["cell_nominal_cap"]  # Ah
         self.nominal_cap = config["cell_nominal_cap"]
         self.cell_resistance = config["resistance"]  # TO be updated
         self._eff = config["round-trip_efficiency"]
         self.ECM_params = config["ECM_params"]["Ro"]
+        self.max_c_rate = config["max_c_rate"]
+        self.max_current = self.max_c_rate * self.cap
         self.A_Ro = self.ECM_params[0]
         self.B_Ro = self.ECM_params[1]
         self.C_Ro = self.ECM_params[2]
@@ -45,7 +49,7 @@ class Battery:
         self.max_voltage = config["max_cell_voltage"]
         self.min_voltage = config["max_cell_voltage"]  # for each cell
         self.nominal_voltage = config["min_cell_voltage"]  # for each cell
-        self.nominal_energy = config["battery_nominal_energy"]
+        self.nominal_energy = config["cell_nominal_voltage"] * config["cell_nominal_cap"]
         self.Qmax = config["SOC_max"] * self.cap
         self.Qmin = config["SOC_min"] * self.cap
         self.initial_SOC = config["SOC"]
@@ -53,10 +57,11 @@ class Battery:
         self.max_SOC = config["SOC_max"]
         self.SOH = config["SOH"]
         self.daily_self_discharge = config["daily_self_discharge"]
+
         # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
 
-        self.SOC_track = []
-        self.SOH_trach = [] # to be finished later
+        self.SOC_track = [self.initial_SOC]
+        self.SOH_track = [self.SOH] # to be finished later
         self.control_power = np.array([])
         self.OCV = cp.Variable((num_steps, 1))
         self.discharge_current = cp.Variable((num_steps, 1))  # current
@@ -134,10 +139,9 @@ class Battery:
 
     def est_cyc_aging(self):
         """Creates linear battery ageing model per hesse. et al, and returns its cvx object."""
-        life_cyc = 4500
-        nominal_energy = 8000
+        life_cyc = 4500 # change this to be input in the config file
         aging_cyc = (0.5 * (cp.sum(self.power_charge + self.power_discharge)
-                            * resolution / seconds_in_min)) / (life_cyc / 0.2 * nominal_energy)
+                            * resolution / seconds_in_min)) / (life_cyc / 0.2 * self.nominal_energy)
         return aging_cyc
 
     def get_power_profile(self, months):
@@ -171,15 +175,30 @@ class Battery:
         self.Q_initial = self.Q.value[action_length]
 
     def track_SOC(self, SOC):
-        pass
+        self.SOC_track.append(SOC)
+
+    def update_max_current(self, verbose=False):
+        self.max_current = self.max_c_rate * self.cap
+        if verbose:
+            print("Maximum allowable current updated.")
 
     def update_voltage(self, voltage):
-        self.current_voltage = voltage
+        self.current_voltage = voltage  # I should be updating initial voltage with new voltage measurement
         self.predicted_voltages.append(voltage)
         print("Current voltage estimate is: ", voltage)
 
     def get_properties(self):
         return self.properties
+
+    def visualize(self, option):
+        if type(option) == str:
+            if option == "SOC":
+                plt.figure
+                plt.plot(self.SOC_track)
+                plt.xlabel("Time Step")
+                plt.ylabel("State of Charge")
+                plt.savefig("SOC_{}.png".format(self.id))
+                plt.close()
 
     def visualize_voltages(self):
         pass
@@ -187,12 +206,56 @@ class Battery:
     def learn_params(self):
         pass
 
+    def dynamics(self, current):
+        # TODO: define the battery dynamics here
+
+        dt = self.dt * 3600  # convert from hour to seconds
+        # state equations
+
+        self.SOC = self.SOC - current * self.dt / self.cap
+
+        if self.SOC >= self.SOC_max:
+            print('out of bounds, readjusting voltage...')
+            self.SOC = self.SOC_max
+            self.SOC_track.append(self.SOC)
+            self.voltage = self.max_voltage
+            self.voltages = np.append(self.voltages, self.voltage)
+            return self.voltage
+        if self.SOC <= self.SOC_min:
+            print('out of bounds, readjusting voltage...')
+            self.voltage = self.min_voltage
+            self.SOC = self.SOC_min
+            self.SOC_track.append(self.SOC)
+            self.voltages = np.append(self.voltages, self.voltage)
+            return self.voltage
+
+        self.OCV = np.interp(self.SOC, self.map[:, 0], self.map[:, 1])
+        self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)
+
+        #   state equations
+        self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
+        self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
+        self.voltage = self.OCV - current * self.Ro - self.iR1 * self.R1 - self.iR2 * self.R2
+        if self.voltage > self.max_voltage:
+            self.voltage = self.max_voltage
+            print('max voltage exceeded')
+            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.SOC_track.append(self.SOC)
+            return self.voltage
+        if self.voltage < self.min_voltage:
+            self.voltage = self.min_voltage
+            print('min voltage exceeded')
+            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.SOC_track.append(self.SOC)
+            return self.voltage
+
+        self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        self.SOC_track.append(self.SOC)
+
+        return self.voltage
+
+
     def get_constraints(self, EV_load):
-        # print(EV_load)
-        # print("ev load", EV_load)
-        # print("Q initial", self.Q_initial)
-        # print(self.start, self.start + num_steps)
-        # print("solar shape is", solar_gen[self.start:self.start + num_steps].shape)
         eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
         num_cells_series = self.topology[0]
         num_modules_parallel = self.topology[1]
@@ -200,17 +263,12 @@ class Battery:
         self.constraints = [self.SOC[0] == self.initial_SOC,
                             self.OCV == OCV_SOC_linear_params[0] * self.SOC[0:num_steps] + OCV_SOC_linear_params[1],
                             self.discharge_voltage == self.OCV + cp.multiply(self.current, 0.076),
-                            # self.Q[1:num_steps + 1] == resolution / 60 * cp.multiply(self.current, self.discharge_voltage) +
-                            #                         self.Q[0:num_steps],
                             self.power == cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
                             self.power == self.power_charge + self.power_discharge,
                             # self.Q >= self.Qmin,  # why did I do this?
                             # self.Q <= self.Qmax,
                             self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
                             + (resolution / 60 * self.current)/self.cap,
-                            # self.power_charge >= cp.maximum(self.power, 0),
-                            # self.power_discharge - cp.minimum(self.power, 0) <= 0,
-                            # self.current <= 8.2,
                             self.power_discharge <= 0,
                             self.power_charge >= 0,
                             self.SOC >= self.min_SOC,

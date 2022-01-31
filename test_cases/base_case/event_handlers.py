@@ -11,7 +11,7 @@ from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
 EV_charging_sim = ChargingSim(3)  # Initialize Charging Simulation Class with 3 charging site
-print("EV_charging_initialized")
+# print("EV_charging_initialized")
 # Sets up the simulation module with Charging sites and batteries
 
 global tic, toc
@@ -63,10 +63,10 @@ def on_precommit(t):
         # print("Net load at {} is".format())
 
     for i in range(len(name_list_base_power)):  # add EV simulation net load for each location
-        print("No error")
+        # print("No error")
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
-        print('NOENE')
+        # print('NOENE')
     print(gblvar.it, 'Time done')
 
     # set base_power properties for this timestep

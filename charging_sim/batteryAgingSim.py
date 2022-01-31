@@ -66,28 +66,17 @@ class BatterySim:
         # First estimate the SOC
         # for battery in self.battery_objects:
         SOC = battery.SOC.value[0, 0]
-        # print("TRUE SOC: ", SOC)
-        # battery.true_SOC[0] = SOC
-        # battery.true_voltage[0] = self.response_surface([0,  SOC])[0]
-        # Q = battery.Q.value[0,0]
-        # for i in range(battery.SOC.value.shape[0]-1):
         for i in range(1):
             SOC = battery.SOC.value[i, 0]
-            current = battery.current.value[i, 0]
+            current = round(battery.current.value[i, 0], 8) # numerical issue here
             print("BATTERY CURRENT IS: ", current)
-            if current < 0:  # Discharge Dynamics
+            if current <= 0:  # Discharge Dynamics
                 # print(current, SOC)
                 true_voltage = self.response_surface([abs(current), SOC])[0]
             else:  # Charge Dynamics
                 # print(current, SOC)
                 true_voltage = self.response_surface([0, SOC])[
                                    0] + current * 0.076  # estimated as OCV + bias for now...RC is low so not t
-            if round(current, 8) == 0:
-                true_voltage = battery.OCV.value[i, 0]
-                battery.true_voltage = np.append(battery.true_voltage, battery.OCV.value[i, 0])
-                battery.current_voltage = battery.OCV.value[i, 0]
-                # battery.true_SOC.append(SOC)
-                continue
             battery.true_voltage = np.append(battery.true_voltage, true_voltage)
             battery.current_voltage = true_voltage
             #   knowledge of battery degradation is somewhat assumed here, making opt problem more optimal than will really be

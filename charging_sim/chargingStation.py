@@ -1,4 +1,4 @@
-from config import num_steps
+from utils import num_steps
 import numpy as np
 import json
 import matplotlib.pyplot as plt
@@ -16,17 +16,18 @@ class ChargingStation:
         self.status = status
         self.loads = []
         self.power = np.zeros((num_steps, 1))
-        self.current_load = 0
         self.auxiliary_power = 10 # this is in watts
+        self.current_load = self.auxiliary_power
         self.cooling_pump = {}  # properties of the charging station cooling pump
+        # COOLING LOAD SHOULD BE A FUNCTION OF CURRENT
         self.controller = controller
 
     def is_charging(self):
         return self.power > self.auxiliary_power
 
     def update_load(self, load):
-        self.current_load = load
-        self.loads.append(load)
+        self.current_load = load + self.auxiliary_power
+        self.loads.append(load)     # net load station pulls from grid, not load from EV
 
     def is_EV_arrived(self):
         if self.current_load > 0:
@@ -70,7 +71,7 @@ class ChargingStation:
         elif option == "storage":
             battery = getattr(self, option)
             plt.figure()
-            plt.plot(battery.true_voltage)
+            plt.plot(battery.true_voltage, "k", ls="--")
             plt.plot(battery.predicted_voltages)
             plt.ylabel('Voltage (V)')
             plt.legend(['True Voltage', 'Controller Estimated Voltage'])

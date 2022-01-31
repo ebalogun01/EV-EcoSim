@@ -10,7 +10,7 @@ import ast
 import pickle
 
 #read config file
-os.chdir('C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\feeder_population')
+os.chdir('/home/ec2-user/EV50_cosimulation/feeder_population')
 f=open('config.txt','r')
 param_dict=f.read()
 f.close()
@@ -223,7 +223,7 @@ with open('voltage_prop.txt','wb') as fp:
 #% load residential load data
 
 os.chdir(load_data_dir)
-data_use=pandas.read_csv('data_2015_use_filt.csv')
+data_use=pandas.read_csv('data_2015_use.csv')
 
 year=2018
 

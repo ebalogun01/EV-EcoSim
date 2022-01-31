@@ -1,5 +1,6 @@
 {
   "class": "MPC model-based",
+  "OCV_linear_params_path": "/home/ec2-user/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy",
   "resolution": 15,
   "horizon_length": 96,
   "num_forecasters": 2,
