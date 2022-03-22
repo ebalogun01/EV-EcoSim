@@ -44,6 +44,8 @@ class Battery:
         self.B_Ro = self.ECM_params[1]
         self.C_Ro = self.ECM_params[2]
         self._name = battery_type
+        self.iR1 = 0
+        self.iR2 = 0
 
         self.voltage = config["cell_nominal_voltage"]
         self.max_voltage = config["max_cell_voltage"]
@@ -66,6 +68,7 @@ class Battery:
         self.OCV = cp.Variable((num_steps, 1))
         self.discharge_current = cp.Variable((num_steps, 1))  # current
         self.discharge_voltage = cp.Variable((num_steps, 1))
+        self.voltages = list()  # to be updated at each time-step (seems expensive)
         self.current_voltage = 0
         self.true_voltage = np.array([])  # discharge/charge voltage per time-step
         self.Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
@@ -193,7 +196,7 @@ class Battery:
     def visualize(self, option):
         if type(option) == str:
             if option == "SOC":
-                plt.figure
+                plt.figure()
                 plt.plot(self.SOC_track)
                 plt.xlabel("Time Step")
                 plt.ylabel("State of Charge")
@@ -206,6 +209,10 @@ class Battery:
     def learn_params(self):
         pass
 
+    def update_params(self):
+        """This changes the battery params depending on the number of cycles"""
+        pass
+    
     def dynamics(self, current):
         # TODO: define the battery dynamics here
 
@@ -251,31 +258,32 @@ class Battery:
 
         self.voltages = np.append(self.voltages, self.voltage)  # numpy array
         self.SOC_track.append(self.SOC)
-
         return self.voltage
 
 
-    def get_constraints(self, EV_load):
-        eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
-        num_cells_series = self.topology[0]
-        num_modules_parallel = self.topology[1]
-        num_cells = self.topology[2]
-        self.constraints = [self.SOC[0] == self.initial_SOC,
-                            self.OCV == OCV_SOC_linear_params[0] * self.SOC[0:num_steps] + OCV_SOC_linear_params[1],
-                            self.discharge_voltage == self.OCV + cp.multiply(self.current, 0.076),
-                            self.power == cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
-                            self.power == self.power_charge + self.power_discharge,
-                            # self.Q >= self.Qmin,  # why did I do this?
-                            # self.Q <= self.Qmax,
-                            self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
-                            + (resolution / 60 * self.current)/self.cap,
-                            self.power_discharge <= 0,
-                            self.power_charge >= 0,
-                            self.SOC >= self.min_SOC,
-                            self.SOC <= self.max_SOC,
-                            EV_load + (self.power_charge + self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps
-                            # no injecting back to the grid; should try unconstrained. This could be infeasible.
-                            ]
-        return self.constraints
+
+
+    # def get_constraints(self, EV_load):
+    #     eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
+    #     num_cells_series = self.topology[0]
+    #     num_modules_parallel = self.topology[1]
+    #     num_cells = self.topology[2]
+    #     self.constraints = [self.SOC[0] == self.initial_SOC,
+    #                         self.OCV == OCV_SOC_linear_params[0] * self.SOC[0:num_steps] + OCV_SOC_linear_params[1],
+    #                         self.discharge_voltage == self.OCV + cp.multiply(self.current, 0.076),
+    #                         self.power == cp.multiply(self.nominal_pack_voltage, self.current*num_modules_parallel)/1000,  # kw
+    #                         self.power == self.power_charge + self.power_discharge,
+    #                         # self.Q >= self.Qmin,  # why did I do this?
+    #                         # self.Q <= self.Qmax,
+    #                         self.SOC[1:num_steps + 1] == self.SOC[0:num_steps] - (self.daily_self_discharge/num_steps) \
+    #                         + (resolution / 60 * self.current)/self.cap,
+    #                         self.power_discharge <= 0,
+    #                         self.power_charge >= 0,
+    #                         self.SOC >= self.min_SOC,
+    #                         self.SOC <= self.max_SOC,
+    #                         EV_load + (self.power_charge + self.power_discharge) - solar_gen[self.start:self.start + num_steps] >= eps
+    #                         # no injecting back to the grid; should try unconstrained. This could be infeasible.
+    #                         ]
+    #     return self.constraints
 
     # START THINKING ABOUT THE SEPARATION OF OPTIMIZATION FROM BATTERY

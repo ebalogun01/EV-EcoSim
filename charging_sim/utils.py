@@ -58,7 +58,7 @@ def build_electricity_cost(battery, load, energy_prices_TOU):
     # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
     lam = 10  # this needs to be guided
     battery_size = battery.topology[2]
-    sparsity_cost_factor = 0.001 # dynamically determine this in future based on load * cost
+    sparsity_cost_factor = 0.000 # dynamically determine this in future based on load * cost
     sparsity_cost = cp.norm(battery.power_charge, 1) + cp.norm(battery.power_discharge, 1)
     cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + (battery.power_charge + battery.power_discharge) -
                                                            solar_gen[battery.start:battery.start + num_steps])))) +\
@@ -108,8 +108,6 @@ def add_power_profile_to_object(battery, index, battery_power_profile):
 
 def plot_control_actions(controller):
     actions = controller.actions
-
-
 
 
 def show_results(savings_total, battery_object, energy_price, EV_load):

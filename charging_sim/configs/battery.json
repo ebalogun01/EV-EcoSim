@@ -18,7 +18,7 @@
   "distribution": {"class": "normal", "mean": 0, "std": 1},
   "energy_nom": 0.01746,
   "SOH": 1,
-  "SOC": 0.8,
+  "SOC": 0.3,
   "round-trip_efficiency": 0.98,
   "daily_self_discharge": 0.0002,
   "SOC_min": 0.2,

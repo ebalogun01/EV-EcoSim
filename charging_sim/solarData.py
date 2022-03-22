@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import truncnorm
-print('truncnorm')
-
 
 def sample_solar():
     """SAMPLE_SOLAR Randomly simulate the power output from solar PV panels as a fraction of rated capacity"""

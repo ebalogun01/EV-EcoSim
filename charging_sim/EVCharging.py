@@ -83,7 +83,7 @@ class ChargingSim:
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(3.5, loc_list[i])  # change this from float param to generic
             controller = control.MPC(self.controller_config, battery)   # need to change this to load based on the users controller python file?
-            assert isinstance(battery, object)  # checks that battery is an obj
+            # assert isinstance(battery, object)  # checks that battery is an obj
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
             charging_station = ChargingStation(battery, self.charging_config, controller)
             self.charging_sites[loc_list[i]] = charging_station
@@ -151,7 +151,7 @@ class ChargingSim:
         # Full day prediction is not changing but the price is changing!! issues
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
-        elec_price_vec = self.price_loader.get_prices(0, self.num_steps)    # need to freeze daily prices
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10    # need to freeze daily prices
         for charging_station in self.stations_list:
             if self.time % 96 == 0:
                 print("reset")

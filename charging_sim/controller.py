@@ -56,7 +56,7 @@ class MPC:
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
 
         # print(predicted_load)
-        battery_constraints = self.storage.get_constraints(predicted_load)  # battery constraints
+        battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
         objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
         linear_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
         electricity_cost = build_electricity_cost(self.storage, predicted_load, price_vector)  # based on prediction as well
@@ -118,7 +118,8 @@ class MPC:
         return prediction
 
     def get_battery_constraints(self, EV_load):
-        eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but this helps avoid it.
+        eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but
+        # this helps avoid it.
         num_cells_series = self.storage.topology[0]
         num_modules_parallel = self.storage.topology[1]
         num_cells = self.storage.topology[2]

@@ -139,6 +139,7 @@ class BatteryMaps:
 
 BM = BatteryMaps()
 BM = BM.get_response_surface()[0]
+print("***** Begin maps testing *****")
 print(BM([0.1, 0.2]))
 print(BM([0, 0.1999999]))  # testing to ensure accuracy for response surface
 print(BM([8, 0.198]))
@@ -146,3 +147,4 @@ print(BM([4, 0.1999999]))
 print(BM([0.00001, 0.1999999]))
 print(BM([0.0011, 0.1999999]))
 print(BM([0.00011, 0.1999999]))
+print("***** Maps testing done *****")
