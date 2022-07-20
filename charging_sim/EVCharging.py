@@ -7,15 +7,16 @@ from utils import add_power_profile_to_object
 from plots import plot_results
 from battery import Battery
 from batteryAgingSim import BatterySim
-import controller as control    # FILE WITH CONTROL MODULE
+import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from electricityPrices import PriceLoader
 
 minute_in_day = 1440
+plt.style.use('seaborn-darkgrid')   # optional
 
 class ChargingSim:
-    def __init__(self, num_charging_sites, battery_config=None, resolution=15):
+    def __init__(self, num_charging_sites, resolution=15):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: fix these literal paths below
         data2018 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
@@ -53,6 +54,7 @@ class ChargingSim:
 
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
+
         configs_path = "/home/ec2-user/EV50_cosimulation/charging_sim/configs"
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
@@ -62,38 +64,57 @@ class ChargingSim:
                 with open(file, "r") as f:
                     config = json.load(f)
                     setattr(self, attribute, config)
-        os.chdir(current_working_dir)    # return back to current working directory
+        os.chdir(current_working_dir)  # return back to current working directory
+        self.load_battery_params()  # update the battery params to have model dynamics for all cells loaded already
+
+    def load_battery_params(self):
+        """ This loads the battery params directly into the sim, so parameters will be the same for all
+        batteries unless otherwise specified. battery_config must be attributed to do this"""
+        params_list = [key for key in self.battery_config.keys() if "params_" in key]
+        for params_key in params_list:
+            # print("testing load battery params: ", params_key)
+            self.battery_config[params_key] = np.loadtxt(self.battery_config[params_key])
+        # do the OCV maps as well; reverse directionality is important for numpy.interp function
+        self.battery_config["OCV_map_voltage"] = np.loadtxt(self.battery_config["OCV_map_voltage"])[::-1]
+        self.battery_config["OCV_map_SOC"] = np.loadtxt(self.battery_config["OCV_map_SOC"])[::-1]
+
+        # this should make those inputs just be the params
 
     def create_battery_object(self, Q_initial, loc):
         #  this stores all battery objects in the network
-        self.load_config()  # loads existing config files
+        self.load_config()  # loads existing config files all at once - MOVING THIS FOR EFFICIENCY
         buffer_battery = Battery("Tesla Model 3", Q_initial, config=self.battery_config)
-        buffer_battery.id, buffer_battery.node = loc, loc
+        buffer_battery.id, buffer_battery.node = loc, loc   # using one index to represent both id and location
         self.battery_objects.append(buffer_battery)
-        buffer_battery.num_cells = buffer_battery.battery_setup(voltage=375, capacity=1500,
+        buffer_battery.num_cells = buffer_battery.battery_setup(pack_voltage=375, capacity=1500,
                                                                 cell_params=(buffer_battery.nominal_voltage, 4.85))
         return buffer_battery
 
     def create_charging_stations(self, power_nodes_list):
         # add flexibility for multiple units at one charging node?
         # No need, can aggregate them and have a different arrival sampling method
-        self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
+        self.load_config()
+        if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
+            print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
+            self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
         loc_list = random.sample(power_nodes_list, self.num_charging_sites)
         # print("There are", len(self.battery_objects), "battery objects initialized")
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(3.5, loc_list[i])  # change this from float param to generic
-            controller = control.MPC(self.controller_config, battery)   # need to change this to load based on the users controller python file?
+            controller = control.MPC(self.controller_config,
+                                     battery)  # need to change this to load based on the users controller python file?
             # assert isinstance(battery, object)  # checks that battery is an obj
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
-            charging_station = ChargingStation(battery, self.charging_config, controller)
+            charging_station = ChargingStation(battery, self.charging_config, controller) # add controller and battery to charging station
             self.charging_sites[loc_list[i]] = charging_station
-            self.battery_objects.append(battery)    # add to list of battery objects
+            self.battery_objects.append(battery)  # add to list of battery objects
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
     def initialize_aging_sim(self):
         # TODO: make the number of steps a passed in variable
-        self.aging_sim = BatterySim(0, 1)
+        num_steps = 1
+        self.aging_sim = BatterySim(0, num_steps)
 
     def initialize_price_loader(self):
         """Can add option for each charging site to have its own price loader"""
@@ -105,9 +126,10 @@ class ChargingSim:
             self.price_loader.downscale(input_data_res, self.resolution)
             self.prices_config["resolution"] = self.resolution
             file_path_list = self.prices_config["data_path"].split("_")
-            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1], str(self.resolution)+"min.csv")
+            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],
+                                                                    str(self.resolution) + "min.csv")
             self.prices_config["data_path"] = new_data_path
-            print(new_data_path)
+            # print(new_data_path)
             with open(self.prices_config["config_path"], 'w') as config_file_path:
                 os.chdir(configs_path)
                 json.dump(self.prices_config, config_file_path, indent=1)
@@ -126,7 +148,7 @@ class ChargingSim:
         self.create_charging_stations(power_nodes_list)
         self.initialize_price_loader()
         self.initialize_aging_sim()  # Battery aging
-        
+
     def update_site_loads(self, load):
         self.site_net_loads.append(load)
 
@@ -148,17 +170,17 @@ class ChargingSim:
 
     def step(self, num_steps):
         # NEED TO ADD STEPPING THROUGH DAYS # should this be done in some controller master sim?
-        # Full day prediction is not changing but the price is changing!! issues
+        # Full day prediction is not changing but the price is changing!! issues - is this fixed?
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
-        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10    # need to freeze daily prices
-        for charging_station in self.stations_list:
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10  # need to freeze daily prices
+        for charging_station in self.stations_list:     # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 print("reset")
                 charging_station.controller.reset_load()
                 elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
                 self.time = 0  # reset time
-                self.day_year_count = 0    # bug..finish this tonight!!
+                self.day_year_count = 0  # bug..finish this tonight!!
 
             buffer_battery = charging_station.storage
             run_count = 0
@@ -171,24 +193,27 @@ class ChargingSim:
             # print("today's load", todays_load)
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
-            loads = [] # TAKE THIS AWAY FROM THE CONTROLLER!
+            loads = []  # TAKE THIS AWAY FROM THE CONTROLLER!
             for i in range(num_steps):
                 # print(todays_load[i], "loadcheck")
                 # I need to abstract the entire controller away!!!
                 control_action, predicted_load = charging_station.controller.compute_control(self.control_start_index,
-                                                         self.control_shift, stop, buffer_battery.size, elec_price_vec)
+                                                                                             self.control_shift, stop,
+                                                                                             buffer_battery.size,
+                                                                                             elec_price_vec)
                 loads.append(predicted_load[i, 0])
                 charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
                 # update load with the true load, not prediction,
                 # to update MPC last observed load
-                controls.append(control_action[0] + control_action[1])
-                print("CONTROL: ", control_action[0], control_action[1])
-                net_load = todays_load[self.time, 0] + (control_action[0] + control_action[1])
-                print("time", self.time)
-                charging_station.update_load(todays_load[self.time, 0])  # set current load for charging station
+                controls.append(control_action)
+                # use the battery power here from its dynamics
+                # print("CONTROL current: ", control_action)
+                buffer_battery.dynamics(control_action)
+                net_load = todays_load[self.time, 0] + buffer_battery.power
+                # print("time", self.time)
+                charging_station.update_load(net_load)  # set current load for charging station # UPDATED 6/8/22
                 self.update_site_loads(net_load)  # Global Load Monitor for all the loads for this time-step
                 # print("site net loads shape is: ", len(self.site_net_loads))
-
 
             self.control_shift = 0
             # print("MSE is ", (np.average(charging_station.controller.full_day_prediction - todays_load) ** 2) ** 0.5,
@@ -199,18 +224,18 @@ class ChargingSim:
             # print("Number of cycles is {}".format(run_count))
             # total_savings = show_results(total_savings, buffer_battery, energy_prices_TOU, todays_load)
             # check whether one year has passed
-            if self.day_year_count % 365 == 0:  # it has already run for 365 days (This is wrt sampling Solar Generation)
+            if self.day_year_count % 365 == 0:  # it has already run 365 days (This is wrt sampling Solar Generation)
                 self.day_year_count = 0
                 buffer_battery.start = 0
 
-            buffer_battery.update_capacity()  # updates the capacity to include linear aging for previous run
-            self.aging_sim.run(buffer_battery)  # run battery response to actions
-            buffer_battery.initial_SOC = buffer_battery.SOC.value[1,0] # this is for the entire battery
-            buffer_battery.track_SOC(buffer_battery.SOC.value[1,0])
-            # print("Current SOC is: ", buffer_battery.initial_SOC)
+            buffer_battery.update_capacity()  # update the linear aging vector to include linear aging for previous run
+            self.aging_sim.run(buffer_battery)  # simulate battery aging
+            charging_station.controller.battery_initial_SOC = charging_station.controller.battery_SOC.value[1, 0]
+            # print("Current SOC is: ", buffer_battery.SOC)
             # start_time = buffer_battery.start
-            EV_power_profile = todays_load[0:num_steps + 1, ] + buffer_battery.power_charge.value[0:num_steps + 1, ] - \
-                               buffer_battery.power_discharge.value[0:num_steps + 1, ]
+            EV_power_profile = todays_load[0:num_steps + 1, ] + \
+                               charging_station.controller.battery_power_charge.value[0:num_steps + 1, ] - \
+                               charging_station.controller.battery_power_discharge.value[0:num_steps + 1, ]
             add_power_profile_to_object(buffer_battery, self.day_year_count, EV_power_profile)  # update power profile
             print("SOH is: ", buffer_battery.SOH)
             buffer_battery.start += 1
@@ -236,7 +261,8 @@ class ChargingSim:
             charging_station.visualize(option=option1)
             charging_station.visualize(option=option2)
         for battery in self.battery_objects:
-            battery.visualize("SOC")
+            battery.visualize("SOC_track")
+            battery.visualize("voltages")
             # power_profiles = charging_station.storage.get_power_profile(months)
             # for key, values in power_profiles:
             #     plt.plot(values)
@@ -244,4 +270,3 @@ class ChargingSim:
             #     plt.ylabel("Power (kW)")
             #     plt.savefig("Charging_site_load_profile_{}".format(charging_station.id))
             #     plt.close()
-

@@ -10,8 +10,8 @@ def sample_solar():
     # associated with each prediction.
 
     # read in data
-    data = pd.read_excel('/home/ec2-user/EV50_cosimulation/Datasets/Mountain View Rooftop Solar.xlsx', sheet_name='Normalized Power')
-    print('yes, no')
+    data = pd.read_excel('/home/ec2-user/EV50_cosimulation/Datasets/Mountain View Rooftop Solar.xlsx',
+                         sheet_name='Normalized Power')
     pvpower = data.Frac_Power.to_list()
     sigma = data.Sigma.to_list()
 

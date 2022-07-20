@@ -3,6 +3,7 @@
 *.mat
 *.glm
 *.dss
+*.txt
 *.xlsx
 *.xml
 *.xls
@@ -13,3 +14,7 @@ Datasets-CP
 Datasets
 env
 ev50
+*.png
+*.player
+feeders
+test_cases

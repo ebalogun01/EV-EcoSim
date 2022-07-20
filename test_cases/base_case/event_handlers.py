@@ -5,8 +5,10 @@ import gridlabd
 import time
 import gblvar
 import re
+print("first pass")
 sys.path.append('/home/ec2-user/EV50_cosimulation/charging_sim')    # change this
 # sys.path.append("../../charging_sim")
+print("before")
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
@@ -20,6 +22,7 @@ def on_init(t):
     # get object lists from GridLAB-D
     # global tic
     # tic = time.time()
+    print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gblvar.node_list = find("class=node")
     gblvar.load_list = find("class=load")

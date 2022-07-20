@@ -5,7 +5,6 @@ from electricityPrices import PriceLoader
 import numpy as np
 from solarData import sample_solar
 
-start_time = 0
 day_hours = 24
 day_minutes = day_hours * 60
 resolution = 15  # minutes
@@ -53,20 +52,22 @@ class EnergyData:
         return np.reshape(sample_solar(), (365*96, 1))
 
 
-def build_electricity_cost(battery, load, energy_prices_TOU):
+def build_electricity_cost(controller, load, energy_prices_TOU):
     """Need to update from home load right now; maybe this can be useful in future opt."""
     # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
     lam = 10  # this needs to be guided
-    battery_size = battery.topology[2]
     sparsity_cost_factor = 0.000 # dynamically determine this in future based on load * cost
-    sparsity_cost = cp.norm(battery.power_charge, 1) + cp.norm(battery.power_discharge, 1)
-    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + (battery.power_charge + battery.power_discharge) -
-                                                           solar_gen[battery.start:battery.start + num_steps])))) +\
-                                                            sparsity_cost_factor * sparsity_cost
+    sparsity_cost = cp.norm(controller.battery_power_charge, 1) + cp.norm(controller.battery_power_discharge, 1)
+    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + (controller.battery_power_charge +
+                                                                       controller.battery_power_discharge) -
+                                                           solar_gen[controller.battery_start:controller.battery_start
+                                                            + num_steps])))) + sparsity_cost_factor * sparsity_cost
+
     # cost_electricity_dem_charge = lam * cp.max((EV_load[battery.start:battery.start + num_steps] +
     #                                             battery.power_charge -
     #                                             battery.power_discharge -
-    #                                             solar_gen[battery.start:battery.start + num_steps])) + cost_electricity
+    #                                             solar_gen[battery.start:battery.start + num_steps])) +
+    #                                             cost_electricity
     # print(cost_electricity)
     return cost_electricity
 

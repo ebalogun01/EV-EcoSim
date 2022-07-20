@@ -1,5 +1,5 @@
 from optimization import Optimization
-from utils import build_objective, build_electricity_cost, resolution, num_steps, start_time, num_steps, solar_gen
+from utils import build_objective, build_electricity_cost, num_steps, solar_gen
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -34,6 +34,21 @@ class MPC:
         self.load = np.array([])
         self.w = 0
 
+        # BATTERY VARIABLES
+        self.battery_start = self.storage.start
+        self.battery_capacity = self.storage.nominal_cap    # controller should be estimating this from time to time. Or decide how it is updated?
+        self.battery_power_charge = cp.Variable((num_steps, 1))
+        self.battery_power_discharge = cp.Variable((num_steps, 1))
+        self.battery_initial_SOC = self.storage.initial_SOC     # begin with initial information of batt SOC
+        self.battery_power_discharge = cp.Variable((num_steps, 1))
+        self.battery_power = cp.Variable((num_steps, 1))
+        self.battery_current = cp.Variable((num_steps, 1))
+        self.battery_OCV = cp.Variable((num_steps, 1))
+        self.battery_discharge_current = cp.Variable((num_steps, 1))  # current
+        self.battery_discharge_voltage = cp.Variable((num_steps, 1))
+        self.battery_Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
+        self.battery_SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
+
         self.scaler_onestep = MinMaxScaler()
         load_history_onestep = np.reshape(self.charge_history, (self.charge_history.size, 1))  # scaling based on historical dist
         self.scaler_onestep.fit(load_history_onestep)
@@ -53,15 +68,18 @@ class MPC:
         self.current_testdata = np.genfromtxt(config["simulation_load"])[:-1, ] / 10
 
     def compute_control(self, start, shift, stop, battery_size, price_vector):
+        # add indicator if perfect foresight or not...if perfect foresight, we do not actually need controller
+        # so instead we can try other setting here
+        self.battery_start = self.storage.start
         predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
 
         # print(predicted_load)
         battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
         objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
         linear_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
-        electricity_cost = build_electricity_cost(self.storage, predicted_load, price_vector)  # based on prediction as well
+        electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
         objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
-        opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, resolution, None,
+        opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution, None,
                                    self.storage, time=0, name="Test_Case_" + str(self.storage.id))
         opt_problem.run()
         # print("Charge ", "Discharge ", self.storage.power_charge.value[0], self.storage.power_discharge.value[0])
@@ -71,10 +89,12 @@ class MPC:
         if electricity_cost.value < 0:
             print('Negative Electricity Cost')
             # print(electricity_cost.value, self.storage.current.value)
-        control_actions = np.hstack([self.storage.power_charge.value[0], self.storage.power_discharge.value[0]])
-        self.actions.append(self.storage.current.value[0, 0])
+        # control_actions = np.hstack([self.storage.power_charge.value[0], self.storage.power_discharge.value[0]])
+        # change to current
+        control_action = self.battery_current.value[0, 0]   # this is current flowing through each cell
+        self.actions.append(control_action)
         # print(control_actions.shape, "control actions shape check")
-        self.storage.update_voltage(self.storage.discharge_voltage.value[0, 0])
+        # self.storage.update_voltage(self.storage.discharge_voltage.value[0, 0]) # done in dynamics
         # plt.plot(self.storage.discharge_voltage.value)
         # plt.plot(self.storage.OCV.value)
         # plt.legend(["OCV", "discharge voltage"])
@@ -86,14 +106,17 @@ class MPC:
         # self.storage.SOC_track.append(self.storage.Q.value[1] / self.storage.Qmax)
         self.storage.update_capacity()  # to track linear estimated aging
         # obtain the true state of charge from the batteryAgingSim (How frequently though?)
+        # print(self.storage.control_current.shape)
         if len(self.storage.control_current) < num_steps:
-            self.storage.control_current = np.append(self.storage.control_current, self.storage.current.value[0])
+            self.storage.control_current = np.append(self.storage.control_current, control_action)
         else:
-            self.storage.control_current = self.storage.current.value[0] # it should be only updating one but then
-            # I am showing results after each step I think. Need to also fix the compute current scheme currently being used
+            self.storage.control_current = np.array([control_action])  # it should be only updating one but then
+            print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
+            # I am showing results after each step I think. 
+            # Need to also fix the compute current scheme currently being used
 
         #  need to get all the states here after the first action is taken
-        return control_actions, predicted_load
+        return control_action, predicted_load
 
     def predict_load(self, start, shift, stop, days_length=14):
         print("shift", shift)
@@ -120,23 +143,25 @@ class MPC:
     def get_battery_constraints(self, EV_load):
         eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but
         # this helps avoid it.
+        # TODO: UPDATE CONTROLLER TO BE MORE INFORMED OF THE VOLTAGE DYNAMICS WITH SOC TO ESTIMATE THE ACTUAL POWER NEEDED
         num_cells_series = self.storage.topology[0]
-        num_modules_parallel = self.storage.topology[1]
+        num_modules_parallel = self.storage.topology[1]     # maybe make this easier later?? abstract it out
         num_cells = self.storage.topology[2]
-        self.storage_constraints = [self.storage.SOC[0] == self.storage.initial_SOC,
-                            self.storage.OCV == OCV_SOC_linear_params[0] * self.storage.SOC[0:num_steps] + OCV_SOC_linear_params[1],
-                            self.storage.discharge_voltage == self.storage.OCV + cp.multiply(self.storage.current, 0.076),
-                            self.storage.power == cp.multiply(self.storage.nominal_pack_voltage,
-                                                      self.storage.current * num_modules_parallel) / 1000,  # kw
-                            self.storage.power == self.storage.power_charge + self.storage.power_discharge,
-                            self.storage.SOC[1:num_steps + 1] == self.storage.SOC[0:num_steps] - (self.storage.daily_self_discharge / num_steps) \
-                            + (resolution / 60 * self.storage.current) / self.storage.cap,
-                            self.storage.power_discharge <= 0,
-                            self.storage.power_charge >= 0,
-                            self.storage.SOC >= self.storage.min_SOC,
-                            self.storage.SOC <= self.storage.max_SOC,
-                            EV_load + (self.storage.power_charge + self.storage.power_discharge) - solar_gen[
-                                                                                   self.storage.start:self.storage.start + num_steps] >= eps
+        self.storage_constraints = [self.battery_SOC[0] == self.battery_initial_SOC,
+                            self.battery_OCV == OCV_SOC_linear_params[0] * self.battery_SOC[0:num_steps] + OCV_SOC_linear_params[1],
+                            cp.pos(self.battery_current) <= self.storage.max_current,
+                            self.battery_discharge_voltage == self.battery_OCV + cp.multiply(self.battery_current, 0.076),
+                            self.battery_power == cp.multiply(self.storage.nominal_voltage * num_cells_series,
+                                                      self.battery_current * num_modules_parallel) / 1000,  # kw
+                            self.battery_power == self.battery_power_charge + self.battery_power_discharge,
+                            self.battery_SOC[1:num_steps + 1] == self.battery_SOC[0:num_steps] \
+                                    + (self.resolution / 60 * self.battery_current) / self.storage.cap, # removed self-discharge
+                            self.battery_power_discharge <= 0,
+                            self.battery_power_charge >= 0,
+                            self.battery_SOC >= self.storage.min_SOC,
+                            self.battery_SOC <= self.storage.max_SOC,
+                            EV_load + (self.battery_power_charge + self.battery_power_discharge) - 
+                                    solar_gen[self.storage.start:self.storage.start + num_steps] >= eps
                             # no injecting back to the grid; should try unconstrained. This could be infeasible.
                             ]
         return self.storage_constraints

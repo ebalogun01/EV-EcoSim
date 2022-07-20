@@ -1,7 +1,7 @@
 # import time
 import numpy as np
 import math
-from maps import BatteryMaps
+# from maps import BatteryMaps
 # from data import raw_data_NMC25degC
 import matplotlib.pyplot as plt
 
@@ -56,13 +56,15 @@ class BatterySim:
         self.num_daily_steps = 96  # to be configured later
         self.res = res
         self.cap = 4.85  # Ah
-        BM = BatteryMaps()
-        self.response_surface = BM.get_response_surface()[0]  # this is used to infer voltage from other states
+        # BM = BatteryMaps()
+        # self.response_surface = BM.get_response_surface()[0]  # this is used to infer voltage from other states
         # Include battery chemistry later.
 
     def infer_voltage(self, battery):
         """This method is used to estimate the voltage from estimated SOC, temp, and current. Do this before
-        simulating the degradation."""
+        simulating the degradation.
+
+        DEPRECATING!!! """
         # First estimate the SOC
         # for battery in self.battery_objects:
         SOC = battery.SOC.value[0, 0]
@@ -78,22 +80,22 @@ class BatterySim:
                 true_voltage = self.response_surface([0, SOC])[
                                    0] + current * 0.076  # estimated as OCV + bias for now...RC is low so not t
             battery.true_voltage = np.append(battery.true_voltage, true_voltage)
-            battery.current_voltage = true_voltage
+            # battery.current_voltage = true_voltage
             #   knowledge of battery degradation is somewhat assumed here, making opt problem more optimal than will really be
         battery.true_power.append(np.multiply(battery.true_voltage[1:], battery.current.value) / 1000)
 
     def get_cyc_aging(self, battery):
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
-        self.infer_voltage(battery)
-        SOC_vector = battery.SOC.value[0:2]
+        SOC_vector = np.array(battery.SOC_list[-(self.num_steps+1):])    # change this to the list? Done after one complete day
         print("SOC is: ", SOC_vector)
-        del_DOD = np.round(SOC_vector[0:self.num_steps] - SOC_vector[1:], 4) # just for numerical convenience
+        # TODO: LATER
+        del_DOD = np.round(SOC_vector[0:self.num_steps] - SOC_vector[1:], 4)    # just for numerical convenience. Have this list be updated, given the resolution we want to solve!!!
         print("del DOD: ", del_DOD)
-        print("Current Voltage is ", battery.current_voltage)
+        print("Current Voltage is ", battery.voltage)
         del_DOD[del_DOD < 0] = 0  # remove the charging parts in profile to get DOD
         del_DOD = np.sum(del_DOD)  # total discharge depth
         # del_DOD = np.max(SOC_vector) - np.min(SOC_vector) # this is not entirely accurate
-        real_voltage = battery.current_voltage
+        real_voltage = battery.voltage
         avg_voltage = np.sqrt(np.average(real_voltage ** 2))  # quadratic mean voltage for aging
         beta_cap = 7.348 * 10 ** -3 * (avg_voltage - 3.667) ** 2 + 7.6 * 10 ** -4 + 4.081 * 10 ** -3 * del_DOD
         # print('Beta Cap is, ', beta_cap)
@@ -101,15 +103,10 @@ class BatterySim:
         beta_minimum = 1.5 * 10 ** -5
         if beta_res < beta_minimum:
             beta_res = beta_minimum  # there is a minimum aging factor that needs to be fixed
-        charge_thrput = np.abs(battery.current.value[0:1] * self.res / 60)  # in Ah
+        charge_thrput = np.abs(battery.current * self.res / 60)  # in Ah
         capacity_fade = beta_cap * charge_thrput ** 0.5 * 2.15 / self.cap  # time is one day for both
         resistance_growth = beta_res * charge_thrput * 2.15 / self.cap
         battery.true_capacity_loss = capacity_fade
-        # plt.figure()
-        # plt.plot(capacity_fade)
-        # plt.title("plot of capacity loss vs time")
-        # # plt.show()
-        # plt.close()
 
         return np.sum(capacity_fade), np.sum(resistance_growth)
 
@@ -117,24 +114,24 @@ class BatterySim:
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         cap_fade = self.get_aging_value(battery)[0]
         battery.SOH -= cap_fade  # change this to nom rating
-        battery.cap -= cap_fade * battery.nominal_cap
-        battery.Qmax = battery.max_SOC * battery.cap * battery.SOH
+        battery.cap = battery.SOH * battery.cap
+        battery.Qmax = battery.max_SOC * battery.cap
         battery.true_capacity_loss += cap_fade
         battery.true_aging.append(cap_fade)
 
     def update_resistance(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         res_growth = self.get_aging_value(battery)[1]
-        battery.properties["resistance"] += res_growth
+        battery.cell_resistance += res_growth
         battery.resistance_growth += res_growth
 
     def get_calendar_aging(self, battery):
         # TODO: This currently runs the aging for an entire day after each iteration run. Will need to formulate
         #  learning architecture
         """Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)"""
-        alpha_cap = (7.543 * battery.current_voltage - 23.75) * 10 ** 6 * math.exp(
+        alpha_cap = (7.543 * battery.voltage - 23.75) * 10 ** 6 * math.exp(
             -6976 / self.ambient_temp)  # aging factors
-        alpha_res = (5.270 * battery.current_voltage - 16.32) * 10 ** 5 * math.exp(
+        alpha_res = (5.270 * battery.voltage - 16.32) * 10 ** 5 * math.exp(
             -5986 / self.ambient_temp)  # temp in K
         capacity_fade = alpha_cap * (
                     self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.nominal_cap  # for each time-step (this is scaled up for current cell)
@@ -157,7 +154,8 @@ class BatterySim:
         return [capacity_fade, res_growth]
 
     def run(self, battery):
-        """need to slightly change this for now"""
+        """need to slightly change this for now
+        MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME"""
         # for battery in self.battery_objects:
         self.update_capacity(battery)
         print("Battery Aging and Response Estimated")
