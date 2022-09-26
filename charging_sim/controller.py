@@ -34,7 +34,7 @@ class MPC:
         self.load = np.array([])
         self.w = 0
 
-        # BATTERY VARIABLES
+        # BATTERY VARIABLES (TODO: INCLUDE MIN-MAX SOC AND DISCHARGE REQUIREMENTS DIRECTLY IN CONTROLLER)
         self.battery_start = self.storage.start
         self.battery_capacity = self.storage.nominal_cap    # controller should be estimating this from time to time. Or decide how it is updated?
         self.battery_power_charge = cp.Variable((num_steps, 1))
@@ -141,7 +141,7 @@ class MPC:
         return prediction
 
     def get_battery_constraints(self, EV_load):
-        eps = 1e-9  # This is a numerical artifact. Values tend to solve at very low negative values but
+        eps = 0.01  # This is a numerical artifact. Values tend to solve at very low negative values but
         # this helps avoid it.
         # TODO: UPDATE CONTROLLER TO BE MORE INFORMED OF THE VOLTAGE DYNAMICS WITH SOC TO ESTIMATE THE ACTUAL POWER NEEDED
         num_cells_series = self.storage.topology[0]
@@ -151,7 +151,7 @@ class MPC:
                             self.battery_OCV == OCV_SOC_linear_params[0] * self.battery_SOC[0:num_steps] + OCV_SOC_linear_params[1],
                             cp.pos(self.battery_current) <= self.storage.max_current,
                             self.battery_discharge_voltage == self.battery_OCV + cp.multiply(self.battery_current, 0.076),
-                            self.battery_power == cp.multiply(self.storage.nominal_voltage * num_cells_series,
+                            self.battery_power == cp.multiply(self.storage.max_voltage * num_cells_series,
                                                       self.battery_current * num_modules_parallel) / 1000,  # kw
                             self.battery_power == self.battery_power_charge + self.battery_power_discharge,
                             self.battery_SOC[1:num_steps + 1] == self.battery_SOC[0:num_steps] \

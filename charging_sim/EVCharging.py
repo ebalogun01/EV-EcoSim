@@ -86,8 +86,7 @@ class ChargingSim:
         buffer_battery = Battery("Tesla Model 3", Q_initial, config=self.battery_config)
         buffer_battery.id, buffer_battery.node = loc, loc   # using one index to represent both id and location
         self.battery_objects.append(buffer_battery)
-        buffer_battery.num_cells = buffer_battery.battery_setup(pack_voltage=375, capacity=1500,
-                                                                cell_params=(buffer_battery.nominal_voltage, 4.85))
+        buffer_battery.num_cells = buffer_battery.battery_setup()
         return buffer_battery
 
     def create_charging_stations(self, power_nodes_list):
@@ -176,7 +175,7 @@ class ChargingSim:
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10  # need to freeze daily prices
         for charging_station in self.stations_list:     # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
-                print("reset")
+                # print("reset")
                 charging_station.controller.reset_load()
                 elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
                 self.time = 0  # reset time
@@ -237,16 +236,20 @@ class ChargingSim:
                                charging_station.controller.battery_power_charge.value[0:num_steps + 1, ] - \
                                charging_station.controller.battery_power_discharge.value[0:num_steps + 1, ]
             add_power_profile_to_object(buffer_battery, self.day_year_count, EV_power_profile)  # update power profile
-            print("SOH is: ", buffer_battery.SOH)
+            # print("SOH is: ", buffer_battery.SOH)
             buffer_battery.start += 1
         self.time += 1
         # stop += 1  # shifts to the next day
         plt.figure()
         plt.plot(buffer_battery.true_aging)
-        plt.plot(np.array(buffer_battery.linear_aging) / 0.2)
-        plt.title("true aging and Linear aging")
-        plt.legend(["True aging", "Linear aging"])
+        # plt.plot(np.array(buffer_battery.linear_aging) / 0.2)
+        plt.title("true aging plot")
+        # plt.legend(["True aging", "Linear aging"])
         plt.savefig("aging_plot.png")
+        plt.close()
+        plt.plot(self.aging_sim.beta_caps)
+        plt.title('Beta_cap')
+        plt.savefig("Beta aging (cap)")
         plt.close()
         return self.site_net_loads
 
@@ -263,6 +266,34 @@ class ChargingSim:
         for battery in self.battery_objects:
             battery.visualize("SOC_track")
             battery.visualize("voltages")
+            battery.visualize("true_aging")
+            battery.visualize("SOH_track")
+
+        # SOME ADDITIONAL PLOTS BELOW
+        fig, ax1 = plt.subplots()
+        ax2 = ax1.twinx()
+        ax1.plot(battery.SOC_track[1:])
+        ax2.plot(battery.calendar_aging[1:], color='r', ls='--')
+        ax1.set_xlabel('Time step')
+        ax1.set_ylabel('SOC')
+        ax2.set_ylabel('Calendar aging')
+        plt.savefig("Calendar_SOC_plot.png")
+        plt.close('all')
+
+        fig, ax1 = plt.subplots()
+        ax2 = ax1.twinx()
+        ax1.plot(battery.SOC_track[1:])
+        ax2.plot(battery.cycle_aging[1:], color='r', ls='--')
+        ax1.set_xlabel('Time step')
+        ax1.set_ylabel('SOC')
+        ax2.set_ylabel('Cycle aging')
+        plt.savefig("Cycle_SOC_plot.png")
+        plt.close('all')
+
+        # plt.plot(battery.SOC_track[1:], battery.calendar_aging[1:], color='k')
+        # plt.savefig("Calendar_SOC_plot_2.png")
+        print("total calendar aging is {}".format(sum(battery.calendar_aging)))
+        print("total cycle aging is {}".format(sum(battery.cycle_aging)))
             # power_profiles = charging_station.storage.get_power_profile(months)
             # for key, values in power_profiles:
             #     plt.plot(values)
