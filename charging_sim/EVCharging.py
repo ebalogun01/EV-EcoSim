@@ -83,7 +83,7 @@ class ChargingSim:
     def create_battery_object(self, Q_initial, loc):
         #  this stores all battery objects in the network
         self.load_config()  # loads existing config files all at once - MOVING THIS FOR EFFICIENCY
-        buffer_battery = Battery("Tesla Model 3", Q_initial, config=self.battery_config)
+        buffer_battery = Battery("Tesla Model 3", Q_initial, config=self.battery_config)    # remove Q_initial later
         buffer_battery.id, buffer_battery.node = loc, loc   # using one index to represent both id and location
         self.battery_objects.append(buffer_battery)
         buffer_battery.num_cells = buffer_battery.battery_setup()

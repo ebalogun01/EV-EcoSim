@@ -3,9 +3,7 @@ import numpy as np
 from utils import num_steps
 import matplotlib.pyplot as plt
 
-# OCV_SOC_linear_params = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
-
-# Need to understand charging dynamics as well. Cannot assume symmetry
+# Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.
 
 # TODO: add battery simulation resolution control so can be different from control as well...
 class Battery:
@@ -91,6 +89,7 @@ class Battery:
         self.Q_initial = Q_initial  # include the units here
         self.control_current = np.array([])
         self.total_amp_thruput = 0.0
+        self.currents = [0]
 
         # self.power_charge = cp.Variable((num_steps, 1))
         # self.power_discharge = cp.Variable((num_steps, 1))
@@ -105,17 +104,16 @@ class Battery:
         self.total_aging = 0
         self.true_capacity_loss = 0
         self.resistance_growth = 0
-        # self.true_SOC = np.empty((num_steps + 1, 1))  #  BatterySim updates this with the true SOC different from Optimization
         self.true_aging = []  # want to keep track to observe trends based on degradation models
         self.linear_aging = []  # linear model per Hesse Et. Al
 
-        self.ambient_temp = 25  # Celsius
+        self.ambient_temp = 25  # Celsius (NOT USED YET - FUTURE VERSION COULD USE THIS)
         self.charging_costs = 0
         self.power_profile = {'Jan': [], 'Feb': [], 'Mar': [], 'Apr': [], 'May': [], 'Jun': [], 'Jul': [], 'Aug': [],
                               'Sep': [], 'Oct': [], 'Nov': [], 'Dec': []}
         # self.Ro = self.get_Ro()
 
-        self.topology = None
+        self.topology = [1, 1]  # DEFAULT VALUE: singular cell
         self.constraints = None
         self.id = None  # Use Charging Station ID for this
         self.savings = None
@@ -231,6 +229,7 @@ class Battery:
         return self.properties
 
     def visualize(self, option):
+        """method is used to plot and save battery states desired by user"""
         if type(option) == str:
             plt.style.use('seaborn-darkgrid')
             if option == "SOC_track":
@@ -263,17 +262,19 @@ class Battery:
     
     def dynamics(self, current):
         # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
-        # TODO: deal with simulation dual-resolution dynamical system...maybe get finer battery dynamics in here
+        # TODO: FUTURE deal with simulation dual-resolution dynamical system...maybe get finer battery dynamics in here
 
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         # state equations
         self.SOC = self.SOC + current * self.dt / self.cap   # current signs (+) charge (-) discharge
-        # For a particular step, if absolute val Crate is so high that SOC exceeds limits, skip dynamics
+        # For a particular step, if absolute val c-rate is so high that SOC exceeds limits, derate current
         if self.SOC > self.max_SOC:
-            assert current >= 0
+            print('max SOC violation, readjusting SoC...')
+            assert current >= 0     # FOR DEV PURPOSES. REMOVE LATER
             excess_soc = self.SOC - self.max_SOC
-            allowable_curr_thruput = current * self.dt - excess_soc * self.cap    # Ah
-            assert allowable_curr_thruput >= 0  # remove this later
+            allowable_curr_thruput = round(current * self.dt - excess_soc * self.cap, 4)    # Ah
+            # print(current, excess_soc, allowable_curr_thruput, self.cap)
+            assert allowable_curr_thruput >= 0  # FOR DEV PURPOSES. REMOVE LATER
             self.current = allowable_curr_thruput / self.dt
             self.total_amp_thruput += abs(self.current) * self.dt   # cycle counting
             # print('SOC violation, readjusting SoC...')
@@ -283,39 +284,43 @@ class Battery:
             self.voltages = np.append(self.voltages, self.voltage)
             return self.voltage
         if self.SOC < self.min_SOC:
-            # print('SOC violation, readjusting SoC...')
+            print('min SOC violation, readjusting SoC...')
             # current should always be negative here
             deficient_soc = self.min_SOC - self.SOC
             allowable_curr_thruput = abs(current * self.dt + deficient_soc * self.cap)
-            assert allowable_curr_thruput >= 0
+            assert allowable_curr_thruput >= 0  # for dev purposes
             self.SOC = self.min_SOC
             self.track_SOC(self.SOC)
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-            # print("power is {} kW".format(self.power))
             self.current = -allowable_curr_thruput / self.dt  # readjusting current
             self.state_eqn(self.current)     # update states
             self.voltages = np.append(self.voltages, self.voltage)
             self.total_amp_thruput += abs(self.current) * self.dt  # cycle counting
+            # self.currents.append(current)
             return self.voltage
 
         #  state equations
         self.state_eqn(current)     # this updates the battery states
+        # self.currents.append(current)
 
         if self.voltage > self.max_voltage:
-            # we need to reduce the current if voltage is too high
+            print("charge current too high! Max voltage exceeded")
+            # we de-rate the current if voltage is too high (exceeds max prescribed v)
+            # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
             current -= (self.voltage - self.max_voltage)/self.Ro
             self.voltage = self.max_voltage
-            self.state_eqn(current)
-            # print('max voltage exceeded...adjusting')   # I don't think this should happen, so FLAG if it does
+            self.state_eqn(current, append=False)
+            self.currents[-1] = current
             # raise Exception("Max voltage exceeded even after max SOC flag!!!") this can happen
             self.voltages = np.append(self.voltages, self.voltage)  # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
         elif self.voltage < self.min_voltage:
+            print("discharge current too high ! Min voltage exceeded")
             current += (self.min_voltage - self.voltage) / self.Ro
-            self.state_eqn(current)
-            # print('min voltage reached...overdischarge', self.voltage)
+            self.state_eqn(current, append=False)
+            self.currents[-1] = current
             self.voltage = self.min_voltage
             self.voltages = np.append(self.voltages, self.voltage)  # numpy array
             self.track_SOC(self.SOC)
@@ -324,14 +329,15 @@ class Battery:
 
         self.current = current
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-        print("power is {} kW".format(self.power))
+        # print("power is {} kW".format(self.power))
         # self.topology[0] = # of cells in series, self.topology[1] = # in parallel
         self.voltages = np.append(self.voltages, self.voltage)  # numpy array
         self.track_SOC(self.SOC)
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
         return self.voltage
 
-    def state_eqn(self, current):
+    def state_eqn(self, current, append=True):
+        """This holds the discretized state equations containing the battery dynamics at the cell-level."""
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)
@@ -339,8 +345,10 @@ class Battery:
         self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
         self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
+        if append:
+            self.currents.append(current)
 
-#   TEST THE BATTERY CODE HERE
+#   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
     # TODO: include error checking assertion points later
     battery_config_path = "/home/ec2-user/EV50_cosimulation/charging_sim/configs/battery.json"
@@ -359,36 +367,51 @@ def test():
     buffer_battery.id, buffer_battery.node = 0, 0
 
     # test dynamics here
-    c = -4.85
+    c = 2.5  # discharging first
     voltages = []
-    for i in range(500):
+    currents = []
+    for i in range(50):
         v = buffer_battery.dynamics(c)
-        voltages.append(v)
+        currents.append(c)
     c = 0
-    for i in range(500):
+    for i in range(50):
         v = buffer_battery.dynamics(c)
-        voltages.append(v)
+        currents.append(c)
     c = -2.8
     for i in range(100):
         v = buffer_battery.dynamics(c)
         voltages.append(v)
-    c = -4.85
-    for i in range(20):
+        currents.append(c)
+    c = -4
+    for i in range(200):
         v = buffer_battery.dynamics(c)
-        voltages.append(v)
-    c = 0
-    for i in range(400):
+        currents.append(c)
+    c = 3
+    for i in range(40):
         v = buffer_battery.dynamics(c)
-        voltages.append(v)
-    c = 4.2
+        currents.append(c)
+    c = 2.03  # charging (Amperes)
     for i in range(100):
         v = buffer_battery.dynamics(c)
-        voltages.append(v)
-    plt.plot(voltages)
-    plt.xlabel(" Time Step (seconds) ")
-    plt.ylabel(" Voltage ")
+        currents.append(c)
+
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.plot(buffer_battery.voltages, label='voltage')
+    ax2.plot(currents, color='k', label='current')
+    ax2.plot(buffer_battery.currents, color='r', ls='--', label='adjusted current')
+    ax1.set_xlabel('Time step')
+    ax1.set_ylabel('Voltage (V)')
+    ax2.set_ylabel('Current (A)')
+    plt.legend()
     plt.savefig("battery_test_plot")
     plt.close()
+    plt.plot(buffer_battery.SOC_list)
+    plt.savefig("SOC_battery_test")
+    plt.close()
+    plt.plot(buffer_battery.currents[1:50])
+    print(len(buffer_battery.currents), len(buffer_battery.voltages))
+    plt.savefig("currents_battery_test")
 
 
 if __name__ == "__main__":
