@@ -10,7 +10,7 @@ import ast
 import pickle
 
 #read config file
-os.chdir('/home/ec2-user/EV50_cosimulation/feeder_population')
+os.chdir('/home/ec2-user/EV50_cosimulation/feeder_population')  # change directory
 f=open('config.txt','r')
 param_dict=f.read()
 f.close()
