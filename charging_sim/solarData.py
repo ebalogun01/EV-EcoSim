@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import truncnorm
+import os
 
 def sample_solar():
     """SAMPLE_SOLAR Randomly simulate the power output from solar PV panels as a fraction of rated capacity"""
@@ -8,10 +9,14 @@ def sample_solar():
     # r = sample_solar() returns an array  of random simulations of solar PV output where pvpower is a list
     # of predictions of the fraction of rated capacity generated and sigma is a list of the standard deviation
     # associated with each prediction.
+    current_dir = os.getcwd()
+    path_break_idk = current_dir.index('EV50_cosimulation')
+    current_dir = current_dir[0:path_break_idk]+'EV50_cosimulation'
+    path_ = os.path.join(current_dir, 'Datasets', 'Mountain View Rooftop Solar.xlsx')
 
     # read in data
-    data = pd.read_excel('/home/ec2-user/EV50_cosimulation/Datasets/Mountain View Rooftop Solar.xlsx',
-                         sheet_name='Normalized Power')
+    data = pd.read_excel(path_, sheet_name='Normalized Power')
+
     pvpower = data.Frac_Power.to_list()
     sigma = data.Sigma.to_list()
 
