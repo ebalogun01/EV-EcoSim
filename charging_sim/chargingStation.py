@@ -71,7 +71,7 @@ class ChargingStation:
         elif option == "storage":
             battery = getattr(self, option)
             plt.figure()
-            plt.plot(battery.true_voltage, "k", ls="--")
+            plt.plot(battery.voltages, "k", ls="--")
             plt.plot(battery.predicted_voltages)
             plt.ylabel('Voltage (V)')
             plt.legend(['True Voltage', 'Controller Estimated Voltage'])

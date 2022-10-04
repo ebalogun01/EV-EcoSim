@@ -14,7 +14,7 @@ month_days = {"January": 31, "February": 28, "March": 31, "April": 30, "May": 31
               "August": 31, "September": 30, "October": 30, "November": 30, "December": 31}
 
 objectives = {'Transformer Aging': [0, 0, 1],
-              "Electricity Cost": [1, 0, 0],
+              "Electricity Cost": [10, 0, 0],
               "Battery Degradation": [1, 200, 0],
               'Air Pollution': [],
               "Mixed": [0.1, 1, 0],

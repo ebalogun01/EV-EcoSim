@@ -17,14 +17,15 @@ OCV_SOC_linear_params = np.load('/home/ec2-user/EV50_cosimulation/BatteryData/OC
 
 
 class MPC:
-
+    """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
+    Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
     def __init__(self, config, storage):
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
         self.charge_history = np.genfromtxt(config["load_history"])
-        self.current_testdata = np.genfromtxt(config["simulation_load"])[:-1, ] / 10 # this is used to predict the load
+        self.current_testdata = np.genfromtxt(config["simulation_load"])[:-1, ] / 1 # this is used to predict the load, in the future, we will generate a bunch of loads to do this
         self.reshaped_data = np.reshape(self.current_testdata, self.current_testdata .size) # flatten data for efficient indexing
-        self.one_step_data = self.reshaped_data[-48:]  # one step LSTM uses last 48 time steps to predict the next
+        self.one_step_data = self.reshaped_data[-48:]  # one step LSTM uses last 48 time steps to predict the next, need
         self.std_data = np.std(self.current_testdata, 0)   # from training distribution
         self.std_data[self.std_data == 0] = 1
         self.mean_data = np.mean(self.current_testdata, 0)
@@ -44,8 +45,7 @@ class MPC:
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current = cp.Variable((num_steps, 1))
         self.battery_OCV = cp.Variable((num_steps, 1))
-        self.battery_discharge_current = cp.Variable((num_steps, 1))  # current
-        self.battery_discharge_voltage = cp.Variable((num_steps, 1))
+        self.battery_voltage = cp.Variable((num_steps, 1))
         self.battery_Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
         self.battery_SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
 
@@ -76,7 +76,7 @@ class MPC:
         # print(predicted_load)
         battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
         objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
-        linear_aging_cost = self.storage.get_total_aging()  # based on simple model and predicted control actions
+        linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
         electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
         objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution, None,
@@ -150,7 +150,7 @@ class MPC:
         self.storage_constraints = [self.battery_SOC[0] == self.battery_initial_SOC,
                             self.battery_OCV == OCV_SOC_linear_params[0] * self.battery_SOC[0:num_steps] + OCV_SOC_linear_params[1],
                             cp.pos(self.battery_current) <= self.storage.max_current,
-                            self.battery_discharge_voltage == self.battery_OCV + cp.multiply(self.battery_current, 0.076),
+                            self.battery_voltage == self.battery_OCV + cp.multiply(self.battery_current, 0.076),
                             self.battery_power == cp.multiply(self.storage.max_voltage * num_cells_series,
                                                       self.battery_current * num_modules_parallel) / 1000,  # kw
                             self.battery_power == self.battery_power_charge + self.battery_power_discharge,

@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 class Battery:
     """
      Properties:
+        properties are mainly controlled in the battery config file 'battery.json'
+         max-c-rate determines the power capacity of the cell as a multiple of the value of the energy capacity
          max voltage(V)
          min Voltage (V)
          nominal energy (kWh)
@@ -33,6 +35,7 @@ class Battery:
         self.cell_resistance = config["resistance"]  # TO be updated
         self._eff = config["round-trip_efficiency"]
         self.max_c_rate = config["max_c_rate"]
+        self.battery_cost = 200 # this is in $/kWh
         # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours
 
         # LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL
@@ -119,7 +122,7 @@ class Battery:
         self.savings = None
         self.state_of_charge = None
         self.nominal_pack_voltage = config["pack_voltage"]    # to be initialized later
-        self.nominal_pack_cap = config["pack_energy_cap"]
+        self.nominal_pack_cap = config["pack_energy_cap"]   # this is in Watt-hours (Wh)
         self.predicted_voltages = list()
         self.operating_voltages = list()
 
@@ -137,7 +140,8 @@ class Battery:
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
         pack_capacity_Ah = self.nominal_pack_cap / self.nominal_pack_voltage
-        print("Capacity is: ", pack_capacity_Ah, round(pack_capacity_Ah))
+        print("Capacity is: ", pack_capacity_Ah, round(pack_capacity_Ah), "")
+        print("Power capacity is: ", pack_capacity_Ah, round(pack_capacity_Ah))
         pack_capacity_Ah = self.nominal_pack_cap // self.nominal_pack_voltage
         cell_amp_hrs = self.cap
         cell_voltage = self.nominal_voltage
@@ -250,6 +254,11 @@ class Battery:
                 plt.close()
         print("Est. tot. no. of cycles is: ", self.total_amp_thruput/((self.nominal_pack_cap+self.cap)/2), 'cycles')
 
+    def save_states(self):
+        np.savetxt('SOC_sim_{}.csv'.format(self.id), self.SOC_track)
+        np.savetxt('SOH_sim_{}.csv'.format(self.id), self.SOH_track)
+        np.savetxt('voltage_sim_{}.csv'.format(self.id), self.voltage)
+
     def visualize_voltages(self):
         pass
 
@@ -282,6 +291,7 @@ class Battery:
             self.track_SOC(self.SOC)
             self.state_eqn(self.current)
             self.voltages = np.append(self.voltages, self.voltage)
+            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             return self.voltage
         if self.SOC < self.min_SOC:
             print('min SOC violation, readjusting SoC...')
@@ -291,7 +301,6 @@ class Battery:
             assert allowable_curr_thruput >= 0  # for dev purposes
             self.SOC = self.min_SOC
             self.track_SOC(self.SOC)
-            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
             self.current = -allowable_curr_thruput / self.dt  # readjusting current
             self.state_eqn(self.current)     # update states
             self.voltages = np.append(self.voltages, self.voltage)
@@ -308,9 +317,13 @@ class Battery:
             # we de-rate the current if voltage is too high (exceeds max prescribed v)
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
             current -= (self.voltage - self.max_voltage)/self.Ro
-            self.voltage = self.max_voltage
+            self.voltage = self.max_voltage #   WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
+            print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
+            print("max testing voltage is: ", self.voltage) # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
             self.currents[-1] = current
+            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
+            self.true_power[-1] = self.power
             # raise Exception("Max voltage exceeded even after max SOC flag!!!") this can happen
             self.voltages = np.append(self.voltages, self.voltage)  # numpy array
             self.track_SOC(self.SOC)
@@ -321,6 +334,8 @@ class Battery:
             current += (self.min_voltage - self.voltage) / self.Ro
             self.state_eqn(current, append=False)
             self.currents[-1] = current
+            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
+            self.true_power[-1] = self.power
             self.voltage = self.min_voltage
             self.voltages = np.append(self.voltages, self.voltage)  # numpy array
             self.track_SOC(self.SOC)
@@ -345,8 +360,10 @@ class Battery:
         self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
         self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
+        self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
         if append:
             self.currents.append(current)
+            self.true_power.append(self.power)
 
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
