@@ -1,4 +1,5 @@
 from chargingStation import ChargingStation
+print('charging')
 import json
 import os
 import numpy as np
@@ -11,6 +12,7 @@ import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from electricityPrices import PriceLoader
+print('Initial imports done')
 
 minute_in_day = 1440
 plt.style.use('seaborn-darkgrid')   # optional
@@ -19,8 +21,8 @@ class ChargingSim:
     def __init__(self, num_charging_sites, resolution=15):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: fix these literal paths below
-        data2018 = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
-        charge_data = np.genfromtxt('/home/ec2-user/EV50_cosimulation/CP_ProjectData/CP_historical_data_2015_2017.csv')
+        data2018 = np.genfromtxt('C:/Users/ebalo/Desktop/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
+        charge_data = np.genfromtxt('C:/Users/ebalo/Desktop/EV50_cosimulation/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 10  # removing bad data
         self.charge_data = charge_data
         self.battery_config = None
@@ -55,7 +57,7 @@ class ChargingSim:
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
 
-        configs_path = "/home/ec2-user/EV50_cosimulation/charging_sim/configs"
+        configs_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs"
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
         for root, dirs, files, in os.walk(configs_path):
@@ -117,7 +119,7 @@ class ChargingSim:
 
     def initialize_price_loader(self):
         """Can add option for each charging site to have its own price loader"""
-        configs_path = "/home/ec2-user/EV50_cosimulation/charging_sim/configs"
+        configs_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs"
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config)
         input_data_res = self.prices_config["resolution"]

@@ -60,7 +60,6 @@ class Battery:
         self.iR1 = 0
         self.iR2 = 0
 
-        self.voltage = config["max_cell_voltage"]
         self.max_voltage = config["max_cell_voltage"]
         self.min_voltage = config["min_cell_voltage"]  # for each cell
         self.nominal_voltage = config["nominal_cell_voltage"]  # for each cell
@@ -81,6 +80,7 @@ class Battery:
         self.cycle_aging = [0.0]   # tracking cycle aging
         self.control_power = np.array([])
 
+        self.voltage = np.interp(self.initial_SOC, self.OCV_map_SOC, self.OCV_map_voltage)  # this is wrong
         self.voltages = [self.voltage]  # to be updated at each time-step (seems expensive)
         self.current_voltage = 0.0
         self.true_voltage = np.array([])  # discharge/charge voltage per time-step
@@ -368,7 +368,7 @@ class Battery:
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
     # TODO: include error checking assertion points later
-    battery_config_path = "/home/ec2-user/EV50_cosimulation/charging_sim/configs/battery.json"
+    battery_config_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs/battery.json"
     with open(battery_config_path, "r") as f:
         battery_config = json.load(f)
     params_list = [key for key in battery_config.keys() if "params_" in key]
@@ -381,10 +381,11 @@ def test():
 
     Q_initial = 3.5
     buffer_battery = Battery("Tesla Model 3", Q_initial, config=battery_config)
+    buffer_battery.battery_setup()
     buffer_battery.id, buffer_battery.node = 0, 0
 
     # test dynamics here
-    c = 2.5  # discharging first
+    c = 0.3  # discharging first
     voltages = []
     currents = []
     for i in range(50):
@@ -394,20 +395,20 @@ def test():
     for i in range(50):
         v = buffer_battery.dynamics(c)
         currents.append(c)
-    c = -2.8
+    c = -0.1
     for i in range(100):
         v = buffer_battery.dynamics(c)
         voltages.append(v)
         currents.append(c)
-    c = -4
+    c = -0.2
     for i in range(200):
         v = buffer_battery.dynamics(c)
         currents.append(c)
-    c = 3
+    c = 1
     for i in range(40):
         v = buffer_battery.dynamics(c)
         currents.append(c)
-    c = 2.03  # charging (Amperes)
+    c = 0.01  # charging (Amperes)
     for i in range(100):
         v = buffer_battery.dynamics(c)
         currents.append(c)
@@ -420,13 +421,16 @@ def test():
     ax1.set_xlabel('Time step')
     ax1.set_ylabel('Voltage (V)')
     ax2.set_ylabel('Current (A)')
+    ax1.legend()
     plt.legend()
     plt.savefig("battery_test_plot")
     plt.close()
     plt.plot(buffer_battery.SOC_list)
     plt.savefig("SOC_battery_test")
     plt.close()
-    plt.plot(buffer_battery.currents[1:50])
+    plt.plot(buffer_battery.currents)
+    plt.xlabel('Time step')
+    plt.ylabel('Current (Amperes)')
     print(len(buffer_battery.currents), len(buffer_battery.voltages))
     plt.savefig("currents_battery_test")
 

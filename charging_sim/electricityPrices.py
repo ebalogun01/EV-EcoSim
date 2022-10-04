@@ -37,7 +37,8 @@ class PriceLoader:
             start_idx += 4
         self.data = pd.DataFrame(data=temp_data)
         self.data_np = temp_data
-        np.savetxt("/home/ec2-user/EV50_cosimulation/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
+        # change the paths below very soon
+        np.savetxt("EV50_cosimulation/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
 
 
 #

@@ -9,8 +9,8 @@ import cvxpy as cp
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 # Get the load predictive models
-LSTM1 = tf.keras.models.load_model("/home/ec2-user/EV50_cosimulation/DLMODELS/LSTM_01.h5")
-LSTM2 = tf.keras.models.load_model("/home/ec2-user/EV50_cosimulation/DLMODELS/LSTM_ONE_STEP.h5")
+LSTM1 = tf.keras.models.load_model("C:/Users/ebalo/Desktop/EV50_cosimulation/DLMODELS/LSTM_01.h5")
+LSTM2 = tf.keras.models.load_model("C:/Users/ebalo/Desktop/EV50_cosimulation/DLMODELS/LSTM_ONE_STEP.h5")
 OCV_SOC_linear_params = np.load('C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
 
 """Build different MPC classes for different horizons maybe? It's hard to do one MPC for all horizons due to ML-side"""
