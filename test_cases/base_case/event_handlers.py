@@ -6,7 +6,7 @@ import time
 import gblvar
 import re
 print("first pass")
-sys.path.append('/home/ec2-user/EV50_cosimulation/charging_sim')    # change this
+sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
 # sys.path.append("../../charging_sim")
 print("before")
 from EVCharging import ChargingSim
