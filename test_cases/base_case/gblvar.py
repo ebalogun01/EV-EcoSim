@@ -1,8 +1,9 @@
-import os
 import numpy as np
 import pandas as pd
+print('pandas')
 import pickle
 from sklearn.preprocessing import StandardScaler
+print('done')
 
 #define global python simulation variables and default initial values
 
@@ -16,6 +17,8 @@ pf_dt=60
 
 p_df=pd.read_csv('real_power.csv')
 q_df=pd.read_csv('reactive_power.csv')
+
+print("Done reading base power files")
 
 p_array=np.asarray(p_df)
 q_array=np.asarray(q_df)
