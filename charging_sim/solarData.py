@@ -15,7 +15,7 @@ def sample_solar():
     path_ = os.path.join(current_dir, 'Datasets', 'Mountain View Rooftop Solar.xlsx')
 
     # read in data
-    data = pd.read_excel(path_, sheet_name='Normalized Power')
+    data = pd.read_excel(path_, sheet_name='Normalized Power', engine='openpyxl')
 
     pvpower = data.Frac_Power.to_list()
     sigma = data.Sigma.to_list()

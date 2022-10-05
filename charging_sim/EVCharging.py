@@ -18,12 +18,13 @@ minute_in_day = 1440
 plt.style.use('seaborn-darkgrid')   # optional
 
 class ChargingSim:
-    def __init__(self, num_charging_sites, resolution=15):
+    def __init__(self, num_charging_sites, resolution=15, path_prefix=None):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: fix these literal paths below
-        data2018 = np.genfromtxt('C:/Users/ebalo/Desktop/EV50_cosimulation/CP_ProjectData/power_data_2018.csv')
-        charge_data = np.genfromtxt('C:/Users/ebalo/Desktop/EV50_cosimulation/CP_ProjectData/CP_historical_data_2015_2017.csv')
+        data2018 = np.genfromtxt(path_prefix+'/CP_ProjectData/power_data_2018.csv')
+        charge_data = np.genfromtxt(path_prefix+'/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 10  # removing bad data
+        self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.battery_config = None
         self.charging_config = None
@@ -57,7 +58,7 @@ class ChargingSim:
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
 
-        configs_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs"
+        configs_path = self.path_prefix + '/charging_sim/configs'
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
         for root, dirs, files, in os.walk(configs_path):
@@ -72,13 +73,14 @@ class ChargingSim:
     def load_battery_params(self):
         """ This loads the battery params directly into the sim, so parameters will be the same for all
         batteries unless otherwise specified. battery_config must be attributed to do this"""
+        # add the path prefix to make is system agnostic
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
             # print("testing load battery params: ", params_key)
-            self.battery_config[params_key] = np.loadtxt(self.battery_config[params_key])
+            self.battery_config[params_key] = np.loadtxt(self.path_prefix+self.battery_config[params_key])   # replace path with true value
         # do the OCV maps as well; reverse directionality is important for numpy.interp function
-        self.battery_config["OCV_map_voltage"] = np.loadtxt(self.battery_config["OCV_map_voltage"])[::-1]
-        self.battery_config["OCV_map_SOC"] = np.loadtxt(self.battery_config["OCV_map_SOC"])[::-1]
+        self.battery_config["OCV_map_voltage"] = np.loadtxt(self.path_prefix+self.battery_config["OCV_map_voltage"])[::-1]
+        self.battery_config["OCV_map_SOC"] = np.loadtxt(self.path_prefix+self.battery_config["OCV_map_SOC"])[::-1]
 
         # this should make those inputs just be the params
 
@@ -121,7 +123,7 @@ class ChargingSim:
         """Can add option for each charging site to have its own price loader"""
         configs_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs"
         current_working_dir = os.getcwd()
-        self.price_loader = PriceLoader(self.prices_config)
+        self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
         input_data_res = self.prices_config["resolution"]
         if input_data_res > self.resolution:
             self.price_loader.downscale(input_data_res, self.resolution)

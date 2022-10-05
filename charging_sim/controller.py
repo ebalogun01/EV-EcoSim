@@ -1,3 +1,4 @@
+import os
 from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps, solar_gen
 import numpy as np
@@ -9,9 +10,14 @@ import cvxpy as cp
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 # Get the load predictive models
-LSTM1 = tf.keras.models.load_model("C:/Users/ebalo/Desktop/EV50_cosimulation/DLMODELS/LSTM_01.h5")
-LSTM2 = tf.keras.models.load_model("C:/Users/ebalo/Desktop/EV50_cosimulation/DLMODELS/LSTM_ONE_STEP.h5")
-OCV_SOC_linear_params = np.load('C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+path_prefix = os.getcwd()
+path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix.replace('\\', '/')
+print('lstm_before')
+LSTM1 = tf.keras.models.load_model(path_prefix+'/DLMODELS/LSTM_01.h5')
+LSTM2 = tf.keras.models.load_model(path_prefix+'/DLMODELS/LSTM_ONE_STEP.h5')
+OCV_SOC_linear_params = np.load(path_prefix+'/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+print('lstm_after')
 
 """Build different MPC classes for different horizons maybe? It's hard to do one MPC for all horizons due to ML-side"""
 
@@ -22,8 +28,8 @@ class MPC:
     def __init__(self, config, storage):
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
-        self.charge_history = np.genfromtxt(config["load_history"])
-        self.current_testdata = np.genfromtxt(config["simulation_load"])[:-1, ] / 1 # this is used to predict the load, in the future, we will generate a bunch of loads to do this
+        self.charge_history = np.genfromtxt(path_prefix+config["load_history"])
+        self.current_testdata = np.genfromtxt(path_prefix+config["simulation_load"])[:-1, ] / 1 # this is used to predict the load, in the future, we will generate a bunch of loads to do this
         self.reshaped_data = np.reshape(self.current_testdata, self.current_testdata .size) # flatten data for efficient indexing
         self.one_step_data = self.reshaped_data[-48:]  # one step LSTM uses last 48 time steps to predict the next, need
         self.std_data = np.std(self.current_testdata, 0)   # from training distribution
@@ -64,8 +70,8 @@ class MPC:
 
     def initialize_forecast_data(self):
         """loads history to be used for forecasting EV charging"""
-        self.charge_history = np.genfromtxt(config["load_history"])
-        self.current_testdata = np.genfromtxt(config["simulation_load"])[:-1, ] / 10
+        self.charge_history = np.genfromtxt(path_prefix+self.config["load_history"])
+        self.current_testdata = np.genfromtxt(path_prefix+self.config["simulation_load"])[:-1, ] / 10
 
     def compute_control(self, start, shift, stop, battery_size, price_vector):
         # add indicator if perfect foresight or not...if perfect foresight, we do not actually need controller

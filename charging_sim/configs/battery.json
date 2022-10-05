@@ -33,11 +33,11 @@
   "data_path": "Insert battery data path here",
   "comments": "Need to model SOC vs. charge curve",
   "capacity": 4.876810410207508,
-  "params_0_cycles": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/params_OCV_corr_W8_1",
-  "params_25_cycles": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/params_OCV_corr_W8_2",
-  "params_75_cycles": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/params_OCV_corr_W8_3",
-  "params_125_cycles": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/params_OCV_corr_W8_4",
-  "OCV_map_SOC": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/SOC_corr_W8_1.csv",
-  "OCV_map_voltage": "C:/Users/ebalo/Desktop/EV50_cosimulation/BatteryData/OCV_corr_W8_1.csv",
+  "params_0_cycles": "/BatteryData/params_OCV_corr_W8_1",
+  "params_25_cycles": "/BatteryData/params_OCV_corr_W8_2",
+  "params_75_cycles": "/BatteryData/params_OCV_corr_W8_3",
+  "params_125_cycles": "/BatteryData/params_OCV_corr_W8_4",
+  "OCV_map_SOC": "/BatteryData/SOC_corr_W8_1.csv",
+  "OCV_map_voltage": "/BatteryData/OCV_corr_W8_1.csv",
   "notes": "I am trying to decide if I should include variable capacity for cells..for now can just assume a nominal. Errors cannot be crazy"
 }

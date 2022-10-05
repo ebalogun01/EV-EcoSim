@@ -2,6 +2,7 @@ import json
 import numpy as np
 from utils import num_steps
 import matplotlib.pyplot as plt
+import os
 
 # Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.
 
@@ -368,16 +369,19 @@ class Battery:
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
     # TODO: include error checking assertion points later
-    battery_config_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs/battery.json"
+    path_prefix = os.getcwd()
+    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    path_prefix.replace('\\', '/')
+    battery_config_path = path_prefix + '/charging_sim/configs/battery.json'
     with open(battery_config_path, "r") as f:
         battery_config = json.load(f)
     params_list = [key for key in battery_config.keys() if "params_" in key]
     for params_key in params_list:
         print("testing load battery params: ", params_key)
-        battery_config[params_key] = np.loadtxt(battery_config[params_key])
+        battery_config[params_key] = np.loadtxt(path_prefix+battery_config[params_key])
     # do the OCV maps as well
-    battery_config["OCV_map_voltage"] = np.loadtxt(battery_config["OCV_map_voltage"])[::-1]     # ascending order
-    battery_config["OCV_map_SOC"] = np.loadtxt(battery_config["OCV_map_SOC"])[::-1]     # ascending order
+    battery_config["OCV_map_voltage"] = np.loadtxt(path_prefix+battery_config["OCV_map_voltage"])[::-1]     # ascending order
+    battery_config["OCV_map_SOC"] = np.loadtxt(path_prefix+battery_config["OCV_map_SOC"])[::-1]     # ascending order
 
     Q_initial = 3.5
     buffer_battery = Battery("Tesla Model 3", Q_initial, config=battery_config)

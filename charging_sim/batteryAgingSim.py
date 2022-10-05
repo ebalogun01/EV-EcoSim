@@ -1,10 +1,6 @@
-# import time
 import numpy as np
 import math
 
-# from maps import BatteryMaps
-# from data import raw_data_NMC25degC
-# import matplotlib.pyplot as plt
 
 """Will likely import all batteries with their respective power profiles to update the SOH for each of them"""
 

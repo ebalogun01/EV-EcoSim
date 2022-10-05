@@ -1,13 +1,13 @@
 {
   "class": "MPC model-based",
   "perfect_foresight": false,
-  "OCV_linear_params_path": "/home/ec2-user/EV50_cosimulation/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy",
+  "OCV_linear_params_path": "/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy",
   "resolution": 15,
   "horizon_length": 96,
   "num_forecasters": 2,
   "forecaster_horizon": [96, 48],
   "autoregression_input_len": 0,
-  "load_history": "/home/ec2-user/EV50_cosimulation/CP_ProjectData/CP_historical_data_2015_2017.csv",
-  "simulation_load": "/home/ec2-user/EV50_cosimulation/CP_ProjectData/power_data_2018.csv",
+  "load_history": "/CP_ProjectData/CP_historical_data_2015_2017.csv",
+  "simulation_load": "/CP_ProjectData/power_data_2018.csv",
   "forecaster": "insert path here or model"
 }

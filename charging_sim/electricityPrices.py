@@ -13,11 +13,10 @@ import pandas as pd
 @dataclass
 class PriceLoader:
     """module for laoding prices, Undecided if this should. UPDATE HARD-CODED PATHS"""
-    # TODO: update hard-coded paths to be generic if possible
-    config: dict
-    # TODO work on time-shifting the electricity prices.
-    def __post_init__(self):
-        self.data = pd.read_csv(self.config["data_path"])
+    def __init__(self, config, path_prefix=None):
+        self.path_prefix = path_prefix
+        self.config = config
+        self.data = pd.read_csv(path_prefix+self.config["data_path"])
         self.data_np = self.data.to_numpy()
 
     def get_prices(self, start_idx, num_steps, desired_shape=(96, 1)):
@@ -38,7 +37,7 @@ class PriceLoader:
         self.data = pd.DataFrame(data=temp_data)
         self.data_np = temp_data
         # change the paths below very soon
-        np.savetxt("EV50_cosimulation/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
+        np.savetxt(self.path_prefix+"/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
 
 
 #
