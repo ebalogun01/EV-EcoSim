@@ -4,13 +4,15 @@ import glm_mod_functions
 import os
 import pandas
 import datetime
-import sklearn.preprocessing
 import numpy as np
 import ast
 import pickle
 
 #read config file
-os.chdir('C:/Users/ebalo/Desktop/EV50_cosimulation/feeder_population')  # change directory
+path_prefix = os.getcwd()
+path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix.replace('\\', '/')
+os.chdir(path_prefix+'/feeder_population')  # change directory
 f=open('config.txt','r')
 param_dict=f.read()
 f.close()
