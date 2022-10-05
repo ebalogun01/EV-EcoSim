@@ -1,9 +1,12 @@
-import os
 import sys
+import os
 import numpy as np
 import gridlabd
+print('ok')
 import time
+print('time')
 import gblvar
+print('var')
 import re
 print("first pass")
 sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
@@ -12,10 +15,13 @@ print("before")
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
-EV_charging_sim = ChargingSim(3)  # Initialize Charging Simulation Class with 3 charging site
-# print("EV_charging_initialized")
-# Sets up the simulation module with Charging sites and batteries
+# get the desired path prefix
+path_prefix = os.getcwd()
+path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix.replace('\\', '/')
+EV_charging_sim = ChargingSim(3, path_prefix=path_prefix)  # Initialize Charging Simulation Class with 3 charging site
 
+# Sets up the simulation module with Charging sites and batteries
 global tic, toc
 tic = time.time()
 def on_init(t):

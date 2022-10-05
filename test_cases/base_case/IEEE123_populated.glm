@@ -1,8 +1,8 @@
 #set minimum_timestep=60
 
 clock {
-	starttime '2018-05-01 00:00:00';
-	stoptime '2018-05-03 00:00:00';
+	starttime '2018-07-01 00:00:00';
+	stoptime '2018-07-31 23:59:59';
 }
 
 module tape;
@@ -29,7 +29,7 @@ class player {
 
 object player {
 	name dummy_player;
-	file "dummy2.player";
+	file "dummy.player";
 }
 
 object overhead_line_conductor {
