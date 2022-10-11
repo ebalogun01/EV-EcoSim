@@ -27,7 +27,7 @@ class PriceLoader:
     def downscale(self, input_res, output_res):
         input_data_shape = len(self.data_np[:, 0])
         num_repetitions = int(input_res / output_res)
-        assert num_repetitions == 4
+        assert num_repetitions == 4     # JUST AN INITIAL CHECK, REMOVE LATER
         temp_data = np.zeros(input_data_shape * num_repetitions)
         start_idx = 0
         for datapoint in self.data_np:
@@ -40,6 +40,18 @@ class PriceLoader:
         np.savetxt(self.path_prefix+"/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
 
 
+def main():
+    """Run this mainly to generate new downscaled data or for testing"""
+    import os
+    import json
+    path_prefix = os.getcwd()
+    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    path_prefix.replace('\\', '/')
+    with open(path_prefix+'charging_sim/prices.json', "r") as f:
+        config = json.load(f)
+    loader = PriceLoader(config, path_prefix=path_prefix)
+    desired_res = 1     # units are in minutes
+    loader.downscale(config['resolution'], desired_res)
 #
 # TOU_rate_summer = np.array(
 #         [0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611,

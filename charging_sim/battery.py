@@ -147,7 +147,7 @@ class Battery:
         cell_amp_hrs = self.cap
         cell_voltage = self.nominal_voltage
         no_cells_series = self.nominal_pack_voltage // cell_voltage
-        no_modules_parallel = pack_capacity_Ah // cell_amp_hrs
+        no_modules_parallel = pack_capacity_Ah // (cell_amp_hrs + 1e-6)
         self.cell_count = no_cells_series * no_modules_parallel
         self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
         self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
