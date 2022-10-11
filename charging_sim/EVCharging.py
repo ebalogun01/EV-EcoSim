@@ -1,5 +1,5 @@
 from chargingStation import ChargingStation
-print('charging')
+# print('charging')
 import json
 import os
 import numpy as np
@@ -121,7 +121,7 @@ class ChargingSim:
 
     def initialize_price_loader(self):
         """Can add option for each charging site to have its own price loader"""
-        configs_path = "C:/Users/ebalo/Desktop/EV50_cosimulation/charging_sim/configs"
+        configs_path = self.path_prefix + '/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
         input_data_res = self.prices_config["resolution"]
@@ -208,9 +208,6 @@ class ChargingSim:
                 charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
                 # update load with the true load, not prediction,
                 # to update MPC last observed load
-                controls.append(control_action)
-                # use the battery power here from its dynamics
-                # print("CONTROL current: ", control_action)
                 buffer_battery.dynamics(control_action)
                 net_load = todays_load[self.time, 0] + buffer_battery.power
                 # print("time", self.time)

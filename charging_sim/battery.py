@@ -25,7 +25,7 @@ class Battery:
 
     """
 
-    def __init__(self, battery_type, Q_initial, node=None, config=None):
+    def __init__(self, battery_type=None, node=None, config=None):
         """should I make in terms of rc pairs or how should I call dynamics..data-driven vs ECM"""
         self._node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
@@ -90,7 +90,7 @@ class Battery:
         self.SOC_list = [self.initial_SOC]
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)   # optional
 
-        self.Q_initial = Q_initial  # include the units here
+        self.Q_initial = 0  # include the units here
         self.control_current = np.array([])
         self.total_amp_thruput = 0.0
         self.currents = [0]
@@ -156,7 +156,6 @@ class Battery:
               "Battery pack capacity is {} Ah".format(pack_capacity_Ah),
               "Total number of cells is: {} .\n".format(self.cell_count),
               "no. cells in series is: {} \n. No modules in parallel is: {}".format(no_cells_series, no_modules_parallel))
-        return self.cell_count
 
     def battery_setup_tesla(self, model=3):
         """Using TESLA mode to setup battery config. TO BE IMPLEMENTED LATER"""
@@ -345,8 +344,6 @@ class Battery:
 
         self.current = current
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-        # print("power is {} kW".format(self.power))
-        # self.topology[0] = # of cells in series, self.topology[1] = # in parallel
         self.voltages = np.append(self.voltages, self.voltage)  # numpy array
         self.track_SOC(self.SOC)
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
@@ -384,7 +381,7 @@ def test():
     battery_config["OCV_map_SOC"] = np.loadtxt(path_prefix+battery_config["OCV_map_SOC"])[::-1]     # ascending order
 
     Q_initial = 3.5
-    buffer_battery = Battery("Tesla Model 3", Q_initial, config=battery_config)
+    buffer_battery = Battery(config=battery_config)
     buffer_battery.battery_setup()
     buffer_battery.id, buffer_battery.node = 0, 0
 

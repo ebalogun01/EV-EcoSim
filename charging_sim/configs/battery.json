@@ -1,5 +1,6 @@
 {
   "start_time": 0,
+  "collocated": true,
   "energy_cap": 2000,
   "max_c_rate": 1,
   "resolution": 15,

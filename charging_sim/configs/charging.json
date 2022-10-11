@@ -1,9 +1,11 @@
 {
   "data_path": "/CP_ProjectData/power_data_2015.csv",
+  "collocated": true,
+  "num_central_sites": 1,
   "charge_types": "normal",
   "ambient_temp": 25,
   "power_cap": 100,
   "locator_index": 1,
   "location": "None",
-  "notes": "location will be replaced by randomly sampled location during instantiation"
+  "notes": "No. of central sites is only activated if collocated is false, meaning, we use central battery storage located somewhere in the distribution circuit"
 }
