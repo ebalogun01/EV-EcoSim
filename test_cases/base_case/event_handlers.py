@@ -2,15 +2,13 @@ import sys
 import os
 import numpy as np
 import gridlabd
-print('ok')
+print("gridlab-D imported")
 import time
 print('time')
 import gblvar
 print('var')
-import re
 print("first pass")
 sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
-# sys.path.append("../../charging_sim")
 print("before")
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
@@ -19,7 +17,9 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-EV_charging_sim = ChargingSim(3, path_prefix=path_prefix)  # Initialize Charging Simulation Class with 3 charging site
+num_charging_nodes = 3
+central_storage = False     # toggle for central vs. decentralized storage
+EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # Initialize Charging Simulation
 
 # Sets up the simulation module with Charging sites and batteries
 global tic, toc
@@ -72,26 +72,30 @@ def on_precommit(t):
         # print("Net load at {} is".format())
 
     for i in range(len(name_list_base_power)):  # add EV simulation net load for each location
-        # print("No error")
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
-        # print('NOENE')
     print(gblvar.it, 'Time done')
 
     # set base_power properties for this timestep
     charging_nodes = EV_charging_sim.get_charging_sites()
+    if central_storage:
+        central_storage_nodes = EV_charging_sim.get_storage_sites()
     for i in range(len(name_list_base_power)):
         # here
         name = name_list_base_power[i]
-        prop = 'power_12' # CAN YOU ADD SOME EXPLANATION FOR THIS PROP. DON'T REALLY UNDERSTAND
+        prop = 'power_12'   # CAN YOU ADD SOME EXPLANATION FOR THIS PROP. DON'T REALLY UNDERSTAND
+        total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec.
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             charger_load = charger.get_current_load()
-            # print('load is', charger_load, "kW")
-            gridlabd.set_value(name, prop, str(set_power_vec[i] + charger_load).replace('(', '').replace(')', ''))
-        else:
-            gridlabd.set_value(name, prop, str(set_power_vec[i] + 0).replace('(', '').replace(')', ''))
+            total_node_load += charger_load
+        if central_storage:
+            if name in central_storage_nodes:
+                storage = EV_charging_sim.get_storage_obj_by_loc(name)
+                storage_load = storage.power    # units in kW
+                total_node_load += storage_load
+        gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # increment timestep
     gblvar.it = gblvar.it + 1
@@ -107,7 +111,6 @@ def on_term(t):
     np.savetxt('nom_vmag.txt', gblvar.nom_vmag)
     toc = time.time()
     print("Total run time: ", (toc - tic)/60, "minutes")
-
 
 def find(criteria):
     finder = criteria.split("=")
