@@ -7,5 +7,6 @@
   "power_cap": 100,
   "locator_index": 1,
   "location": "None",
+  "power_factor": 1.0,
   "notes": "No. of central sites is only activated if collocated is false, meaning, we use central battery storage located somewhere in the distribution circuit"
 }

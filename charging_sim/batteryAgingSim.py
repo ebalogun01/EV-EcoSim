@@ -86,7 +86,7 @@ class BatterySim:
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
         SOC_vector = np.array(
             battery.SOC_list[-(self.num_steps + 1):])  # change this to the list? Done after one complete day
-        print("SOC is: ", SOC_vector)
+        # print("SOC is: ", SOC_vector)
         # TODO: changed del DOD to absolute value!!
         del_DOD = np.abs(np.round(SOC_vector[0:self.num_steps] - SOC_vector[1:], 5))  # just for numerical convenience. Have this list be updated, given the resolution we want to solve!!!
         # print("del DOD: ", del_DOD)
@@ -149,7 +149,6 @@ class BatterySim:
         # battery.true_capacity_loss = capacity_fade  # this is wrong
         if isinstance(capacity_fade, float):
             battery.calendar_aging.append(capacity_fade)
-            # print('checkpoint for sanity')
             return capacity_fade, resistance_growth  # due to interval which degradation is implemented
         return sum(capacity_fade), sum(resistance_growth)
 

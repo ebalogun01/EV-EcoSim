@@ -1,5 +1,6 @@
 {
   "class": "MPC model-based",
+  "control_battery": true,
   "perfect_foresight": false,
   "OCV_linear_params_path": "/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy",
   "resolution": 15,
@@ -9,5 +10,6 @@
   "autoregression_input_len": 0,
   "load_history": "/CP_ProjectData/CP_historical_data_2015_2017.csv",
   "simulation_load": "/CP_ProjectData/power_data_2018.csv",
-  "forecaster": "insert path here or model"
+  "forecaster": "insert path here or model",
+  "notes": "change control_battery to false if working on centralized storage"
 }

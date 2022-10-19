@@ -8,10 +8,9 @@ class ChargingStation:
     def __init__(self, storage, config, controller, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
-        self.storage = storage
-        if self.storage:
-            self.storage.id = self.id
         self.loc = config["location"]
+        self.storage = storage
+        # removed setting storage id as charging station ID
         self.capacity = config["power_cap"]
         self.status = status
         self.loads = []
@@ -72,7 +71,7 @@ class ChargingStation:
             battery = getattr(self, option)
             plt.figure()
             plt.plot(battery.voltages, "k", ls="--")
-            plt.plot(battery.predicted_voltages)
+            plt.plot(battery.predicted_voltages)    # currently needs to be fixed, minor bug
             plt.ylabel('Voltage (V)')
             plt.legend(['True Voltage', 'Controller Estimated Voltage'])
             plt.savefig('voltage_plot_{}_{}_Sim.png'.format(battery.id, self.id))

@@ -25,15 +25,17 @@ class Battery:
 
     """
 
-    def __init__(self, battery_type=None, node=None, config=None):
+    def __init__(self, battery_type=None, node=None, config=None, controller=None):
         """should I make in terms of rc pairs or how should I call dynamics..data-driven vs ECM"""
         self._node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
+        self.controller = controller
         self.resolution = config["resolution"]
         self.dt = config["resolution"] / 60     # in hours
         self.cap = config["cell_nominal_cap"]  # Ah
         self.nominal_cap = config["cell_nominal_cap"]
         self.cell_resistance = config["resistance"]  # TO be updated
+        self.pack_resistance = None
         self._eff = config["round-trip_efficiency"]
         self.max_c_rate = config["max_c_rate"]
         self.battery_cost = 200 # this is in $/kWh
@@ -102,7 +104,7 @@ class Battery:
         self.true_power = []
         self.start = config["start_time"]
         self.MPC_Control = {'Q': [], 'P': []}  # tracks the control actions for the MPC control
-        self.size = 100  # what does this mean?
+        self.size = 100  # what does this mean?...I should use this for accounting how much power I CAN DEMAND
         self.cell_count = 0
 
         self.total_aging = 0
@@ -119,7 +121,8 @@ class Battery:
 
         self.topology = [1, 1]  # DEFAULT VALUE: singular cell
         self.constraints = None
-        self.id = None  # Use Charging Station ID for this
+        self.id = None
+        self.location = None
         self.savings = None
         self.state_of_charge = None
         self.nominal_pack_voltage = config["pack_voltage"]    # to be initialized later
@@ -152,8 +155,14 @@ class Battery:
         self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
         self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
         self.nominal_pack_cap = no_modules_parallel * self.cap
+        self.cell_resistance = self.Ro + self.R1 + self.R2
+        # self.cell_capacitance
+        series_resistance = no_cells_series * self.cell_resistance
+        # series_capacitance = 1/(no_cells_series * self.C1 )
+        self.pack_resistance = 1/(no_modules_parallel * 1/series_resistance)
         print("***** Battery initialized. *****\n",
               "Battery pack capacity is {} Ah".format(pack_capacity_Ah),
+              "Battery pack resistance is {} Ohm".format(self.pack_resistance),
               "Total number of cells is: {} .\n".format(self.cell_count),
               "no. cells in series is: {} \n. No modules in parallel is: {}".format(no_cells_series, no_modules_parallel))
 
@@ -243,6 +252,7 @@ class Battery:
                 plt.xlabel("Time Step")
                 plt.ylabel("SOC")
                 plt.savefig(option + "_{}.png".format(self.id))
+                print("Saving values for {}".format(self.id))
                 plt.close()
             else:
                 plotting_values = getattr(self, option)

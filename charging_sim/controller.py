@@ -25,7 +25,7 @@ print('lstm_after')
 class MPC:
     """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
     Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
-    def __init__(self, config, storage):
+    def __init__(self, config, storage=None):
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
         self.charge_history = np.genfromtxt(path_prefix+config["load_history"])
@@ -40,13 +40,16 @@ class MPC:
         self.storage_constraints = None
         self.load = np.array([])
         self.w = 0
+        self.control_battery = self.config["control_battery"]
 
         # BATTERY VARIABLES (TODO: INCLUDE MIN-MAX SOC AND DISCHARGE REQUIREMENTS DIRECTLY IN CONTROLLER)
-        self.battery_start = self.storage.start
-        self.battery_capacity = self.storage.nominal_cap    # controller should be estimating this from time to time. Or decide how it is updated?
+        if storage:
+            self.battery_start = self.storage.start
+            self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
+            self.battery_capacity = self.storage.nominal_cap    # controller should be estimating this from time to time. Or decide how it is updated?
         self.battery_power_charge = cp.Variable((num_steps, 1))
         self.battery_power_discharge = cp.Variable((num_steps, 1))
-        self.battery_initial_SOC = self.storage.initial_SOC     # begin with initial information of batt SOC
+
         self.battery_power_discharge = cp.Variable((num_steps, 1))
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current = cp.Variable((num_steps, 1))
@@ -73,59 +76,41 @@ class MPC:
         self.charge_history = np.genfromtxt(path_prefix+self.config["load_history"])
         self.current_testdata = np.genfromtxt(path_prefix+self.config["simulation_load"])[:-1, ] / 10
 
-    def compute_control(self, start, shift, stop, battery_size, price_vector):
-        # add indicator if perfect foresight or not...if perfect foresight, we do not actually need controller
-        # so instead we can try other setting here
-        self.battery_start = self.storage.start
-        predicted_load = np.reshape(self.predict_load(start, shift, stop), (96, 1))
-
-        # print(predicted_load)
-        battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
-        objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
-        linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-        electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
-        objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
-        opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution, None,
-                                   self.storage, time=0, name="Test_Case_" + str(self.storage.id))
-        opt_problem.run()
-        # print("Charge ", "Discharge ", self.storage.power_charge.value[0], self.storage.power_discharge.value[0])
-        # print("POWER: ", self.storage.power.value)
-        if opt_problem.problem.status != 'optimal':
-            print('Unable to service travel')
-        if electricity_cost.value < 0:
-            print('Negative Electricity Cost')
-            # print(electricity_cost.value, self.storage.current.value)
-        # control_actions = np.hstack([self.storage.power_charge.value[0], self.storage.power_discharge.value[0]])
-        # change to current
-        control_action = self.battery_current.value[0, 0]   # this is current flowing through each cell
-        self.actions.append(control_action)
-        # print(control_actions.shape, "control actions shape check")
-        # self.storage.update_voltage(self.storage.discharge_voltage.value[0, 0]) # done in dynamics
-        # plt.plot(self.storage.discharge_voltage.value)
-        # plt.plot(self.storage.OCV.value)
-        # plt.legend(["OCV", "discharge voltage"])
-        # plt.savefig("Voltage_simulation_plot_{}".format(self.w))
-        # plt.close()
-        # self.w += 1
-        # only take first action
-        # self.storage.Q_initial = self.storage.Q.value[1]  # estimated new SOC or Battery Capacity left
-        # self.storage.SOC_track.append(self.storage.Q.value[1] / self.storage.Qmax)
-        self.storage.update_capacity()  # to track linear estimated aging
-        # obtain the true state of charge from the batteryAgingSim (How frequently though?)
-        # print(self.storage.control_current.shape)
-        if len(self.storage.control_current) < num_steps:
-            self.storage.control_current = np.append(self.storage.control_current, control_action)
-        else:
-            self.storage.control_current = np.array([control_action])  # it should be only updating one but then
-            print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
-            # I am showing results after each step I think. 
-            # Need to also fix the compute current scheme currently being used
+    def compute_control(self, start, shift, stop, price_vector):
+        """This should never be run for centralized battery storage simulation"""
+        predicted_load = self.predict_load(start, shift, stop)
+        control_action = None
+        if self.control_battery:
+            battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
+            objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
+            linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
+            electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
+            objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
+            opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution, None,
+                                       self.storage, time=0, name="Test_Case_" + str(self.storage.id))
+            opt_problem.run()
+            if opt_problem.problem.status != 'optimal':
+                print('Unable to service travel')
+            if electricity_cost.value < 0:
+                print('Negative Electricity Cost')
+            # change to current
+            control_action = self.battery_current.value[0, 0]   # this is current flowing through each cell
+            self.actions.append(control_action)
+            self.storage.update_capacity()  # to track linear estimated aging
+            # obtain the true state of charge from the batteryAgingSim (How frequently though?)
+            if len(self.storage.control_current) < num_steps:
+                self.storage.control_current = np.append(self.storage.control_current, control_action)
+            else:
+                self.storage.control_current = np.array([control_action])  # it should be only updating one but then
+                print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
+                # I am showing results after each step I think.
+                # Need to also fix the compute current scheme currently being used
 
         #  need to get all the states here after the first action is taken
         return control_action, predicted_load
 
     def predict_load(self, start, shift, stop, days_length=14):
-        print("shift", shift)
+        print("start, stop, shift", start, stop, shift)
         """this uses two ML models for predictions. One for full day prediction (runs only once a day) and the
         other for time-step update"""
         begin = stop * 96 - 48 + shift  # shift at each time-step, then reset after a day is done
@@ -134,16 +119,13 @@ class MPC:
         if not self.full_day_prediction.any():   # This checks if a full day is done
             test_input_fullday = np.reshape(self.reshaped_data[start:start + days_length * num_steps],
                                             (1, days_length, num_steps))
-            # print(test_input_fullday.shape)
             self.full_day_prediction = LSTM1.predict(test_input_fullday) * self.std_data + self.mean_data
             self.full_day_prediction.shape = (num_steps, 1)
         prediction_next_step = self.scaler_onestep.inverse_transform(LSTM2.predict(test_input_onestep))
         index = len(self.load) + 1  # this is tracking what time step we are at
-        # print("controller load is: ", self.load)
         prediction = np.append(self.load, prediction_next_step)     # include previous day's known load
-        # print("pred", len(prediction))
         prediction = np.append(prediction, self.full_day_prediction[index:, :])
-        # print(prediction.shape)
+        prediction = np.reshape(prediction, (96, 1))
         return prediction
 
     def get_battery_constraints(self, EV_load):
@@ -176,6 +158,117 @@ class MPC:
         """This is done after one full day is done."""
         self.load = np.array([])
         self.full_day_prediction = np.array([])
+
+
+class MPCBatt:
+    """This is for controlling the battery ONLY at centralized location"""
+    def __init__(self, config, storage):
+        self.config = config
+        self.resolution = config["resolution"]
+        self.storage = storage
+        self.storage_constraints = None
+        self.control_battery = self.config["control_battery"]
+
+        # BATTERY VARIABLES (TODO: INCLUDE MIN-MAX SOC AND DISCHARGE REQUIREMENTS DIRECTLY IN CONTROLLER)
+        self.battery_start = self.storage.start
+        self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
+        self.battery_capacity = self.storage.nominal_cap    # controller should be estimating this from time to time. Or decide how it is updated?
+        self.battery_power_charge = cp.Variable((num_steps, 1))
+        self.battery_power_discharge = cp.Variable((num_steps, 1))
+
+        self.battery_power_discharge = cp.Variable((num_steps, 1))
+        self.battery_power = cp.Variable((num_steps, 1))
+        self.battery_current = cp.Variable((num_steps, 1))
+        self.battery_OCV = cp.Variable((num_steps, 1))
+        self.battery_voltage = cp.Variable((num_steps, 1))
+        self.battery_Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
+        self.battery_SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
+
+        self.actions = []
+        # self.LSTM_model = tf.keras.models.load_model("LSTM_01.h5")
+
+    def initialize_forecast_data(self):
+        """loads history to be used for forecasting EV charging"""
+        self.charge_history = np.genfromtxt(path_prefix+self.config["load_history"])
+        self.current_testdata = np.genfromtxt(path_prefix+self.config["simulation_load"])[:-1, ] / 10
+
+    def compute_control(self, price_vector, predicted_load):
+        # add indicator if perfect foresight or not...if perfect foresight, we do not actually need controller
+        # so instead we can try other setting here
+        self.battery_start = self.storage.start
+        battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
+        objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
+        linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
+        electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
+        objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
+        opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution, None,
+                                   self.storage, time=0, name="Test_Case_" + str(self.storage.id))
+        opt_problem.run()
+        if opt_problem.problem.status != 'optimal':
+            print('Unable to service travel')
+        if electricity_cost.value < 0:
+            print('Negative Electricity Cost')
+
+        control_action = self.battery_current.value[0, 0]   # this is current flowing through each cell
+        self.actions.append(control_action)
+        self.storage.update_capacity()  # to track linear estimated aging
+        # obtain the true state of charge from the batteryAgingSim (How frequently though?)
+        if len(self.storage.control_current) < num_steps:
+            self.storage.control_current = np.append(self.storage.control_current, control_action)
+        else:
+            self.storage.control_current = np.array([control_action])  # it should be only updating one but then
+            print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
+        self.battery_initial_SOC = self.battery_SOC.value[1, 0]     # update SOC estimation
+        return control_action
+
+    def predict_load(self, start, shift, stop, days_length=14):
+        """this uses two ML models for predictions. One for full day prediction (runs only once a day) and the
+        other for time-step update"""
+        begin = stop * 96 - 48 + shift  # shift at each time-step, then reset after a day is done
+        end = begin + 48
+        test_input_onestep = np.reshape(self.scaled_onestep_data[begin:end], (1, 48, 1))
+        if not self.full_day_prediction.any():   # This checks if a full day is done
+            test_input_fullday = np.reshape(self.reshaped_data[start:start + days_length * num_steps],
+                                            (1, days_length, num_steps))
+            self.full_day_prediction = LSTM1.predict(test_input_fullday) * self.std_data + self.mean_data
+            self.full_day_prediction.shape = (num_steps, 1)
+        prediction_next_step = self.scaler_onestep.inverse_transform(LSTM2.predict(test_input_onestep))
+        index = len(self.load) + 1  # this is tracking what time step we are at
+        prediction = np.append(self.load, prediction_next_step)     # include previous day's known load
+        prediction = np.append(prediction, self.full_day_prediction[index:, :])
+        return prediction
+
+    def get_battery_constraints(self, EV_load):
+        eps = 0.01  # This is a numerical artifact. Values tend to solve at very low negative values but
+        # this helps avoid it.
+        # TODO: UPDATE CONTROLLER TO BE MORE INFORMED OF THE VOLTAGE DYNAMICS WITH SOC TO ESTIMATE THE ACTUAL POWER NEEDED
+        num_cells_series = self.storage.topology[0]
+        num_modules_parallel = self.storage.topology[1]     # maybe make this easier later?? abstract it out
+        num_cells = self.storage.topology[2]
+        self.storage_constraints = [self.battery_SOC[0] == self.battery_initial_SOC,
+                            self.battery_OCV == OCV_SOC_linear_params[0] * self.battery_SOC[0:num_steps] + OCV_SOC_linear_params[1],
+                            cp.pos(self.battery_current) <= self.storage.max_current,
+                            self.battery_voltage == self.battery_OCV + cp.multiply(self.battery_current, 0.076),
+                            self.battery_power == cp.multiply(self.storage.max_voltage * num_cells_series,
+                                                      self.battery_current * num_modules_parallel) / 1000,  # kw
+                            self.battery_power == self.battery_power_charge + self.battery_power_discharge,
+                            self.battery_SOC[1:num_steps + 1] == self.battery_SOC[0:num_steps] \
+                                    + (self.resolution / 60 * self.battery_current) / self.storage.cap, # removed self-discharge
+                            self.battery_power_discharge <= 0,
+                            self.battery_power_charge >= 0,
+                            self.battery_SOC >= self.storage.min_SOC,
+                            self.battery_SOC <= self.storage.max_SOC,
+                            EV_load + (self.battery_power_charge + self.battery_power_discharge) -
+                                    solar_gen[self.storage.start:self.storage.start + num_steps] >= eps
+                            # no injecting back to the grid; should try unconstrained. This could be infeasible.
+                            ]
+        return self.storage_constraints
+
+    def reset_load(self):
+        """This is done after one full day is done."""
+        self.load = np.array([])
+        self.full_day_prediction = np.array([])
+
 
 class MPC2:
     """this uses a different prediction and control mechanism..to be developed later"""
