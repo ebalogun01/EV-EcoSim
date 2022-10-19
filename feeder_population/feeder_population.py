@@ -300,13 +300,13 @@ key_index=key_index+1
 num_transformers_list=[]
 k=0
 for i in range(len(bus_list)):
-    num_transformers=int(np.floor(abs(spot_load_list[i])/(20*1000)))
+    num_transformers=int(np.floor(abs(spot_load_list[i])/(20*1000)))    # is this 20kVA based on the defined rating? change this from hard-coded?
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
         #Triplex node
         num_houses=int(np.floor(20*0.85)*safety_factor/admd)
         real_power_trans=np.sum(data_use_mat[:,np.random.choice(np.arange(data_use_mat.shape[1]),size=(num_houses,))],axis=1)
-        pf_trans=np.random.uniform(0.85,1.0,size=real_power_trans.shape)
+        pf_trans=np.random.uniform(0.85,1.0,size=real_power_trans.shape)    # randomly sample power factor for the homes, make the lower limit generic as well
         reactive_power_trans=np.multiply(real_power_trans,np.tan(np.arccos(pf_trans)))
         
         if k==0:
