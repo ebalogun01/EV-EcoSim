@@ -2,6 +2,9 @@
 
 Platform for co-simulating power flow and EV charging stations for Stanford EV50 project. 
 
+## Authors
+Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
+
 
 ## Requirements
 
@@ -29,8 +32,10 @@ rlsf - base_case plus implements a recursive least squares filter to estimate ne
 transformer - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model.
 battery - base_case plus transformer model plus battery model (not finished yet)
 
+## How to run
+Create a new environment using `conda env create --name <your env name> -f environmentl.yml`
+Ensure gridlabd is installed by following recommended installation method.
 Start simulation by running master_sim.py.
-
 
 ### analysis
 
