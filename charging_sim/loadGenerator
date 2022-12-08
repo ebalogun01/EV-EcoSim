@@ -1,0 +1,11 @@
+# FUTURE WORK - USERS CAN SELECT DESIRED LOCATION AND WE CAN GENERATE REPRESENTATIVE LOADS
+
+class Generator:
+    def __init__(self, loc, freq, res):
+        self.loc = loc
+        self.freq = freq
+        self.res = res
+
+    def get_load(self):
+        """Generates charging station load for simulation"""
+        pass

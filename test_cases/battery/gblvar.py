@@ -47,9 +47,10 @@ v_pred=np.zeros((1,len(voltage_obj)))
 
 # transformer properties
 
-trans_dt=10.0  #integration timestep
+trans_dt=10.0  #integration timestep IS THIS SECONDS OR MINUTES?
 trans_Ta=20.0 #ambient temperature[C]
 
+# TODO: find where all these transformer values were obtained from
 trans_R=5.0
 trans_tau_o=2*60*60.0
 trans_tau_h=6*60.0
@@ -59,7 +60,7 @@ trans_delta_theta_hs_rated=28.0
 trans_delta_theta_oil_rated=36.0
 
 trans_To0=30.0 #initial oil temperature [C]
-trans_Th0=60.0 #initial hot spot temperature [C]
+trans_Th0=60.0 #initial hot spot temperature [C]    # How is this set?
 trans_int_method='euler' #integration method ['euler' or 'RK4']
 
 

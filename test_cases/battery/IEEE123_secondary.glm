@@ -27,6 +27,107 @@ object transformer_configuration {
 	shunt_impedance 339.610+336.934j;
 }
 
+object transformer_configuration {
+	name dcfc_transformer;
+	connect_type WYE_WYE;
+	install_type PADMOUNT;
+	primary_voltage 2401.7771;
+	secondary_voltage 480 V;
+	power_rating 222.22222222222223;
+	resistance 0.00600;
+	reactance 0.00400;
+}
+
+object load {
+	name dcfc_load_0;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_0;
+	phases "ABCN";
+	from "meter_87";
+	to dcfc_load_0;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_1;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_1;
+	phases "ABCD";
+	from "meter_35";
+	to dcfc_load_1;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_2;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_2;
+	phases "ABCD";
+	from "meter_65";
+	to dcfc_load_2;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_3;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_3;
+	phases "ABCN";
+	from "meter_79";
+	to dcfc_load_3;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_4;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_4;
+	phases "ABCN";
+	from "meter_100";
+	to dcfc_load_4;
+	configuration dcfc_transformer;
+}
+
 object triplex_node {
 	name tn_0;
 	nominal_voltage 120.00;

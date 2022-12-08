@@ -4,13 +4,15 @@ import glm_mod_functions
 import os
 import pandas
 import datetime
-import sklearn.preprocessing
 import numpy as np
 import ast
 import pickle
 
 #read config file
-os.chdir('C:\\Users\\Lily Buechler\Documents\Lily\Stanford\Research\EV50_cosimulation\\feeder_population')
+path_prefix = os.getcwd()
+path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix.replace('\\', '/')
+os.chdir(path_prefix+'/feeder_population')  # change directory
 f=open('config.txt','r')
 param_dict=f.read()
 f.close()
@@ -62,7 +64,6 @@ for i in obj_type_base.keys():
                 nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
                 load_phases.append('B')
 
-
             if 'B' in glm_dict_base[i]['phases']:
                 prop_voltage.append('voltage_B')
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load','meter'))
@@ -81,7 +82,7 @@ for i in obj_type_base.keys():
         #get rid of regulator control
         elif 'regulator_configuration' in obj_type_base[i]['object']:
             if 'Control' in glm_dict_base[i].keys():
-                glm_dict_base[i]['Control']='MANUAL'
+                glm_dict_base[i]['Control']='MANUAL'    # why is control made manual here?
                     
         #get rid of capacitor control
         elif 'capacitor' in obj_type_base[i]['object']:
@@ -118,7 +119,7 @@ for i in obj_type_base.keys():
             glm_dict_base=glm_mod_functions.replace_load_w_meter(glm_dict_base,glm_dict_base[i]['name'],glm_dict_base[i]['name'].replace('load','meter'),obj_type_base)
 
 
-include_list_base.append('#include "'+feeder_name+'_secondary.glm'+'";')
+include_list_base.append('#include "'+feeder_name+'_secondary.glm'+'";')    # adds the secondary distribution in simulation
 
 # delete existing recorders
 rec_del_index=[]
@@ -130,7 +131,7 @@ for i in rec_del_index:
     del glm_dict_base[i]
     del obj_type_base[i]
     
-#add dummy player class
+#add dummy player class (this allows running multiple time-steps)
 key_index=max(glm_dict_base.keys())+1
 obj_type_base[key_index]={'class':'dummy'}
 glm_dict_base[key_index]={'double':'value'}
@@ -151,7 +152,7 @@ glm_dict_base[key_index]={'name':'dummy_obj',
     
 
 #add tape module if not already there
-tape_bool=False
+tape_bool=False     # double-check what the tape module does
 for i in obj_type_base.keys():
     if ('module' in obj_type_base[i].keys()):
         if 'tape' in obj_type_base[i]['module']:
@@ -186,7 +187,7 @@ if ('#set minimum_timestep=60' in globals_list_base)==False:
 for i in obj_type_base.keys():
     if ('clock' in obj_type_base[i].keys()):
         clock_del_index=i
-del glm_dict_base[clock_del_index]
+del glm_dict_base[clock_del_index]      # why isn't this in the for-loop?
 
     
 #add new clock object
@@ -223,7 +224,7 @@ with open('voltage_prop.txt','wb') as fp:
 #% load residential load data
 
 os.chdir(load_data_dir)
-data_use=pandas.read_csv('data_2015_use_filt.csv')
+data_use=pandas.read_csv('data_2015_use.csv')
 
 year=2018
 
@@ -298,13 +299,13 @@ key_index=key_index+1
 num_transformers_list=[]
 k=0
 for i in range(len(bus_list)):
-    num_transformers=int(np.floor(abs(spot_load_list[i])/(20*1000)))
+    num_transformers=int(np.floor(abs(spot_load_list[i])/(20*1000)))    # is this 20kVA based on the defined rating? change this from hard-coded?
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
         #Triplex node
         num_houses=int(np.floor(20*0.85)*safety_factor/admd)
         real_power_trans=np.sum(data_use_mat[:,np.random.choice(np.arange(data_use_mat.shape[1]),size=(num_houses,))],axis=1)
-        pf_trans=np.random.uniform(0.85,1.0,size=real_power_trans.shape)
+        pf_trans=np.random.uniform(0.85,1.0,size=real_power_trans.shape)    # randomly sample power factor for the homes load for transformer, make the lower limit generic as well
         reactive_power_trans=np.multiply(real_power_trans,np.tan(np.arccos(pf_trans)))
         
         if k==0:

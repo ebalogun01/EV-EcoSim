@@ -5,6 +5,7 @@ Functions for modifying GridLAB-D power system simulation models
 """
 
 def load_base_glm(base_file_dir,base_glm_file):
+    """This loads the glm as list and populates it into dict and returns the output"""
     
     os.chdir(base_file_dir)
     f = open(base_glm_file, 'r')
@@ -19,12 +20,12 @@ def load_base_glm(base_file_dir,base_glm_file):
     
     #edit out all comments
     for l in glm:
-        line_temp=l.lstrip().rstrip().rstrip('\n').split('//')[0]   
+        line_temp=l.lstrip().rstrip().rstrip('\n').split('//')[0]       # is the // encoding something
         #Comment somewhere in line
         if len(line_temp)>1:
             #There is some content in line, extract content
             if l.split('//')[0]!='':
-                glm_list.append(line_temp.rstrip())
+                glm_list.append(line_temp.rstrip())     # this adds to glm list lines that are not comments
         #No comment in line
         else:
             #Line is not a space
