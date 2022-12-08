@@ -1,0 +1,21 @@
+# ignores files of these types
+**.csv
+**.mat
+**.dss
+**.txt
+**.xlsx
+**.xml
+**.xls
+**.npy
+BatteryData
+CP_ProjectData
+Datasets-CP
+Datasets
+env
+ev50
+*.png
+**.player
+feeders
+test_cases
+test_cases/*.txt/
+test_cases/*.csv/
