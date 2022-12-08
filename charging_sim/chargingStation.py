@@ -2,8 +2,10 @@ from utils import num_steps
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class ChargingStation:
     """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
+
     def __init__(self, storage, config, controller, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
@@ -15,7 +17,7 @@ class ChargingStation:
         self.loads = [0]
         self.total_load = [0]
         self.power = np.zeros((num_steps, 1))
-        self.auxiliary_power = 0.01 # this is in kilo-watts
+        self.auxiliary_power = 0.01  # this is in kilo-watts
         self.current_load = self.auxiliary_power
         self.cooling_pump = {}  # properties of the charging station cooling pump
         # COOLING LOAD SHOULD BE A FUNCTION OF CURRENT
@@ -26,7 +28,7 @@ class ChargingStation:
 
     def update_load(self, net_grid_load, ev_load):
         self.current_load = net_grid_load + self.auxiliary_power
-        self.loads.append(net_grid_load)     # net load station pulls from grid, not load from EV
+        self.loads.append(net_grid_load)  # net load station pulls from grid, not load from EV
         self.total_load.append(ev_load)
 
     def is_EV_arrived(self):
@@ -82,11 +84,10 @@ class ChargingStation:
             battery = getattr(self, option)
             plt.figure()
             plt.plot(battery.voltages, "k", ls="--")
-            plt.plot(battery.predicted_voltages)    # currently needs to be fixed, minor bug
+            plt.plot(battery.predicted_voltages)  # currently needs to be fixed, minor bug
             plt.ylabel('Voltage (V)')
             plt.legend(['True Voltage', 'Controller Estimated Voltage'])
             plt.savefig('voltage_plot_{}_{}_Sim.png'.format(battery.id, self.id))
             plt.close()
         else:
             return
-

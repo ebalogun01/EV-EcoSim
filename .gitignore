@@ -16,6 +16,5 @@ ev50
 *.png
 **.player
 feeders
-test_cases
-test_cases/*.txt/
-test_cases/*.csv/
+test_cases/**.txt/
+test_cases/**.csv/
