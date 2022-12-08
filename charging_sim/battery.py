@@ -27,7 +27,7 @@ class Battery:
 
     def __init__(self, battery_type=None, node=None, config=None, controller=None):
         """should I make in terms of rc pairs or how should I call dynamics..data-driven vs ECM"""
-        self._node = node  # This is used for battery location.
+        self.node = node  # This is used for battery location.
         #   TODO: need to include resolution and others
         self.controller = controller
         self.resolution = config["resolution"]
@@ -64,6 +64,7 @@ class Battery:
         self.iR2 = 0
 
         self.max_voltage = config["max_cell_voltage"]
+        self.pack_max_voltage = config["pack_max_voltage"]
         self.min_voltage = config["min_cell_voltage"]  # for each cell
         self.nominal_voltage = config["nominal_cell_voltage"]  # for each cell
         self.nominal_energy = self.nominal_voltage * self.nominal_cap
@@ -101,7 +102,7 @@ class Battery:
         # self.power_discharge = cp.Variable((num_steps, 1))
         self.power = 0
         self.current = 0
-        self.true_power = []
+        self.true_power = [0]
         self.start = config["start_time"]
         self.MPC_Control = {'Q': [], 'P': []}  # tracks the control actions for the MPC control
         self.size = 100  # what does this mean?...I should use this for accounting how much power I CAN DEMAND
@@ -126,7 +127,8 @@ class Battery:
         self.savings = None
         self.state_of_charge = None
         self.nominal_pack_voltage = config["pack_voltage"]    # to be initialized later
-        self.nominal_pack_cap = config["pack_energy_cap"]   # this is in Watt-hours (Wh)
+        self.pack_energy_capacity = config["pack_energy_cap"]   # battery rating this is in Watt-hours (Wh)
+        self.nominal_pack_cap = None    # will be set in battery setup
         self.predicted_voltages = list()
         self.operating_voltages = list()
 
@@ -135,22 +137,16 @@ class Battery:
 
     def battery_setup(self):
         """
-        TODO: I NEED TO CHECK THAT THE PACK MATCHES THE OUTPUT POWER CORRECTLY
         Capacity (Wh)
         Voltage (V)
-        params: (cell_amp_hrs (Ah), cell_voltage (V)
-        TODO: Finish this up and scale battery up completely.
-            Do comparison algo setup with real battery and parameter adjustment."""
+        params: (cell_amp_hrs (Ah), cell_voltage (V)"""
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
-        pack_capacity_Ah = self.nominal_pack_cap / self.nominal_pack_voltage
-        print("Capacity is: ", pack_capacity_Ah, round(pack_capacity_Ah), "")
-        print("Power capacity is: ", pack_capacity_Ah, round(pack_capacity_Ah))
-        pack_capacity_Ah = self.nominal_pack_cap // self.nominal_pack_voltage
-        cell_amp_hrs = self.cap
-        cell_voltage = self.nominal_voltage
-        no_cells_series = self.nominal_pack_voltage // cell_voltage
-        no_modules_parallel = pack_capacity_Ah // (cell_amp_hrs + 1e-6)
+        print("**** Pre-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
+        pack_capacity_Ah = self.pack_energy_capacity / self.pack_max_voltage
+        cell_amp_hrs = self.nominal_cap     # for a cell (Ah) Maximum
+        no_cells_series = round(self.pack_max_voltage / self.max_voltage)     # cell nominal
+        no_modules_parallel = round(pack_capacity_Ah / (cell_amp_hrs + 1e-8))
         self.cell_count = no_cells_series * no_modules_parallel
         self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
         self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
@@ -160,6 +156,7 @@ class Battery:
         series_resistance = no_cells_series * self.cell_resistance
         # series_capacitance = 1/(no_cells_series * self.C1 )
         self.pack_resistance = 1/(no_modules_parallel * 1/series_resistance)
+        print("**** Post-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
         print("***** Battery initialized. *****\n",
               "Battery pack capacity is {} Ah".format(pack_capacity_Ah),
               "Battery pack resistance is {} Ohm".format(self.pack_resistance),
@@ -268,6 +265,22 @@ class Battery:
         np.savetxt('SOC_sim_{}.csv'.format(self.id), self.SOC_track)
         np.savetxt('SOH_sim_{}.csv'.format(self.id), self.SOH_track)
         np.savetxt('voltage_sim_{}.csv'.format(self.id), self.voltage)
+
+    def save_sim_data(self, save_prefix):
+        """working on this, not tested yet"""
+        import pandas as pd
+        save_file_base = str(self.id) + '_' + self.node # node is same as location
+        data = {'SOC': self.SOC_track,
+                'SOH': self.SOH_track,
+                'Voltage_pack': np.array(self.voltages) * self.topology[0],
+                'currents_pack': np.array(self.currents) * self.topology[1],
+                'cycle_aging': np.array(self.cycle_aging),
+                'calendar_aging': np.array(self.calendar_aging),
+                'power_kW': np.array(self.true_power)}
+        pd.DataFrame(data).to_csv(save_prefix + '/battery_sim_{}.csv'.format(save_file_base))
+        print('***** Successfully saved simulation outputs to: ', 'battery_sim_{}.csv'.format(save_file_base))
+        print("Est. tot. no. of cycles is: ", 0.5*(self.total_amp_thruput / self.nominal_pack_cap),
+              'cycles')
 
     def visualize_voltages(self):
         pass

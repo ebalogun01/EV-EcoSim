@@ -5,6 +5,7 @@
   "charge_types": "normal",
   "ambient_temp": 25,
   "power_cap": 100,
+  "power_cap_units":  "kW",
   "locator_index": 1,
   "location": "None",
   "power_factor": 1.0,

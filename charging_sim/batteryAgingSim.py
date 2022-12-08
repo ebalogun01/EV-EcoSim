@@ -69,7 +69,7 @@ class BatterySim:
         for i in range(1):
             SOC = battery.SOC.value[i, 0]
             current = round(battery.current.value[i, 0], 8)  # numerical issue here
-            print("BATTERY CURRENT IS: ", current)
+            # print("BATTERY CURRENT IS: ", current)
             if current <= 0:  # Discharge Dynamics
                 # print(current, SOC)
                 true_voltage = self.response_surface([abs(current), SOC])[0]
@@ -97,8 +97,8 @@ class BatterySim:
         real_voltage = np.array(battery.voltages[-2:])  # this should include the prior voltage no?
         avg_voltage = np.sqrt(np.average(real_voltage ** 2))  # quadratic mean voltage for aging
         # print("average voltage: ", avg_voltage, "regular avg: ", np.average(real_voltage))
-        beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.667)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
-        beta_cap /= 2627
+        beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.695)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
+        beta_cap /= 340.3652
         # print('Beta Cap is, ', beta_cap)
         beta_res = 2.153 * 10**-4 * (avg_voltage - 3.725)**2 - 1.521 * 10**-5 + 2.798 * 10**-4 * del_DOD
         beta_minimum = 1.5 * 10**-5
@@ -106,10 +106,12 @@ class BatterySim:
             beta_res = beta_minimum  # there is a minimum aging factor that needs to be fixed
         Q = np.abs(battery.current * self.res / 60)  # in Ah
 
-        capacity_fade = beta_cap * Q**0.5 * 2.15 / battery.nominal_cap # time is one day for both
+        capacity_fade = beta_cap * Q ** 0.5     # time is one day for both
+        # capacity_fade = beta_cap * Qmax**0.5 * 2.15 / battery.nominal_cap # time is one day for both
         battery.cycle_aging.append(capacity_fade)
         # print('Q: {}, del DOD: {}, cap fade: {}'.format(Q, del_DOD, capacity_fade))
-        resistance_growth = beta_res * Q * 2.15 / battery.nominal_cap
+        resistance_growth = beta_res * Q
+        # resistance_growth = beta_res * Q * 2.15 / battery.nominal_cap
         battery.true_capacity_loss = capacity_fade
         self.beta_caps.append(beta_cap)
         # print("Aging factor beta,", beta_cap)
@@ -141,7 +143,7 @@ class BatterySim:
         # I THINK THIS MUST BE ESTIMATED IN DAYS? AND I THINK IT HAS TO BE CUMULATIVE? NOT PER TIMESTEP?
         alpha_cap = (7.543 * avg_voltage - 23.75) * 10**6 * math.exp(-6976 / self.ambient_temp)  # aging factors
         alpha_res = (5.270 * avg_voltage - 16.32) * 10**5 * math.exp(-5986 / self.ambient_temp)  # temp in K
-        alpha_cap /= 2627
+        alpha_cap /= 340.3652
         capacity_fade = alpha_cap * (self.time / self.num_daily_steps)**0.75 * 2.15 / battery.nominal_cap
         # for each time-step (this is scaled up for current cell)
         resistance_growth = alpha_res * (self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.nominal_cap
@@ -169,7 +171,7 @@ class BatterySim:
         MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME"""
         # for battery in self.battery_objects:
         self.update_capacity(battery)
-        print("Battery Aging and Response Estimated")
+        # print("Battery Aging and Response Estimated")
 
     @staticmethod
     def NMC_cal_aging():
