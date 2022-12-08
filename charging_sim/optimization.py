@@ -93,7 +93,7 @@ class Optimization:
         self.problem = problem
         result = problem.solve(solver=self.solver, verbose=False)
         self.cost_per_opt.append(result)
-        print(problem.status)
+        # print(problem.status) ACTIVATE LATER
         return result
 
     @staticmethod

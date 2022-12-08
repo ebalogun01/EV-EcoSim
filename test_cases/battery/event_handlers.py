@@ -10,7 +10,6 @@ import time
 import gblvar
 
 sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
-print("before")
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
@@ -18,7 +17,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'test_ecos11'
+save_folder_prefix = 'test_ecos13'
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()
@@ -108,7 +107,7 @@ def on_precommit(t):
 
     ########################### OPTIMIZE #####################################################
 
-    xxx = opt.opt_dummy()   # this is done in the controller Optimize abstraction
+    # xxx = opt.opt_dummy()   # this is done in the controller Optimize abstraction
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
@@ -121,7 +120,7 @@ def on_precommit(t):
 
     # get loads from EV charging station
     num_steps = 1
-    print("Global time is: ", gblvar.it)
+    # print("Global time is: ", gblvar.it)
     if gblvar.it % EV_charging_sim.resolution == 0:
         """only step when controller time matches pf..based on resolution.
         This ensures allows for varied resolution for ev-charging vs pf solver"""

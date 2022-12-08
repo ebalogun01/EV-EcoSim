@@ -1,5 +1,4 @@
 from chargingStation import ChargingStation
-# print('charging')
 import json
 import os
 import numpy as np
@@ -12,7 +11,6 @@ import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from electricityPrices import PriceLoader
-print('Initial imports done')
 
 minute_in_day = 1440
 plt.style.use('seaborn-darkgrid')   # optional
@@ -131,7 +129,6 @@ class ChargingSim:
             new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],
                                                                     str(self.resolution) + "min.csv")
             self.prices_config["data_path"] = new_data_path
-            # print(new_data_path)
             with open(self.prices_config["config_path"], 'w') as config_file_path:
                 os.chdir(configs_path)
                 json.dump(self.prices_config, config_file_path, indent=1)
@@ -179,8 +176,7 @@ class ChargingSim:
         # TODO: add aggregation for a certain node in here instead of event handlers
         """Step forward once. Run MPC controller and take one time-step action.."""
         self.reset_loads()  # reset the loads from old time-step
-        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 1  # need to freeze daily prices
-        print("price", elec_price_vec[0])
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 1
         for charging_station in self.stations_list:     # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 # print("reset")
@@ -210,13 +206,8 @@ class ChargingSim:
                 # to update MPC last observed load
                 buffer_battery.dynamics(control_action)
                 net_load = todays_load[self.time, 0] + buffer_battery.power
-                # print("time", self.time)
                 charging_station.update_load(net_load, todays_load[self.time, 0])  # set current load for charging station # UPDATED 6/8/22
-                # self.update_site_loads(net_load)  # Global Load Monitor for all the loads for this time-step
-                # print("site net loads shape is: ", len(self.site_net_loads))
-
             self.control_shift = 0
-
             # update season based on run_count (assumes start_time was set to 0)
             run_count += 1
             # check whether one year has passed
@@ -227,27 +218,9 @@ class ChargingSim:
             buffer_battery.update_capacity()  # update the linear aging vector to include linear aging for previous run
             self.aging_sim.run(buffer_battery)  # simulate battery aging
             charging_station.controller.battery_initial_SOC = charging_station.controller.battery_SOC.value[1, 0]
-            # print("Current SOC is: ", buffer_battery.SOC)
-            # start_time = buffer_battery.start
-            # EV_power_profile = todays_load[0:num_steps + 1, ] + \
-            #                    charging_station.controller.battery_power.value[0:num_steps + 1, ]
-            # add_power_profile_to_object(buffer_battery, self.day_year_count, EV_power_profile)  # update power profile
-            # print("SOH is: ", buffer_battery.SOH)
             buffer_battery.start += 1
         self.time += 1
         self.update_steps(num_steps)
-        # stop += 1  # shifts to the next day
-        # plt.figure()
-        # plt.plot(buffer_battery.true_aging)
-        # # plt.plot(np.array(buffer_battery.linear_aging) / 0.2)
-        # plt.title("true aging plot")
-        # # plt.legend(["True aging", "Linear aging"])
-        # plt.savefig("aging_plot.png")
-        # plt.close()
-        # plt.plot(self.aging_sim.beta_caps)
-        # plt.title('Beta_cap')
-        # plt.savefig("Beta aging (cap)")
-        # plt.close()
         return self.site_net_loads
 
     def load_results_summary(self, save_path_prefix):
@@ -256,15 +229,11 @@ class ChargingSim:
         # charging_sites_keys = self.charging_sites.keys()
         option1 = "loads"
         option2 = "storage"
-        print(len(self.battery_objects), len(self.stations_list))
+        # print(len(self.battery_objects), len(self.stations_list))
         for charging_station in self.stations_list:
             charging_station.save_sim_data(save_path_prefix)
         for battery in self.battery_objects:
             battery.save_sim_data(save_path_prefix)
-            # battery.visualize("SOC_track")
-            # battery.visualize("voltages")
-            # battery.visualize("true_aging")
-            # battery.visualize("SOH_track")
 
         # SOME ADDITIONAL PLOTS BELOW
         fig, ax1 = plt.subplots()
@@ -295,6 +264,7 @@ class ChargingSim:
         # plt.savefig("Calendar_SOC_plot_2.png")
         print("total calendar aging is {}".format(sum(battery.calendar_aging)))
         print("total cycle aging is {}".format(sum(battery.cycle_aging)))
+        print("Final capacity (SOH) is {}".format(battery.SOH))
 
 
 class ChargingSimCentralized:

@@ -3,7 +3,6 @@ from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps
 import numpy as np
 import tensorflow as tf
-# import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import cvxpy as cp
 
@@ -90,8 +89,9 @@ class MPC:
             # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
             if opt_problem.problem.status != 'optimal':
                 print('Unable to service travel')
+                raise Exception("Solution is not optimal, please check optimization formulation!")
             if electricity_cost.value < 0:
-                print('Negative Electricity Cost')
+                print('Negative Electricity')
             # change to current
             control_action = self.battery_current.value[0, 0]   # this is current flowing through each cell
             # print("checking powers", self.battery_power_charge.value[0], self.battery_power_discharge.value[0])

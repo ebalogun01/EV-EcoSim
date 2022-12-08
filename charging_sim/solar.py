@@ -51,7 +51,7 @@ class Solar:
         temp_data = np.zeros((self.solar_vec.shape[0]*num_repetitions, self.solar_vec.shape[1]))
         start_idx = 0
         for datapoint in self.solar_vec:
-            print(datapoint)
+            # print(datapoint)
             temp_data[start_idx:start_idx + num_repetitions] = datapoint
             start_idx += num_repetitions
         self.data = pd.DataFrame(data=temp_data, columns=self.cols)
