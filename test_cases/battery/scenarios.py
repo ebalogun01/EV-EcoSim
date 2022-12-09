@@ -47,4 +47,4 @@ def run_scenarios_sequential():
 
 
 if __name__ == '__main__':
-    run_scenarios_parallel()
+    run_scenarios_sequential()

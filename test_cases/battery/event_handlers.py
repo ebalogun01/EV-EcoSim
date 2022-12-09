@@ -18,7 +18,9 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'sim_'+gblvar.scenario['index']
+print("www")
+print(gblvar.scenario)
+save_folder_prefix = 'sim_'+str(gblvar.scenario['index'])
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()
@@ -178,6 +180,7 @@ def on_term(t):
     # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')
     toc = time.time()
     print("Total run time: ", (toc - tic) / 60, "minutes")
+    gridlabd.cancel()
 
 def find(criteria):
     '''Finding objects in gridlabd that satisfy certain criteria'''
