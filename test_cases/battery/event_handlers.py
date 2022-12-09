@@ -4,12 +4,13 @@ import numpy as np
 import pandas as pd
 import gridlabd
 print("gridlab-D imported")
-import opt
 import sim
 import time
 import gblvar
 
-sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
+if not gblvar.charging_sim_path_append:
+    sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
+    print('append 2')
 from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
@@ -17,7 +18,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'test_ecos13'
+save_folder_prefix = 'sim_'+gblvar.scenario['index']
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()
@@ -44,7 +45,7 @@ def on_init(t):
     gblvar.transconfig_list = find("class=transformer_configuration")
 
     # Configure EV charging simulation...NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
-    EV_charging_sim.setup(dcfc_nodes)
+    EV_charging_sim.setup(dcfc_nodes,  scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     os.mkdir(save_folder_prefix)
     return True

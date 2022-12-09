@@ -1,5 +1,11 @@
 import gridlabd
+import gblvar
+
+# MODIFY CONFIGURATION FILES
 
 
-gridlabd.command("IEEE123_populated.glm")
-gridlabd.start("wait")
+def run(scenario):
+    gblvar.scenario = scenario
+    gridlabd.command("IEEE123_populated.glm")
+    gridlabd.start("wait")
+

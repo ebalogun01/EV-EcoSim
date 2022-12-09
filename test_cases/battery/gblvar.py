@@ -5,6 +5,9 @@ from sklearn.preprocessing import StandardScaler
 
 #define global python simulation variables and default initial values
 
+#   flag for scenarios
+charging_sim_path_append = False
+
 #iteration number
 it=0
 
