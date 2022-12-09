@@ -146,11 +146,19 @@ class ChargingSim:
     def get_storage_sites(self):
         return self.storage_sites
 
-    def setup(self, power_nodes_list):
+    def setup(self, power_nodes_list, scenario=None):
         """This is used to setup charging station locations and simulations"""
         self.create_charging_stations(power_nodes_list)
         self.initialize_price_loader()
         self.initialize_aging_sim()  # Battery aging
+        self.update_scenario(scenario)  # scenarios for study
+
+    def update_scenario(self, scenario=None):
+        if scenario:
+            for key in scenario.keys():
+                if key != 'index':
+                    self.battery_config[key] = scenario[key]
+            print('New scenario updated...')
 
     def update_site_loads(self, load):
         self.site_net_loads.append(load)
@@ -350,6 +358,11 @@ class ChargingSimCentralized:
 
     def set_central_storage_controller(self, controller):
         self.central_storage_controller = controller
+
+    def update_scenario(self, scenario=None):
+        if scenario:
+            pass
+        pass
 
     def create_charging_stations(self, power_nodes_list):
         self.load_config()
