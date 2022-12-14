@@ -1,20 +1,24 @@
-import os 
 import csv
-import datetime
-import re
-import math
-import cmath
 import glmptime as glmptime
+import numpy as np
 
 data = {}
 nodes = ["Timestamp"]
 lastnodes = []
 timestamp = None
 timezone = "UTC"
-with open('volt_dump.csv', 'r') as dumpfile:
+
+path_prefix = str(np.loadtxt('voltdump.txt', dtype=str))
+# print("path prefix: ", path_prefix, '\n')
+# current_dir = os.getcwd()
+# print('current directory is', current_dir)
+# os.chdir(path_prefix)
+# print(os.getcwd())
+
+with open(path_prefix+'volt_dump.csv', 'r') as dumpfile:
 	print("Reading volt_dump...")
 	reader = csv.reader(dumpfile)
-	for row in reader :
+	for row in reader:
 		if row[0].startswith("#") :
 			tpos = row[0].find(" at ")
 			if tpos > 0 :
@@ -53,7 +57,8 @@ with open('volt_dump.csv', 'r') as dumpfile:
 			except :
 				print("ERROR: ignored row '%s'" % row)
 
-with open('voltages.csv','w') as voltages:
+
+with open(path_prefix+'voltages.csv','w') as voltages:
 	print("Writing voltages...")
 	writer = csv.writer(voltages)
 	writer.writerow(nodes)
@@ -66,5 +71,6 @@ with open('voltages.csv','w') as voltages:
 			#row.append("%g%+gd" % (value.real,value.imag))
 		writer.writerow(row)
 
+# os.chdir(current_dir)  # get out of script working dir back to code dir
 
 

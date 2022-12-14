@@ -1,7 +1,7 @@
 import multiprocessing as mp
 import sys
 import gblvar
-import master_sim
+# import time
 
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
@@ -30,21 +30,28 @@ def make_scenarios():
     return scenarios_list
 
 
+def run(scenario):
+    import master_sim
+    master_sim.run(scenario)
+
+
 def run_scenarios_parallel():
     scenarios = make_scenarios()
     num_cores = mp.cpu_count()
     if num_cores > 1:
-        use_cores_count = num_cores - 1  # leave one out
+        use_cores_count = num_cores - 2  # leave one out
         print("Running {} parallel scenarios...".format(use_cores_count))
         pool = mp.Pool(use_cores_count)
-        pool.map(master_sim.run, [scenarios[i] for i in range(num_cores)])
+        pool.map(run, [scenarios[i] for i in range(num_cores)])
 
 
 def run_scenarios_sequential():
     scenarios = make_scenarios()
     for scenario in scenarios:
+        import master_sim
         master_sim.run(scenario)
+        # time.sleep(5)
 
 
 if __name__ == '__main__':
-    run_scenarios_parallel()
+    run_scenarios_sequential()
