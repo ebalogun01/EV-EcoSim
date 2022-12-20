@@ -40,7 +40,7 @@ EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # In
 def on_init(t):
     '''Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd'''
     # get object lists from GridLAB-D
-    gridlabd.set_value("voltdump", "filename", save_folder_prefix)
+    # gridlabd.set_value("voltdump", "filename", save_folder_prefix)
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     np.savetxt(path_prefix+'/voltdump.txt', np.array([save_folder_prefix + '/']), fmt="%s")
@@ -48,6 +48,7 @@ def on_init(t):
     gblvar.node_list = find("class=node")
     gblvar.load_list = find("class=load")
     gblvar.tn_list = find("class=triplex_node")
+    # print(gridlabd.get_object(gblvar.tn_list[0]['power_12']))
     gblvar.trans_list = find("class=transformer")
     gblvar.transconfig_list = find("class=transformer_configuration")
 
@@ -179,7 +180,7 @@ def on_term(t):
     # os.chdir(save_folder_prefix)
     # print(os.getcwd())
     global tic
-    # EV_charging_sim.load_results_summary(save_folder_prefix)
+    EV_charging_sim.load_results_summary(save_folder_prefix)
     np.savetxt(save_folder_prefix+'/volt_mag.txt', gblvar.vm)
     np.savetxt(save_folder_prefix+'/volt_phase.txt', gblvar.vp)
     np.savetxt(save_folder_prefix+'/nom_vmag.txt', gblvar.nom_vmag)

@@ -1,6 +1,3 @@
-import os
-import time
-
 import gridlabd
 import gblvar
 

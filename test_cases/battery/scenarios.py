@@ -8,6 +8,12 @@ if not gblvar.charging_sim_path_append:
     gblvar.charging_sim_path_append = True
     print('append 1')
 
+
+# RUN TYPE
+sequential_run = False
+parallel_run = False
+single_run = True
+
 # BATTERY SCENARIOS
 num_vars = 6
 min_power = 0
@@ -53,5 +59,22 @@ def run_scenarios_sequential():
         # time.sleep(5)
 
 
+def run_scenario_single():
+    """This function just runs one scenario"""
+    # Keep changing this for each run
+    Er_idx = 2
+    c_rate_idx = 1
+    idx = 11
+    scenario = {'pack_energy_cap': energy_ratings[Er_idx],
+                'max_c_rate': max_c_rates[c_rate_idx],
+                'index': idx}
+    run(scenario)
+
+
 if __name__ == '__main__':
-    run_scenarios_sequential()
+    if sequential_run:
+        run_scenarios_sequential()
+    elif single_run:
+        run_scenario_single()
+    else:
+        run_scenarios_parallel()

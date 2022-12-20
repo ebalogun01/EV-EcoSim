@@ -42,6 +42,9 @@ def on_init(t):
 
     # Configure EV charging simulation...NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
     EV_charging_sim.setup(list(gblvar.tn_list))
+    print("Making results directory at: ", save_prefix)
+    os.mkdir(save_prefix)
+
     return True
 
 
