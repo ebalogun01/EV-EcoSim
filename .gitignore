@@ -8,14 +8,13 @@
 **.xls
 **.npy
 **.png
+**.Identifier
 BatteryData
 CP_ProjectData
 Datasets-CP
 Datasets
 env
 ev50
-*.png
 **.player
-feeders
 test_cases/**.txt/
 test_cases/**.csv/
