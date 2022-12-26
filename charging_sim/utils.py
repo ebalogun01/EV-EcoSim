@@ -27,11 +27,16 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
     # sparsity_cost_factor = 0.000001  # dynamically determine this in future based on load * cost
     # sparsity_cost = cp.norm(controller.battery_power_charge, 1) + \
     #                 cp.norm(controller.battery_power_discharge, 1)
-    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + controller.battery_power))))
+    cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + controller.battery_power -
+                                                               controller.solar.battery_power -
+                                                               controller.solar.ev_power -
+                                                               controller.solar.grid_power))))
     if demand_charge:
         demand_charge_cost = cp.max(cp.pos(load + (controller.battery_power_charge +
                                                    controller.battery_power_discharge -
-                                                   solar.battery_power - solar.ev_power)))
+                                                   controller.solar.battery_power -
+                                                   controller.solar.ev_power -
+                                                   controller.solar.grid_power)))
         cost_electricity += demand_charge_cost
     return cost_electricity
 

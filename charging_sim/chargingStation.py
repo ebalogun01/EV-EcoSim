@@ -6,13 +6,14 @@ import matplotlib.pyplot as plt
 class ChargingStation:
     """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
 
-    def __init__(self, storage, config, controller, status='idle'):
+    def __init__(self, storage, config, controller, solar=None, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
         self.loc = config["location"]
         self.storage = storage
         # removed setting storage id as charging station ID
         self.capacity = config["power_cap"]
+        self.solar = solar
         self.status = status
         self.loads = [0]
         self.total_load = [0]

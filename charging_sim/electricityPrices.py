@@ -24,7 +24,6 @@ class PriceLoader:
         self.month = -100 # July
 
     def get_prices(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
-        # TODO: make this number of steps agnostic - this is currently hard-coded
         price_vector = self.data_np[start_idx:start_idx + num_steps]
         price_vector = np.reshape(price_vector, desired_shape)
         return price_vector

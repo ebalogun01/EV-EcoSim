@@ -3,22 +3,25 @@ import json
 import os
 import numpy as np
 import random
-from utils import add_power_profile_to_object
-from plots import plot_results
 from battery import Battery
 from batteryAgingSim import BatterySim
 import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
 from electricityPrices import PriceLoader
+from solar import Solar
 
 minute_in_day = 1440
 plt.style.use('seaborn-darkgrid')   # optional
 
+#TODO: start working on the solar module first and then remove all MPC simulations from this version and
+# clean code COMPLETELY
+
 class ChargingSim:
-    def __init__(self, num_charging_sites, resolution=15, path_prefix=None):
+    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: fix these literal paths below
+        if solar:
+            self.solar = True   # to be initialized with module later
         data2018 = np.genfromtxt(path_prefix+'/CP_ProjectData/power_data_2018.csv')
         charge_data = np.genfromtxt(path_prefix+'/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 2  # removing bad data
@@ -48,11 +51,6 @@ class ChargingSim:
         self.num_steps = int(minute_in_day / resolution)
         self.aging_sim = None  # This gets updated later
         self._nodes = []
-
-        scaler = MinMaxScaler()
-        onestep_data = np.reshape(charge_data, (charge_data.size, 1))
-        scaler.fit(onestep_data)
-        self.scaled_test_data_onestep = [scaler.transform(np.reshape(test_data, (test_data.size, 1))), scaler]
 
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
@@ -102,11 +100,10 @@ class ChargingSim:
         # print("There are", len(self.battery_objects), "battery objects initialized")
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
-            controller = control.MPC(self.controller_config,
-                                     storage=battery)  # need to change this to load based on the users controller python file?
-            # assert isinstance(battery, object)  # checks that battery is an obj
+            solar = self.create_solar_object(i, loc_list[i])    # create solar object
+            controller = control.MPC(self.controller_config, storage=battery, solar=solar)  # need to change this to load based on the users controller python file?
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
-            charging_station = ChargingStation(battery, self.charging_config, controller) # add controller and battery to charging station
+            charging_station = ChargingStation(battery, self.charging_config, controller, solar=solar) # add controller and battery to charging station
             self.charging_sites[loc_list[i]] = charging_station
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
@@ -116,11 +113,12 @@ class ChargingSim:
         num_steps = 1
         self.aging_sim = BatterySim(0, num_steps)
 
-    def initialize_price_loader(self):
-        """Can add option for each charging site to have its own price loader"""
+    def initialize_price_loader(self, month):
+        """Loads the price loading module and sets the month to be simulated for memory-efficient sampling"""
         configs_path = self.path_prefix + '/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
+        self.price_loader.set_month_data(month)
         input_data_res = self.prices_config["resolution"]
         if input_data_res > self.resolution:
             self.price_loader.downscale(input_data_res, self.resolution)
@@ -133,6 +131,19 @@ class ChargingSim:
                 os.chdir(configs_path)
                 json.dump(self.prices_config, config_file_path, indent=1)
             os.chdir(current_working_dir)
+
+    def initialize_solar_module(self):
+        """This initializes the solar module if there is solar"""
+        if self.solar:
+            self.solar = Solar(self.solar_config, path_prefix=self.path_prefix)
+            print("Solar module loaded...")
+        else:
+            raise Exception('Cannot load solar module because flag is set to False!')
+
+    def create_solar_object(self, idx, loc, controller=None):
+        solar = Solar(config=self.solar_config, path_prefix=self.path_prefix, controller=controller)  # remove Q_initial later
+        solar.id, solar.node = idx, loc  # using one index to represent both id and location
+        return solar
 
     def reset_loads(self):
         self.site_net_loads = []
@@ -147,11 +158,12 @@ class ChargingSim:
         return self.storage_sites
 
     def setup(self, power_nodes_list, scenario=None):
-        """This is used to setup charging station locations and simulations"""
-        self.create_charging_stations(power_nodes_list)
-        self.initialize_price_loader()
+        """This is used to set up charging station locations and simulations"""
+        self.create_charging_stations(power_nodes_list)     # this should always be first since it loads the config
+        self.initialize_price_loader(self.prices_config["month"])
         self.initialize_aging_sim()  # Battery aging
         self.update_scenario(scenario)  # scenarios for study
+        self.initialize_solar_module()  # this loads solar module
 
     def update_scenario(self, scenario=None):
         if scenario:
@@ -171,62 +183,42 @@ class ChargingSim:
     @staticmethod
     def get_action(self):
         """returns only the control current"""
-        return 0
+        raise NotImplementedError("Function not implemented yet!")
 
     def initialize_controllers(self):
         """assign charging controller to each EVSE"""
-        # for charging_station in self.stations_list:
-        #     charging_station.controller = MPC(self.controller_config, 0, )
-        pass
+        raise NotImplementedError("Function not implemented yet!")
 
     def step(self, num_steps):
-        # NEED TO ADD STEPPING THROUGH DAYS # should this be done in some controller master sim?
-        # TODO: add aggregation for a certain node in here instead of event handlers
-        """Step forward once. Run MPC controller and take one time-step action.."""
+        """Perfect foresight daily stepping...should I do full-shot run (one optimization per day?)"""
         self.reset_loads()  # reset the loads from old time-step
-        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 1
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
         for charging_station in self.stations_list:     # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
-                # print("reset")
                 charging_station.controller.reset_load()
-                elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
+                print("time is: ", self.time, ". One day done!")
+                # elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
                 self.time = 0  # reset time
-                # self.day_year_count = 0  # bug..finish this tonight!! #TODO: 11/10/2022
-
+            charging_station.controller.solar.get_power(self.time, self.num_steps)
+            # print(charging_station.controller.solar.power)
             buffer_battery = charging_station.storage
-            run_count = 0
-            controls = []
             self.control_start_index = num_steps * self.day_year_count
-            stop = self.day_year_count + 14  # get today's load from test data; move to load generator
-            self.control_shift = 0
+            stop = self.day_year_count  # get today's load from test data; move to load generator
             todays_load = self.test_data[stop]
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
-            loads = []  # TAKE THIS AWAY FROM THE CONTROLLER!
             for i in range(num_steps):
-                # I need to abstract the entire controller away
-                control_action, predicted_load = charging_station.controller.compute_control(self.control_start_index,
-                                                                                             self.control_shift, stop,
-                                                                                             elec_price_vec)
-                loads.append(predicted_load[i, 0])
+                control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
                 charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
-                # update load with the true load, not prediction,
-                # to update MPC last observed load
                 buffer_battery.dynamics(control_action)
                 net_load = todays_load[self.time, 0] + buffer_battery.power
                 charging_station.update_load(net_load, todays_load[self.time, 0])  # set current load for charging station # UPDATED 6/8/22
-            self.control_shift = 0
-            # update season based on run_count (assumes start_time was set to 0)
-            run_count += 1
-            # check whether one year has passed
-            if self.day_year_count % 365 == 0:  # it has already run 365 days (This is wrt sampling Solar Generation)
+            # check whether one year has passed (not relevant since we don't run one full year yet)
+            if self.day_year_count % 365 == 0:
                 self.day_year_count = 0
-                buffer_battery.start = 0
-
             buffer_battery.update_capacity()  # update the linear aging vector to include linear aging for previous run
             self.aging_sim.run(buffer_battery)  # simulate battery aging
             charging_station.controller.battery_initial_SOC = charging_station.controller.battery_SOC.value[1, 0]
-            buffer_battery.start += 1
         self.time += 1
         self.update_steps(num_steps)
         return self.site_net_loads
@@ -320,8 +312,6 @@ class ChargingSimCentralized:
         self.scaled_test_data_onestep = [scaler.transform(np.reshape(test_data, (test_data.size, 1))), scaler]
 
     def load_config(self):
-        # use master config for loading other configs also change all these paths from literal
-
         configs_path = self.path_prefix + '/charging_sim/configs'
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
@@ -335,7 +325,7 @@ class ChargingSimCentralized:
         self.load_battery_params()  # update the battery params to have model dynamics for all cells loaded already
 
     def load_battery_params(self):
-        """ This loads the battery params directly into the sim, so parameters will be the same for all
+        """ Loads the battery params directly into the sim, so parameters will be the same for all
         batteries unless otherwise specified. battery_config must be attributed to do this"""
         # add the path prefix to make is system agnostic
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
@@ -438,9 +428,8 @@ class ChargingSimCentralized:
         return self.storage_sites[loc]
 
     def setup(self, power_nodes_list):
-        month = 7   # TODO: make as agnostic input (MAYBE)
         self.create_charging_stations(power_nodes_list)
-        self.initialize_price_loader(month)
+        self.initialize_price_loader(self.prices_config["month"])
         self.initialize_aging_sim()  # Battery aging
 
     def update_site_loads(self, load):

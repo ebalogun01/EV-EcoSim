@@ -7,7 +7,7 @@ class Optimization:
 
     # TODO: change all refs to battery_constraints to call controller
     def __init__(self, objective_type, objective, controller, power_demand, time_res, transformer, battery, time=0,
-                 name=None, solar=None, solver='ECOS'):
+                 name=None, solar=None, solver='MOSEK'):
         self._objective_type = objective_type
         self._objective = objective
         self._name = name
@@ -88,10 +88,10 @@ class Optimization:
     def run(self):
         """runs an instance of the problem
         Using ecos as default solver as it gives the lowest optimal value"""
-        self.aggregate_constraints()  # aggregate constraints
+        self.aggregate_constraints()  # aggregate co----nstraints
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
         self.problem = problem
-        result = problem.solve(solver=self.solver, verbose=False)
+        result = problem.solve(solver=self.solver, verbose=True)
         self.cost_per_opt.append(result)
         # print(problem.status) ACTIVATE LATER
         return result

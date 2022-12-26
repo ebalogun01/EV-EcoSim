@@ -4,11 +4,12 @@ import cvxpy as cp
 
 class Solar:
     """This simulates the ground-truth Solar conditions in location"""
-    def __init__(self, config, path_prefix=None):
+    def __init__(self, config, path_prefix=None, controller=None):
         self.path_prefix = path_prefix + '/'
         self.config = config
         cols = ['Month', 'Day', 'Hour', 'GHI', 'Temperature']
         self.cols = cols
+        self.controller = controller
         self.num_steps = self.config["num steps"]
         self.solar_df = pd.read_csv(self.path_prefix+self.config["data_path"])[cols]
         self.solar_vec = self.solar_df.to_numpy()
@@ -27,9 +28,12 @@ class Solar:
         self.data_np = None
         self.battery_power = cp.Variable((self.num_steps, 1))  # solar power to battery
         self.ev_power = cp.Variable((self.num_steps, 1))  # solar power to ev
-        self.constraints = []
+        self.grid_power = cp.Variable((self.num_steps, 1))  # TODO: consider including this in future work
         self.power = None
+        self.constraints = []
         self.month = 1
+        self.id = None
+        self.node = None
 
     def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
         if not self.month == month:
@@ -38,6 +42,7 @@ class Solar:
             self.month = month  # set month to current desired month
         self.power = self.data_np[start_idx:start_idx+num_steps]
         self.power = np.minimum(self.rating, np.reshape(self.power, desired_shape) * self.efficiency)
+        print("Solar Max Power is: {}kW".format(self.power.max()))
         # this ignores area for now. Can look at potential land-use/space use in future work
         return self.power
 
@@ -64,8 +69,15 @@ class Solar:
 
     def get_constraints(self):
         if not self.constraints:
-            self.constraints.append(self.power == self.battery_power + self.ev_power)
+            self.constraints = [self.power == self.battery_power + self.ev_power + self.grid_power,
+                                self.battery_power >= 0,
+                                self.ev_power >= 0,
+                                self.grid_power >= 0]
         return self.constraints
+
+    def update_history(self):
+        #TODO: add solar history update
+        return NotImplementedError
 
 def main():
     """THis is mainly to testing or generating new data purposes"""
