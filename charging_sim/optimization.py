@@ -88,10 +88,10 @@ class Optimization:
     def run(self):
         """runs an instance of the problem
         Using ecos as default solver as it gives the lowest optimal value"""
-        self.aggregate_constraints()  # aggregate co----nstraints
+        self.aggregate_constraints()  # aggregate constraints
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
         self.problem = problem
-        result = problem.solve(solver=self.solver, verbose=True)
+        result = problem.solve(solver=self.solver, verbose=False)
         self.cost_per_opt.append(result)
         # print(problem.status) ACTIVATE LATER
         return result

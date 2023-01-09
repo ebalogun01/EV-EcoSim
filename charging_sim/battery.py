@@ -88,7 +88,7 @@ class Battery:
         self.voltages = [self.voltage]  # to be updated at each time-step (seems expensive)
         self.current_voltage = 0.0
         self.true_voltage = np.array([])  # discharge/charge voltage per time-step
-        # self.Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
+        # self.Q = cp.Variable((stepsize + 1, 1))  # Amount of energy Kwh available in battery
         self.SOC = self.initial_SOC
         self.SOC_list = [self.initial_SOC]
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)   # optional
@@ -98,8 +98,8 @@ class Battery:
         self.total_amp_thruput = 0.0
         self.currents = [0]
 
-        # self.power_charge = cp.Variable((num_steps, 1))
-        # self.power_discharge = cp.Variable((num_steps, 1))
+        # self.power_charge = cp.Variable((stepsize, 1))
+        # self.power_discharge = cp.Variable((stepsize, 1))
         self.power = 0
         self.current = 0
         self.true_power = [0]
@@ -339,7 +339,7 @@ class Battery:
             print("charge current too high! Max voltage exceeded")
             # we de-rate the current if voltage is too high (exceeds max prescribed v)
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
-            current -= (self.voltage - self.max_voltage)/self.Ro
+            current -= (self.voltage - self.max_voltage)/self.cell_resistance   # changed from just Ro
             self.voltage = self.max_voltage #   WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
             print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
@@ -354,7 +354,7 @@ class Battery:
             return self.voltage
         elif self.voltage < self.min_voltage:
             print("discharge current too high ! Min voltage exceeded")
-            current += (self.min_voltage - self.voltage) / self.Ro
+            current += (self.min_voltage - self.voltage) / self.cell_resistance
             self.state_eqn(current, append=False)
             self.currents[-1] = current
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
@@ -374,6 +374,7 @@ class Battery:
 
     def state_eqn(self, current, append=True):
         """This holds the discretized state equations containing the battery dynamics at the cell-level."""
+        self.current = current  # added 01/09/22 to fix bug
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)

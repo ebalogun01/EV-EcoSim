@@ -1,5 +1,6 @@
 """Maybe stores general configurations and general functions"""
 import cvxpy as cp
+
 # import pandas as pd
 # from electricityPrices import PriceLoader
 # import numpy as np
@@ -19,18 +20,19 @@ objectives = {'Transformer Aging': [0, 0, 1],
               "Mixed": [0.1, 1, 0],
               "All": [1, 100, 1]}  # modifies weight placed on multi-obj based on priority/case study
 
+
 def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=False):
     # to be used later. For now, keep as-is.
     """Need to update from home load right now; maybe this can be useful in future opt."""
     # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
     lam = 10  # this needs to be guided
     # sparsity_cost_factor = 0.000001  # dynamically determine this in future based on load * cost
-    # sparsity_cost = cp.norm(controller.battery_power_charge, 1) + \
-    #                 cp.norm(controller.battery_power_discharge, 1)
+    sparsity_cost = cp.norm(controller.battery_current_grid, 1) + cp.norm(controller.battery_current_solar, 1) + \
+                    cp.norm(controller.battery_current_ev, 1)
+
     cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + controller.battery_power -
                                                                controller.solar.battery_power -
-                                                               controller.solar.ev_power -
-                                                               controller.solar.grid_power))))
+                                                               controller.solar.ev_power)))) + 0.0 * sparsity_cost
     if demand_charge:
         demand_charge_cost = cp.max(cp.pos(load + (controller.battery_power_charge +
                                                    controller.battery_power_discharge -
@@ -39,6 +41,7 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
                                                    controller.solar.grid_power)))
         cost_electricity += demand_charge_cost
     return cost_electricity
+
 
 def build_objective(mode, electricity_cost, battery_degradation_cost, transformer_cost=0):
     """Builds the objective function that we will minimize."""
@@ -73,5 +76,3 @@ def add_power_profile_to_object(battery, index, battery_power_profile):
         battery.power_profile['Nov'].append(battery_power_profile)
     if 335 <= index <= 365:
         battery.power_profile['Dec'].append(battery_power_profile)
-
-
