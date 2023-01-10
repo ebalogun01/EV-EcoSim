@@ -3,7 +3,6 @@ import os
 import numpy as np
 # import pandas as pd
 import gridlabd
-print("gridlab-D imported")
 import sim
 import time
 import gblvar

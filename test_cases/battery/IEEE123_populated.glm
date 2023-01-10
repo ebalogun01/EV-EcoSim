@@ -2395,8 +2395,8 @@ object dummy {
 }
 
 object voltdump {
-    name voltdump;
-    filemode "a";
+	name "voltdump";
+	filemode "a";
 	filename "volt_dump.csv";
 	interval 60;
 	version 1;

@@ -16,6 +16,7 @@ plt.style.use('seaborn-darkgrid')  # optional
 
 # TODO: start working on the solar module first and then remove all MPC simulations from this version and
 # clean code COMPLETELY
+# TODO: track the loads as well
 
 class ChargingSim:
     def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None):

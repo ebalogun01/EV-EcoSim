@@ -122,11 +122,12 @@ class MPC:
                 # plt.plot(self.solar.ev_power.value)
                 # plt.plot(self.solar.grid_power.value)
                 # plt.plot(self.solar.battery_power.value)
-                plt.plot(self.battery_current_solar.value)
                 plt.plot(self.battery_current_ev.value)
+                plt.plot(self.battery_current_solar.value)
                 plt.plot(self.battery_current_grid.value)
                 # plt.legend(["solar_ev", "solar_grid", "solar_battery", "solar", "ev", "grid"])
                 plt.legend(["solar", "ev", "grid"])
+                # plt.legend(["ev", "grid", "battery"])
                 plt.savefig("battery_actions_{}.png".format(self.time))
                 plt.close('all')
             self.time += 1
