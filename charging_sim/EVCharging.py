@@ -203,7 +203,7 @@ class ChargingSim:
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 charging_station.controller.reset_load()
-                print("time is: ", self.time, ". One day done!")
+                # print("time is: ", self.time, ". One day done!")
                 # elec_price_vec = self.price_loader.get_prices(self.time, self.stepsize)
                 self.time = 0  # reset time
             p = charging_station.controller.solar.get_power(self.time, self.num_steps)
@@ -236,7 +236,7 @@ class ChargingSim:
         #     plt.close('all')
         return self.site_net_loads
 
-    def load_results_summary(self, save_path_prefix):
+    def load_results_summary(self, save_path_prefix, plot=False):
         # TODO: selecting option for desired statistics
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         # charging_sites_keys = self.charging_sites.keys()
@@ -249,35 +249,37 @@ class ChargingSim:
             battery.save_sim_data(save_path_prefix)
 
         # SOME ADDITIONAL PLOTS BELOW
-        fig, ax1 = plt.subplots()
-        ax2 = ax1.twinx()
-        ax1.plot(battery.SOC_track[1:], label='battery SoC')
-        ax2.plot(battery.calendar_aging[1:], color='r', ls='--', label='calendar aging')
-        ax1.legend()
-        ax2.legend()
-        ax1.set_xlabel('Time step')
-        ax1.set_ylabel('SOC')
-        ax2.set_ylabel('Calendar aging')
-        plt.savefig(save_path_prefix + "/Calendar_SOC_plot.png")
-        plt.close('all')
+        if plot:
+            fig, ax1 = plt.subplots()
+            ax2 = ax1.twinx()
+            ax1.plot(battery.SOC_track[1:], label='battery SoC')
+            ax2.plot(battery.calendar_aging[1:], color='r', ls='--', label='calendar aging')
+            ax1.legend()
+            ax2.legend()
+            ax1.set_xlabel('Time step')
+            ax1.set_ylabel('SOC')
+            ax2.set_ylabel('Calendar aging')
+            plt.savefig(save_path_prefix + "/Calendar_SOC_plot.png")
+            plt.close('all')
 
-        fig, ax1 = plt.subplots()
-        ax2 = ax1.twinx()
-        ax1.plot(battery.SOC_track[1:], label='battery SOC')
-        ax2.plot(battery.cycle_aging[1:], color='r', ls='--', label='cycle aging')
-        ax1.set_xlabel('Time step')
-        ax1.set_ylabel('SOC')
-        ax2.set_ylabel('Cycle aging')
-        ax1.legend()
-        ax2.legend()
-        plt.savefig(save_path_prefix + "/Cycle_SOC_plot.png")
-        plt.close('all')
+            fig, ax1 = plt.subplots()
+            ax2 = ax1.twinx()
+            ax1.plot(battery.SOC_track[1:], label='battery SOC')
+            ax2.plot(battery.cycle_aging[1:], color='r', ls='--', label='cycle aging')
+            ax1.set_xlabel('Time step')
+            ax1.set_ylabel('SOC')
+            ax2.set_ylabel('Cycle aging')
+            ax1.legend()
+            ax2.legend()
+            plt.savefig(save_path_prefix + "/Cycle_SOC_plot.png")
+            plt.close('all')
 
         # plt.plot(battery.SOC_track[1:], battery.calendar_aging[1:], color='k')
         # plt.savefig("Calendar_SOC_plot_2.png")
         print("total calendar aging is {}".format(sum(battery.calendar_aging)))
         print("total cycle aging is {}".format(sum(battery.cycle_aging)))
         print("Final capacity (SOH) is {}".format(battery.SOH))
+        print("Total current throughput is {}".format(battery.total_amp_thruput))
 
 
 class ChargingSimCentralized:

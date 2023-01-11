@@ -62,8 +62,8 @@ class ChargingStation:
     def save_sim_data(self, save_prefix):
         import pandas as pd
         save_file_base = str(self.id) + '_' + self.loc
-        print(self.storage.voltages.shape, self.solar.battery_power.value.shape, self.solar.ev_power.value.shape,
-              self.solar.grid_power.value.shape)
+        # print(self.storage.voltages.shape, self.solar.battery_power.value.shape, self.solar.ev_power.value.shape,
+        #       self.solar.grid_power.value.shape)
         data = {'Control_current': np.array(self.controller.actions) * self.storage.topology[1],
                 'battery_voltage': self.storage.voltages * self.storage.topology[0],
                 'station_net_grid_load_kW': self.loads,

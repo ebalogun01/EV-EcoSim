@@ -5,8 +5,9 @@ import os
 
 
 
-os.chdir('/home/ec2-user/EV50_cosimulation/test_cases/base_case/')
+os.chdir('C:/Users/ebalo/Desktop/EV50_cosimulation/test_cases/battery/sim_0/')
 voltages = pd.read_csv('voltages.csv')
+plt.close('all')
 
 #process voltages
 cols=list(voltages.columns)
@@ -58,13 +59,14 @@ plt.figure(figsize=(10*0.8,6*0.8))
 for i in range(v.shape[1]):       
     plt.plot(v[:,i]/1000)
 
-plt.ylabel('Voltage (V)',fontsize=16)
+plt.ylabel('Voltage (kV)',fontsize=16)
 plt.xlabel('Time (min)',fontsize=16)
 ax=plt.gca()
 ax.tick_params(axis='both', which='major', labelsize=16)
 plt.grid()
-plt.show()
 plt.savefig('v.png')
+plt.show()
+plt.close()
 
 
 plt.figure(figsize=(10*0.8,6*0.8))
@@ -75,8 +77,9 @@ plt.xlabel('Time (min)',fontsize=16)
 ax=plt.gca()
 ax.tick_params(axis='both', which='major', labelsize=16)
 plt.grid()
-plt.show()
 plt.savefig('vnorm.png')
+plt.show()
+plt.close()
 
 
 plt.figure(figsize=(10*0.8,6*0.8))
@@ -85,11 +88,11 @@ plt.ylabel('Count',fontsize=16)
 plt.xlabel('Voltage (p.u.)',fontsize=16)
 ax=plt.gca()
 ax.tick_params(axis='both', which='major', labelsize=16)
-
 plt.xlim([0.7,1.08])
 plt.grid()
-plt.show()
 plt.savefig('vhist.png')
+plt.show()
+plt.close()
 
 
 plt.figure(figsize=(10*0.8,6*0.8))
@@ -99,5 +102,8 @@ plt.xlabel('Voltage phase (deg)',fontsize=16)
 ax=plt.gca()
 ax.tick_params(axis='both', which='major', labelsize=16)
 plt.grid()
-plt.show()
 plt.savefig('ahist.png')
+plt.show()
+plt.close()
+
+# CALCULATE PERCENTAGE VIOLATIONS
