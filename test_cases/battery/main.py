@@ -1,0 +1,3 @@
+import settings
+
+settings.init()

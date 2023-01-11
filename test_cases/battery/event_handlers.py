@@ -7,6 +7,7 @@ import sim
 import time
 import gblvar
 import json
+import settings
 
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')    # change this
@@ -20,7 +21,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'sim_'+str(gblvar.scenario['index'])   # how can I permanently save this state?
+save_folder_prefix = 'sim_'+str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
 
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
@@ -40,12 +41,14 @@ def on_init(t):
     '''Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd'''
     # get object lists from GridLAB-D
     # gridlabd.set_value("voltdump", "filename", save_folder_prefix)
+    # settings.init(save_folder_prefix)
+    # print("testing testing...", settings.sim_path_prefix)
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
-    np.savetxt(path_prefix+'/voltdump.txt', np.array([save_folder_prefix + '/']), fmt="%s")
-    gridlabd.set_value("voltdump", "filename", save_folder_prefix + "/" + 'volt_dump.csv')
+    gridlabd.set_value("voltdump", "filename", save_folder_prefix + 'volt_dump.csv')
     gblvar.node_list = find("class=node")
     gblvar.load_list = find("class=load")
+    gblvar.sim_file_path = save_folder_prefix
     gblvar.tn_list = find("class=triplex_node")
     # print(gridlabd.get_object(gblvar.tn_list[0]['power_12']))
     gblvar.trans_list = find("class=transformer")
@@ -55,6 +58,7 @@ def on_init(t):
     EV_charging_sim.setup(dcfc_nodes,  scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     os.mkdir(save_folder_prefix)
+    np.savetxt(save_folder_prefix + 'voltdump.txt', np.array([save_folder_prefix]), fmt="%s")
     return True
 
 
@@ -178,14 +182,16 @@ def on_term(t):
     '''Stuff to do at the very end of the whole simulation, like saving data'''
     # os.chdir(save_folder_prefix)
     # print(os.getcwd())
+    import voltdump2
+    voltdump2.parse_voltages(save_folder_prefix)
     global tic
     EV_charging_sim.load_results_summary(save_folder_prefix)
-    np.savetxt(save_folder_prefix+'/volt_mag.txt', gblvar.vm)
-    np.savetxt(save_folder_prefix+'/volt_phase.txt', gblvar.vp)
-    np.savetxt(save_folder_prefix+'/nom_vmag.txt', gblvar.nom_vmag)
-    np.savetxt(save_folder_prefix+'/trans_To.txt', gblvar.trans_To)
-    np.savetxt(save_folder_prefix+'/trans_Th.txt', gblvar.trans_Th)
-    with open(save_folder_prefix+'/scenario.json', "w") as outfile:
+    np.savetxt(save_folder_prefix+'volt_mag.txt', gblvar.vm)
+    np.savetxt(save_folder_prefix+'volt_phase.txt', gblvar.vp)
+    np.savetxt(save_folder_prefix+'nom_vmag.txt', gblvar.nom_vmag)
+    np.savetxt(save_folder_prefix+'trans_To.txt', gblvar.trans_To)
+    np.savetxt(save_folder_prefix+'trans_Th.txt', gblvar.trans_Th)
+    with open(save_folder_prefix+'scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
     # pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(save_folder_prefix+'/trans_Th.csv')
     # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')

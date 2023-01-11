@@ -11,8 +11,8 @@ if not gblvar.charging_sim_path_append:
 
 # RUN TYPE
 sequential_run = False
-parallel_run = False
-single_run = True
+parallel_run = True
+single_run = False
 
 # BATTERY SCENARIOS
 num_vars = 6
@@ -43,12 +43,13 @@ def run(scenario):
 
 def run_scenarios_parallel():
     scenarios = make_scenarios()
+    start_idx = 0
     num_cores = mp.cpu_count()
     if num_cores > 1:
         use_cores_count = num_cores - 2  # leave one out
         print("Running {} parallel scenarios...".format(use_cores_count))
         pool = mp.Pool(use_cores_count)
-        pool.map(run, [scenarios[i] for i in range(num_cores)])
+        pool.map(run, [scenarios[i] for i in range(num_cores+start_idx)])
 
 
 def run_scenarios_sequential():
@@ -62,9 +63,9 @@ def run_scenarios_sequential():
 def run_scenario_single():
     """This function just runs one scenario"""
     # Keep changing this for each run
-    Er_idx = 2
-    c_rate_idx = 1
-    idx = 11
+    Er_idx = 0
+    c_rate_idx = 2
+    idx = 2
     scenario = {'pack_energy_cap': energy_ratings[Er_idx],
                 'max_c_rate': max_c_rates[c_rate_idx],
                 'index': idx}

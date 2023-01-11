@@ -118,19 +118,19 @@ class MPC:
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
             # change to current
-            if self.time % 96 == 0:
-                # plt.plot(self.solar.ev_power.value)
-                # plt.plot(self.solar.grid_power.value)
-                # plt.plot(self.solar.battery_power.value)
-                plt.plot(self.battery_current_ev.value)
-                plt.plot(self.battery_current_solar.value)
-                plt.plot(self.battery_current_grid.value)
-                # plt.legend(["solar_ev", "solar_grid", "solar_battery", "solar", "ev", "grid"])
-                plt.legend(["solar", "ev", "grid"])
-                # plt.legend(["ev", "grid", "battery"])
-                plt.savefig("battery_actions_{}.png".format(self.time))
-                plt.close('all')
-            self.time += 1
+            # if self.time % 96 == 0:
+            #     # plt.plot(self.solar.ev_power.value)
+            #     # plt.plot(self.solar.grid_power.value)
+            #     # plt.plot(self.solar.battery_power.value)
+            #     plt.plot(self.battery_current_ev.value)
+            #     plt.plot(self.battery_current_solar.value)
+            #     plt.plot(self.battery_current_grid.value)
+            #     # plt.legend(["solar_ev", "solar_grid", "solar_battery", "solar", "ev", "grid"])
+            #     plt.legend(["solar", "ev", "grid"])
+            #     # plt.legend(["ev", "grid", "battery"])
+            #     plt.savefig("battery_actions_{}.png".format(self.time))
+            #     plt.close('all')
+            # self.time += 1
 
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
             self.actions.append(control_action)

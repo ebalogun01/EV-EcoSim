@@ -6,7 +6,10 @@ import os
 
 # Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.
 
+
 # TODO: add battery simulation resolution control so can be different from control as well...
+#  ALso track the number of voltage control violations during control computations in the future
+
 class Battery:
     """
      Properties:
@@ -38,7 +41,7 @@ class Battery:
         self.pack_resistance = None
         self._eff = config["round-trip_efficiency"]
         self.max_c_rate = config["max_c_rate"]
-        self.battery_cost = 200 # this is in $/kWh
+        self.battery_cost = 200     # this is in $/kWh
         # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours
 
         # LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL

@@ -2,7 +2,7 @@
 
 clock {
 	starttime '2018-07-01 00:00:00';
-	stoptime '2018-07-31 23:59:00';
+	stoptime '2018-07-01 00:30:00';
 }
 
 module tape;
@@ -2400,7 +2400,5 @@ object voltdump {
 	filename "volt_dump.csv";
 	interval 60;
 	version 1;
-}
-
-script on_term "python3 voltdump2.py";
+};
 

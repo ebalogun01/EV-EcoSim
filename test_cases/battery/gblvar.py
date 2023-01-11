@@ -8,6 +8,9 @@ from sklearn.preprocessing import StandardScaler
 #   flag for scenarios
 charging_sim_path_append = False
 
+#   simulation file path
+sim_file_path = ''
+
 #iteration number
 it=0
 
