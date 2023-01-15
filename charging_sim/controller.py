@@ -133,12 +133,15 @@ class MPC:
             # self.time += 1
 
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
-            self.actions.append(control_action)
+            # self.actions.append(control_action)
+            self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
             if len(self.storage.control_current) < num_steps:
-                self.storage.control_current = np.append(self.storage.control_current, control_action)
+                # self.storage.control_current = np.append(self.storage.control_current, control_action)
+                self.storage.control_current += control_action,
             else:
-                self.storage.control_current = np.array([control_action])  # it should be only updating one but then
+                self.storage.control_current += control_action,
+                # self.storage.control_current = np.array([control_action])  # it should be only updating one but then
         #  need to get all the states here after the first action is taken
         return control_action
 

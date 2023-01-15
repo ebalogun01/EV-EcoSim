@@ -31,10 +31,15 @@ class ChargingStation:
 
     def update_load(self, net_grid_load, ev_load):
         self.current_load = net_grid_load + self.auxiliary_power
-        self.loads.append(net_grid_load)  # net load station pulls from grid, not load from EV
-        self.total_load.append(ev_load + self.auxiliary_power)
-        self.solar_power_ev.append(self.solar.ev_power.value[0, 0])
-        self.solar_power_grid.append(self.solar.grid_power.value[0, 0])
+        # self.loads.append(net_grid_load)  # net load station pulls from grid, not load from EV
+        # self.total_load.append(ev_load + self.auxiliary_power)
+        # self.solar_power_ev.append(self.solar.ev_power.value[0, 0])
+        # self.solar_power_grid.append(self.solar.grid_power.value[0, 0])
+
+        self.loads += net_grid_load,  # net load station pulls from grid, not load from EV
+        self.total_load += ev_load + self.auxiliary_power,
+        self.solar_power_ev += self.solar.ev_power.value[0, 0],
+        self.solar_power_grid += self.solar.grid_power.value[0, 0],
 
     def is_EV_arrived(self):
         if self.current_load > 0:

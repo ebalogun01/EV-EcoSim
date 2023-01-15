@@ -97,7 +97,7 @@ class Battery:
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)   # optional
 
         self.Q_initial = 0  # include the units here
-        self.control_current = np.array([])
+        self.control_current = []   # changed to a list - will be more efficient
         self.total_amp_thruput = 0.0
         self.currents = [0]
 
@@ -285,9 +285,10 @@ class Battery:
                 'calendar_aging': np.array(self.calendar_aging),
                 'power_kW': np.array(self.true_power)}
         pd.DataFrame(data).to_csv(save_prefix + '/battery_sim_{}.csv'.format(save_file_base))
+        total_cycles = 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2)
+        np.savetxt(save_prefix + '/total_batt_cycles_{}.csv'.format(save_file_base), [total_cycles])
         print('***** Successfully saved simulation outputs to: ', 'battery_sim_{}.csv'.format(save_file_base))
-        print("Est. tot. no. of cycles is: ", 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2),
-              'cycles')
+        print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
     def visualize_voltages(self):
         pass
