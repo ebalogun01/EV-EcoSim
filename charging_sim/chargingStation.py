@@ -64,8 +64,9 @@ class ChargingStation:
         save_file_base = str(self.id) + '_' + self.loc
         # print(self.storage.voltages.shape, self.solar.battery_power.value.shape, self.solar.ev_power.value.shape,
         #       self.solar.grid_power.value.shape)
-        data = {'Control_current': np.array(self.controller.actions) * self.storage.topology[1],
-                'battery_voltage': self.storage.voltages * self.storage.topology[0],
+        # print(self.storage.voltages)
+        data = {'Control_current': [c*self.storage.topology[1] for c in self.controller.actions],
+                'battery_voltage': [v*self.storage.topology[0] for v in self.storage.voltages],
                 'station_net_grid_load_kW': self.loads,
                 'station_total_load_kW': self.total_load,
                 'station_solar_load_ev': self.solar_power_ev,

@@ -236,7 +236,7 @@ class ChargingSim:
         #     plt.close('all')
         return self.site_net_loads
 
-    def load_results_summary(self, save_path_prefix, plot=False):
+    def load_results_summary(self, save_path_prefix, plot=True):
         # TODO: selecting option for desired statistics
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         # charging_sites_keys = self.charging_sites.keys()

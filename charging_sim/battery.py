@@ -210,7 +210,8 @@ class Battery:
         """This is not true capacity but anticipated capacity based on linear model."""
         aging_value = self.get_aging_value() * 0.2  # do not multiply by 0.2 to keep comparable
         self.total_aging += aging_value
-        self.linear_aging.append(aging_value)  # this is to ADD aging for each time step
+        # self.linear_aging.append(aging_value)  # this is to ADD aging for each time step
+        self.linear_aging += aging_value,
 
     def get_Ro(self):
         """This can be updated later to include current...
@@ -225,8 +226,10 @@ class Battery:
         self.Q_initial = self.Q.value[action_length]
 
     def track_SOC(self, SOC):
-        self.SOC_track.append(SOC)
-        self.SOC_list.append(SOC)
+        # self.SOC_track.append(SOC)
+        # self.SOC_list.append(SOC)
+        self.SOC_track += SOC,
+        self.SOC_list += SOC,
 
     def update_max_current(self, verbose=False):
         self.max_current = self.max_c_rate * self.cap
@@ -235,7 +238,8 @@ class Battery:
 
     def update_voltage(self, voltage):
         self.current_voltage = voltage  # I should be updating initial voltage with new voltage measurement
-        self.predicted_voltages.append(voltage)
+        # self.predicted_voltages.append(voltage)
+        self.predicted_voltages += voltage,
         # print("Current voltage estimate is: ", voltage)
 
     def get_properties(self):
@@ -282,7 +286,7 @@ class Battery:
                 'power_kW': np.array(self.true_power)}
         pd.DataFrame(data).to_csv(save_prefix + '/battery_sim_{}.csv'.format(save_file_base))
         print('***** Successfully saved simulation outputs to: ', 'battery_sim_{}.csv'.format(save_file_base))
-        print("Est. tot. no. of cycles is: ", 0.5*(self.total_amp_thruput / self.nominal_pack_cap),
+        print("Est. tot. no. of cycles is: ", 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2),
               'cycles')
 
     def visualize_voltages(self):
@@ -316,7 +320,8 @@ class Battery:
             self.SOC = self.max_SOC
             self.track_SOC(self.SOC)
             self.state_eqn(self.current)
-            self.voltages = np.append(self.voltages, self.voltage)
+            # self.voltages = np.append(self.voltages, self.voltage)
+            self.voltages += self.voltage,
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             return self.voltage
         if self.SOC < self.min_SOC:
@@ -329,7 +334,8 @@ class Battery:
             self.track_SOC(self.SOC)
             self.current = -allowable_curr_thruput / self.dt  # readjusting current
             self.state_eqn(self.current)     # update states
-            self.voltages = np.append(self.voltages, self.voltage)
+            # self.voltages = np.append(self.voltages, self.voltage)
+            self.voltages += self.voltage,
             self.total_amp_thruput += abs(self.current) * self.dt  # cycle counting
             # self.currents.append(current)
             return self.voltage
@@ -351,7 +357,8 @@ class Battery:
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
             # raise Exception("Max voltage exceeded even after max SOC flag!!!") this can happen
-            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.voltages += self.voltage,  # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
@@ -363,14 +370,16 @@ class Battery:
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
             self.voltage = self.min_voltage
-            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.voltages += self.voltage, # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
 
         self.current = current
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-        self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        self.voltages += self.voltage,  # numpy array
         self.track_SOC(self.SOC)
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
         return self.voltage
@@ -387,8 +396,10 @@ class Battery:
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
         if append:
-            self.currents.append(current)
-            self.true_power.append(self.power)
+            # self.currents.append(current)
+            # self.true_power.append(self.power)
+            self.currents += current,
+            self.true_power += self.power,
 
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
