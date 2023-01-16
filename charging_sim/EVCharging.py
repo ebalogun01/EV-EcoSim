@@ -89,7 +89,7 @@ class ChargingSim:
         #  this stores all battery objects in the network
         buffer_battery = Battery(config=self.battery_config, controller=controller)  # remove Q_initial later
         buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
-        self.battery_objects.append(buffer_battery)  # add to list of battery objects
+        self.battery_objects += buffer_battery,  # add to list of battery objects
         buffer_battery.num_cells = buffer_battery.battery_setup()
         return buffer_battery
 
@@ -180,7 +180,7 @@ class ChargingSim:
             print('New scenario updated...')
 
     def update_site_loads(self, load):
-        self.site_net_loads.append(load)
+        self.site_net_loads += load,
 
     def update_steps(self, steps):
         self.steps += steps
@@ -206,7 +206,7 @@ class ChargingSim:
                 # print("time is: ", self.time, ". One day done!")
                 # elec_price_vec = self.price_loader.get_prices(self.time, self.stepsize)
                 self.time = 0  # reset time
-            p = charging_station.controller.solar.get_power(self.time, self.num_steps)
+            p = charging_station.controller.solar.get_power(self.time, self.num_steps)  # can set month for multi-month sim later
             buffer_battery = charging_station.storage
             self.control_start_index = stepsize * self.day_year_count
             # stop = self.day_year_count  # get today's load from test data; move to load generator
@@ -218,7 +218,7 @@ class ChargingSim:
             todays_load.shape = (todays_load.size, 1)
             for i in range(stepsize):
                 control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
-                charging_station.controller.load = np.append(charging_station.controller.load, todays_load[i])
+                charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
                 net_load = todays_load[self.time, 0] + buffer_battery.power - charging_station.solar.power[self.time, 0]
                 charging_station.update_load(net_load, todays_load[self.time, 0])  # set current load for charging station # UPDATED 6/8/22
@@ -354,7 +354,7 @@ class ChargingSimCentralized:
         #  this stores all battery objects in the network
         buffer_battery = Battery(config=self.battery_config, controller=controller)  # remove Q_initial later
         buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
-        self.battery_objects.append(buffer_battery)  # adding battery object to battery list
+        self.battery_objects += buffer_battery,  # adding battery object to battery list
         buffer_battery.num_cells = buffer_battery.battery_setup()
         return buffer_battery
 
@@ -445,7 +445,7 @@ class ChargingSimCentralized:
         self.initialize_aging_sim()  # Battery aging
 
     def update_site_loads(self, load):
-        self.site_net_loads.append(load)
+        self.site_net_loads += load,
 
     def update_steps(self, steps):
         self.steps += steps

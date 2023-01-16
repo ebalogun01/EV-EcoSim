@@ -35,7 +35,7 @@ class MPC:
         self.storage = storage
         self.storage_constraints = None
 
-        self.load = np.array([])
+        self.load = []
         self.time = 0
         self.w = 0
         self.costs = []
@@ -192,7 +192,7 @@ class MPC:
 
     def reset_load(self):
         """This is done after one full day is done."""
-        self.load = np.array([])
+        self.load = []
         self.full_day_prediction = np.array([])
 
 
@@ -269,7 +269,7 @@ class MPCBatt:
             self.full_day_prediction.shape = (num_steps, 1)
         prediction_next_step = self.scaler_onestep.inverse_transform(LSTM2.predict(test_input_onestep))
         index = len(self.load) + 1  # this is tracking what time step we are at
-        prediction = np.append(self.load, prediction_next_step)  # include previous day's known load
+        prediction = self.load + (prediction_next_step,)  # include previous day's known load
         prediction = np.append(prediction, self.full_day_prediction[index:, :])
         return prediction
 
@@ -304,7 +304,7 @@ class MPCBatt:
 
     def reset_load(self):
         """This is done after one full day is done."""
-        self.load = np.array([])
+        self.load = []
         self.full_day_prediction = np.array([])
 
 

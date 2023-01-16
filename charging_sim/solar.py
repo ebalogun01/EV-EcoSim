@@ -25,17 +25,18 @@ class Solar:
         self.rating = self.config['rating'] * 1000  # convert from MW to kW
         self.area = self.rating * 1000 / 150    # approximate area using 150W/m2
         self.data = None
-        self.data_np = None
+        # self.data_np = None
+        self.data_np = self.solar_df[self.solar_df["Month"] == self.start_month]['GHI'].to_numpy()
         self.battery_power = cp.Variable((self.num_steps, 1), nonneg=True)  # solar power to battery
         self.ev_power = cp.Variable((self.num_steps, 1), nonneg=True)  # solar power to ev
         self.grid_power = cp.Variable((self.num_steps, 1), nonneg=True)  # TODO: consider including this in future work
         self.power = None
         self.constraints = []
-        self.month = 1
+        self.month = self.start_month   # initializing for the start of the simulation
         self.id = None
         self.node = None
 
-    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
+    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=1):
         if not self.month == month:
             # GHI = Global Horizontal Irradiance
             print("setting month for solar power...")
