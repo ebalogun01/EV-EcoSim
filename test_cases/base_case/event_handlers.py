@@ -19,7 +19,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_prefix = 'test_16'
+save_prefix = 'dev_3'
 num_charging_nodes = 3  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False     # toggle for central vs. decentralized storage
 EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # Initialize Charging Simulation

@@ -90,13 +90,12 @@ class ChargingSim:
         buffer_battery = Battery(config=self.battery_config, controller=controller)  # remove Q_initial later
         buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
         self.battery_objects += buffer_battery,  # add to list of battery objects
-        buffer_battery.num_cells = buffer_battery.battery_setup()
+        buffer_battery.num_cells = buffer_battery.battery_setup() # THIS IS THE PROBLEM
         return buffer_battery
 
     def create_charging_stations(self, power_nodes_list):
         # add flexibility for multiple units at one charging node?
         # No need, can aggregate them and have a different arrival sampling method
-        self.load_config()
         if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
             print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
@@ -165,11 +164,13 @@ class ChargingSim:
         return self.storage_sites
 
     def setup(self, power_nodes_list, scenario=None):
+        # TODO: this has a bug; scenario MUST be loaded first
         """This is used to set up charging station locations and simulations"""
+        self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
+        self.update_scenario(scenario)  # scenarios for study
         self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
         self.initialize_price_loader(self.prices_config["month"])
         self.initialize_aging_sim()  # Battery aging
-        self.update_scenario(scenario)  # scenarios for study
         self.initialize_solar_module()  # this loads solar module
 
     def update_scenario(self, scenario=None):

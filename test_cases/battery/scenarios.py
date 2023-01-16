@@ -6,12 +6,12 @@ import gblvar
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
     gblvar.charging_sim_path_append = True
-    print('append 1')
+    # print('append 1')
 
 
 # RUN TYPE
-sequential_run = False
-parallel_run = True
+sequential_run = True
+parallel_run = False
 single_run = False
 
 # BATTERY SCENARIOS
@@ -19,7 +19,7 @@ num_vars = 6
 min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
-energy_ratings = [80, 100, 150, 200, 250]
+energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
 max_c_rates = [0.2, 0.5, 1, 1.5, 2]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
@@ -46,17 +46,21 @@ def run_scenarios_parallel():
     start_idx = 0
     num_cores = mp.cpu_count()
     if num_cores > 1:
-        use_cores_count = num_cores - 2  # leave one out
+        use_cores_count = num_cores - 1  # leave one out
         print("Running {} parallel scenarios...".format(use_cores_count))
         pool = mp.Pool(use_cores_count)
-        pool.map(run, [scenarios[i] for i in range(num_cores+start_idx)])
+        pool.map(run, [scenarios[i] for i in range(start_idx, min(num_cores+start_idx, len(scenarios)))])
 
 
 def run_scenarios_sequential():
     scenarios = make_scenarios()
     for scenario in scenarios:
-        import master_sim
-        master_sim.run(scenario)
+        process = mp.Process(target=run, args=(scenario,))
+        process.start()
+        process.join()
+    # for scenario in scenarios:
+    #     import master_sim
+    #     master_sim.run(scenario)
         # time.sleep(5)
 
 

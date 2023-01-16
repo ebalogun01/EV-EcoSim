@@ -10,7 +10,7 @@ import json
 
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
-    print('append 2')
+    # print('append 2')
 from EVCharging import ChargingSim
 
 print("*****EV Charging Station Simulation Imported Successfully*****")
@@ -21,7 +21,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'sim_' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
+save_folder_prefix = 'test_' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
 
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
@@ -112,14 +112,8 @@ def on_precommit(t):
 
     ####################### SIMULATE ##################################
 
-    # propagage transformer state
+    # propagate transformer state
     sim.sim_transformer()
-
-    ### add in battery simulation here
-
-    ########################### OPTIMIZE #####################################################
-
-    # xxx = opt.opt_dummy()   # this is done in the controller Optimize abstraction
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
@@ -183,6 +177,7 @@ def on_term(t):
     # os.chdir(save_folder_prefix)
     # print(os.getcwd())
     import voltdump2
+    import pandas as pd
     voltdump2.parse_voltages(save_folder_prefix)
     global tic
     EV_charging_sim.load_results_summary(save_folder_prefix)
@@ -193,7 +188,10 @@ def on_term(t):
     np.savetxt(save_folder_prefix + 'trans_Th.txt', gblvar.trans_Th)
     with open(save_folder_prefix + 'scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
-    # pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(save_folder_prefix+'/trans_Th.csv')
+    print(gblvar.trans_Th.squeeze().shape, len(gblvar.trans_list), len(gblvar.nom_vmag))
+    # print(gblvar.trans_list)
+    pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(save_folder_prefix+'/trans_Th.csv')
+
     # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')
     toc = time.time()
     print("Total run time: ", (toc - tic) / 60, "minutes")
