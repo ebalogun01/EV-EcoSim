@@ -1,5 +1,6 @@
 # ignores files of these types
 **.iml
+**.png
 **.csv
 **.mat
 **.dss
