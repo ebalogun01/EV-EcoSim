@@ -1,4 +1,5 @@
 # ignores files of these types
+**.iml
 **.csv
 **.mat
 **.dss
@@ -15,7 +16,6 @@ env
 ev50
 *.png
 **.player
-feeders
 test_cases
 test_cases/*.txt/
 test_cases/*.csv/
