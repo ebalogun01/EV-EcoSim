@@ -9,6 +9,7 @@
 **.xml
 **.xls
 **.npy
+**.pyc
 BatteryData
 CP_ProjectData
 Datasets-CP
@@ -16,7 +17,7 @@ Datasets
 env
 ev50
 *.png
-**.player
+**.dummy2.player
 test_cases
 test_cases/*.txt/
 test_cases/*.csv/
