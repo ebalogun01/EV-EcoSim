@@ -4,7 +4,7 @@
 'box_pts':60,
 'base_file_dir':'C:/Users/ebalo/Desktop/EV50_cosimulation/feeders',
 'test_case_dir':'C:/Users/ebalo/Desktop/EV50_cosimulation/test_cases/base_case',
-'load_data_dir':'C:/Users/ebalo/Desktop/EV50_cosimulation/feeder_population',
+'load_data_dir':'C:/Users/ebalo/Desktop/EV50_cosimulation/baseloadData',
 'starttime':"'2018-07-01 00:00:00'",
 'endtime':"'2018-07-31 23:59:59'",
 'python_module':'event_handlers',
