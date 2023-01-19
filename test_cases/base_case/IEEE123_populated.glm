@@ -1,8 +1,8 @@
 #set minimum_timestep=60
 
 clock {
-	starttime '2018-07-01 00:00:00';
-	stoptime '2018-07-31 23:59:59';
+	starttime '2018-01-01 00:00:00';
+	stoptime '2018-01-31 23:59:59';
 }
 
 module tape;

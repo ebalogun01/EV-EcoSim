@@ -21,3 +21,4 @@ ev50
 test_cases
 test_cases/*.txt/
 test_cases/*.csv/
+mosek
