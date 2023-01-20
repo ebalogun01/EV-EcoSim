@@ -1,5 +1,7 @@
 {
- "data_path": "/charging_sim/annual_TOU_rate_15min.csv",
+ "data_path": "/elec_rates/annual_TOU_rate_15min.csv",
  "config_path": "/charging_sim/configs/prices.json",
- "resolution": 15
+ "resolution": 15,
+ "month": 7,
+ "notes": "resolutions from data and resolution field should match"
 }

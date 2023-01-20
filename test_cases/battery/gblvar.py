@@ -1,10 +1,15 @@
-import os
 import numpy as np
 import pandas as pd
 import pickle
 from sklearn.preprocessing import StandardScaler
 
 #define global python simulation variables and default initial values
+
+#   flag for scenarios
+charging_sim_path_append = False
+
+#   simulation file path
+sim_file_path = ''
 
 #iteration number
 it=0

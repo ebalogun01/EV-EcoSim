@@ -167,17 +167,18 @@ key_index=max(glm_dict_base.keys())+1
 obj_type_base[key_index]={'module':python_module}
 glm_dict_base[key_index]={}
 
-# add script on term statement
+# add script on term statement (CAN MODIFY THIS)
 sync_list_base.append('script on_term "python3 voltdump2.py";')
 
 
 #add voltdump
 key_index=max(glm_dict_base.keys())+1
 obj_type_base[key_index]={'object':'voltdump'}
-glm_dict_base[key_index]={'filemode':'"a"',
-             'filename':'"volt_dump.csv"',
-             'interval':'60',
-             'version':'1'}
+glm_dict_base[key_index]={'name': '"voltdump"',
+                          'filemode':'"a"',
+                          'filename':'"volt_dump.csv"',
+                          'interval':'60',
+                          'version':'1'}
     
 #check if minimum timestep is already set
 if ('#set minimum_timestep=60' in globals_list_base)==False:

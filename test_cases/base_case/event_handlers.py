@@ -19,6 +19,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
+save_prefix = 'dev_3'
 num_charging_nodes = 3  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False     # toggle for central vs. decentralized storage
 EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # Initialize Charging Simulation
@@ -41,6 +42,9 @@ def on_init(t):
 
     # Configure EV charging simulation...NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
     EV_charging_sim.setup(list(gblvar.tn_list))
+    print("Making results directory at: ", save_prefix)
+    os.mkdir(save_prefix)
+
     return True
 
 
@@ -107,7 +111,7 @@ def on_precommit(t):
 
 def on_term(t):
     global tic
-    EV_charging_sim.load_results_summary()
+    EV_charging_sim.load_results_summary(save_prefix)
     np.savetxt('volt_mag.txt', gblvar.vm)
     np.savetxt('volt_phase.txt', gblvar.vp)
     np.savetxt('nom_vmag.txt', gblvar.nom_vmag)

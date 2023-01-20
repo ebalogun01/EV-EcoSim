@@ -24,7 +24,6 @@ class PriceLoader:
         self.month = -100 # July
 
     def get_prices(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
-        # TODO: make this number of steps agnostic - this is currently hard-coded
         price_vector = self.data_np[start_idx:start_idx + num_steps]
         price_vector = np.reshape(price_vector, desired_shape)
         return price_vector
@@ -40,13 +39,13 @@ class PriceLoader:
         temp_data = np.zeros(input_data_shape * num_repetitions)
         start_idx = 0
         for datapoint in self.data_np:
-            print(datapoint)
+            # print(datapoint)
             temp_data[start_idx:start_idx + num_repetitions] = datapoint
             start_idx += 4
         self.data = pd.DataFrame(data=temp_data)
         self.data_np = temp_data
         # change the paths below very soon
-        np.savetxt(self.path_prefix + "/charging_sim/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
+        np.savetxt(self.path_prefix + "/elec_rates/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
 
 
 def main():

@@ -4,7 +4,7 @@ import glm_mod_functions
 import os
 import pandas
 import datetime
-import sklearn.preprocessing
+# import sklearn.preprocessing
 import numpy as np
 import ast
 import pickle
@@ -175,7 +175,8 @@ sync_list_base.append('script on_term "python3 voltdump2.py";')
 # add voltdump
 key_index = max(glm_dict_base.keys()) + 1
 obj_type_base[key_index] = {'object': 'voltdump'}
-glm_dict_base[key_index] = {'filemode': '"a"',
+glm_dict_base[key_index] = {'name': '"voltdump"',
+                            'filemode': '"a"',
                             'filename': '"volt_dump.csv"',
                             'interval': '60',
                             'version': '1'}
@@ -255,7 +256,7 @@ admd = 3
 
 # % generate glm for homes
 
-# Initiatize dictionaries and lists
+# Initialize dictionaries and lists
 glm_house_dict = {}
 obj_type = {}
 globals_list = []
@@ -308,7 +309,7 @@ key_index = key_index + 1
 standard_rating = False
 glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                         'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
-num_charging_nodes = 5  # make param later
+num_charging_nodes = param_dict['num_dcfc_nodes']
 num_charging_stalls_per_node = 4  # make param later
 charging_stall_base_rating = 50  # kW (make param later)
 trans_standard_ratings = np.array([3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA
@@ -316,10 +317,9 @@ DCFC_voltage = 480  # volts (480 volts is the most common DCFC transformer Secon
 DCFC_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_node  # kw
 load_pf = 0.9  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
 DCFC_trans_power_rating_kVA = DCFC_trans_power_rating_kW / load_pf
-proximal_std_rating = trans_standard_ratings[np.argmin(trans_standard_ratings - DCFC_trans_power_rating_kVA)]
+proximal_std_rating = trans_standard_ratings[np.argmin(trans_standard_ratings - DCFC_trans_power_rating_kVA)]   # find the closest transformer rating
 if standard_rating:
     DCFC_trans_power_rating_kVA = proximal_std_rating
-# charging_bus_subset_idx = random.sample(list(range(len(bus_list))), num_charging_nodes)
 charging_bus_subset_list = random.sample(list(glm_subset_dict_dcfc.values()), num_charging_nodes)
 
 #   TODO: find more accurate properties for the transformer

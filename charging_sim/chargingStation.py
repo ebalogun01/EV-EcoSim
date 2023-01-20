@@ -2,20 +2,25 @@ from utils import num_steps
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class ChargingStation:
     """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
-    def __init__(self, storage, config, controller, status='idle'):
+
+    def __init__(self, storage, config, controller, solar=None, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
         self.loc = config["location"]
         self.storage = storage
         # removed setting storage id as charging station ID
         self.capacity = config["power_cap"]
+        self.solar = solar
         self.status = status
         self.loads = [0]
         self.total_load = [0]
+        self.solar_power_ev = [0]
+        self.solar_power_grid = [0]
         self.power = np.zeros((num_steps, 1))
-        self.auxiliary_power = 0.01 # this is in kilo-watts
+        self.auxiliary_power = 0.01  # this is in kilo-watts
         self.current_load = self.auxiliary_power
         self.cooling_pump = {}  # properties of the charging station cooling pump
         # COOLING LOAD SHOULD BE A FUNCTION OF CURRENT
@@ -26,8 +31,15 @@ class ChargingStation:
 
     def update_load(self, net_grid_load, ev_load):
         self.current_load = net_grid_load + self.auxiliary_power
-        self.loads.append(net_grid_load)     # net load station pulls from grid, not load from EV
-        self.total_load.append(ev_load)
+        # self.loads.append(net_grid_load)  # net load station pulls from grid, not load from EV
+        # self.total_load.append(ev_load + self.auxiliary_power)
+        # self.solar_power_ev.append(self.solar.ev_power.value[0, 0])
+        # self.solar_power_grid.append(self.solar.grid_power.value[0, 0])
+
+        self.loads += net_grid_load,  # net load station pulls from grid, not load from EV
+        self.total_load += ev_load + self.auxiliary_power,
+        self.solar_power_ev += self.solar.ev_power.value[0, 0],
+        self.solar_power_grid += self.solar.grid_power.value[0, 0],
 
     def is_EV_arrived(self):
         if self.current_load > 0:
@@ -55,10 +67,16 @@ class ChargingStation:
     def save_sim_data(self, save_prefix):
         import pandas as pd
         save_file_base = str(self.id) + '_' + self.loc
-        data = {'Control_current': np.array(self.controller.actions) * self.storage.topology[1],
-                'battery_voltage': self.storage.voltages * self.storage.topology[0],
+        # print(self.storage.voltages.shape, self.solar.battery_power.value.shape, self.solar.ev_power.value.shape,
+        #       self.solar.grid_power.value.shape)
+        # print(self.storage.voltages)
+        data = {'Control_current': [c*self.storage.topology[1] for c in self.controller.actions],
+                'battery_voltage': [v*self.storage.topology[0] for v in self.storage.voltages],
                 'station_net_grid_load_kW': self.loads,
-                'station_total_load_kW': self.total_load}
+                'station_total_load_kW': self.total_load,
+                'station_solar_load_ev': self.solar_power_ev,
+                'station_solar_grid': self.solar_power_grid
+                }
         pd.DataFrame(data).to_csv(save_prefix + '/charging_station_sim_{}.csv'.format(save_file_base))
         print('***** Successfully saved simulation outputs to: ', 'charging_station_sim_{}.csv'.format(save_file_base))
 
@@ -82,11 +100,10 @@ class ChargingStation:
             battery = getattr(self, option)
             plt.figure()
             plt.plot(battery.voltages, "k", ls="--")
-            plt.plot(battery.predicted_voltages)    # currently needs to be fixed, minor bug
+            plt.plot(battery.predicted_voltages)  # currently needs to be fixed, minor bug
             plt.ylabel('Voltage (V)')
             plt.legend(['True Voltage', 'Controller Estimated Voltage'])
             plt.savefig('voltage_plot_{}_{}_Sim.png'.format(battery.id, self.id))
             plt.close()
         else:
             return
-

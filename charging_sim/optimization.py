@@ -7,7 +7,7 @@ class Optimization:
 
     # TODO: change all refs to battery_constraints to call controller
     def __init__(self, objective_type, objective, controller, power_demand, time_res, transformer, battery, time=0,
-                 name=None, solar=None, solver='ECOS'):
+                 name=None, solar=None, solver='MOSEK'):
         self._objective_type = objective_type
         self._objective = objective
         self._name = name
@@ -93,7 +93,7 @@ class Optimization:
         self.problem = problem
         result = problem.solve(solver=self.solver, verbose=False)
         self.cost_per_opt.append(result)
-        print(problem.status)
+        # print(problem.status) ACTIVATE LATER
         return result
 
     @staticmethod

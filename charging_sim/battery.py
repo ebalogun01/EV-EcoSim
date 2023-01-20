@@ -6,7 +6,10 @@ import os
 
 # Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.
 
+
 # TODO: add battery simulation resolution control so can be different from control as well...
+#  ALso track the number of voltage control violations during control computations in the future
+
 class Battery:
     """
      Properties:
@@ -38,7 +41,7 @@ class Battery:
         self.pack_resistance = None
         self._eff = config["round-trip_efficiency"]
         self.max_c_rate = config["max_c_rate"]
-        self.battery_cost = 200 # this is in $/kWh
+        self.battery_cost = 200     # this is in $/kWh
         # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours
 
         # LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL
@@ -88,18 +91,18 @@ class Battery:
         self.voltages = [self.voltage]  # to be updated at each time-step (seems expensive)
         self.current_voltage = 0.0
         self.true_voltage = np.array([])  # discharge/charge voltage per time-step
-        # self.Q = cp.Variable((num_steps + 1, 1))  # Amount of energy Kwh available in battery
+        # self.Q = cp.Variable((stepsize + 1, 1))  # Amount of energy Kwh available in battery
         self.SOC = self.initial_SOC
         self.SOC_list = [self.initial_SOC]
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)   # optional
 
         self.Q_initial = 0  # include the units here
-        self.control_current = np.array([])
+        self.control_current = []   # changed to a list - will be more efficient
         self.total_amp_thruput = 0.0
         self.currents = [0]
 
-        # self.power_charge = cp.Variable((num_steps, 1))
-        # self.power_discharge = cp.Variable((num_steps, 1))
+        # self.power_charge = cp.Variable((stepsize, 1))
+        # self.power_discharge = cp.Variable((stepsize, 1))
         self.power = 0
         self.current = 0
         self.true_power = [0]
@@ -207,7 +210,8 @@ class Battery:
         """This is not true capacity but anticipated capacity based on linear model."""
         aging_value = self.get_aging_value() * 0.2  # do not multiply by 0.2 to keep comparable
         self.total_aging += aging_value
-        self.linear_aging.append(aging_value)  # this is to ADD aging for each time step
+        # self.linear_aging.append(aging_value)  # this is to ADD aging for each time step
+        self.linear_aging += aging_value,
 
     def get_Ro(self):
         """This can be updated later to include current...
@@ -222,8 +226,10 @@ class Battery:
         self.Q_initial = self.Q.value[action_length]
 
     def track_SOC(self, SOC):
-        self.SOC_track.append(SOC)
-        self.SOC_list.append(SOC)
+        # self.SOC_track.append(SOC)
+        # self.SOC_list.append(SOC)
+        self.SOC_track += SOC,
+        self.SOC_list += SOC,
 
     def update_max_current(self, verbose=False):
         self.max_current = self.max_c_rate * self.cap
@@ -232,7 +238,8 @@ class Battery:
 
     def update_voltage(self, voltage):
         self.current_voltage = voltage  # I should be updating initial voltage with new voltage measurement
-        self.predicted_voltages.append(voltage)
+        # self.predicted_voltages.append(voltage)
+        self.predicted_voltages += voltage,
         # print("Current voltage estimate is: ", voltage)
 
     def get_properties(self):
@@ -278,9 +285,10 @@ class Battery:
                 'calendar_aging': np.array(self.calendar_aging),
                 'power_kW': np.array(self.true_power)}
         pd.DataFrame(data).to_csv(save_prefix + '/battery_sim_{}.csv'.format(save_file_base))
+        total_cycles = 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2)
+        np.savetxt(save_prefix + '/total_batt_cycles_{}.csv'.format(save_file_base), [total_cycles])
         print('***** Successfully saved simulation outputs to: ', 'battery_sim_{}.csv'.format(save_file_base))
-        print("Est. tot. no. of cycles is: ", 0.5*(self.total_amp_thruput / self.nominal_pack_cap),
-              'cycles')
+        print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
     def visualize_voltages(self):
         pass
@@ -313,7 +321,8 @@ class Battery:
             self.SOC = self.max_SOC
             self.track_SOC(self.SOC)
             self.state_eqn(self.current)
-            self.voltages = np.append(self.voltages, self.voltage)
+            # self.voltages = np.append(self.voltages, self.voltage)
+            self.voltages += self.voltage,
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             return self.voltage
         if self.SOC < self.min_SOC:
@@ -326,7 +335,8 @@ class Battery:
             self.track_SOC(self.SOC)
             self.current = -allowable_curr_thruput / self.dt  # readjusting current
             self.state_eqn(self.current)     # update states
-            self.voltages = np.append(self.voltages, self.voltage)
+            # self.voltages = np.append(self.voltages, self.voltage)
+            self.voltages += self.voltage,
             self.total_amp_thruput += abs(self.current) * self.dt  # cycle counting
             # self.currents.append(current)
             return self.voltage
@@ -339,7 +349,7 @@ class Battery:
             print("charge current too high! Max voltage exceeded")
             # we de-rate the current if voltage is too high (exceeds max prescribed v)
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
-            current -= (self.voltage - self.max_voltage)/self.Ro
+            current -= (self.voltage - self.max_voltage)/self.cell_resistance   # changed from just Ro
             self.voltage = self.max_voltage #   WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
             print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
@@ -348,32 +358,36 @@ class Battery:
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
             # raise Exception("Max voltage exceeded even after max SOC flag!!!") this can happen
-            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.voltages += self.voltage,  # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
         elif self.voltage < self.min_voltage:
             print("discharge current too high ! Min voltage exceeded")
-            current += (self.min_voltage - self.voltage) / self.Ro
+            current += (self.min_voltage - self.voltage) / self.cell_resistance
             self.state_eqn(current, append=False)
             self.currents[-1] = current
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
             self.voltage = self.min_voltage
-            self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+            self.voltages += self.voltage, # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
 
         self.current = current
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-        self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        self.voltages += self.voltage,  # numpy array
         self.track_SOC(self.SOC)
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
         return self.voltage
 
     def state_eqn(self, current, append=True):
         """This holds the discretized state equations containing the battery dynamics at the cell-level."""
+        self.current = current  # added 01/09/22 to fix bug
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)
@@ -383,8 +397,10 @@ class Battery:
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
         if append:
-            self.currents.append(current)
-            self.true_power.append(self.power)
+            # self.currents.append(current)
+            # self.true_power.append(self.power)
+            self.currents += current,
+            self.true_power += self.power,
 
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():

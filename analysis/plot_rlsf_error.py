@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-os.chdir('/home/ec2-user/EV50_cosimulation/test_cases/rlsf/')
+os.chdir('C:/Users/ebalo/Desktop/EV50_cosimulation/test_cases/rlsf/')
 rmse_vmag=np.loadtxt('rmse_vmag.txt')
 
 plt.figure(figsize=(10,6))

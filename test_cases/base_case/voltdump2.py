@@ -1,4 +1,4 @@
-import os 
+import os
 import csv
 import datetime
 import re
@@ -65,6 +65,3 @@ with open('voltages.csv','w') as voltages:
 			row.append("{0:.6f}".format(value))
 			#row.append("%g%+gd" % (value.real,value.imag))
 		writer.writerow(row)
-
-
-
