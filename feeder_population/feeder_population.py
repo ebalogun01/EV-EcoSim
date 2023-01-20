@@ -167,7 +167,7 @@ key_index=max(glm_dict_base.keys())+1
 obj_type_base[key_index]={'module':python_module}
 glm_dict_base[key_index]={}
 
-# add script on term statement
+# add script on term statement (CAN MODIFY THIS)
 sync_list_base.append('script on_term "python3 voltdump2.py";')
 
 
