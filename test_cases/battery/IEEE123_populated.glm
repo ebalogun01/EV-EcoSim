@@ -2401,4 +2401,3 @@ object voltdump {
 	interval 60;
 	version 1;
 };
-
