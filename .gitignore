@@ -1,4 +1,6 @@
 # ignores files of these types
+**.iml
+**.png
 **.csv
 **.pyc
 **.mat
@@ -6,9 +8,9 @@
 **.txt
 **.xlsx
 **.xml
+**.glm
 **.xls
 **.npy
-**.png
 **.glm
 **.Identifier
 BatteryData
@@ -17,6 +19,9 @@ Datasets-CP
 Datasets
 env
 ev50
-**.player
+**.dummy2.player
+test_cases
 test_cases/**.txt/
 test_cases/**.csv/
+mosek
+.idea
