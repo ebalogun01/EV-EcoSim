@@ -154,16 +154,16 @@ def on_precommit(t):
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
-    total_node_load_Watts = 0  # for dcfc
+    total_node_load_watts = 0  # for dcfc
+    prop_1 = 'constant_power_A'
+    prop_2 = 'constant_power_B'
+    prop_3 = 'constant_power_C'
     for name in charging_nodes:
         charger_load = EV_charging_sim.get_charger_obj_by_loc(name).get_current_load()  # this is in kW
-        total_node_load_Watts = charger_load * 1000  # converting to watts
-        prop_1 = 'constant_power_A'
-        prop_2 = 'constant_power_B'
-        prop_3 = 'constant_power_C'
-        gridlabd.set_value(name, prop_1, str(total_node_load_Watts / 3))  # balancing dcfc load between 3-phase
-        gridlabd.set_value(name, prop_2, str(total_node_load_Watts / 3))
-        gridlabd.set_value(name, prop_3, str(total_node_load_Watts / 3))
+        total_node_load_watts = charger_load * 1000  # converting to watts
+        gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
+        gridlabd.set_value(name, prop_2, str(total_node_load_watts / 3))
+        gridlabd.set_value(name, prop_3, str(total_node_load_watts / 3))
 
     # increment timestep
     gblvar.it = gblvar.it + 1
@@ -188,14 +188,14 @@ def on_term(t):
     np.savetxt(save_folder_prefix + 'trans_Th.txt', gblvar.trans_Th)
     with open(save_folder_prefix + 'scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
-    print(gblvar.trans_Th.squeeze().shape, len(gblvar.trans_list), len(gblvar.nom_vmag))
+    # print(gblvar.trans_Th.squeeze().shape, len(gblvar.trans_list), len(gblvar.nom_vmag))
     # print(gblvar.trans_list)
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(save_folder_prefix+'/trans_Th.csv')
 
     # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')
     toc = time.time()
     print("Total run time: ", (toc - tic) / 60, "minutes")
-    gridlabd.cancel()
+    # gridlabd.cancel()
     # gridlabd.pause()
     return True
 
@@ -230,7 +230,6 @@ def get_voltage():
         if 'e-' in data[prop]:
             if 'd' in data[prop]:
                 data[prop] = data[prop].replace('e-', '(')
-                # print(data[prop])
                 vl = data[prop].rstrip('d V').replace('+', ',+').replace('-', ',-').split(',')
                 if '(' in vl[1]:
                     vl[1] = vl[1].replace('(', 'e-')
@@ -242,16 +241,32 @@ def get_voltage():
                     pass
                 vm_array[i] = float(vl[1])
                 vp_array[i] = float(vl[2])
+            elif 'j' in data[prop]:
+                data[prop] = data[prop].replace('e-', '(')
+                vl = data[prop].rstrip('j V').replace('+', ',+').replace('-', ',-').split(',')
+                if '(' in vl[1]:
+                    vl[1] = vl[1].replace('(', 'e-')
+                else:
+                    pass
+                if '(' in vl[2]:
+                    vl[2] = vl[2].replace('(', 'e-')
+                else:
+                    pass
+                vm_array[i] = (float(vl[1]) ** 2 + float(vl[2]) ** 2) ** 0.5
+                vp_array[i] = np.rad2deg(np.angle(float(vl[1]) + float(vl[2]) * 1j))
+
             else:
-                x
+                # print(data[prop])  # removed x with throws error
+                raise Exception('Missing string in transformer power string')
+
         elif 'd' in data[prop]:
             vl = data[prop].rstrip('d V').replace('+', ',+').replace('-', ',-').split(',')
             vm_array[i] = float(vl[1])
             vp_array[i] = float(vl[2])
 
         else:
+            # think the fix ideally should be here but doesn't change time complexity
             vl = data[prop].rstrip('j V').replace('+', ',+').replace('-', ',-').split(',')
-
             vm_array[i] = (float(vl[1]) ** 2 + float(vl[2]) ** 2) ** 0.5
             vp_array[i] = np.rad2deg(np.angle(float(vl[1]) + float(vl[2]) * 1j))
     return vm_array, vp_array
@@ -276,7 +291,9 @@ def get_trans_power(trans_power_str):
             pmag = float(strtemp[1])
             pdeg = float(strtemp[2])
         else:
-            x
+            # print(trans_power_str)  # removed x with throws error
+            raise Exception('Missing string in transformer power string')
+
     elif 'd' in trans_power_str:
         strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')
         pmag = float(strtemp[1])
