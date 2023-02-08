@@ -10,8 +10,8 @@ if not gblvar.charging_sim_path_append:
 
 
 # RUN TYPE
-sequential_run = False
-parallel_run = True
+sequential_run = True
+parallel_run = False
 single_run = False
 
 # BATTERY SCENARIOS
@@ -53,7 +53,11 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    scenarios = make_scenarios()
+    start_idx = 0
+    end_idx = 5
+    idx_list = list(range(start_idx, end_idx))
+    scenarios_list = make_scenarios()
+    scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:
         process = mp.Process(target=run, args=(scenario,))
         process.start()
