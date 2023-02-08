@@ -3,10 +3,12 @@ on whatever pricing scheme is being used..."""
 
 import numpy as np
 import pandas as pd
+from utils import PGE_BEV2_S
 
 
 # load_profile is a 24x1 array with kWh consumed in each our of the day, starting at 0:00
 # Rates in $/kWh based on "Residential TOU Service for Plug-In EV2"
+# Rates in $/kWh based on "Commercial TOU Service for Plug-In EV2"
 # Peak (weekday) = 4 to 9 PM 
 # Partial-peak (weekday) = 3 to 4 PM, 9 to 12 AM
 # Off-peak: all other times
@@ -21,7 +23,7 @@ class PriceLoader:
         self.data_np = self.data.to_numpy()
         self.month_start_idx = {1: 0, 2: 31, 3: 59, 4: 90, 5: 120, 6: 151, 7: 181, 8: 243, 9: 273, 10: 304, 11: 334,
                                 12: 365}
-        self.month = -100 # July
+        self.month = -100  # July
 
     def get_prices(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
         price_vector = self.data_np[start_idx:start_idx + num_steps]
@@ -30,7 +32,7 @@ class PriceLoader:
 
     def set_month_data(self, month):
         if self.month != month:
-            self.data_np = self.data.to_numpy()[self.month_start_idx[month]*96:self.month_start_idx[month+1]*96]
+            self.data_np = self.data.to_numpy()[self.month_start_idx[month] * 96:self.month_start_idx[month + 1] * 96]
 
     def downscale(self, input_res, output_res):
         input_data_shape = len(self.data_np[:, 0])
@@ -45,7 +47,7 @@ class PriceLoader:
         self.data = pd.DataFrame(data=temp_data)
         self.data_np = temp_data
         # change the paths below very soon
-        np.savetxt(self.path_prefix + "/elec_rates/annual_TOU_rate_{}min.csv".format(output_res), temp_data)
+        np.savetxt(self.path_prefix + "/elec_rates/PGE_BEV2_S_annual_TOU_rate_{}min.csv".format(output_res), temp_data)
 
 
 def main():
@@ -54,12 +56,13 @@ def main():
     import json
     path_prefix = os.getcwd()
     path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-    path_prefix.replace('\\', '/')
-    with open(path_prefix + 'charging_sim/prices.json', "r") as f:
+    path_prefix = path_prefix.replace('\\', '/')
+    with open(path_prefix + '/charging_sim/configs/prices.json', "r") as f:
         config = json.load(f)
     loader = PriceLoader(config, path_prefix=path_prefix)
-    desired_res = 1  # units are in minutes
+    desired_res = 15  # units are in minutes
     loader.downscale(config['resolution'], desired_res)
+
 #
 # TOU_rate_summer = np.array(
 #         [0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611,
@@ -71,19 +74,20 @@ def main():
 #      0.16611, 0.16611, 0.16611, 0.16611, 0.33480, 0.35150, 0.35150, 0.35150, 0.35150, 0.35150,
 #      0.33480, 0.33480, 0.33480])
 
-# # summmer - November - March, # Winter - April - October
-# Jan = np.tile(TOU_rate_winter, 31)
-# Feb = np.tile(TOU_rate_winter, 28)
-# March = np.tile(TOU_rate_winter, 31)
-# Apr = np.tile(TOU_rate_winter, 30)
-# May = np.tile(TOU_rate_summer, 31)
-# June = np.tile(TOU_rate_summer, 30)
-# July_Aug = np.tile(TOU_rate_summer, 31*2)
-# Sep = np.tile(TOU_rate_summer, 30)
-# Oct = np.tile(TOU_rate_summer, 31)
-# Nov = np.tile(TOU_rate_winter, 30)
-# Dec = np.tile(TOU_rate_summer, 31)
-# #
+# TOU_rate = PGE_BEV2_S()
+# # # summmer - November - March, # Winter - April - October
+# Jan = np.tile(TOU_rate, 31)
+# Feb = np.tile(TOU_rate, 28)
+# March = np.tile(TOU_rate, 31)
+# Apr = np.tile(TOU_rate, 30)
+# May = np.tile(TOU_rate, 31)
+# June = np.tile(TOU_rate, 30)
+# July_Aug = np.tile(TOU_rate, 31*2)
+# Sep = np.tile(TOU_rate, 30)
+# Oct = np.tile(TOU_rate, 31)
+# Nov = np.tile(TOU_rate, 30)
+# Dec = np.tile(TOU_rate, 31)
+# # #
 # annual_price_vector = np.concatenate((Jan, Feb, March, Apr, May, June, July_Aug, Sep, Oct, Nov, Dec))
-# # np.savetxt("annual_TOU_rate.csv", annual_price_vector)
-# # print(annual_price_vector.shape, 24*365)
+# np.savetxt("PGE_BEV2_S_annual_TOU_rate_60min.csv", annual_price_vector)
+# # # print(annual_price_vector.shape, 24*365)
