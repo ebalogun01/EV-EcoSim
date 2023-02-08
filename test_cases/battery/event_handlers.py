@@ -19,7 +19,7 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 
 
 path_prefix = os.getcwd()
-path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
 save_folder_prefix = 'test_' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
 
@@ -27,8 +27,7 @@ save_folder_prefix = 'test_' + str(gblvar.scenario['index']) + '/'  # how can I 
 print('...loading dcfc bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()
 print("DCFC bus nodes loaded...")
-num_charging_nodes = len(
-    dcfc_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
+num_charging_nodes = len(dcfc_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 #####
 global tic, toc  # used to time simulation
@@ -46,7 +45,7 @@ def on_init(t):
     # print("testing testing...", settings.sim_path_prefix)
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
-    gridlabd.set_value("voltdump", "filename", save_folder_prefix + 'volt_dump.csv')
+    gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
     gblvar.node_list = find("class=node")
     gblvar.load_list = find("class=load")
     gblvar.sim_file_path = save_folder_prefix
@@ -59,7 +58,7 @@ def on_init(t):
     EV_charging_sim.setup(dcfc_nodes, scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     os.mkdir(save_folder_prefix)
-    np.savetxt(save_folder_prefix + 'voltdump.txt', np.array([save_folder_prefix]), fmt="%s")
+    np.savetxt(f'{save_folder_prefix}voltdump.txt', np.array([save_folder_prefix]),fmt="%s")
     return True
 
 
@@ -68,7 +67,7 @@ def on_precommit(t):
 
     # get clock from GridLAB-D
     clock = gridlabd.get_global("clock")
-    print('****  ' + str(clock) + '  ****')
+    print(f'****  {str(clock)}  ****')
 
     # get voltage from previous timestep from GridLAB-D
     vm_array, vp_array = get_voltage()
@@ -97,8 +96,9 @@ def on_precommit(t):
             # print(data)
             trans_config_name = data['configuration']
             data = gridlabd.get_object(trans_config_name)
+            print(f"Trans power rating: {data['power_rating']}")
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-        # print(gblvar.trans_rated_s)
+            # print(gblvar.trans_rated_s)
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
@@ -124,12 +124,12 @@ def on_precommit(t):
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
 
-    # get loads from EV charging station
-    num_steps = 1
     # print("Global time is: ", gblvar.it)
     if gblvar.it % EV_charging_sim.resolution == 0:
         """only step when controller time matches pf..based on resolution.
         This ensures allows for varied resolution for ev-charging vs pf solver"""
+        # get loads from EV charging station
+        num_steps = 1
         charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
 
     ################################## SEND TO GRIDLABD ################################################
@@ -138,19 +138,18 @@ def on_precommit(t):
     charging_nodes = EV_charging_sim.get_charging_sites()
     if central_storage:
         central_storage_nodes = EV_charging_sim.get_storage_sites()
+    prop = 'power_12'
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
-        prop = 'power_12'
         total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec.
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             # charger_load = charger.get_current_load()
             total_node_load += charger.get_current_load()
-        if central_storage:
-            if name in central_storage_nodes:
-                storage = EV_charging_sim.get_storage_obj_by_loc(name)
-                total_node_load += storage.power  # units in kW (should be negative if there is discharge to the grid/charger)
+        if central_storage and name in central_storage_nodes:
+            storage = EV_charging_sim.get_storage_obj_by_loc(name)
+            total_node_load += storage.power  # units in kW (should be negative if there is discharge to the grid/charger)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
@@ -181,22 +180,19 @@ def on_term(t):
     voltdump2.parse_voltages(save_folder_prefix)
     global tic
     EV_charging_sim.load_results_summary(save_folder_prefix)
-    np.savetxt(save_folder_prefix + 'volt_mag.txt', gblvar.vm)
-    np.savetxt(save_folder_prefix + 'volt_phase.txt', gblvar.vp)
-    np.savetxt(save_folder_prefix + 'nom_vmag.txt', gblvar.nom_vmag)
-    np.savetxt(save_folder_prefix + 'trans_To.txt', gblvar.trans_To)
-    np.savetxt(save_folder_prefix + 'trans_Th.txt', gblvar.trans_Th)
-    with open(save_folder_prefix + 'scenario.json', "w") as outfile:
+    np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
+    np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
+    np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)    # nominal voltage magnitude (use in analysis)
+    pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
+                                                                         index=False)
+    pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
+                                                                         index=False)
+    with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
-    # print(gblvar.trans_Th.squeeze().shape, len(gblvar.trans_list), len(gblvar.nom_vmag))
-    # print(gblvar.trans_list)
-    pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(save_folder_prefix+'/trans_Th.csv')
 
     # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')
     toc = time.time()
     print("Total run time: ", (toc - tic) / 60, "minutes")
-    # gridlabd.cancel()
-    # gridlabd.pause()
     return True
 
 
@@ -205,7 +201,7 @@ def find(criteria):
 
     finder = criteria.split("=")
     if len(finder) < 2:
-        raise Exception("find(criteria='key=value'): criteria syntax error")
+        raise IOError("find(criteria='key=value'): criteria syntax error")
     objects = gridlabd.get("objects")
     result = []
     for name in objects:
@@ -220,6 +216,7 @@ def find(criteria):
 
 def get_voltage():
     """Get voltage string from GridLAB-D and process it into float"""
+    #   TODO: find a way to ignore the nodes that have no voltage (zero-load)
 
     vm_array = np.zeros((len(gblvar.voltage_obj),))
     vp_array = np.zeros((len(gblvar.voltage_prop),))
@@ -233,12 +230,8 @@ def get_voltage():
                 vl = data[prop].rstrip('d V').replace('+', ',+').replace('-', ',-').split(',')
                 if '(' in vl[1]:
                     vl[1] = vl[1].replace('(', 'e-')
-                else:
-                    pass
                 if '(' in vl[2]:
                     vl[2] = vl[2].replace('(', 'e-')
-                else:
-                    pass
                 vm_array[i] = float(vl[1])
                 vp_array[i] = float(vl[2])
             elif 'j' in data[prop]:
@@ -246,12 +239,8 @@ def get_voltage():
                 vl = data[prop].rstrip('j V').replace('+', ',+').replace('-', ',-').split(',')
                 if '(' in vl[1]:
                     vl[1] = vl[1].replace('(', 'e-')
-                else:
-                    pass
                 if '(' in vl[2]:
                     vl[2] = vl[2].replace('(', 'e-')
-                else:
-                    pass
                 vm_array[i] = (float(vl[1]) ** 2 + float(vl[2]) ** 2) ** 0.5
                 vp_array[i] = np.rad2deg(np.angle(float(vl[1]) + float(vl[2]) * 1j))
 
@@ -277,23 +266,18 @@ def get_trans_power(trans_power_str):
 
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:
-        if 'd' in trans_power_str:
-            trans_power_str = trans_power_str.replace('e-', '(')
-            strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')
-            if '(' in strtemp[1]:
-                strtemp[1] = strtemp[1].replace('(', 'e-')
-            else:
-                pass
-            if '(' in strtemp[2]:
-                strtemp[2] = strtemp[2].replace('(', 'e-')
-            else:
-                pass
-            pmag = float(strtemp[1])
-            pdeg = float(strtemp[2])
-        else:
+        if 'd' not in trans_power_str:
             # print(trans_power_str)  # removed x with throws error
             raise Exception('Missing string in transformer power string')
 
+        trans_power_str = trans_power_str.replace('e-', '(')
+        strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')
+        if '(' in strtemp[1]:
+            strtemp[1] = strtemp[1].replace('(', 'e-')
+        if '(' in strtemp[2]:
+            strtemp[2] = strtemp[2].replace('(', 'e-')
+        pmag = float(strtemp[1])
+        pdeg = float(strtemp[2])
     elif 'd' in trans_power_str:
         strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')
         pmag = float(strtemp[1])
@@ -305,6 +289,5 @@ def get_trans_power(trans_power_str):
         pmag = (float(strtemp[1]) ** 2 + float(strtemp[2]) ** 2) ** 0.5
         pdeg = np.rad2deg(np.angle(float(strtemp[1]) + float(strtemp[2]) * 1j))
 
-    # print(str(pmag)+'  '+str(pdeg))
-
     return pmag, pdeg
+

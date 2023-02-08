@@ -323,7 +323,7 @@ if standard_rating:
 charging_bus_subset_list = random.sample(list(glm_subset_dict_dcfc.values()), num_charging_nodes)
 
 #   TODO: find more accurate properties for the transformer
-
+#   This is the transformer configuration that is inherited for DCFC
 glm_house_dict[key_index] = {'name': 'dcfc_transformer',
                              'connect_type': 'WYE_WYE',
                              'install_type': 'PADMOUNT',
@@ -347,6 +347,7 @@ if fast_charging:
 k = 0
 
 fast_charging_bus_list = []
+# getting the 3-phase meters (nodes) that were stored in the charging_bus_subset_list
 for meter_dict in charging_bus_subset_list:
     # load object
     glm_house_dict[key_index] = {'name': 'dcfc_load_' + str(k),

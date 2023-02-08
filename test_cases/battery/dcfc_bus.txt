@@ -3,3 +3,8 @@ dcfc_load_1
 dcfc_load_2
 dcfc_load_3
 dcfc_load_4
+dcfc_load_5
+dcfc_load_6
+dcfc_load_7
+dcfc_load_8
+dcfc_load_9
