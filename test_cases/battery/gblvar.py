@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import pickle
-from sklearn.preprocessing import StandardScaler
 
 # define global python simulation variables and default initial values
 
@@ -23,17 +22,7 @@ q_df = pd.read_csv('reactive_power.csv')
 p_array = np.asarray(p_df)
 q_array = np.asarray(q_df)
 
-# p_array=s_array*pf_array
-# q_array=(s_array**2-p_array**2)**0.5
-x_array = np.concatenate((p_array, q_array), axis=1)
-scaler = StandardScaler()
-scaler.fit(x_array)
-x_array_scaled = scaler.transform(x_array)
-x_array_scaled = np.concatenate((np.ones((x_array_scaled.shape[0], 1)), x_array_scaled), axis=1)
-x_array_aug = np.concatenate((np.ones((x_array.shape[0], 1)), x_array), axis=1)
-
 # voltage objects and properties
-
 with open('voltage_obj.txt', 'rb') as fp:
     voltage_obj = pickle.load(fp)
 with open('voltage_prop.txt', 'rb') as fp:
@@ -49,7 +38,6 @@ v_pred = np.zeros((1, len(voltage_obj)))
 # move to other file format, maybe json, generated from feeder population code
 
 # transformer properties
-
 trans_dt = 10.0  # integration timestep [seconds]?
 trans_Ta = 20.0  # ambient temperature[C]
 

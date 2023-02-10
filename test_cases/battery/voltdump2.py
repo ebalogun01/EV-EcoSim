@@ -8,7 +8,7 @@ def parse_voltages(path_prefix):
     lastnodes = []
     timestamp = None
     timezone = "UTC"
-    with open(path_prefix + 'volt_dump.csv', 'r') as dumpfile:
+    with open(f'{path_prefix}volt_dump.csv', 'r') as dumpfile:
         print("Reading volt_dump...")
         reader = csv.reader(dumpfile)
         for row in reader:
@@ -42,25 +42,30 @@ def parse_voltages(path_prefix):
                     # C = complex(float(row[5]),float(row[6]))
                     Cr = float(row[5])
                     Ci = float(row[6])
-                    if not node + "_Ar" in nodes:
+                    if f"{node}_Ar" not in nodes:
                         # nodes.extend([node+"_A",node+"_B",node+"_C"])
                         nodes.extend(
-                            [node + "_Ar", node + "_Ai", node + "_Br", node + "_Bi", node + "_Cr", node + "_Ci"])
+                            [
+                                f"{node}_Ar",
+                                f"{node}_Ai",
+                                f"{node}_Br",
+                                f"{node}_Bi",
+                                f"{node}_Cr",
+                                f"{node}_Ci",
+                            ]
+                        )
                     # data[timestamp].extend([A,B,C])
                     data[timestamp].extend([Ar, Ai, Br, Bi, Cr, Ci])
 
                 except:
-                    print("ERROR: ignored row '%s'" % row)
+                    print(f"ERROR: ignored row '{row}'")
 
-    with open(path_prefix + 'voltages.csv', 'w') as voltages:
+    with open(f'{path_prefix}voltages.csv', 'w') as voltages:
         print("Writing voltages...")
         writer = csv.writer(voltages)
         writer.writerow(nodes)
         for key in sorted(data.keys()):
             row = [key.strftime("%Y-%m-%dT%H:%M:%S%z")]
-            for value in data[key]:
-                # row.append("%g%+gd" % (abs(value),(cmath.phase(value))*180/3.1415926))
-                # row.append("%g" % value)
-                row.append("{0:.6f}".format(value))
+            row.extend("{0:.6f}".format(value) for value in data[key])
             # row.append("%g%+gd" % (value.real,value.imag))
             writer.writerow(row)

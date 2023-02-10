@@ -204,17 +204,12 @@ class ChargingSim:
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 charging_station.controller.reset_load()
-                # print("time is: ", self.time, ". One day done!")
-                # elec_price_vec = self.price_loader.get_prices(self.time, self.stepsize)
                 self.time = 0  # reset time
             p = charging_station.controller.solar.get_power(self.time, self.num_steps)  # can set month for multi-month sim later
             buffer_battery = charging_station.storage
             self.control_start_index = stepsize * self.day_year_count
-            # stop = self.day_year_count  # get today's load from test data; move to load generator
             todays_load = self.test_data[self.day_year_count*self.num_steps+self.time
                                          :self.num_steps*(self.day_year_count+1)+self.time] * 1
-            # todays_load = np.zeros((96, 1))
-            # todays_load[75:95] = 300
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
             for i in range(stepsize):
@@ -231,10 +226,6 @@ class ChargingSim:
             charging_station.controller.battery_initial_SOC = charging_station.controller.battery_SOC.value[1, 0]
         self.time += 1
         self.update_steps(stepsize)
-        # if self.time > 0:
-        #     plt.plot(p)
-        #     plt.savefig('solar_{}'.format(self.time))
-        #     plt.close('all')
         return self.site_net_loads
 
     def load_results_summary(self, save_path_prefix, plot=True):
@@ -275,8 +266,6 @@ class ChargingSim:
             plt.savefig(save_path_prefix + "/Cycle_SOC_plot.png")
             plt.close('all')
 
-        # plt.plot(battery.SOC_track[1:], battery.calendar_aging[1:], color='k')
-        # plt.savefig("Calendar_SOC_plot_2.png")
         print("total calendar aging is {}".format(sum(battery.calendar_aging)))
         print("total cycle aging is {}".format(sum(battery.cycle_aging)))
         print("Final capacity (SOH) is {}".format(battery.SOH))
@@ -340,7 +329,6 @@ class ChargingSimCentralized:
     def load_battery_params(self):
         """ Loads the battery params directly into the sim, so parameters will be the same for all
         batteries unless otherwise specified. battery_config must be attributed to do this"""
-        # add the path prefix to make is system agnostic
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
             self.battery_config[params_key] = np.loadtxt(
@@ -352,7 +340,7 @@ class ChargingSimCentralized:
         # this should make those inputs just be the params
 
     def create_battery_object(self, idx, loc, controller=None):
-        #  this stores all battery objects in the network
+        """stores and tracks all battery objects in the network"""
         buffer_battery = Battery(config=self.battery_config, controller=controller)  # remove Q_initial later
         buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
         self.battery_objects += buffer_battery,  # adding battery object to battery list
@@ -383,22 +371,22 @@ class ChargingSimCentralized:
             print(
                 "WARNING: cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
-        # remove the battery from being added to any node that already has an EV charging station LaTER
+        # TODO: remove the battery from being added to any node that already has an EV charging station LATER
         loc_list = random.sample(power_nodes_list, self.num_charging_sites)  # randomization of charging locations
 
         for i in range(self.num_charging_sites):
             controller = control.MPC(
                 self.controller_config)  # need to change this to load based on the users controller python file?
+            # TODO: any controller object must have an action method which outputs a current for the current timestep
             # change config to false for centralized battery
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
             charging_station = ChargingStation(battery, self.charging_config,
                                                controller)  # add controller and battery to charging station
             self.charging_sites[loc_list[i]] = charging_station
-        # self.battery_objects.append(battery)  # add to list of battery objects
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
         self.storage_locs = list(self.storage_sites.keys())
-        print("There are", len(self.battery_objects), "battery objects initialized")
+        print(f"There are {len(self.battery_objects)} battery objects initialized")
 
     def initialize_aging_sim(self):
         # TODO: make the number of steps a passed in variable
@@ -462,26 +450,24 @@ class ChargingSimCentralized:
         """assign charging controller to each EVSE"""
         # for charging_station in self.stations_list:
         #     charging_station.controller = MPC(self.controller_config, 0, )
-        pass
+        raise NotImplementedError("This method has not been implemented or will soon be deprecated!")
 
     def step(self, num_steps):
         # NEED TO ADD STEPPING THROUGH DAYS # should this be done in some controller master sim?
         # Full day prediction is not changing but the price is changing!! issues - is this fixed?
-        """Step forward once. Run MPC controller and take one time-step action.."""
+        """Propagates the simulation one step forward. Run controller and take one time-step action.."""
         ## FOR CENTRALIZED, LET'S USE ONLY ONE BATTERY FOR NOW AND USE THE AGGREGATE POWER FROM ALL STATIONS
         self.reset_loads()  # reset the loads from old time-step
         overall_charging_load = np.zeros((96, 1))
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10  # need to freeze daily prices
         buffer_battery = self.battery_objects[0]  # first version only has one battery
         if self.time % 96 == 0:
-            elec_price_vec = self.price_loader.get_prices(self.time,
-                                                          self.num_steps)  # assuming prices are the same everywhere within the grid
+            elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
             self.time = 0  # reset time
             self.day_year_count = 0  # bug..finish this tonight!!
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 charging_station.controller.reset_load()
-
             self.control_start_index = num_steps * self.day_year_count
             stop = self.day_year_count + 14  # get today's load from test data; move to load generator; starting from the 14th index which is two weeks of history already happened
             self.control_shift = 0
@@ -507,21 +493,11 @@ class ChargingSimCentralized:
                 buffer_battery.start = 0
 
         control_action = self.central_storage_controller.compute_control(elec_price_vec, overall_charging_load)
-
         buffer_battery.dynamics(control_action)  # this should be aggregated
         buffer_battery.update_capacity()  # update the linear aging vector to include linear aging for previous run
         self.aging_sim.run(buffer_battery)  # simulate battery aging
         buffer_battery.start += 1
         self.time += 1
-        plt.figure()
-        plt.plot(buffer_battery.true_aging)
-        plt.title("true aging plot")
-        plt.savefig("aging_plot.png")
-        plt.close()
-        plt.plot(self.aging_sim.beta_caps)
-        plt.title('Beta_cap')
-        plt.savefig("Beta aging (cap)")
-        plt.close()
         return self.site_net_loads
 
     def load_results_summary(self):
