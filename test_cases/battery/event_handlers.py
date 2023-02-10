@@ -16,8 +16,6 @@ from EVCharging import ChargingSim
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
 # get the desired path prefix
-
-
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
@@ -40,9 +38,6 @@ EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # In
 def on_init(t):
     """Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd"""
     # get object lists from GridLAB-D
-    # gridlabd.set_value("voltdump", "filename", save_folder_prefix)
-    # settings.init(save_folder_prefix)
-    # print("testing testing...", settings.sim_path_prefix)
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
@@ -50,7 +45,6 @@ def on_init(t):
     gblvar.load_list = find("class=load")
     gblvar.sim_file_path = save_folder_prefix
     gblvar.tn_list = find("class=triplex_node")
-    # print(gridlabd.get_object(gblvar.tn_list[0]['power_12']))
     gblvar.trans_list = find("class=transformer")
     gblvar.transconfig_list = find("class=transformer_configuration")
 
@@ -81,7 +75,7 @@ def on_precommit(t):
         gblvar.vm = vm_array.reshape(1, -1)
         gblvar.vp = vp_array.reshape(1, -1)
 
-    # concatenace new voltage vector onto voltage history
+    # concatenate new voltage vector onto voltage history
     elif gblvar.it > 1:
         gblvar.vm = np.concatenate((gblvar.vm, vm_array.reshape(1, -1)), axis=0)
         gblvar.vp = np.concatenate((gblvar.vp, vp_array.reshape(1, -1)), axis=0)
@@ -93,12 +87,9 @@ def on_precommit(t):
         for i in range(len(gblvar.trans_list)):
             name = gblvar.trans_list[i]
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
-            # print(data)
             trans_config_name = data['configuration']
             data = gridlabd.get_object(trans_config_name)
-            print(f"Trans power rating: {data['power_rating']}")
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-            # print(gblvar.trans_rated_s)
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
@@ -124,13 +115,13 @@ def on_precommit(t):
         set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
             gblvar.it] * 1j
 
-    # print("Global time is: ", gblvar.it)
     if gblvar.it % EV_charging_sim.resolution == 0:
         """only step when controller time matches pf..based on resolution.
         This ensures allows for varied resolution for ev-charging vs pf solver"""
-        # get loads from EV charging station
+        # print("Global time is: ", gblvar.it)
         num_steps = 1
-        charging_net_loads_per_loc = EV_charging_sim.step(num_steps)
+        # get loads from EV charging station
+        EV_charging_sim.step(num_steps)
 
     ################################## SEND TO GRIDLABD ################################################
 
@@ -144,6 +135,7 @@ def on_precommit(t):
         total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec.
         if name in charging_nodes:
+            raise IOError("fast charging node should not be in regular node!")
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             # charger_load = charger.get_current_load()
             total_node_load += charger.get_current_load()
@@ -166,8 +158,6 @@ def on_precommit(t):
 
     # increment timestep
     gblvar.it = gblvar.it + 1
-    # if gblvar.it == 1:
-    #     os.chdir(save_folder_prefix)
     return True
 
 
