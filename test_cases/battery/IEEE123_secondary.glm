@@ -50,8 +50,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_0;
-	phases "ABC";
-	from "meter_63";
+	phases "ABCN";
+	from "meter_56";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
 }
@@ -69,7 +69,7 @@ object load {
 object transformer {
 	name dcfc_trans_1;
 	phases "ABCN";
-	from "meter_79";
+	from "meter_86";
 	to dcfc_load_1;
 	configuration dcfc_transformer;
 }
@@ -87,7 +87,7 @@ object load {
 object transformer {
 	name dcfc_trans_2;
 	phases "ABCN";
-	from "meter_55";
+	from "meter_52";
 	to dcfc_load_2;
 	configuration dcfc_transformer;
 }
@@ -104,8 +104,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_3;
-	phases "ABCN";
-	from "meter_48";
+	phases "ABCD";
+	from "meter_35";
 	to dcfc_load_3;
 	configuration dcfc_transformer;
 }
@@ -123,8 +123,98 @@ object load {
 object transformer {
 	name dcfc_trans_4;
 	phases "ABCN";
-	from "meter_47";
+	from "meter_82";
 	to dcfc_load_4;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_5;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_5;
+	phases "ABCN";
+	from "meter_51";
+	to dcfc_load_5;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_6;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_6;
+	phases "ABC";
+	from "meter_66";
+	to dcfc_load_6;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_7;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_7;
+	phases "ABCN";
+	from "meter_42";
+	to dcfc_load_7;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_8;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_8;
+	phases "ABCN";
+	from "meter_29";
+	to dcfc_load_8;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_9;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_9;
+	phases "ABCN";
+	from "meter_77";
+	to dcfc_load_9;
 	configuration dcfc_transformer;
 }
 
@@ -2842,3 +2932,4 @@ object transformer {
 	to tn_180;
 	configuration house_transformer;
 }
+

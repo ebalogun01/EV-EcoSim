@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import cvxpy as cp
 
+
 class Solar:
     """This simulates the ground-truth Solar conditions in location"""
     def __init__(self, config, path_prefix=None, controller=None):
@@ -36,7 +37,7 @@ class Solar:
         self.id = None
         self.node = None
 
-    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=1):
+    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=4):
         if not self.month == month:
             # GHI = Global Horizontal Irradiance
             print("setting month for solar power...")
@@ -77,6 +78,7 @@ class Solar:
         # CODE IS NOT UPDATING ALL THE ACTIONS SO THERE IS A BUG THERE
         #TODO: add solar history update
         return NotImplementedError
+
 
 def main():
     """THis is mainly to testing or generating new data purposes"""

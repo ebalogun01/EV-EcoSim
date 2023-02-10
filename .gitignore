@@ -12,6 +12,7 @@
 **.xls
 **.npy
 **.glm
+charging_sim/__pycache__
 **.Identifier
 BatteryData
 CP_ProjectData

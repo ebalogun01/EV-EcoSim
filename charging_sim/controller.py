@@ -81,14 +81,9 @@ class MPC:
     def load_battery_ocv(self):
         """Learns the battery OCV Parameters from data"""
         from sklearn.linear_model import LinearRegression
-        indices = ((0.9 >= self.storage.OCV_map_SOC) & (self.storage.OCV_map_SOC >= 0.1)).nonzero()[0]
+        indices = ((self.storage.OCV_map_SOC <= 0.9) & (self.storage.OCV_map_SOC >= 0.2)).nonzero()[0]
         soc = self.storage.OCV_map_SOC[indices[0]: indices[-1]].reshape(-1, 1)
         voltage = self.storage.OCV_map_voltage[indices[0]: indices[-1]].reshape(-1, 1)
-        # plt.plot(soc)
-        # plt.plot(voltage)
-        # plt.title("SOC_check")
-        # plt.savefig("SOC_TEST.png")
-        # plt.close('all')
         model = LinearRegression().fit(soc, voltage)
         self.battery_ocv_params = (model.coef_, model.intercept_)
         plt.plot(model.coef_ * soc + model.intercept_)
