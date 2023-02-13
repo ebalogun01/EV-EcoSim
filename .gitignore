@@ -5,7 +5,7 @@
 **.pyc
 **.mat
 **.dss
-**.txt
+../voltdump.txt
 **.xlsx
 **.xml
 **.glm

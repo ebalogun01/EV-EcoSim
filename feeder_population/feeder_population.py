@@ -13,7 +13,7 @@ path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
 os.chdir(path_prefix+'/feeder_population')  # change directory
-f=open('config.txt','r')
+f=open('config.txt', 'r')
 param_dict=f.read()
 f.close()
 param_dict=ast.literal_eval(param_dict)
@@ -32,7 +32,7 @@ safety_factor=param_dict['safety_factor']
 
 base_glm_file=feeder_name+'.glm'
 print('Loading original glm')
-glm_dict_base,obj_type_base,globals_list_base,include_list_base,sync_list_base=glm_mod_functions.load_base_glm(base_file_dir,base_glm_file)
+glm_dict_base,obj_type_base,globals_list_base,include_list_base,sync_list_base= glm_mod_functions.load_base_glm(base_file_dir, base_glm_file)
 
 
 print('Modifying properties')
@@ -116,7 +116,7 @@ for i in obj_type_base.keys():
         
         if 'load' in obj_type_base[i]['object']:
 
-            glm_dict_base=glm_mod_functions.replace_load_w_meter(glm_dict_base,glm_dict_base[i]['name'],glm_dict_base[i]['name'].replace('load','meter'),obj_type_base)
+            glm_dict_base= glm_mod_functions.replace_load_w_meter(glm_dict_base, glm_dict_base[i]['name'], glm_dict_base[i]['name'].replace('load', 'meter'), obj_type_base)
 
 
 include_list_base.append('#include "'+feeder_name+'_secondary.glm'+'";')    # adds the secondary distribution in simulation
@@ -213,7 +213,7 @@ glm_dict_base[pf_del_index]={'solver_method':'NR',
 print('writing new glm file')
 out_dir=test_case_dir
 file_name=feeder_name+'_populated.glm'
-glm_mod_functions.write_base_glm(glm_dict_base,obj_type_base,globals_list_base,include_list_base,out_dir,file_name,sync_list_base)
+glm_mod_functions.write_base_glm(glm_dict_base, obj_type_base, globals_list_base, include_list_base, out_dir, file_name, sync_list_base)
 
 # write voltage objects and property lists
 with open('voltage_obj.txt','wb') as fp:
@@ -337,7 +337,7 @@ for i in range(len(bus_list)):
 #write out glm file for secondary distribution
 out_dir=test_case_dir
 file_name=feeder_name+'_secondary.glm'
-glm_mod_functions.write_base_glm(glm_house_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list)
+glm_mod_functions.write_base_glm(glm_house_dict, obj_type, globals_list, include_list, out_dir, file_name, sync_list)
 
 
 #save load data

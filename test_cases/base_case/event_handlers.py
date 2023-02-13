@@ -1,14 +1,11 @@
-import sys
 import os
+import sys
 import numpy as np
 import gridlabd
 import time
 import gblvar
 import sim
-
-sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
-print('OK..')
-
+sys.path.append('../../../EV50_cosimulation/charging_sim')
 from EVCharging import ChargingSim
 
 print("*****EV Charging Station Simulation Imported Successfully*****")

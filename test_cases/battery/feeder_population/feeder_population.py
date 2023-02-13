@@ -1,10 +1,8 @@
 # %%
-
 import glm_mod_functions
 import os
 import pandas
 import datetime
-# import sklearn.preprocessing
 import numpy as np
 import ast
 import pickle
@@ -12,9 +10,10 @@ import random
 
 # read config file
 path_prefix = os.getcwd()
-# path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-# path_prefix.replace('\\', '/')
 os.chdir(path_prefix)  # change directory
+path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix.replace('\\', '/')
+
 f = open('config.txt', 'r')
 param_dict = f.read()
 f.close()
@@ -23,9 +22,9 @@ param_dict = ast.literal_eval(param_dict)
 feeder_name = param_dict['feeder_name']
 set_sd = param_dict['set_sd']   # what is sd?
 mean_scale = param_dict['mean_scale']
-base_file_dir = param_dict['base_file_dir']
-test_case_dir = param_dict['test_case_dir']
-load_data_dir = param_dict['load_data_dir']
+base_file_dir = path_prefix+param_dict['base_file_dir']
+test_case_dir = path_prefix+param_dict['test_case_dir']
+load_data_dir = path_prefix+param_dict['load_data_dir']
 box_pts = param_dict['box_pts']
 starttime_str = param_dict['starttime']
 endtime_str = param_dict['endtime']
