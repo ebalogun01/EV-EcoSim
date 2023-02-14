@@ -154,7 +154,7 @@ class MPC:
              self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
+             ev_load + self.battery_power - self.solar.ev_power >= 0  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              # battery.ev_power can actually exceed the ev load at times,
              # meaning the rest of the energy is sent back into the grid
