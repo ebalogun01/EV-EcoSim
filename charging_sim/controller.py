@@ -117,21 +117,20 @@ class MPC:
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
-            plt.close('all')
-            plt.plot(self.battery_current.value)
-            plt.plot(self.battery_current_solar.value, '--')
-            plt.plot(self.battery_current_ev.value)
-            plt.plot(self.battery_current_grid.value)
-            plt.legend(['total', 'solar', 'ev', 'grid'])
-            data = {'total': [self.battery_current.value[i, 0] for i in range(len(self.battery_current.value))],
-                    'solar': [self.battery_current_solar.value[i, 0] for i in range(len(self.battery_current.value))],
-                    'EV': [self.battery_current_ev.value[i, 0] for i in range(len(self.battery_current.value))],
-                    'Grid': [self.battery_current_grid.value[i, 0] for i in range(len(self.battery_current.value))]
-                    }
-            pd.DataFrame(data).to_csv(f'test_{self.time}.csv')
-            plt.savefig(f'test_{self.time}')
+            # plt.close('all')
+            # plt.plot(self.battery_current.value)
+            # plt.plot(self.battery_current_solar.value, '--')
+            # plt.plot(self.battery_current_ev.value)
+            # plt.plot(self.battery_current_grid.value)
+            # plt.legend(['total', 'solar', 'ev', 'grid'])
+            # data = {'total': [self.battery_current.value[i, 0] for i in range(len(self.battery_current.value))],
+            #         'solar': [self.battery_current_solar.value[i, 0] for i in range(len(self.battery_current.value))],
+            #         'EV': [self.battery_current_ev.value[i, 0] for i in range(len(self.battery_current.value))],
+            #         'Grid': [self.battery_current_grid.value[i, 0] for i in range(len(self.battery_current.value))]
+            #         }
+            # pd.DataFrame(data).to_csv(f'test_{self.time}.csv')
+            # plt.savefig(f'test_{self.time}')
             # plt.show()
-
             self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
             self.storage.control_current += control_action,  # TODO: double-check this here
