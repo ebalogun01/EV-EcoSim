@@ -2,7 +2,7 @@
 
 clock {
 	starttime '2018-07-01 00:00:00';
-	stoptime '2018-07-02 00:00:00';
+	stoptime '2018-07-31 23:59:59';
 }
 
 module tape;
@@ -2395,6 +2395,7 @@ object dummy {
 }
 
 object voltdump {
+	name "voltdump";
 	filemode "a";
 	filename "volt_dump.csv";
 	interval 60;

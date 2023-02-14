@@ -5,7 +5,7 @@ import numpy as np
 
 
 def battery_cost():
-    cost_per_kWh = 0
+    cost_per_kWh = 100
     operation_cost = 0
     second_life_value = 0
 

@@ -159,12 +159,13 @@ class Battery:
         series_resistance = no_cells_series * self.cell_resistance
         # series_capacitance = 1/(no_cells_series * self.C1 )
         self.pack_resistance = 1/(no_modules_parallel * 1/series_resistance)
-        print("**** Post-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
+        print(f"**** Post-initialized nominal pack voltage is {self.nominal_pack_voltage}")
         print("***** Battery initialized. *****\n",
-              "Battery pack capacity is {} Ah".format(pack_capacity_Ah),
-              "Battery pack resistance is {} Ohm".format(self.pack_resistance),
-              "Total number of cells is: {} .\n".format(self.cell_count),
-              "no. cells in series is: {} \n. No modules in parallel is: {}".format(no_cells_series, no_modules_parallel))
+              f"Battery pack capacity is {pack_capacity_Ah} Ah",
+              f"Battery pack resistance is {self.pack_resistance} Ohm",
+              f"Total number of cells is: {self.cell_count} .\n",
+              f"no. cells in series is: {no_cells_series} \n. No modules in parallel is: {no_modules_parallel}"
+              )
 
     def battery_setup_tesla(self, model=3):
         """Using TESLA mode to setup battery config. TO BE IMPLEMENTED LATER"""
@@ -188,23 +189,18 @@ class Battery:
         Deprecate this later for this object"""
         seconds_in_min = 60
         life_cyc = 4500     # change this to be input in the config file
-        aging_cyc = (0.5 * (np.sum(abs(self.current * self.voltage))
-                            * self.resolution / seconds_in_min)) / (life_cyc / 0.2 * self.nominal_energy)
-        return aging_cyc
+        return (0.5 * (np.sum(abs(self.current * self.voltage))*self.resolution / seconds_in_min)) /\
+            (life_cyc / 0.2 * self.nominal_energy)
 
     def get_power_profile(self, months):
-        power_profiles_dict = {}
-        for month in months:
-            power_profiles_dict[month] = self.power_profile[month]
-        return power_profiles_dict
+        return {month: self.power_profile[month] for month in months}
 
     def get_total_aging(self):
         return self.est_cyc_aging() + self.est_calendar_aging()
 
     def get_aging_value(self):
         """returns the actual aging value lost after a cvxpy run..."""
-        aging_value = self.est_cyc_aging() + self.est_calendar_aging()
-        return aging_value
+        return self.est_cyc_aging() + self.est_calendar_aging()
 
     def update_capacity(self):
         """This is not true capacity but anticipated capacity based on linear model."""
@@ -249,34 +245,32 @@ class Battery:
         """method is used to plot and save battery states desired by user"""
         if type(option) == str:
             plt.style.use('seaborn-darkgrid')
+            plotting_values = getattr(self, option)
             if option == "SOC_track":
-                plotting_values = getattr(self, option)
                 plt.figure()
                 plt.plot(plotting_values)
                 plt.xlabel("Time Step")
                 plt.ylabel("SOC")
-                plt.savefig(option + "_{}.png".format(self.id))
-                print("Saving values for {}".format(self.id))
-                plt.close()
+                plt.savefig(f"{option}_{self.id}.png")
+                print(f"Saving values for {self.id}")
             else:
-                plotting_values = getattr(self, option)
                 plt.figure()
                 plt.plot(plotting_values)
                 plt.xlabel("Time Step")
                 plt.ylabel(option)
-                plt.savefig(option + "_{}.png".format(self.id))
-                plt.close()
+                plt.savefig(f"{option}_{self.id}.png")
+            plt.close()
         print("Est. tot. no. of cycles is: ", self.total_amp_thruput/((self.nominal_pack_cap+self.cap)/2), 'cycles')
 
     def save_states(self):
-        np.savetxt('SOC_sim_{}.csv'.format(self.id), self.SOC_track)
-        np.savetxt('SOH_sim_{}.csv'.format(self.id), self.SOH_track)
-        np.savetxt('voltage_sim_{}.csv'.format(self.id), self.voltage)
+        np.savetxt(f'SOC_sim_{self.id}.csv', self.SOC_track)
+        np.savetxt(f'SOH_sim_{self.id}.csv', self.SOH_track)
+        np.savetxt(f'voltage_sim_{self.id}.csv', self.voltage)
 
     def save_sim_data(self, save_prefix):
         """working on this, not tested yet"""
         import pandas as pd
-        save_file_base = str(self.id) + '_' + self.node # node is same as location
+        save_file_base = f'{str(self.id)}_{self.node}'
         data = {'SOC': self.SOC_track,
                 'SOH': self.SOH_track,
                 'Voltage_pack': np.array(self.voltages) * self.topology[0],
@@ -284,10 +278,10 @@ class Battery:
                 'cycle_aging': np.array(self.cycle_aging),
                 'calendar_aging': np.array(self.calendar_aging),
                 'power_kW': np.array(self.true_power)}
-        pd.DataFrame(data).to_csv(save_prefix + '/battery_sim_{}.csv'.format(save_file_base))
+        pd.DataFrame(data).to_csv(f'{save_prefix}/battery_sim_{save_file_base}.csv')
         total_cycles = 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2)
-        np.savetxt(save_prefix + '/total_batt_cycles_{}.csv'.format(save_file_base), [total_cycles])
-        print('***** Successfully saved simulation outputs to: ', 'battery_sim_{}.csv'.format(save_file_base))
+        np.savetxt(f'{save_prefix}/total_batt_cycles_{save_file_base}.csv', [total_cycles])
+        print('***** Successfully saved simulation outputs to: ', f'battery_sim_{save_file_base}.csv')
         print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
     def visualize_voltages(self):
@@ -401,6 +395,9 @@ class Battery:
             # self.true_power.append(self.power)
             self.currents += current,
             self.true_power += self.power,
+
+    def get_OCV(self):
+        return np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
 
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():

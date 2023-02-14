@@ -24,8 +24,8 @@ class ChargingSim:
         # TODO: fix these literal paths below
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.genfromtxt(path_prefix + '/CP_ProjectData/power_data_2018.csv')
-        charge_data = np.genfromtxt(path_prefix + '/CP_ProjectData/CP_historical_data_2015_2017.csv')
+        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')
+        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 2  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
@@ -56,8 +56,7 @@ class ChargingSim:
 
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
-
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
         for root, dirs, files, in os.walk(configs_path):
@@ -120,7 +119,7 @@ class ChargingSim:
 
     def initialize_price_loader(self, month):
         """Loads the price loading module and sets the month to be simulated for memory-efficient sampling"""
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
         self.price_loader.set_month_data(month)
@@ -200,7 +199,7 @@ class ChargingSim:
     def step(self, stepsize):
         """Perfect foresight daily stepping...should I do full-shot run (one optimization per day?)"""
         self.reset_loads()  # reset the loads from old time-step
-        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)    # time already accounted for
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             if self.time % 96 == 0:
                 charging_station.controller.reset_load()
@@ -209,15 +208,16 @@ class ChargingSim:
             buffer_battery = charging_station.storage
             self.control_start_index = stepsize * self.day_year_count
             todays_load = self.test_data[self.day_year_count*self.num_steps+self.time
-                                         :self.num_steps*(self.day_year_count+1)+self.time] * 1
+                                         :self.num_steps*(self.day_year_count+1)+self.time] * 1 # this is where time comes in
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
             for i in range(stepsize):
                 control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
                 charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
-                net_load = todays_load[self.time, 0] + buffer_battery.power - charging_station.solar.power[self.time, 0]
-                charging_station.update_load(net_load, todays_load[self.time, 0])  # set current load for charging station # UPDATED 6/8/22
+                # TODO: debug here
+                net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]    # moving horizon so always only pick the first one
+                charging_station.update_load(net_load, todays_load[0, 0])  # set current load for charging station # UPDATED 6/8/22
             # check whether one year has passed (not relevant since we don't run one full year yet)
             if self.day_year_count % 365 == 0:
                 self.day_year_count = 0
@@ -542,5 +542,5 @@ class ChargingSimCentralized:
         plt.savefig("Cycle_SOC_plot.png")
         plt.close('all')
 
-        print("total calendar aging is {}".format(sum(battery.calendar_aging)))
-        print("total cycle aging is {}".format(sum(battery.cycle_aging)))
+        print(f"total calendar aging is {sum(battery.calendar_aging)}")
+        print(f"total cycle aging is {sum(battery.cycle_aging)}")

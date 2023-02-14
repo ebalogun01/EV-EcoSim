@@ -1,19 +1,13 @@
-import sys
 import os
+import sys
 import numpy as np
 import gridlabd
 import sim
 import time
 import gblvar
 import json
-
-
-if not gblvar.charging_sim_path_append:
-    sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
-    # print('append 2')
+sys.path.append('../../../EV50_cosimulation/charging_sim')
 from EVCharging import ChargingSim
-
-print("*****EV Charging Station Simulation Imported Successfully*****")
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -126,7 +120,7 @@ def on_precommit(t):
     ################################## SEND TO GRIDLABD ################################################
 
     # set base_power properties for this timestep, i.e. existing loads, home base loads, buildings, etc.
-    charging_nodes = EV_charging_sim.get_charging_sites()
+    fast_charging_nodes = EV_charging_sim.get_charging_sites()
     if central_storage:
         central_storage_nodes = EV_charging_sim.get_storage_sites()
     prop = 'power_12'
@@ -134,22 +128,21 @@ def on_precommit(t):
         name = name_list_base_power[i]
         total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec.
-        if name in charging_nodes:
+        if name in fast_charging_nodes:
             raise IOError("fast charging node should not be in regular node!")
-            charger = EV_charging_sim.get_charger_obj_by_loc(name)
-            # charger_load = charger.get_current_load()
-            total_node_load += charger.get_current_load()
+            # charger = EV_charging_sim.get_charger_obj_by_loc(name)
+            # # charger_load = charger.get_current_load()
+            # total_node_load += charger.get_current_load()
         if central_storage and name in central_storage_nodes:
             storage = EV_charging_sim.get_storage_obj_by_loc(name)
             total_node_load += storage.power  # units in kW (should be negative if there is discharge to the grid/charger)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
-    total_node_load_watts = 0  # for dcfc
     prop_1 = 'constant_power_A'
     prop_2 = 'constant_power_B'
     prop_3 = 'constant_power_C'
-    for name in charging_nodes:
+    for name in fast_charging_nodes:
         charger_load = EV_charging_sim.get_charger_obj_by_loc(name).get_current_load()  # this is in kW
         total_node_load_watts = charger_load * 1000  # converting to watts
         gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
@@ -163,12 +156,9 @@ def on_precommit(t):
 
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
-    # os.chdir(save_folder_prefix)
-    # print(os.getcwd())
     import voltdump2
     import pandas as pd
     voltdump2.parse_voltages(save_folder_prefix)
-    global tic
     EV_charging_sim.load_results_summary(save_folder_prefix)
     np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
     np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
@@ -179,10 +169,7 @@ def on_term(t):
                                                                          index=False)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
-
-    # pd.DataFrame(data=gblvar.nom_vmag, columns=gblvar.voltage_obj).to_csv(save_folder_prefix+'/nom_vmag.csv')
-    toc = time.time()
-    print("Total run time: ", (toc - tic) / 60, "minutes")
+    print("Total run time: ", (time.time() - tic) / 60, "minutes")
     return True
 
 
@@ -200,7 +187,7 @@ def find(criteria):
             if "name" in item.keys():
                 result.append(item["name"])
             else:
-                result.append("%s:%s" % (item["class"], item["id"]))
+                result.append(f'{item["class"]}:{item["id"]}')
     return result
 
 
@@ -236,7 +223,7 @@ def get_voltage():
 
             else:
                 # print(data[prop])  # removed x with throws error
-                raise Exception('Missing string in transformer power string')
+                raise IOError('Missing string in transformer power string')
 
         elif 'd' in data[prop]:
             vl = data[prop].rstrip('d V').replace('+', ',+').replace('-', ',-').split(',')
@@ -258,7 +245,7 @@ def get_trans_power(trans_power_str):
     if 'e-' in trans_power_str:
         if 'd' not in trans_power_str:
             # print(trans_power_str)  # removed x with throws error
-            raise Exception('Missing string in transformer power string')
+            raise IOError('Missing string in transformer power string')
 
         trans_power_str = trans_power_str.replace('e-', '(')
         strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')

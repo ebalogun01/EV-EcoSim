@@ -1,9 +1,8 @@
 import os
-
+import pandas as pd
 import matplotlib.pyplot as plt
-
 from optimization import Optimization
-from utils import build_objective, build_electricity_cost, num_steps
+from utils import build_objective, build_electricity_cost, num_steps, build_cost_PGE_BEV2S
 import numpy as np
 import cvxpy as cp
 
@@ -54,6 +53,10 @@ class MPC:
             self.battery_OCV = self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + \
                                                   self.battery_ocv_params[1][0]
             self.battery_capacity = self.storage.nominal_cap  # controller should be estimating this from time to time. Or decide how it is updated?
+
+        if self.config["electricity_rate_plan"] == "PGEBEV2S":
+            self.pge_gamma = cp.Variable(1, integer=True)
+            self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_current = cp.Variable((num_steps, 1))
@@ -93,68 +96,59 @@ class MPC:
     def compute_control(self, load, price_vector):
         """This should never be run for centralized battery storage simulation"""
         # TODO: include option for solar module
+        self.time += 1
         control_action = None
         if self.control_battery:
             # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            electricity_cost = build_electricity_cost(self, load, price_vector)  # based on prediction as well
+            # electricity_cost = build_electricity_cost(self, load, price_vector)  # based on prediction as well
+            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None,
                                        self.storage, solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id))
             cost = opt_problem.run()
+            # print("BLock", self.pge_gamma.value)
             # self.costs.append(cost)
-            # print(np.hstack((self.battery_current_solar.value, self.battery_current_grid.value, self.battery_current_ev.value)),"Grid power demand")
-            # print(self.battery_current_ev.value.max())
             # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
             if opt_problem.problem.status != 'optimal':
                 print('Unable to service travel')
                 raise Exception("Solution is not optimal, please check optimization formulation!")
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
-            # change to current
-            # if self.time % 96 == 0:
-            #     # plt.plot(self.solar.ev_power.value)
-            #     # plt.plot(self.solar.grid_power.value)
-            #     # plt.plot(self.solar.battery_power.value)
-            #     plt.plot(self.battery_current_ev.value)
-            #     plt.plot(self.battery_current_solar.value)
-            #     plt.plot(self.battery_current_grid.value)
-            #     # plt.legend(["solar_ev", "solar_grid", "solar_battery", "solar", "ev", "grid"])
-            #     plt.legend(["solar", "ev", "grid"])
-            #     # plt.legend(["ev", "grid", "battery"])
-            #     plt.savefig("battery_actions_{}.png".format(self.time))
-            #     plt.close('all')
-            # self.time += 1
-
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
-            # self.actions.append(control_action)
+            plt.close('all')
+            plt.plot(self.battery_current.value)
+            plt.plot(self.battery_current_solar.value, '--')
+            plt.plot(self.battery_current_ev.value)
+            plt.plot(self.battery_current_grid.value)
+            plt.legend(['total', 'solar', 'ev', 'grid'])
+            data = {'total': [self.battery_current.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'solar': [self.battery_current_solar.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'EV': [self.battery_current_ev.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'Grid': [self.battery_current_grid.value[i, 0] for i in range(len(self.battery_current.value))]
+                    }
+            pd.DataFrame(data).to_csv(f'test_{self.time}.csv')
+            plt.savefig(f'test_{self.time}')
+            # plt.show()
+
             self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
-            if len(self.storage.control_current) < num_steps:
-                # self.storage.control_current = np.append(self.storage.control_current, control_action)
-                self.storage.control_current += control_action,
-            else:
-                self.storage.control_current += control_action,
-                # self.storage.control_current = np.array([control_action])  # it should be only updating one but then
+            self.storage.control_current += control_action,  # TODO: double-check this here
         #  need to get all the states here after the first action is taken
         return control_action
 
     def get_battery_constraints(self, ev_load):
-        eps = 0.01  # This is a numerical artifact. Values tend to solve at very low negative values but
-        # this helps avoid it.
         # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
-        # TODO: we do not monitor detailed power dynamics on the EV charging side
-        # TODO: MAKE THIS CONVEX
-        # TODO: include the solar outputs in the results summary TOMORROW
-        # ev_load[0:20, 0] = 0
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
-        self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
+        # self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
+        self.battery_OCV = self.storage.get_OCV()  # sensing directly from the battery at each time-step
+        print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
         self.storage_constraints = \
-            [self.battery_SOC[0] == self.battery_initial_SOC,
-             self.battery_SOC[1:num_steps + 1] == self.battery_SOC[0:num_steps] +
-             (self.resolution / 60 * self.battery_current) / self.storage.cap,
+            [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
+             self.battery_SOC[1:] == self.battery_SOC[0:-1] + (
+                         self.resolution / 60 * self.battery_current) / self.storage.cap,
              cp.abs(self.battery_current) <= self.storage.max_current,
              self.solar.battery_power == self.battery_current_solar * mod_parallel * self.battery_OCV * cells_series / 1000,
              self.battery_power == self.battery_current * mod_parallel * self.battery_OCV * cells_series / 1000,
@@ -167,22 +161,25 @@ class MPC:
 
              self.battery_current_grid <= cp.multiply(self.storage.max_current, self.batt_binary_var_grid),  # GRID
              self.battery_current_grid <= self.batt_curr_g,
-             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid)*self.storage.max_current,
+             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid) * self.storage.max_current,
 
              self.battery_current_solar <= cp.multiply(self.storage.max_current, self.batt_binary_var_solar),  # SOLAR
              self.battery_current_solar <= self.batt_curr_s,
-             self.battery_current_solar >= self.batt_curr_s - (1 - self.batt_binary_var_solar) * self.storage.max_current,
+             self.battery_current_solar >= self.batt_curr_s - (
+                         1 - self.batt_binary_var_solar) * self.storage.max_current,
 
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
              self.battery_current_ev <= self.batt_curr_e,
              self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
+             ev_load + self.battery_power_ev - self.solar.ev_power >= 0.001  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              # battery.ev_power can actually exceed the ev load at times,
              # meaning the rest of the energy is sent back into the grid
              ]
+        if self.config["electricity_rate_plan"] == "PGEBEV2S":
+            self.storage_constraints.extend(self.pge_gamma_constraint)
         return self.storage_constraints
 
     def reset_load(self):
@@ -228,7 +225,8 @@ class MPCBatt:
         battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
         objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
         linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-        electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
+        # electricity_cost = build_electricity_cost(self, predicted_load, price_vector)  # based on prediction as well
+        electricity_cost = build_cost_PGE_BEV2S(self, predicted_load, price_vector)
         objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution,
                                    None,
