@@ -80,6 +80,18 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
     return cost_electricity
 
 
+def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU):
+    """This will need to use a heuristic and take the average conservative estimate for gamma"""
+    net_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
+    TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_load))
+    price_per_block = 95.56     # ($/kW)
+    overage_fee = 3.82  # ($/kW)
+    charging_block = controller.pge_gamma * 50     # gamma is an integer variable
+    subscription_cost = charging_block * price_per_block / month_days["June"]  # This is in blocks of 50kW which makes it very convenient
+    penalty_cost = cp.sum(cp.neg(charging_block + net_load) * overage_fee)
+    return subscription_cost + penalty_cost + TOU_cost
+
+
 def build_objective(mode, electricity_cost, battery_degradation_cost, transformer_cost=0):
     """Builds the objective function that we will minimize."""
     lambdas = objectives[mode]

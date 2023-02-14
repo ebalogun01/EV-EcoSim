@@ -24,8 +24,8 @@ class ChargingSim:
         # TODO: fix these literal paths below
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.genfromtxt(path_prefix + '/CP_ProjectData/power_data_2018.csv')
-        charge_data = np.genfromtxt(path_prefix + '/CP_ProjectData/CP_historical_data_2015_2017.csv')
+        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')
+        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 2  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
@@ -56,8 +56,7 @@ class ChargingSim:
 
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
-
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
         for root, dirs, files, in os.walk(configs_path):
@@ -120,7 +119,7 @@ class ChargingSim:
 
     def initialize_price_loader(self, month):
         """Loads the price loading module and sets the month to be simulated for memory-efficient sampling"""
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
         self.price_loader.set_month_data(month)
@@ -542,5 +541,5 @@ class ChargingSimCentralized:
         plt.savefig("Cycle_SOC_plot.png")
         plt.close('all')
 
-        print("total calendar aging is {}".format(sum(battery.calendar_aging)))
-        print("total cycle aging is {}".format(sum(battery.cycle_aging)))
+        print(f"total calendar aging is {sum(battery.calendar_aging)}")
+        print(f"total cycle aging is {sum(battery.cycle_aging)}")

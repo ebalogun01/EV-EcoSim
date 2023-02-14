@@ -11,6 +11,7 @@
   "autoregression_input_len": 0,
   "load_history": "/CP_ProjectData/CP_historical_data_2015_2017.csv",
   "simulation_load": "/CP_ProjectData/power_data_2018.csv",
+  "electricity_rate_plan": "PGEBEV2S",
   "forecaster": "insert path here or model",
   "notes": "change control_battery to false if working on centralized storage"
 }

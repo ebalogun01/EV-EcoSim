@@ -19,12 +19,14 @@ class ChargingStation:
         self.total_load = [0]
         self.solar_power_ev = [0]
         self.solar_power_grid = [0]
+        self.solar_power_battery = [0]
         self.power = np.zeros((num_steps, 1))
         self.auxiliary_power = 0.01  # this is in kilo-watts
         self.current_load = self.auxiliary_power
         self.cooling_pump = {}  # properties of the charging station cooling pump
         # COOLING LOAD SHOULD BE A FUNCTION OF CURRENT
         self.controller = controller
+        self.pge_blocks = [0]  # this is used with the new pge rate schedule
 
     def is_charging(self):
         return self.power > self.auxiliary_power
@@ -40,6 +42,8 @@ class ChargingStation:
         self.total_load += ev_load + self.auxiliary_power,
         self.solar_power_ev += self.solar.ev_power.value[0, 0],
         self.solar_power_grid += self.solar.grid_power.value[0, 0],
+        self.solar_power_battery += self.solar.battery_power.value[0, 0],
+        self.pge_blocks += self.controller.pge_gamma.value[0],
 
     def is_EV_arrived(self):
         if self.current_load > 0:
@@ -66,25 +70,25 @@ class ChargingStation:
 
     def save_sim_data(self, save_prefix):
         import pandas as pd
-        save_file_base = str(self.id) + '_' + self.loc
-        # print(self.storage.voltages.shape, self.solar.battery_power.value.shape, self.solar.ev_power.value.shape,
-        #       self.solar.grid_power.value.shape)
-        # print(self.storage.voltages)
-        data = {'Control_current': [c*self.storage.topology[1] for c in self.controller.actions],
-                'battery_voltage': [v*self.storage.topology[0] for v in self.storage.voltages],
+        save_file_base = f'{str(self.id)}_{self.loc}'
+        data = {'Control_current': [c * self.storage.topology[1] for c in self.controller.actions],
+                'battery_voltage': [v * self.storage.topology[0] for v in self.storage.voltages],
                 'station_net_grid_load_kW': self.loads,
                 'station_total_load_kW': self.total_load,
                 'station_solar_load_ev': self.solar_power_ev,
-                'station_solar_grid': self.solar_power_grid
+                'station_solar_grid': self.solar_power_grid,
+                'station_solar_battery': self.solar_power_battery
                 }
-        pd.DataFrame(data).to_csv(save_prefix + '/charging_station_sim_{}.csv'.format(save_file_base))
-        print('***** Successfully saved simulation outputs to: ', 'charging_station_sim_{}.csv'.format(save_file_base))
+        if len(self.pge_blocks) > 2:
+            data['PGE_power_blocks'] = self.pge_blocks
+        pd.DataFrame(data).to_csv(f'{save_prefix}/charging_station_sim_{save_file_base}.csv')
+        print('***** Successfully saved simulation outputs to: ', f'charging_station_sim_{save_file_base}.csv')
 
     def visualize(self, option=None):
         plt.plot(self.controller.actions)
         plt.ylabel("Control current")
         plt.xlabel("Time Steps (count)")
-        plt.savefig("Control_action_station{}".format(self.id))
+        plt.savefig(f"Control_action_station{self.id}")
         plt.close()
         if option and isinstance(option, str) and option != "storage":
             try:
@@ -94,8 +98,8 @@ class ChargingStation:
                 plt.xlabel("Time Steps (count)")
                 plt.savefig("Load_profile_station{}".format(self.id))
                 plt.close()
-            except:
-                raise Exception("Option chosen is not an attribute! Please choose relevant option")
+            except IOError as e:
+                raise IOError("Option chosen is not an attribute! Please choose relevant option") from e
         elif option == "storage":
             battery = getattr(self, option)
             plt.figure()
