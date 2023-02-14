@@ -144,7 +144,7 @@ class MPC:
         mod_parallel = self.storage.topology[1]  # parallel modules count
         # self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
         self.battery_OCV = self.storage.get_OCV()  # sensing directly from the battery at each time-step
-        print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
+        # print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
         self.storage_constraints = \
             [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
              self.battery_SOC[1:] == self.battery_SOC[0:-1] + (
