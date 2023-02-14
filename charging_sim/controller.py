@@ -108,7 +108,7 @@ class MPC:
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None,
                                        self.storage, solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id))
             cost = opt_problem.run()
-            print("BLock", self.pge_gamma.value)
+            # print("BLock", self.pge_gamma.value)
             # self.costs.append(cost)
             # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
             if opt_problem.problem.status != 'optimal':
