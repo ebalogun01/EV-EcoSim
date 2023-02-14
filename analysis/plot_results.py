@@ -5,7 +5,10 @@ import os
 
 
 # C:\Users\ebalo\OneDrive - Stanford\EV50_cosimulation\ResultsSolarDeterministic\July_5stations
-os.chdir('C:/Users/ebalo/OneDrive - Stanford/EV50_cosimulation/ResultsSolarDeterministic/')
+simulation_results_folder = 'C:/Users/ebalo/OneDrive - Stanford/EV50_cosimulation/ResultsSolarDeterministic/'
+os.chdir(simulation_results_folder)
+fig_width, fig_height = 10, 6
+font_size = 16
 for root, dirs, files, in os.walk(".", topdown=True):
     for name in dirs:
         curr_dir = os.getcwd()
@@ -63,8 +66,6 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 print(v.shape)
                 print(a.shape)
 
-                fig_width, fig_height = 10, 6
-                font_size = 16
                 plt.figure(figsize=(fig_width, fig_height))
                 for i in range(v.shape[1]):
                     plt.plot(v[:, i] / 1000)
