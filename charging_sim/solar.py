@@ -38,14 +38,13 @@ class Solar:
         self.node = None
 
     def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=4):
-        if not self.month == month:
+        if self.month != month:
             # GHI = Global Horizontal Irradiance
             print("setting month for solar power...")
             self.data_np = self.solar_df[self.solar_df["Month"] == month]['GHI'].to_numpy()     # for one month
             self.month = month  # set month to current desired month
         self.power = self.data_np[start_idx:start_idx+num_steps] / 1000     # convert to kW
         self.power = np.minimum(self.rating, np.reshape(self.power, desired_shape) * self.efficiency * self.area)
-        # print("Solar Max Power is: {}kW".format(self.power.max()))
         # this ignores area for now. Can look at potential land-use/space use in future work
         return self.power
 
@@ -65,7 +64,7 @@ class Solar:
         self.data = pd.DataFrame(data=temp_data, columns=self.cols)
         self.data_np = temp_data
         path_suffix = self.config['data_path'].split('-')[0]
-        self.data.to_csv(self.path_prefix+path_suffix+"-{}min.csv".format(output_res))
+        self.data.to_csv(self.path_prefix+path_suffix + f"-{output_res}min.csv")
 
     def get_solar_output(self):
         return self.data_np * self.efficiency * self.area / 1000    # this is in kW
@@ -86,12 +85,13 @@ def main():
     import json
     # load input data
     path_prefix = os.getcwd()
-    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    path_prefix = path_prefix[:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
     path_prefix = path_prefix.replace('\\', '/')
     with open(path_prefix+'/charging_sim/configs/solar.json', "r") as f:
         config = json.load(f)
     solar = Solar(config, path_prefix=path_prefix)
     desired_res = 15
+    #   input res, desired res
     solar.downscale(30, desired_res)
 
 
