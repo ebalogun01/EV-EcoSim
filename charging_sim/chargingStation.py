@@ -77,7 +77,8 @@ class ChargingStation:
                 'station_total_load_kW': self.total_load,
                 'station_solar_load_ev': self.solar_power_ev,
                 'station_solar_grid': self.solar_power_grid,
-                'station_solar_battery': self.solar_power_battery
+                'station_solar_battery': self.solar_power_battery,
+                'battery_power': self.storage.true_power
                 }
         if len(self.pge_blocks) > 2:
             data['PGE_power_blocks'] = self.pge_blocks
