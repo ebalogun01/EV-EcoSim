@@ -146,7 +146,7 @@ class MPC:
         # print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
         self.storage_constraints = \
             [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
-             self.battery_SOC[1:] == self.battery_SOC[0:-1] + (
+             self.battery_SOC[1:] == self.battery_SOC[:-1] + (
                          self.resolution / 60 * self.battery_current) / self.storage.cap,
              cp.abs(self.battery_current) <= self.storage.max_current,
              self.solar.battery_power == self.battery_current_solar * mod_parallel * self.battery_OCV * cells_series / 1000,
@@ -172,7 +172,7 @@ class MPC:
              self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power_ev - self.solar.ev_power >= 0.001  # energy balance
+             ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              # battery.ev_power can actually exceed the ev load at times,
              # meaning the rest of the energy is sent back into the grid
