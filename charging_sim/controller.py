@@ -1,7 +1,6 @@
 import os
-
+import pandas as pd
 import matplotlib.pyplot as plt
-
 from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps, build_cost_PGE_BEV2S
 import numpy as np
@@ -97,6 +96,7 @@ class MPC:
     def compute_control(self, load, price_vector):
         """This should never be run for centralized battery storage simulation"""
         # TODO: include option for solar module
+        self.time += 1
         control_action = None
         if self.control_battery:
             # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
@@ -117,9 +117,24 @@ class MPC:
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
+            plt.close('all')
+            plt.plot(self.battery_current.value)
+            plt.plot(self.battery_current_solar.value, '--')
+            plt.plot(self.battery_current_ev.value)
+            plt.plot(self.battery_current_grid.value)
+            plt.legend(['total', 'solar', 'ev', 'grid'])
+            data = {'total': [self.battery_current.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'solar': [self.battery_current_solar.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'EV': [self.battery_current_ev.value[i, 0] for i in range(len(self.battery_current.value))],
+                    'Grid': [self.battery_current_grid.value[i, 0] for i in range(len(self.battery_current.value))]
+                    }
+            pd.DataFrame(data).to_csv(f'test_{self.time}.csv')
+            plt.savefig(f'test_{self.time}')
+            # plt.show()
+
             self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
-            self.storage.control_current += control_action,     # TODO: double-check this here
+            self.storage.control_current += control_action,  # TODO: double-check this here
         #  need to get all the states here after the first action is taken
         return control_action
 
@@ -127,10 +142,13 @@ class MPC:
         # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
-        self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
+        # self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
+        self.battery_OCV = self.storage.get_OCV()  # sensing directly from the battery at each time-step
+        print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
         self.storage_constraints = \
-            [self.battery_SOC[0] == self.battery_initial_SOC,
-             self.battery_SOC[1:] == self.battery_SOC[0:-1] + (self.resolution / 60 * self.battery_current) / self.storage.cap,
+            [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
+             self.battery_SOC[1:] == self.battery_SOC[0:-1] + (
+                         self.resolution / 60 * self.battery_current) / self.storage.cap,
              cp.abs(self.battery_current) <= self.storage.max_current,
              self.solar.battery_power == self.battery_current_solar * mod_parallel * self.battery_OCV * cells_series / 1000,
              self.battery_power == self.battery_current * mod_parallel * self.battery_OCV * cells_series / 1000,
@@ -143,18 +161,19 @@ class MPC:
 
              self.battery_current_grid <= cp.multiply(self.storage.max_current, self.batt_binary_var_grid),  # GRID
              self.battery_current_grid <= self.batt_curr_g,
-             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid)*self.storage.max_current,
+             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid) * self.storage.max_current,
 
              self.battery_current_solar <= cp.multiply(self.storage.max_current, self.batt_binary_var_solar),  # SOLAR
              self.battery_current_solar <= self.batt_curr_s,
-             self.battery_current_solar >= self.batt_curr_s - (1 - self.batt_binary_var_solar) * self.storage.max_current,
+             self.battery_current_solar >= self.batt_curr_s - (
+                         1 - self.batt_binary_var_solar) * self.storage.max_current,
 
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
              self.battery_current_ev <= self.batt_curr_e,
              self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power - self.solar.ev_power >= 0  # energy balance
+             ev_load + self.battery_power_ev - self.solar.ev_power >= 0.001  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              # battery.ev_power can actually exceed the ev load at times,
              # meaning the rest of the energy is sent back into the grid

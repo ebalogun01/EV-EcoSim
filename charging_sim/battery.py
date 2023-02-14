@@ -396,6 +396,9 @@ class Battery:
             self.currents += current,
             self.true_power += self.power,
 
+    def get_OCV(self):
+        return np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
+
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():
     # TODO: include error checking assertion points later
