@@ -216,7 +216,7 @@ class ChargingSim:
                 charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
                 # TODO: debug here
-                net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]    # moving horizon so always only pick the first one
+                net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]   # moving horizon so always only pick the first one
                 charging_station.update_load(net_load, todays_load[0, 0])  # set current load for charging station # UPDATED 6/8/22
             # check whether one year has passed (not relevant since we don't run one full year yet)
             if self.day_year_count % 365 == 0:
