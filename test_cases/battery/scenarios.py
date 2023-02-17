@@ -11,8 +11,8 @@ if not gblvar.charging_sim_path_append:
 
 # RUN TYPE
 sequential_run = False
-parallel_run = False
-single_run = True
+parallel_run = True
+single_run = False
 
 # BATTERY SCENARIOS
 num_vars = 6
@@ -43,18 +43,19 @@ def run(scenario):
 
 def run_scenarios_parallel():
     scenarios = make_scenarios()
-    start_idx = 0
+    start_idx = 11
+    end_idx = 14
     num_cores = mp.cpu_count()
     if num_cores > 1:
-        use_cores_count = num_cores - 2  # leave one out
+        use_cores_count = min(num_cores - 2, end_idx - start_idx)  # leave one out
         print(f"Running {use_cores_count} parallel scenarios...")
-        pool = mp.Pool(use_cores_count)
-        pool.map(run, [scenarios[i] for i in range(start_idx, min(use_cores_count+start_idx, len(scenarios)))])
+        with mp.get_context("spawn").Pool(use_cores_count) as pool:
+            pool.map(run, [scenarios[i] for i in range(start_idx, min(use_cores_count+start_idx, end_idx))])
 
 
 def run_scenarios_sequential():
     start_idx = 0
-    end_idx = 5
+    end_idx = 7
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
