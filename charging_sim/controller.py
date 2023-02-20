@@ -56,7 +56,7 @@ class MPC:
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.pge_gamma = cp.Variable(1, integer=True)
-            self.pge_gamma_constraint = [self.pge_gamma >= 1]
+            self.pge_gamma_constraint = [self.pge_gamma >= 0]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_current = cp.Variable((num_steps, 1))
@@ -117,6 +117,8 @@ class MPC:
                 raise Exception("Solution is not optimal, please check optimization formulation!")
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
+            else:
+                print("cost is: ", cost)
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
             # plt.close('all')
             # plt.plot(self.battery_current.value)

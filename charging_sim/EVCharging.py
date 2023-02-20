@@ -26,12 +26,11 @@ class ChargingSim:
             self.solar = True  # to be initialized with module later
         data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')
         charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv')
-        test_data = data2018[:-1, ] / 2  # removing bad data
+        test_data = data2018[:-1, ]  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.battery_config = None
         self.charging_config = None
-        self.controller_config = None
         self.prices_config = None
         self.price_loader = None
         self.battery_specs_per_loc = None  # Could be used later to specify varying batteries for various nodes
