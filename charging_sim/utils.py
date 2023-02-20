@@ -89,7 +89,7 @@ def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU):
     overage_fee = 3.82  # ($/kW)
     charging_block = controller.pge_gamma * 50  # gamma is an integer variable that's at least 1
     subscription_cost = controller.pge_gamma * price_per_block / month_days["April"]  # This is in blocks of 50kW which makes it very convenient ($/day)
-    penalty_cost = cp.sum(cp.neg(charging_block - net_grid_load) * overage_fee)     # ($)
+    penalty_cost = cp.max(cp.neg(charging_block - net_grid_load) * overage_fee)     # ($)
     return subscription_cost + penalty_cost + TOU_cost
 
 
