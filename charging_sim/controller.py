@@ -37,7 +37,7 @@ class MPC:
         self.load = []
         self.time = 0
         self.w = 0
-        self.costs = []
+        self.costs = [0]
         self.control_battery = self.config["control_battery"]
         self.solar = solar
 
