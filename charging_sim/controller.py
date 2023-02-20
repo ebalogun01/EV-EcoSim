@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+# import pandas as pd
 import matplotlib.pyplot as plt
 from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps, build_cost_PGE_BEV2S
@@ -56,7 +56,7 @@ class MPC:
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.pge_gamma = cp.Variable(1, integer=True)
-            self.pge_gamma_constraint = [self.pge_gamma >= 1]
+            self.pge_gamma_constraint = [self.pge_gamma >= 0]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_current = cp.Variable((num_steps, 1))
@@ -108,6 +108,7 @@ class MPC:
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None,
                                        self.storage, solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id))
             cost = opt_problem.run()
+            self.costs += cost/num_steps,
             # print("BLock", self.pge_gamma.value)
             # self.costs.append(cost)
             # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
@@ -116,6 +117,8 @@ class MPC:
                 raise Exception("Solution is not optimal, please check optimization formulation!")
             elif electricity_cost.value < 0:
                 print('Negative Electricity')
+            else:
+                print("cost is: ", cost)
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
             # plt.close('all')
             # plt.plot(self.battery_current.value)
@@ -228,8 +231,7 @@ class MPCBatt:
         electricity_cost = build_cost_PGE_BEV2S(self, predicted_load, price_vector)
         objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution,
-                                   None,
-                                   self.storage, time=0, name="Test_Case_" + str(self.storage.id))
+                                   None, self.storage, time=0, name=f"Test_Case_{str(self.storage.id)}")
         opt_problem.run()
         if opt_problem.problem.status != 'optimal':
             print('Unable to service travel')
@@ -244,7 +246,6 @@ class MPCBatt:
             self.storage.control_current = np.append(self.storage.control_current, control_action)
         else:
             self.storage.control_current = np.array([control_action])  # it should be only updating one but then
-            # print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
         self.battery_initial_SOC = self.battery_SOC.value[1, 0]  # update SOC estimation
         return control_action
 
