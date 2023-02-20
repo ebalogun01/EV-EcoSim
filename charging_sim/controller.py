@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+# import pandas as pd
 import matplotlib.pyplot as plt
 from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps, build_cost_PGE_BEV2S
@@ -108,6 +108,7 @@ class MPC:
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None,
                                        self.storage, solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id))
             cost = opt_problem.run()
+            self.costs += cost/num_steps,
             # print("BLock", self.pge_gamma.value)
             # self.costs.append(cost)
             # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
@@ -228,8 +229,7 @@ class MPCBatt:
         electricity_cost = build_cost_PGE_BEV2S(self, predicted_load, price_vector)
         objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
         opt_problem = Optimization(objective_mode, objective, battery_constraints, predicted_load, self.resolution,
-                                   None,
-                                   self.storage, time=0, name="Test_Case_" + str(self.storage.id))
+                                   None, self.storage, time=0, name=f"Test_Case_{str(self.storage.id)}")
         opt_problem.run()
         if opt_problem.problem.status != 'optimal':
             print('Unable to service travel')
@@ -244,7 +244,6 @@ class MPCBatt:
             self.storage.control_current = np.append(self.storage.control_current, control_action)
         else:
             self.storage.control_current = np.array([control_action])  # it should be only updating one but then
-            # print("RESETTING CONTROL ARRAY", len(self.storage.control_current))
         self.battery_initial_SOC = self.battery_SOC.value[1, 0]  # update SOC estimation
         return control_action
 
