@@ -9,9 +9,9 @@ import cvxpy as cp
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 path_prefix = os.getcwd()
-path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
 path_prefix.replace('\\', '/')
-OCV_SOC_linear_params = np.load(path_prefix + '/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+OCV_SOC_linear_params = np.load(f'{path_prefix}/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
 
 
 class MPC:
@@ -22,8 +22,7 @@ class MPC:
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
         self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
-        self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[
-                                :-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
+        self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
         self.reshaped_data = np.reshape(self.current_testdata,
                                         self.current_testdata.size)  # flatten data for efficient indexing
         self.one_step_data = self.reshaped_data[-48:]  # one step LSTM uses last 48 time steps to predict the next, need
@@ -52,7 +51,8 @@ class MPC:
             self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
             self.battery_OCV = self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + \
                                                   self.battery_ocv_params[1][0]
-            self.battery_capacity = self.storage.nominal_cap  # controller should be estimating this from time to time. Or decide how it is updated?
+            self.battery_capacity = self.storage.nominal_cap
+            # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.pge_gamma = cp.Variable(1, integer=True)
@@ -70,8 +70,6 @@ class MPC:
         self.batt_binary_var_ev = cp.Variable((num_steps, 1), boolean=True)
         self.batt_binary_var_grid = cp.Variable((num_steps, 1), boolean=True)
         self.batt_binary_var_solar = cp.Variable((num_steps, 1), boolean=True)
-        # self.battery_voltage = cp.Variable((stepsize + 1, 1))
-        # self.battery_Q = cp.Variable((stepsize + 1, 1))  # Amount of energy Kwh available in battery
         self.battery_SOC = cp.Variable((num_steps + 1, 1))  # State of Charge max:1 min:0
         self.action = 0
         self.actions = [self.action]
@@ -95,45 +93,27 @@ class MPC:
 
     def compute_control(self, load, price_vector):
         """This should never be run for centralized battery storage simulation"""
-        # TODO: include option for solar module
         self.time += 1
         control_action = None
         if self.control_battery:
             # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            # electricity_cost = build_electricity_cost(self, load, price_vector)  # based on prediction as well
             electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
-            opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None,
-                                       self.storage, solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id))
+            opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
+                                       solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id),
+                                       solver=self.config['opt_solver'])
             cost = opt_problem.run()
             self.costs += cost/num_steps,
-            # print("BLock", self.pge_gamma.value)
-            # self.costs.append(cost)
-            # print("Optimal cost is: ", sum(self.costs)/len(self.costs))
             if opt_problem.problem.status != 'optimal':
                 print('Unable to service travel')
                 raise Exception("Solution is not optimal, please check optimization formulation!")
-            elif electricity_cost.value < 0:
-                print('Negative Electricity')
-            else:
-                print("cost is: ", cost)
+            # elif electricity_cost.value < 0:
+            #     print('Negative Electricity')
+            # else:
+            #     print("cost is: ", cost)
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
-            # plt.close('all')
-            # plt.plot(self.battery_current.value)
-            # plt.plot(self.battery_current_solar.value, '--')
-            # plt.plot(self.battery_current_ev.value)
-            # plt.plot(self.battery_current_grid.value)
-            # plt.legend(['total', 'solar', 'ev', 'grid'])
-            # data = {'total': [self.battery_current.value[i, 0] for i in range(len(self.battery_current.value))],
-            #         'solar': [self.battery_current_solar.value[i, 0] for i in range(len(self.battery_current.value))],
-            #         'EV': [self.battery_current_ev.value[i, 0] for i in range(len(self.battery_current.value))],
-            #         'Grid': [self.battery_current_grid.value[i, 0] for i in range(len(self.battery_current.value))]
-            #         }
-            # pd.DataFrame(data).to_csv(f'test_{self.time}.csv')
-            # plt.savefig(f'test_{self.time}')
-            # plt.show()
             self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
             self.storage.control_current += control_action,  # TODO: double-check this here
@@ -187,7 +167,6 @@ class MPC:
     def reset_load(self):
         """This is done after one full day is done."""
         self.load = []
-        self.full_day_prediction = np.array([])
 
 
 class MPCBatt:

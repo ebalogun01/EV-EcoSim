@@ -52,6 +52,7 @@ class ChargingSim:
         self.num_steps = int(minute_in_day / resolution)
         self.aging_sim = None  # This gets updated later
         self._nodes = []
+        self.scenario = None    # to be updated later
 
     def load_config(self):
         # use master config for loading other configs also change all these paths from literal
@@ -98,10 +99,11 @@ class ChargingSim:
             print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
         loc_list = random.sample(power_nodes_list, self.num_charging_sites)  # randomization of charging locations
-        # print("There are", len(self.battery_objects), "battery objects initialized")
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
+            # TODO: change the below later
+            self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
             controller = control.MPC(self.controller_config, storage=battery,
                                      solar=solar)  # need to change this to load based on the users controller python file?
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
@@ -166,6 +168,7 @@ class ChargingSim:
         """This is used to set up charging station locations and simulations"""
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
+        self.scenario = scenario
         self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
         self.initialize_price_loader(self.prices_config["month"])
         self.initialize_aging_sim()  # Battery aging
