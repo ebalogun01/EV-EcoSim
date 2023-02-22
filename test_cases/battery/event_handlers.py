@@ -15,6 +15,10 @@ path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosi
 path_prefix.replace('\\', '/')
 save_folder_prefix = 'test_' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
 
+# SET OPTIMIZATION SOLVER
+solver_options = ['GUROBI', 'MOSEK', 'ECOS']
+gblvar.scenario['opt_solver'] = solver_options[0]
+
 # lood DCFC locations txt file
 print('...loading dcfc bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()

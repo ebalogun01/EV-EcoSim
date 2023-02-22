@@ -7,7 +7,7 @@ class Optimization:
 
     # TODO: change all refs to battery_constraints to call controller
     def __init__(self, objective_type, objective, controller, power_demand, time_res, transformer, battery, time=0,
-                 name=None, solar=None, solver='MOSEK'):
+                 name=None, solar=None, solver='GUROBI'):
         self._objective_type = objective_type
         self._objective = objective
         self._name = name

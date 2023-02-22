@@ -5,13 +5,11 @@ import matplotlib.pyplot as plt
 
 class ChargingStation:
     """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
-
     def __init__(self, storage, config, controller, solar=None, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
         self.loc = config["location"]
         self.storage = storage
-        # removed setting storage id as charging station ID
         self.capacity = config["power_cap"]
         self.solar = solar
         self.status = status
@@ -33,11 +31,6 @@ class ChargingStation:
 
     def update_load(self, net_grid_load, ev_load):
         self.current_load = net_grid_load + self.auxiliary_power
-        # self.loads.append(net_grid_load)  # net load station pulls from grid, not load from EV
-        # self.total_load.append(ev_load + self.auxiliary_power)
-        # self.solar_power_ev.append(self.solar.ev_power.value[0, 0])
-        # self.solar_power_grid.append(self.solar.grid_power.value[0, 0])
-
         self.loads += net_grid_load,  # net load station pulls from grid, not load from EV
         self.total_load += ev_load + self.auxiliary_power,
         self.solar_power_ev += self.solar.ev_power.value[0, 0],
@@ -78,7 +71,8 @@ class ChargingStation:
                 'station_solar_load_ev': self.solar_power_ev,
                 'station_solar_grid': self.solar_power_grid,
                 'station_solar_battery': self.solar_power_battery,
-                'battery_power': self.storage.true_power
+                'battery_power': self.storage.true_power,
+                'average_cost_per_interval': self.controller.costs
                 }
         if len(self.pge_blocks) > 2:
             data['PGE_power_blocks'] = self.pge_blocks

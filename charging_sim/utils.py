@@ -36,12 +36,11 @@ def PGE_BEV2_S():
     plt.rcParams.update({'font.size': 16})
     plt.xticks(rotation=60, ha="right")
     plt.plot(times, hourly_prices)
-    # plt.gca().xaxis.set_major_locator(plt.MultipleLocator(1))
     plt.xlabel("Hour of day")
     plt.ylabel("TOU rate ($/kWh)")
     plt.tight_layout()
     plt.show()
-    np.save
+    # np.save
     return hourly_prices
 
 
@@ -61,14 +60,7 @@ def load_prices(time_intervals, price, price_vector):
 
 
 def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=False):
-    # to be used later. For now, keep as-is.
     """Need to update from home load right now; maybe this can be useful in future opt."""
-    # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
-    lam = 10  # this needs to be guided
-    # sparsity_cost_factor = 0.000001  # dynamically determine this in future based on load * cost
-    sparsity_cost = cp.norm(controller.battery_current_grid, 1) + cp.norm(controller.battery_current_solar, 1) + \
-                    cp.norm(controller.battery_current_ev, 1)
-
     cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + controller.battery_power -
                                                                controller.solar.battery_power -
                                                                controller.solar.ev_power))))
@@ -83,13 +75,13 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
 
 def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU):
     """This will need to use a heuristic and take the average conservative estimate for gamma"""
-    net_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
-    TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_load))
-    price_per_block = 95.56  # ($/kW)
+    net_grid_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
+    TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_grid_load)) * controller.resolution/60     # ($)
+    price_per_block = 95.56  # ($/Block)
     overage_fee = 3.82  # ($/kW)
     charging_block = controller.pge_gamma * 50  # gamma is an integer variable that's at least 1
-    subscription_cost = charging_block * price_per_block / month_days["June"]  # This is in blocks of 50kW which makes it very convenient
-    penalty_cost = cp.sum(cp.neg(charging_block + net_load) * overage_fee)
+    subscription_cost = controller.pge_gamma * price_per_block / month_days["April"]  # This is in blocks of 50kW which makes it very convenient ($/day)
+    penalty_cost = cp.max(cp.neg(charging_block - net_grid_load) * overage_fee)     # ($)
     return subscription_cost + penalty_cost + TOU_cost
 
 
