@@ -20,10 +20,17 @@ solver_options = ['GUROBI', 'MOSEK', 'ECOS']
 gblvar.scenario['opt_solver'] = solver_options[0]
 
 # lood DCFC locations txt file
-print('...loading dcfc bus nodes')
-dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()
-print("DCFC bus nodes loaded...")
-num_charging_nodes = len(dcfc_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
+print('...loading charging bus nodes')
+dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()     # this is for DC FAST charging
+if type(dcfc_nodes) is not list:
+    dcfc_nodes = [dcfc_nodes]
+L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()    # this is for L2 charging
+if type(L2_charging_nodes) is not list:
+    L2_charging_nodes = [L2_charging_nodes]
+print(L2_charging_nodes, "HHAA")
+print("Charging bus nodes loaded...")
+# return
+num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 #####
 global tic, toc  # used to time simulation
@@ -47,7 +54,7 @@ def on_init(t):
     gblvar.transconfig_list = find("class=transformer_configuration")
 
     # Configure EV charging simulation...NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
-    EV_charging_sim.setup(dcfc_nodes, scenario=gblvar.scenario)
+    EV_charging_sim.setup(dcfc_nodes + L2_charging_nodes, scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     os.mkdir(save_folder_prefix)
     np.savetxt(f'{save_folder_prefix}voltdump.txt', np.array([save_folder_prefix]),fmt="%s")
@@ -124,30 +131,24 @@ def on_precommit(t):
     ################################## SEND TO GRIDLABD ################################################
 
     # set base_power properties for this timestep, i.e. existing loads, home base loads, buildings, etc.
-    fast_charging_nodes = EV_charging_sim.get_charging_sites()
-    if central_storage:
-        central_storage_nodes = EV_charging_sim.get_storage_sites()
+    # TODO: get regular L2 charging sharing transformer with existing loads
     prop = 'power_12'
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
-        # if ev node is power node, add ev_charging power to the set value for power vec.
-        if name in fast_charging_nodes:
-            raise IOError("fast charging node should not be in regular node!")
-            # charger = EV_charging_sim.get_charger_obj_by_loc(name)
-            # # charger_load = charger.get_current_load()
-            # total_node_load += charger.get_current_load()
-        if central_storage and name in central_storage_nodes:
-            storage = EV_charging_sim.get_storage_obj_by_loc(name)
-            total_node_load += storage.power  # units in kW (should be negative if there is discharge to the grid/charger)
+        # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
+        if name in L2_charging_nodes:
+            charger = EV_charging_sim.get_charger_obj_by_loc(name)
+            total_node_load += min(charger.get_current_load(), charger.capacity)    # for L2
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
     prop_1 = 'constant_power_A'
     prop_2 = 'constant_power_B'
     prop_3 = 'constant_power_C'
-    for name in fast_charging_nodes:
-        charger_load = EV_charging_sim.get_charger_obj_by_loc(name).get_current_load()  # this is in kW
+    for name in dcfc_nodes:
+        charger = EV_charging_sim.get_charger_obj_by_loc(name)
+        charger_load = min(charger.get_current_load(), charger.capacity_dcfc)  # this is in kW (for dcfc)
         total_node_load_watts = charger_load * 1000  # converting to watts
         gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
         gridlabd.set_value(name, prop_2, str(total_node_load_watts / 3))

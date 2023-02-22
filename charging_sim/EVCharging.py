@@ -24,8 +24,8 @@ class ChargingSim:
         # TODO: fix these literal paths below
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')
-        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv')
+        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv') / 2
+        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv') / 2
         test_data = data2018[:-1, ]  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
@@ -98,7 +98,7 @@ class ChargingSim:
         if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
             print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
-        loc_list = random.sample(power_nodes_list, self.num_charging_sites)  # randomization of charging locations
+        loc_list = random.sample(power_nodes_list, self.num_charging_sites)  # randomization of charging locations (not random for dcfc since they are the same)
         for i in range(self.num_charging_sites):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
             solar = self.create_solar_object(i, loc_list[i])  # create solar object

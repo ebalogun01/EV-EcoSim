@@ -11,6 +11,7 @@ class ChargingStation:
         self.loc = config["location"]
         self.storage = storage
         self.capacity = config["power_cap"]
+        self.capacity_dcfc = 75
         self.solar = solar
         self.status = status
         self.loads = [0]
@@ -52,7 +53,7 @@ class ChargingStation:
             print("Charging station is currently idle.")
 
     def set_current_load(self, load):
-        self.current_load = load
+        self.current_load = min(load, self.capacity)
 
     def get_current_load(self):
         return self.current_load
