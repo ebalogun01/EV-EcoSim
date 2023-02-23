@@ -27,8 +27,8 @@ with open('voltage_obj.txt', 'rb') as fp:
     voltage_obj = pickle.load(fp)
 with open('voltage_prop.txt', 'rb') as fp:
     voltage_prop = pickle.load(fp)
-with open('bat_bus.txt', 'rb') as fp:
-    bat_bus_obj = pickle.load(fp)
+# with open('bat_bus.txt', 'rb') as fp:
+#     bat_bus_obj = pickle.load(fp)
 
 vm = np.zeros((1, len(voltage_obj)))
 vp = np.zeros((1, len(voltage_obj)))
@@ -56,5 +56,5 @@ trans_int_method = 'euler'  # integration method ['euler' or 'RK4']
 
 # Battery properties
 
-bat_soc0 = 0.5
-cap_E = 13500  # Wh
+# bat_soc0 = 0.5
+# cap_E = 13500  # Wh

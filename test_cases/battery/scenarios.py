@@ -10,8 +10,8 @@ if not gblvar.charging_sim_path_append:
 
 
 # RUN TYPE
-sequential_run = False
-parallel_run = True
+sequential_run = True
+parallel_run = False
 single_run = False
 
 # BATTERY SCENARIOS
@@ -43,7 +43,7 @@ def run(scenario):
 
 def run_scenarios_parallel():
     scenarios = make_scenarios()
-    start_idx = 11
+    start_idx = 0
     end_idx = 14
     num_cores = mp.cpu_count()
     if num_cores > 1:
@@ -54,8 +54,8 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 0
-    end_idx = 7
+    start_idx = 16
+    end_idx = 20
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
