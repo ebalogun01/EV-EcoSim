@@ -8,4 +8,4 @@
 'starttime':"'2018-07-01 00:00:00'",
 'endtime':"'2018-07-31 23:59:59'",
 'python_module':'event_handlers',
-'safety_factor':0.5}
+'safety_factor':0.1}
