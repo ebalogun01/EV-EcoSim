@@ -6,6 +6,7 @@ import sim
 import time
 import gblvar
 import json
+import pandas as pd
 sys.path.append('../../../EV50_cosimulation/charging_sim')
 from EVCharging import ChargingSim
 
@@ -27,12 +28,17 @@ if type(dcfc_nodes) is not list:
 L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()    # this is for L2 charging
 if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
-print(L2_charging_nodes, "HHAA")
-print("Charging bus nodes loaded...")
 # return
 num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 #####
+
+# AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
+# TODO: include time-varying temperature for T_ambient
+simulation_month = 1  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+temperature_data = pd.read_csv('../../../EV50_cosimulation/trans_ambientT_timeseries.csv')
+temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature']
+
 global tic, toc  # used to time simulation
 tic = time.time()
 #####
@@ -109,7 +115,9 @@ def on_precommit(t):
     ####################### SIMULATE ##################################
 
     # propagate transformer state
+    # sim.sim_transformer(temperature_data=temperature_data)
     sim.sim_transformer()
+
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
@@ -162,7 +170,6 @@ def on_precommit(t):
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
     import voltdump2
-    import pandas as pd
     voltdump2.parse_voltages(save_folder_prefix)
     EV_charging_sim.load_results_summary(save_folder_prefix)
     np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
