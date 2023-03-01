@@ -242,7 +242,7 @@ class Oneshot:
             # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector)
+            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
                                        solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id),

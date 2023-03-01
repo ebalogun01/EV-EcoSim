@@ -58,7 +58,7 @@ def make_scenarios():
 
 
 def run(scenario):
-    save_folder_prefix = 'test_June' + str(scenario['index']) + '/'
+    save_folder_prefix = 'test_June_nomax' + str(scenario['index']) + '/'
     os.mkdir(save_folder_prefix)
     EV_charging_sim.setup(dcfc_nodes + L2_charging_nodes, scenario=scenario)
     EV_charging_sim.multistep()

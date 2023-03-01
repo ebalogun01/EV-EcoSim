@@ -86,6 +86,8 @@ class ChargingStation:
                 }
         if len(self.pge_blocks) > 2:
             data['PGE_power_blocks'] = self.pge_blocks
+        elif len(self.pge_blocks) > 1:
+            np.savetxt(f'{save_prefix}/PGE_block_charging_station_sim_{save_file_base}.csv', self.pge_blocks)
         pd.DataFrame(data).to_csv(f'{save_prefix}/charging_station_sim_{save_file_base}.csv')
         print('***** Successfully saved simulation outputs to: ', f'charging_station_sim_{save_file_base}.csv')
 
