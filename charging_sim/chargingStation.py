@@ -10,8 +10,8 @@ class ChargingStation:
         self.id = self.config["locator_index"]
         self.loc = config["location"]
         self.storage = storage
-        self.capacity = config["power_cap"]
-        self.capacity_dcfc = 75
+        self.capacity = config["L2_power_cap"]     # multiple chargers at a node
+        self.capacity_dcfc = config["dcfc_power_cap"]
         self.solar = solar
         self.status = status
         self.loads = [0]
@@ -38,6 +38,15 @@ class ChargingStation:
         self.solar_power_grid += self.solar.grid_power.value[0, 0],
         self.solar_power_battery += self.solar.battery_power.value[0, 0],
         self.pge_blocks += self.controller.pge_gamma.value[0],
+
+    def update_load_oneshot(self, net_grid_load, ev_load):
+        self.current_load += net_grid_load + self.auxiliary_power
+        self.loads.extend(net_grid_load.flatten().tolist())  # net load station pulls from grid, not load from EV
+        self.total_load.extend((ev_load + self.auxiliary_power).flatten().tolist())
+        self.solar_power_ev.extend(self.solar.ev_power.value.flatten().tolist())
+        self.solar_power_grid.extend(self.solar.grid_power.value.flatten().tolist())
+        self.solar_power_battery.extend(self.solar.battery_power.value.flatten().tolist())
+        self.pge_blocks.extend(self.controller.pge_gamma.value.flatten().tolist())
 
     def is_EV_arrived(self):
         if self.current_load > 0:

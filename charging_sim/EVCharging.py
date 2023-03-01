@@ -14,14 +14,15 @@ minute_in_day = 1440
 plt.style.use('seaborn-darkgrid')  # optional
 
 
-# TODO: start working on the solar module first and then remove all MPC simulations from this version and
+# TODO: COMPLETE SEPERATE CONFIGS FOR EACH CHARGING STATION GIVEN CONFIG (fast charging vs L2) and include relevant load data
 # clean code COMPLETELY
 # TODO: track the loads as well
 
 class ChargingSim:
-    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None):
+    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: fix these literal paths below
+        self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
         data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv') / 2
@@ -49,7 +50,10 @@ class ChargingSim:
         self.storage_locs = []  # usually empty if not centralized mode
         self.site_net_loads = []
         self.resolution = resolution
-        self.num_steps = int(minute_in_day / resolution)
+        if not num_steps:
+            self.num_steps = int(minute_in_day / resolution)
+        else:
+            self.num_steps = num_steps
         self.aging_sim = None  # This gets updated later
         self._nodes = []
         self.scenario = None    # to be updated later
@@ -113,6 +117,27 @@ class ChargingSim:
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
+    def create_charging_stations_oneshot(self, power_nodes_list):
+        # self.num_steps = 96 * 30 # testing
+        if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
+            print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
+            self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
+        loc_list = random.sample(power_nodes_list,
+                                 self.num_charging_sites)  # randomization of charging locations (not random for dcfc since they are the same)
+        for i in range(self.num_charging_sites):
+            battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
+            solar = self.create_solar_object(i, loc_list[i])  # create solar object
+            # TODO: change the below later
+            self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
+            controller = control.Oneshot(self.controller_config, storage=battery,
+                                     solar=solar, num_steps=self.num_steps)  # need to change this to load based on the users controller python file?
+            self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
+            charging_station = ChargingStation(battery, self.charging_config, controller,
+                                               solar=solar)  # add controller and energy assets to charging station
+            self.charging_sites[loc_list[i]] = charging_station
+        self.stations_list = list(self.charging_sites.values())
+        self.charging_locs = list(self.charging_sites.keys())
+
     def initialize_aging_sim(self):
         # TODO: make the number of steps a passed in variable
         num_steps = 1
@@ -140,14 +165,14 @@ class ChargingSim:
     def initialize_solar_module(self):
         """This initializes the solar module if there is solar"""
         if self.solar:
-            self.solar = Solar(self.solar_config, path_prefix=self.path_prefix)
+            self.solar = Solar(self.solar_config, path_prefix=self.path_prefix, num_steps=self.num_steps)
             print("Solar module loaded...")
         else:
-            raise Exception('Cannot load solar module because flag is set to False!')
+            raise IOError('Cannot load solar module because flag is set to False!')
 
     def create_solar_object(self, idx, loc, controller=None):
         solar = Solar(config=self.solar_config, path_prefix=self.path_prefix,
-                      controller=controller)  # remove Q_initial later
+                      controller=controller, num_steps=self.num_steps)  # remove Q_initial later
         solar.id, solar.node = idx, loc  # using one index to represent both id and location
         return solar
 
@@ -164,15 +189,19 @@ class ChargingSim:
         return self.storage_sites
 
     def setup(self, power_nodes_list, scenario=None):
-        # TODO: this has a bug; scenario MUST be loaded first
         """This is used to set up charging station locations and simulations"""
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
         self.scenario = scenario
-        self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
+        print(scenario)
+        if 'oneshot' in list(scenario.keys()):
+            print("One shot optimization loading...")
+            self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
+        else:
+            self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
         self.initialize_price_loader(self.prices_config["month"])
         self.initialize_aging_sim()  # Battery aging
-        self.initialize_solar_module()  # this loads solar module
+        self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
 
     def update_scenario(self, scenario=None):
         if scenario:
@@ -217,7 +246,7 @@ class ChargingSim:
                 control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
                 charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
-                # TODO: debug here
+                # TODO: debug here: done in Feb
                 net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]   # moving horizon so always only pick the first one
                 charging_station.update_load(net_load, todays_load[0, 0])  # set current load for charging station # UPDATED 6/8/22
             # check whether one year has passed (not relevant since we don't run one full year yet)
@@ -229,6 +258,28 @@ class ChargingSim:
         self.time += 1
         self.update_steps(stepsize)
         return self.site_net_loads
+
+    def multistep(self):
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps, desired_shape=(self.num_steps, 1))  # time already accounted for
+        for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
+            p = charging_station.controller.solar.get_power(self.time, self.num_steps, desired_shape=(self.num_steps, 1))  # can set month for multi-month sim later
+            buffer_battery = charging_station.storage
+            todays_load = self.test_data[self.day_year_count * self.num_steps + self.time
+                                         :self.num_steps * (self.day_year_count + 1) + self.time] * 1  # this is where time comes in
+            assert todays_load.size == self.num_steps
+            todays_load = todays_load.reshape(-1, 1)
+            control_actions = charging_station.controller.compute_control(todays_load, elec_price_vec)
+            charging_station.controller.load = todays_load
+
+            battery_powers = []
+            for interval in range(self.num_steps):
+                charging_station.storage.dynamics(control_actions[interval, 0])
+                self.aging_sim.run(buffer_battery)
+                battery_powers.append(buffer_battery.power)
+            net_load = todays_load + np.array(buffer_battery.power).reshape(-1, 1) - charging_station.solar.power
+            charging_station.update_load_oneshot(net_load, todays_load)
+
+        return
 
     def load_results_summary(self, save_path_prefix, plot=True):
         # TODO: selecting option for desired statistics

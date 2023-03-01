@@ -5,13 +5,16 @@ import cvxpy as cp
 
 class Solar:
     """This simulates the ground-truth Solar conditions in location"""
-    def __init__(self, config, path_prefix=None, controller=None):
+    def __init__(self, config, path_prefix=None, controller=None, num_steps=None):
         self.path_prefix = path_prefix + '/'
         self.config = config
         cols = ['Month', 'Day', 'Hour', 'GHI', 'Temperature']
         self.cols = cols
         self.controller = controller
-        self.num_steps = self.config["num steps"]
+        if num_steps:
+            self.num_steps = num_steps
+        else:
+            self.num_steps = self.config["num steps"]
         self.solar_df = pd.read_csv(self.path_prefix+self.config["data_path"])[cols]
         self.solar_vec = self.solar_df.to_numpy()
         self.location = self.config["location"]
@@ -37,8 +40,8 @@ class Solar:
         self.id = None
         self.node = None
 
-    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=4):
-        if self.month != month:
+    def get_power(self, start_idx, num_steps, desired_shape=(96, 1), month=None):
+        if month is not None and self.month != month:
             # GHI = Global Horizontal Irradiance
             print("setting month for solar power...")
             self.data_np = self.solar_df[self.solar_df["Month"] == month]['GHI'].to_numpy()     # for one month
