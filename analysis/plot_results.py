@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
-
 # C:\Users\ebalo\OneDrive - Stanford\EV50_cosimulation\ResultsSolarDeterministic\July_5stations
 simulation_results_folder = 'C:/Users/ebalo/OneDrive - Stanford/EV50_cosimulation/ResultsSolarDeterministic/'
 os.chdir(simulation_results_folder)
@@ -21,7 +20,6 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 os.chdir(os.path.join(root, subname))
                 voltages = pd.read_csv('voltages.csv')  # read this as sparse or eliminate nodes with 0 values for V
                 plt.close('all')
-                # C:\Users\ebalo\OneDrive - Stanford\EV50_cosimulation\ResultsSolarDeterministic\July_5stations
                 # process voltages
                 cols = list(voltages.columns)
                 real_cols_ind = [(('_Ar' in m) or ('_Br' in m) or ('_Cr' in m)) for m in cols]
@@ -40,15 +38,15 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 v = abs(voltage_complex)
                 a = np.rad2deg(np.angle(voltage_complex))
 
-                a[a < 50] = a[a < 50] + 120
+                a[a < 50] = a[a < 50] + 120     # need to check these again
                 a[a > 50] = a[a > 50] - 120
 
                 mean_v = np.mean(v, axis=0)
+                zero_idx = np.argwhere(np.all(mean_v[..., :] == 0, axis=0))
+                mean_v = np.delete(mean_v, zero_idx, axis=1)  # remove zero voltages
+                v = np.delete(v, zero_idx, axis=1)  # remove zero voltages from data
 
                 nom_v = np.zeros(mean_v.shape)
-
-                # need Lily to explain these more carefully
-                # TODO: including the DCFC nodes here which were not accounted for 2/2/2023
 
                 nom_v[(mean_v < 300) * (mean_v > 250)] = 480 / (3 ** 0.5)
                 nom_v[(mean_v < 8000) * (mean_v > 6500)] = 7200
@@ -57,11 +55,19 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 nom_v[(mean_v < 500) * (mean_v > 460)] = 480
                 norm_v = v / nom_v.reshape(1, -1)
 
+                # calculating percentage of voltage violations
+                num_voltage_violations = nom_v.flatten()[(nom_v.flatten() > 1.05) | (nom_v.flatten() < 0.95)]
+                percent_violations = num_voltage_violations/len(nom_v.flatten()) * 100
+                np.savetxt('percent_voltage_violations.csv', percent_violations)
+
                 print(f'Dim v: {str(v.shape)}')
-                print(f'Dim 480 V: {str(len(mean_v[(mean_v < 300) * (mean_v > 250)]) + len(mean_v[(mean_v < 500) * (mean_v > 460)]))}')
+                print(
+                    f'Dim 480 V: {str(len(mean_v[(mean_v < 300) * (mean_v > 250)]) + len(mean_v[(mean_v < 500) * (mean_v > 460)]))}')
                 print(f'Dim 7200 V: {len(mean_v[(mean_v < 8000) * (mean_v > 6500)])}')
                 print(f'Dim 120 V: {len(mean_v[(mean_v < 150) * (mean_v > 80)])}')
                 print(f'Dim 2400 V: {len(mean_v[(mean_v < 2600) * (mean_v > 2100)])}')
+
+                # calculate percentage violations
                 print(norm_v.shape)
                 print(v.shape)
                 print(a.shape)
@@ -114,18 +120,13 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 # plt.show()
                 plt.close()
 
-                # CALCULATE PERCENTAGE VIOLATIONS
-
                 os.chdir("..")
             os.chdir("..")
 
 
-
-
 # TRANSFORMER
 def plot_trans_results(resolution=15):
-    default_res = 1/60  # seconds
-
+    default_res = 1 / 60  # seconds
 
 #
 # voltages = pd.read_csv('voltages.csv')
