@@ -2,6 +2,7 @@ import os
 from EVCharging import ChargingSim
 import multiprocessing as mp
 import numpy as np
+import json
 import sys
 
 """This runs optimization offline without the power system or battery feedback. This is done to save time. Power 
@@ -11,7 +12,7 @@ optimization was done """
 month = 6   # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
 day_minutes = 1440
 opt_time_res = 15   # minutes
-num_days = 30   # determines optimization horizon
+num_days = 30  # determines optimization horizon
 num_steps = num_days * day_minutes//opt_time_res    # number of steps to initialize variables for opt
 
 # lood DCFC locations txt file
@@ -28,20 +29,20 @@ num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)  # needs to come i
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
-EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps)
+
 
 # RUN TYPE
-sequential_run = False
+sequential_run = True
 parallel_run = False
-single_run = True
+single_run = False
 
 # BATTERY SCENARIOS
 num_vars = 6
 min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
-energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
-max_c_rates = [0.2, 0.5, 1, 1.5, 2]
+energy_ratings = [5e4, 10e4, 20e4, 40e4, 80e4]
+max_c_rates = [0.1, 0.2, 0.5, 1]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
@@ -51,18 +52,22 @@ def make_scenarios():
     idx = 0
     for Er in energy_ratings:
         for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'opt_solver': 'GUROBI', 'oneshot': True}
+            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'opt_solver': 'GUROBI',
+                        'oneshot': True, 'start_month': month}
             scenarios_list.append(scenario)
             idx += 1
     return scenarios_list
 
 
 def run(scenario):
-    save_folder_prefix = 'test_June_nomax' + str(scenario['index']) + '/'
+    EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps)
+    save_folder_prefix = 'oneshot_June' + str(scenario['index']) + '/'
     os.mkdir(save_folder_prefix)
     EV_charging_sim.setup(dcfc_nodes + L2_charging_nodes, scenario=scenario)
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
+    with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
+        json.dump(scenario, outfile)
 
 
 def run_scenarios_parallel():
@@ -79,14 +84,15 @@ def run_scenarios_parallel():
 
 def run_scenarios_sequential():
     start_idx = 0
-    end_idx = 25
+    end_idx = len(energy_ratings) * len(max_c_rates)
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
+    # d = 1
     for scenario in scenarios:
-        process = mp.get_context('spawn').Process(target=run, args=(scenario,))
-        process.start()
-        process.join()
+        scenario["L2_nodes"] = L2_charging_nodes
+        run(scenario)
+        # d += 1
 
 
 def run_scenario_single():

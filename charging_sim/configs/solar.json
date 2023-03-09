@@ -2,7 +2,7 @@
   "data_path": "SolarData/SolarData_SanJose_2018-15min.csv",
   "location": "San Jose",
   "start_year": 2018,
-  "start_month": 6,
+  "start_month": 1,
   "start_day": 1,
   "efficiency": 0.25,
   "resolution": 15,
@@ -10,7 +10,7 @@
   "sample_start_idx": 0,
   "sample_end_idx": 96,
   "area": 1,
-  "rating": 0.08,
+  "rating": 0.0,
   "num steps": 96,
   "dollar_per_m2": 6,
   "notes": "rating is in MW, dollar per m2 is for post optimization (can look into including it during optimization, MONTH IS INDEXED FROM 1 not O"

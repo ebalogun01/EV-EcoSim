@@ -51,7 +51,7 @@ class MPC:
             self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
             self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + \
                                self.battery_ocv_params[1][0]
-            self.battery_capacity = self.storage.nominal_cap
+            self.battery_capacity = self.storage.cell_nominal_cap
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
@@ -62,10 +62,7 @@ class MPC:
         self.battery_current = cp.Variable((num_steps, 1))
         self.battery_current_ev = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_power_ev = cp.Variable((num_steps, 1))
-
-        self.batt_curr_e = cp.Variable((num_steps, 1), nonneg=True)
-        self.batt_curr_g = cp.Variable((num_steps, 1), nonneg=True)
-        self.batt_curr_s = cp.Variable((num_steps, 1), nonneg=True)
+        self.battery_power_grid = cp.Variable((num_steps, 1))
 
         self.batt_binary_var_ev = cp.Variable((num_steps, 1), boolean=True)
         self.batt_binary_var_grid = cp.Variable((num_steps, 1), boolean=True)
@@ -96,10 +93,9 @@ class MPC:
         self.time += 1
         control_action = None
         if self.control_battery:
-            # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector)
+            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
                                        solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id),
@@ -108,11 +104,7 @@ class MPC:
             self.costs += cost/num_steps,
             if opt_problem.problem.status != 'optimal':
                 print('Unable to service travel')
-                raise Exception("Solution is not optimal, please check optimization formulation!")
-            # elif electricity_cost.value < 0:
-            #     print('Negative Electricity')
-            # else:
-            #     print("cost is: ", cost)
+                raise IOError(f'{opt_problem.problem.status}. Suboptimal solution obtained')
             control_action = self.battery_current.value[0, 0]  # this is current flowing through each cell
             self.actions += control_action,
             self.storage.update_capacity()  # to track linear estimated aging
@@ -124,41 +116,33 @@ class MPC:
         # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
-        # self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
-        self.battery_OCV = self.storage.get_OCV()  # sensing directly from the battery at each time-step
-        # print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
+        self.battery_OCV = self.storage.get_OCV() * cells_series  # sensing directly from the battery at each time-step
         self.storage_constraints = \
-            [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
+            [self.battery_SOC[0] == self.storage.SOC,  # changing to deterministic
              self.battery_SOC[1:] == self.battery_SOC[:-1] + (
-                         self.resolution / 60 * self.battery_current) / self.storage.cap,
+                     self.resolution / 60 * self.battery_current) / (self.storage.cap * mod_parallel),
              cp.abs(self.battery_current) <= self.storage.max_current,
-             self.solar.battery_power == self.battery_current_solar * mod_parallel * self.battery_OCV * cells_series / 1000,
-             self.battery_power == self.battery_current * mod_parallel * self.battery_OCV * cells_series / 1000,
+             self.solar.battery_power == self.battery_current_solar * self.battery_OCV / 1000,
+             self.battery_power == self.battery_power_ev + self.battery_power_grid + self.solar.battery_power,
+             # self.battery_power == (self.battery_current * self.battery_OCV) / 1000,
              self.battery_SOC >= self.storage.min_SOC,
              self.battery_SOC <= self.storage.max_SOC,
-             self.battery_power_ev == -self.battery_current_ev * mod_parallel * self.battery_OCV * cells_series / 1000,
+             self.battery_power_ev == -self.battery_current_ev * self.battery_OCV / 1000,
+             self.battery_power_grid == self.battery_current_grid * self.battery_OCV / 1000,
              self.battery_current == self.battery_current_grid + self.battery_current_solar - self.battery_current_ev,
+
+             # included power losses in here
              self.batt_binary_var_ev + self.batt_binary_var_solar <= 1,
              self.batt_binary_var_ev + self.batt_binary_var_grid <= 1,
 
              self.battery_current_grid <= cp.multiply(self.storage.max_current, self.batt_binary_var_grid),  # GRID
-             self.battery_current_grid <= self.batt_curr_g,
-             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid) * self.storage.max_current,
-
              self.battery_current_solar <= cp.multiply(self.storage.max_current, self.batt_binary_var_solar),  # SOLAR
-             self.battery_current_solar <= self.batt_curr_s,
-             self.battery_current_solar >= self.batt_curr_s - (
-                         1 - self.batt_binary_var_solar) * self.storage.max_current,
 
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
-             self.battery_current_ev <= self.batt_curr_e,
-             self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
              ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
-             # battery.ev_power can actually exceed the ev load at times,
-             # meaning the rest of the energy is sent back into the grid
              ]
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.storage_constraints.extend(self.pge_gamma_constraint)
@@ -169,7 +153,7 @@ class MPC:
         self.load = []
 
 
-class Oneshot:
+class Oneshot2:
     """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
     Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
 
@@ -201,7 +185,8 @@ class Oneshot:
             self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
             self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + \
                                self.battery_ocv_params[1][0]
-            self.battery_capacity = self.storage.nominal_cap
+            self.battery_capacity = self.storage.cell_nominal_cap
+            self.battery_eff = self.storage.get_roundtrip_efficiency()
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
@@ -212,10 +197,7 @@ class Oneshot:
         self.battery_current = cp.Variable((num_steps, 1))
         self.battery_current_ev = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_power_ev = cp.Variable((num_steps, 1))
-
-        self.batt_curr_e = cp.Variable((num_steps, 1), nonneg=True)
-        self.batt_curr_g = cp.Variable((num_steps, 1), nonneg=True)
-        self.batt_curr_s = cp.Variable((num_steps, 1), nonneg=True)
+        self.battery_power_grid = cp.Variable((num_steps, 1))
 
         self.batt_binary_var_ev = cp.Variable((num_steps, 1), boolean=True)
         self.batt_binary_var_grid = cp.Variable((num_steps, 1), boolean=True)
@@ -245,10 +227,9 @@ class Oneshot:
             electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
-                                       solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id),
-                                       solver=self.config['opt_solver'])
+                                       solar=self.solar, time=0, name=f"Test_Case_{str(self.storage.id)}", solver=self.config['opt_solver'])
             cost = opt_problem.run()
-            self.costs.extend([cost/self.num_steps for i in range(self.num_steps)])
+            self.costs.extend([cost/self.num_steps for _ in range(self.num_steps)])
             if opt_problem.problem.status != 'optimal':
                 print('Unable to service travel')
                 raise Warning("Solution is not optimal!")
@@ -263,41 +244,33 @@ class Oneshot:
         # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
-        # self.battery_OCV = self.battery_ocv_params[0][0, 0] * self.battery_initial_SOC + self.battery_ocv_params[1][0]
-        self.battery_OCV = self.storage.get_OCV()  # sensing directly from the battery at each time-step
-        # print(f'(SOC error: {self.storage.SOC - self.battery_initial_SOC}')
+        self.battery_OCV = self.storage.get_OCV() * cells_series    # sensing directly from the battery at each time-step
         self.storage_constraints = \
             [self.battery_SOC[0] == self.storage.SOC,       # changing to deterministic
              self.battery_SOC[1:] == self.battery_SOC[:-1] + (
-                         self.resolution / 60 * self.battery_current) / self.storage.cap,
+                         self.resolution / 60 * self.battery_current) / (self.storage.cap*mod_parallel),
              cp.abs(self.battery_current) <= self.storage.max_current,
-             self.solar.battery_power == self.battery_current_solar * mod_parallel * self.battery_OCV * cells_series / 1000,
-             self.battery_power == self.battery_current * mod_parallel * self.battery_OCV * cells_series / 1000,
+             self.solar.battery_power == self.battery_current_solar * self.battery_OCV / 1000,
+             self.battery_power == self.battery_power_ev + self.battery_power_grid + self.solar.battery_power,
+             # self.battery_power == (self.battery_current * self.battery_OCV) / 1000,
              self.battery_SOC >= self.storage.min_SOC,
              self.battery_SOC <= self.storage.max_SOC,
-             self.battery_power_ev == -self.battery_current_ev * mod_parallel * self.battery_OCV * cells_series / 1000,
+             self.battery_power_ev == -self.battery_current_ev * self.battery_OCV / 1000,
+             self.battery_power_grid == self.battery_current_grid * self.battery_OCV / 1000,
              self.battery_current == self.battery_current_grid + self.battery_current_solar - self.battery_current_ev,
+
+             # included power losses in here
              self.batt_binary_var_ev + self.batt_binary_var_solar <= 1,
              self.batt_binary_var_ev + self.batt_binary_var_grid <= 1,
 
              self.battery_current_grid <= cp.multiply(self.storage.max_current, self.batt_binary_var_grid),  # GRID
-             self.battery_current_grid <= self.batt_curr_g,
-             self.battery_current_grid >= self.batt_curr_g - (1 - self.batt_binary_var_grid) * self.storage.max_current,
-
              self.battery_current_solar <= cp.multiply(self.storage.max_current, self.batt_binary_var_solar),  # SOLAR
-             self.battery_current_solar <= self.batt_curr_s,
-             self.battery_current_solar >= self.batt_curr_s - (
-                         1 - self.batt_binary_var_solar) * self.storage.max_current,
 
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
-             self.battery_current_ev <= self.batt_curr_e,
-             self.battery_current_ev >= self.batt_curr_e - (1 - self.batt_binary_var_ev) * self.storage.max_current,
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
              ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
-             # battery.ev_power can actually exceed the ev load at times,
-             # meaning the rest of the energy is sent back into the grid
              ]
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.storage_constraints.extend(self.pge_gamma_constraint)
@@ -306,6 +279,7 @@ class Oneshot:
     def reset_load(self):
         """This is done after one full day is done."""
         self.load = []
+
 
 class MPCBatt:
     """This is for controlling the battery ONLY at centralized location"""
@@ -320,7 +294,7 @@ class MPCBatt:
         # BATTERY VARIABLES (TODO: INCLUDE MIN-MAX SOC AND DISCHARGE REQUIREMENTS DIRECTLY IN CONTROLLER)
         # self.battery_start = self.storage.start
         self.battery_initial_SOC = self.storage.initial_SOC  # begin with initial information of batt SOC
-        self.battery_capacity = self.storage.nominal_cap  # controller should be estimating this from time to time. Or decide how it is updated?
+        self.battery_capacity = self.storage.cell_nominal_cap  # controller should be estimating this from time to time. Or decide how it is updated?
         self.battery_power_charge = cp.Variable((num_steps, 1))
         self.battery_power_discharge = cp.Variable((num_steps, 1))
 

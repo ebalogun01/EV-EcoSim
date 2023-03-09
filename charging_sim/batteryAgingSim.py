@@ -94,7 +94,7 @@ class BatterySim:
         # del_DOD[del_DOD < 0] = 0  # remove the charging parts in profile to get DOD
         del_DOD = np.sum(del_DOD) / 2   # total cycle depth is half one depth - DOUBLE-CHECK IF THIS IS ACCURATE
         # del_DOD = np.max(SOC_vector) - np.min(SOC_vector) # this is not entirely accurate
-        real_voltage = np.array(battery.voltages[-2:])  # this should include the prior voltage no?
+        real_voltage = np.array(battery.voltages[-2:]) / battery.topology[0]    # this should include the prior voltage no?
         avg_voltage = np.sqrt(np.average(real_voltage ** 2))  # quadratic mean voltage for aging
         # print("average voltage: ", avg_voltage, "regular avg: ", np.average(real_voltage))
         beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.695)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
@@ -104,14 +104,14 @@ class BatterySim:
         beta_minimum = 1.5 * 10**-5
         if beta_res < beta_minimum:
             beta_res = beta_minimum  # there is a minimum aging factor that needs to be fixed
-        Q = np.abs(battery.current * self.res / 60)  # in Ah
+        Q = np.abs(battery.current / battery.topology[1] * self.res / 60)  # in Ah
 
         capacity_fade = beta_cap * Q ** 0.5     # time is one day for both
-        # capacity_fade = beta_cap * Qmax**0.5 * 2.15 / battery.nominal_cap # time is one day for both
+        # capacity_fade = beta_cap * Qmax**0.5 * 2.15 / battery.cell_nominal_cap # time is one day for both
         battery.cycle_aging.append(capacity_fade)
         # print('Q: {}, del DOD: {}, cap fade: {}'.format(Q, del_DOD, capacity_fade))
         resistance_growth = beta_res * Q
-        # resistance_growth = beta_res * Q * 2.15 / battery.nominal_cap
+        # resistance_growth = beta_res * Q * 2.15 / battery.cell_nominal_cap
         battery.true_capacity_loss = capacity_fade
         self.beta_caps.append(beta_cap)
         # print("Aging factor beta,", beta_cap)
@@ -123,7 +123,7 @@ class BatterySim:
         cap_fade = self.get_aging_value(battery)[0]
         battery.SOH -= cap_fade  # change this to nom rating
         battery.SOH_track.append(battery.SOH)
-        battery.cap = battery.SOH * battery.nominal_cap
+        battery.cap = battery.SOH * battery.cell_nominal_cap
         battery.Qmax = battery.max_SOC * battery.cap
         battery.true_capacity_loss += cap_fade
         battery.true_aging.append(cap_fade)
@@ -131,22 +131,22 @@ class BatterySim:
     def update_resistance(self, battery):
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         res_growth = self.get_aging_value(battery)[1]
-        battery.cell_resistance += res_growth
+        battery.R_cell += res_growth
         battery.resistance_growth += res_growth
 
     def get_calendar_aging(self, battery):
         # TODO: This currently runs the aging for an entire day after each iteration run. Will need to formulate
         #  learning architecture
         """Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)"""
-        voltages = np.array(battery.voltages[-2:])  # this should include the prior voltage no?
+        voltages = np.array(battery.voltages[-2:]) / battery.topology[0]   # this should include the prior voltage no?
         avg_voltage = np.average(voltages)  # mean voltage for aging
         # I THINK THIS MUST BE ESTIMATED IN DAYS? AND I THINK IT HAS TO BE CUMULATIVE? NOT PER TIMESTEP?
         alpha_cap = (7.543 * avg_voltage - 23.75) * 10**6 * math.exp(-6976 / self.ambient_temp)  # aging factors
         alpha_res = (5.270 * avg_voltage - 16.32) * 10**5 * math.exp(-5986 / self.ambient_temp)  # temp in K
-        alpha_cap /= 340.3652
-        capacity_fade = alpha_cap * (self.time / self.num_daily_steps)**0.75 * 2.15 / battery.nominal_cap
+        alpha_cap /= 340.3652   # scaling factor to match our data
+        capacity_fade = alpha_cap * (self.time / self.num_daily_steps)**0.75 * 2.15 / battery.cell_nominal_cap
         # for each time-step (this is scaled up for current cell)
-        resistance_growth = alpha_res * (self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.nominal_cap
+        resistance_growth = alpha_res * (self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.cell_nominal_cap
         # for each time-step (this is scaled up for current cell)
         # battery.true_capacity_loss = capacity_fade  # this is wrong
         if isinstance(capacity_fade, float):

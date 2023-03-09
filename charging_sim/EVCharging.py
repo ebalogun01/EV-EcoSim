@@ -3,7 +3,7 @@ import json
 import os
 import numpy as np
 import random
-from battery import Battery
+from batterypack import Battery
 from batteryAgingSim import BatterySim
 import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
@@ -25,11 +25,12 @@ class ChargingSim:
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv') / 2
-        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv') / 2
+        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv') / 5
+        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv') / 5
         test_data = data2018[:-1, ]  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
+        self.solar_config = None
         self.battery_config = None
         self.charging_config = None
         self.prices_config = None
@@ -90,13 +91,15 @@ class ChargingSim:
 
     def create_battery_object(self, idx, loc, controller=None):
         #  this stores all battery objects in the network
-        buffer_battery = Battery(config=self.battery_config, controller=controller)  # remove Q_initial later
+        buffer_battery = Battery(config=self.battery_config, controller=controller)
         buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
+        buffer_battery.num_cells = buffer_battery.battery_setup_2()  # toggle between setup and setuo_2 to scale energy capacity using voltage changed this to try scaling voltage instead
+        buffer_battery.load_pack_props()    # this is for simulating the entire pack at once
         self.battery_objects += buffer_battery,  # add to list of battery objects
-        buffer_battery.num_cells = buffer_battery.battery_setup() # THIS IS THE PROBLEM
         return buffer_battery
 
     def create_charging_stations(self, power_nodes_list):
+        # todo: upgrade this in the future to account for variable steps
         # add flexibility for multiple units at one charging node?
         # No need, can aggregate them and have a different arrival sampling method
         if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
@@ -118,7 +121,6 @@ class ChargingSim:
         self.charging_locs = list(self.charging_sites.keys())
 
     def create_charging_stations_oneshot(self, power_nodes_list):
-        # self.num_steps = 96 * 30 # testing
         if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
             print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
@@ -129,8 +131,8 @@ class ChargingSim:
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
             # TODO: change the below later
             self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
-            controller = control.Oneshot(self.controller_config, storage=battery,
-                                     solar=solar, num_steps=self.num_steps)  # need to change this to load based on the users controller python file?
+            controller = control.Oneshot2(self.controller_config, storage=battery,
+                                     solar=solar, num_steps=self.num_steps)  # todo: difference! uses oneshot controller
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
             charging_station = ChargingStation(battery, self.charging_config, controller,
                                                solar=solar)  # add controller and energy assets to charging station
@@ -154,8 +156,7 @@ class ChargingSim:
             self.price_loader.downscale(input_data_res, self.resolution)
             self.prices_config["resolution"] = self.resolution
             file_path_list = self.prices_config["data_path"].split("_")
-            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],
-                                                                    str(self.resolution) + "min.csv")
+            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],str(self.resolution) + "min.csv")
             self.prices_config["data_path"] = new_data_path
             with open(self.prices_config["config_path"], 'w') as config_file_path:
                 os.chdir(configs_path)
@@ -205,6 +206,8 @@ class ChargingSim:
 
     def update_scenario(self, scenario=None):
         if scenario:
+            if self.solar_config:
+                self.solar_config['start_month'] = scenario['start_month']
             for key in scenario.keys():
                 if key != 'index':
                     self.battery_config[key] = scenario[key]
@@ -246,7 +249,6 @@ class ChargingSim:
                 control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
                 charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
-                # TODO: debug here: done in Feb
                 net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]   # moving horizon so always only pick the first one
                 charging_station.update_load(net_load, todays_load[0, 0])  # set current load for charging station # UPDATED 6/8/22
             # check whether one year has passed (not relevant since we don't run one full year yet)
@@ -284,10 +286,6 @@ class ChargingSim:
     def load_results_summary(self, save_path_prefix, plot=True):
         # TODO: selecting option for desired statistics
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        # charging_sites_keys = self.charging_sites.keys()
-        option1 = "loads"
-        option2 = "storage"
-        # print(len(self.battery_objects), len(self.stations_list))
         for charging_station in self.stations_list:
             charging_station.save_sim_data(save_path_prefix)
         for battery in self.battery_objects:
@@ -330,7 +328,7 @@ class ChargingSimCentralized:
 
     def __init__(self, num_charging_sites, num_storage_sites=1, resolution=15, path_prefix=None):
         """Design charging sim as orchestrator for battery setup"""
-        # TODO: fix these literal paths below
+        # TODO: fix these literal paths below and leave this for future work
         data2018 = np.genfromtxt(path_prefix + '/CP_ProjectData/power_data_2018.csv')
         charge_data = np.genfromtxt(path_prefix + '/CP_ProjectData/CP_historical_data_2015_2017.csv')
         test_data = data2018[:-1, ] / 10  # removing bad data
@@ -340,6 +338,7 @@ class ChargingSimCentralized:
         self.charging_config = None
         self.controller_config = None
         self.prices_config = None
+        self.solar_config = None
         self.price_loader = None
         self.battery_specs_per_loc = None  # Could be used later to specify varying batteries for various nodes
         self.central_storage_controllers = []
@@ -367,7 +366,7 @@ class ChargingSimCentralized:
         onestep_data = np.reshape(charge_data, (charge_data.size, 1))
 
     def load_config(self):
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         os.chdir(configs_path)
         for root, dirs, files, in os.walk(configs_path):
@@ -448,7 +447,7 @@ class ChargingSimCentralized:
 
     def initialize_price_loader(self, month):
         """Can add option for each charging site to have its own price loader"""
-        configs_path = self.path_prefix + '/charging_sim/configs'
+        configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
         self.price_loader.set_month_data(month)
@@ -509,7 +508,7 @@ class ChargingSimCentralized:
         # NEED TO ADD STEPPING THROUGH DAYS # should this be done in some controller master sim?
         # Full day prediction is not changing but the price is changing!! issues - is this fixed?
         """Propagates the simulation one step forward. Run controller and take one time-step action.."""
-        ## FOR CENTRALIZED, LET'S USE ONLY ONE BATTERY FOR NOW AND USE THE AGGREGATE POWER FROM ALL STATIONS
+        #   FOR CENTRALIZED, LET'S USE ONLY ONE BATTERY FOR NOW AND USE THE AGGREGATE POWER FROM ALL STATIONS
         self.reset_loads()  # reset the loads from old time-step
         overall_charging_load = np.zeros((96, 1))
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps) * 10  # need to freeze daily prices
@@ -527,8 +526,7 @@ class ChargingSimCentralized:
             todays_load = self.test_data[stop]
             assert todays_load.size == 96
             todays_load.shape = (todays_load.size, 1)
-            loads = []  # TAKE THIS AWAY FROM THE CONTROLLER! MAYBE MONITOR THE LOADS LATER
-            for i in range(num_steps):
+            for _ in range(num_steps):
                 # I need to abstract the entire controller away!
                 predicted_load = charging_station.controller.predict_load(self.control_start_index,
                                                                           self.control_shift, stop)
@@ -536,10 +534,8 @@ class ChargingSimCentralized:
                 net_load = todays_load[self.time, 0]
                 charging_station.update_load(net_load)  # set current load for charging station # UPDATED 6/8/22
                 self.update_site_loads(net_load)  # Global Load Monitor for all the loads for this time-step
-
             overall_charging_load += predicted_load
             self.control_shift = 0
-
             # check whether one year has passed
             if self.day_year_count % 365 == 0:  # it has already run 365 days (This is wrt sampling Solar Generation)
                 self.day_year_count = 0

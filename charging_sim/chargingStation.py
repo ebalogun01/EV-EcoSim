@@ -40,7 +40,7 @@ class ChargingStation:
         self.pge_blocks += self.controller.pge_gamma.value[0],
 
     def update_load_oneshot(self, net_grid_load, ev_load):
-        self.current_load += net_grid_load + self.auxiliary_power
+        self.current_load = net_grid_load + self.auxiliary_power
         self.loads.extend(net_grid_load.flatten().tolist())  # net load station pulls from grid, not load from EV
         self.total_load.extend((ev_load + self.auxiliary_power).flatten().tolist())
         self.solar_power_ev.extend(self.solar.ev_power.value.flatten().tolist())
@@ -74,8 +74,8 @@ class ChargingStation:
     def save_sim_data(self, save_prefix):
         import pandas as pd
         save_file_base = f'{str(self.id)}_{self.loc}'
-        data = {'Control_current': [c * self.storage.topology[1] for c in self.controller.actions],
-                'battery_voltage': [v * self.storage.topology[0] for v in self.storage.voltages],
+        data = {'Control_current': self.controller.actions,
+                'battery_voltage': self.storage.voltages,
                 'station_net_grid_load_kW': self.loads,
                 'station_total_load_kW': self.total_load,
                 'station_solar_load_ev': self.solar_power_ev,

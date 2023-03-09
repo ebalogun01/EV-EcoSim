@@ -9,6 +9,8 @@ import os
 
 # TODO: add battery simulation resolution control so can be different from control as well...
 #  ALso track the number of voltage control violations during control computations in the future
+# todo: make Battery inherit the class cell- seems like a more natural progression...
+#  battery will have topology layers to build up the equivalent pack
 
 class Battery:
     """
@@ -36,12 +38,14 @@ class Battery:
         self.resolution = config["resolution"]
         self.dt = config["resolution"] / 60     # in hours
         self.cap = config["cell_nominal_cap"]  # Ah
-        self.nominal_cap = config["cell_nominal_cap"]
-        self.cell_resistance = config["resistance"]  # TO be updated
-        self.pack_resistance = None
+        self.cell_nominal_cap = config["cell_nominal_cap"]
+        self.R_cell = config["resistance"]  # single cell resistance
+        self.R_pack = None  # overall pack resistance
         self._eff = config["round-trip_efficiency"]
         self.max_c_rate = config["max_c_rate"]
         self.battery_cost = 200     # this is in $/kWh
+        self.To = 273.15 + 23   # ambient temperature   (USE THE SAME INPUT AS TRANSFORMER AGING MODEL
+        self.T = self.To    # initialize at atmposheric temperature
         # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours
 
         # LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL
@@ -69,8 +73,10 @@ class Battery:
         self.max_voltage = config["max_cell_voltage"]
         self.pack_max_voltage = config["pack_max_voltage"]
         self.min_voltage = config["min_cell_voltage"]  # for each cell
-        self.nominal_voltage = config["nominal_cell_voltage"]  # for each cell
-        self.nominal_energy = self.nominal_voltage * self.nominal_cap
+        self.pack_max_Ah = config["pack_max_Ah"]    # this is used in battery_setup_2 to scale voltage instead of curr
+        self.pack_nom_Ah = config["pack_nom_Ah"]
+        self.cell_nominal_voltage = config["nominal_cell_voltage"]  # for each cell
+        self.nominal_energy = self.cell_nominal_voltage * self.cell_nominal_cap
         self.Qmax = config["SOC_max"] * self.cap
         self.Qmin = config["SOC_min"] * self.cap
         self.initial_SOC = config["SOC"]
@@ -101,8 +107,6 @@ class Battery:
         self.total_amp_thruput = 0.0
         self.currents = [0]
 
-        # self.power_charge = cp.Variable((stepsize, 1))
-        # self.power_discharge = cp.Variable((stepsize, 1))
         self.power = 0
         self.current = 0
         self.true_power = [0]
@@ -147,22 +151,51 @@ class Battery:
         # should use nominal voltage and max allowable current
         print("**** Pre-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
         pack_capacity_Ah = self.pack_energy_capacity / self.pack_max_voltage
-        cell_amp_hrs = self.nominal_cap     # for a cell (Ah) Maximum
+        cell_amp_hrs = self.cell_nominal_cap     # for a cell (Ah) Maximum
         no_cells_series = round(self.pack_max_voltage / self.max_voltage)     # cell nominal
         no_modules_parallel = round(pack_capacity_Ah / (cell_amp_hrs + 1e-8))
         self.cell_count = no_cells_series * no_modules_parallel
         self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
-        self.nominal_pack_voltage = no_cells_series * self.nominal_voltage
+        self.nominal_pack_voltage = no_cells_series * self.cell_nominal_voltage
         self.nominal_pack_cap = no_modules_parallel * self.cap
-        self.cell_resistance = self.Ro + self.R1 + self.R2
+        self.R_cell = self.Ro + self.R1 + self.R2
         # self.cell_capacitance
-        series_resistance = no_cells_series * self.cell_resistance
+        series_resistance = no_cells_series * self.R_cell
         # series_capacitance = 1/(no_cells_series * self.C1 )
-        self.pack_resistance = 1/(no_modules_parallel * 1/series_resistance)
+        self.R_pack = 1 / (no_modules_parallel * 1 / series_resistance)
         print(f"**** Post-initialized nominal pack voltage is {self.nominal_pack_voltage}")
         print("***** Battery initialized. *****\n",
               f"Battery pack capacity is {pack_capacity_Ah} Ah",
-              f"Battery pack resistance is {self.pack_resistance} Ohm",
+              f"Battery pack resistance is {self.R_pack} Ohm",
+              f"Total number of cells is: {self.cell_count} .\n",
+              f"no. cells in series is: {no_cells_series} \n. No modules in parallel is: {no_modules_parallel}"
+              )
+
+    def battery_setup_2(self):
+        """
+        This will scale up voltage instead of current capacity (Ah).
+        Capacity (Wh)
+        Voltage (V)
+        params: (cell_amp_hrs (Ah), cell_voltage (V)"""
+        # number of modules in parallel should be determined by the power rating and Voltage
+        # should use nominal voltage and max allowable current
+        # print("**** Pre-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
+        self.pack_max_voltage = self.pack_energy_capacity / self.pack_nom_Ah
+        no_cells_series = round(self.pack_max_voltage / self.max_voltage)  # cell nominal
+        no_modules_parallel = round(self.pack_max_Ah / (self.cell_nominal_cap + 1e-8))
+        self.cell_count = no_cells_series * no_modules_parallel
+        self.topology = (no_cells_series, no_modules_parallel, self.cell_count)
+        self.nominal_pack_voltage = no_cells_series * self.cell_nominal_voltage
+        # self.nominal_pack_cap = no_modules_parallel * self.cap
+        self.R_cell = self.Ro + self.R1 + self.R2
+        # self.cell_capacitance
+        series_resistance = no_cells_series * self.R_cell
+        # series_capacitance = 1/(no_cells_series * self.C1 )
+        self.R_pack = 1 / (no_modules_parallel * 1 / series_resistance)
+        print(f"**** Post-initialized nominal pack voltage is {self.nominal_pack_voltage}")
+        print("***** Battery initialized. *****\n",
+              f"Battery pack capacity is {self.pack_max_Ah} Ah",
+              f"Battery pack resistance is {self.R_pack} Ohm",
               f"Total number of cells is: {self.cell_count} .\n",
               f"no. cells in series is: {no_cells_series} \n. No modules in parallel is: {no_modules_parallel}"
               )
@@ -213,17 +246,15 @@ class Battery:
         """This can be updated later to include current...
         Deprecate this possibly"""
         pass
-        # Ro = self.ECM_params[1] * cp.exp(self.SOC) + self.ECM_params[0] * cp.exp(self.C_Ro * self.SOC) \
-        #      + self.resistance_growth
-        # return Ro
+
+    def get_roundtrip_efficiency(self):
+        return self._eff
 
     def update_SOC(self):
         action_length = 1   # maybe change this later for variable action length
         self.Q_initial = self.Q.value[action_length]
 
     def track_SOC(self, SOC):
-        # self.SOC_track.append(SOC)
-        # self.SOC_list.append(SOC)
         self.SOC_track += SOC,
         self.SOC_list += SOC,
 
@@ -234,9 +265,7 @@ class Battery:
 
     def update_voltage(self, voltage):
         self.current_voltage = voltage  # I should be updating initial voltage with new voltage measurement
-        # self.predicted_voltages.append(voltage)
         self.predicted_voltages += voltage,
-        # print("Current voltage estimate is: ", voltage)
 
     def get_properties(self):
         return self.properties
@@ -279,8 +308,9 @@ class Battery:
                 'calendar_aging': np.array(self.calendar_aging),
                 'power_kW': np.array(self.true_power)}
         pd.DataFrame(data).to_csv(f'{save_prefix}/battery_sim_{save_file_base}.csv')
-        total_cycles = 0.5*self.total_amp_thruput / ((self.nominal_cap+self.cap)/2)
+        total_cycles = 0.5*self.total_amp_thruput / ((self.cell_nominal_cap + self.cap) / 2)
         np.savetxt(f'{save_prefix}/total_batt_cycles_{save_file_base}.csv', [total_cycles])
+        np.savetxt(f'{save_prefix}/pack_resistance_{save_file_base}.csv', [self.R_pack])
         print('***** Successfully saved simulation outputs to: ', f'battery_sim_{save_file_base}.csv')
         print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
@@ -294,90 +324,96 @@ class Battery:
         """This changes the battery params depending on the number of cycles"""
         pass
     
-    def dynamics(self, current):
+    def dynamics(self, current, simulate_pack=True):
         # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
-        # TODO: FUTURE deal with simulation dual-resolution dynamical system...maybe get finer battery dynamics in here
-
-        dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
-        # state equations
-        self.SOC = self.SOC + current * self.dt / self.cap   # current signs (+) charge (-) discharge
-        # For a particular step, if absolute val c-rate is so high that SOC exceeds limits, derate current
-        if self.SOC > self.max_SOC:
-            print('max SOC violation, readjusting SoC...')
-            assert current >= 0     # FOR DEV PURPOSES. REMOVE LATER
-            excess_soc = self.SOC - self.max_SOC
-            allowable_curr_thruput = round(current * self.dt - excess_soc * self.cap, 4)    # Ah
-            # print(current, excess_soc, allowable_curr_thruput, self.cap)
-            assert allowable_curr_thruput >= 0  # FOR DEV PURPOSES. REMOVE LATER
-            self.current = allowable_curr_thruput / self.dt
-            self.total_amp_thruput += abs(self.current) * self.dt   # cycle counting
-            # print('SOC violation, readjusting SoC...')
-            self.SOC = self.max_SOC
-            self.track_SOC(self.SOC)
-            self.state_eqn(self.current)
-            # self.voltages = np.append(self.voltages, self.voltage)
-            self.voltages += self.voltage,
-            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
-            return self.voltage
-        if self.SOC < self.min_SOC:
-            print('min SOC violation, readjusting SoC...')
-            # current should always be negative here
-            deficient_soc = self.min_SOC - self.SOC
-            allowable_curr_thruput = abs(current * self.dt + deficient_soc * self.cap)
-            assert allowable_curr_thruput >= 0  # for dev purposes
-            self.SOC = self.min_SOC
-            self.track_SOC(self.SOC)
-            self.current = -allowable_curr_thruput / self.dt  # readjusting current
-            self.state_eqn(self.current)     # update states
-            # self.voltages = np.append(self.voltages, self.voltage)
-            self.voltages += self.voltage,
-            self.total_amp_thruput += abs(self.current) * self.dt  # cycle counting
-            # self.currents.append(current)
-            return self.voltage
-
         #  state equations
         self.state_eqn(current)     # this updates the battery states
-        # self.currents.append(current)
 
         if self.voltage > self.max_voltage:
             print("charge current too high! Max voltage exceeded")
             # we de-rate the current if voltage is too high (exceeds max prescribed v)
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
-            current -= (self.voltage - self.max_voltage)/self.cell_resistance   # changed from just Ro
+            current -= (self.voltage - self.max_voltage)/self.R_cell   # changed from just Ro
             self.voltage = self.max_voltage #   WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
             print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
             print("max testing voltage is: ", self.voltage) # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
             self.currents[-1] = current
-            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
+            self.power = (self.max_voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
-            # raise Exception("Max voltage exceeded even after max SOC flag!!!") this can happen
-            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
-            self.voltages += self.voltage,  # numpy array
+            self.SOC = self.SOC + current * self.dt / self.cap
+            self.voltages += self.max_voltage,  # numpy array
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
         elif self.voltage < self.min_voltage:
             print("discharge current too high ! Min voltage exceeded")
-            current += (self.min_voltage - self.voltage) / self.cell_resistance
+            current += (self.min_voltage - self.voltage) / self.R_cell
             self.state_eqn(current, append=False)
             self.currents[-1] = current
             self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
             self.true_power[-1] = self.power
             self.voltage = self.min_voltage
-            # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
-            self.voltages += self.voltage, # numpy array
+            self.voltages += self.min_voltage,
+            self.SOC = self.SOC + current * self.dt / self.cap
             self.track_SOC(self.SOC)
             self.total_amp_thruput += abs(current) * self.dt  # cycle counting
             return self.voltage
 
         self.current = current
-        self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
-        # self.voltages = np.append(self.voltages, self.voltage)  # numpy array
+        self.SOC = self.SOC + current * self.dt / self.cap
         self.voltages += self.voltage,  # numpy array
         self.track_SOC(self.SOC)
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
         return self.voltage
+
+    def dynamics_pack(self, current, simulate_pack=True):
+        # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
+        #  state equations
+        self.state_eqn_pack(current)  # this updates the battery states
+
+        if self.voltage > self.max_voltage:
+            print("charge current too high! Max voltage exceeded")
+            # we de-rate the current if voltage is too high (exceeds max prescribed v)
+            # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
+            current -= (self.voltage - self.max_voltage) / self.R_cell  # changed from just Ro
+            self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
+            print("max testing voltage is: ", self.voltage)
+            self.state_eqn(current, append=False)
+            print("max testing voltage is: ",
+                  self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
+            self.currents[-1] = current
+            self.power = (self.max_voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
+            self.true_power[-1] = self.power
+            self.SOC = self.SOC + current * self.dt / self.cap
+            self.voltages += self.max_voltage,  # numpy array
+            self.track_SOC(self.SOC)
+            self.total_amp_thruput += abs(current) * self.dt  # cycle counting
+            return self.voltage
+        elif self.voltage < self.min_voltage:
+            print("discharge current too high ! Min voltage exceeded")
+            current += (self.min_voltage - self.voltage) / self.R_cell
+            self.state_eqn(current, append=False)
+            self.currents[-1] = current
+            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
+            self.true_power[-1] = self.power
+            self.voltage = self.min_voltage
+            self.voltages += self.min_voltage,
+            self.SOC = self.SOC + current * self.dt / self.cap
+            self.track_SOC(self.SOC)
+            self.total_amp_thruput += abs(current) * self.dt  # cycle counting
+            return self.voltage
+
+        self.current = current
+        self.SOC = self.SOC + current * self.dt / self.cap
+        self.voltages += self.voltage,  # numpy array
+        self.track_SOC(self.SOC)
+        self.total_amp_thruput += abs(current) * self.dt  # cycle counting
+        return self.voltage
+
+    def thermal_dynamics(self):
+        """This models the battery's thermal state """
+        #   using the lumped-sum capacitance model
 
     def state_eqn(self, current, append=True):
         """This holds the discretized state equations containing the battery dynamics at the cell-level."""
@@ -391,8 +427,38 @@ class Battery:
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
         self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000  # kw
         if append:
-            # self.currents.append(current)
-            # self.true_power.append(self.power)
+            self.currents += current,
+            self.true_power += self.power,
+
+    def load_pack_props(self):
+        # TODO: write a method that builds a pack from cells in any config
+        # first get the series resistance and capacitance
+        self.R1 *= self.topology[0]
+        self.R2 *= self.topology[0]
+        self.C1 /= self.topology[0]
+        self.C2 /= self.topology[0]
+
+        # now obtain the overall parallel resistance
+        self.R1 /= self.topology[1]
+        self.R2 /= self.topology[1]     # each new parallel path reduces the overall resistance
+        self.C1 *= self.topology[1]
+        self.C2 *= self.topology[1]
+        self.R_pack = self.Ro + self.R1 + self.R2
+
+
+    def state_eqn_pack(self, current, append=True):
+        """This holds the discretized state equations containing the battery dynamics at the cell-level."""
+        self.current = current  # added 01/09/22 to fix bug
+        dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
+        self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage) * self.topology[0]
+        self.Ro = (self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)) * self.topology[0]/self.topology[1]
+        #   state equations
+        #TODO: done: only modify currents for number of cells in parallel
+        self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
+        self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
+        self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
+        self.power = self.voltage * self.current / 1000  # kw
+        if append:
             self.currents += current,
             self.true_power += self.power,
 

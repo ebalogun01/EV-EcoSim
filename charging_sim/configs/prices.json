@@ -2,6 +2,6 @@
  "data_path": "/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv",
  "config_path": "/charging_sim/configs/prices.json",
  "resolution": 15,
- "month": 6,
+ "month": 1,
  "notes": "resolutions from data and resolution field should match"
 }
