@@ -261,9 +261,6 @@ class Battery:
         self.predicted_voltages += voltage,
         # print("Current voltage estimate is: ", voltage)
 
-    def get_properties(self):
-        return self.properties
-
     def visualize(self, option):
         """method is used to plot and save battery states desired by user"""
         if type(option) == str:
@@ -403,9 +400,9 @@ class Battery:
 def test():
     # TODO: include error checking assertion points later
     path_prefix = os.getcwd()
-    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
     path_prefix.replace('\\', '/')
-    battery_config_path = path_prefix + '/charging_sim/configs/battery.json'
+    battery_config_path = f'{path_prefix}/charging_sim/configs/battery.json'
     with open(battery_config_path, "r") as f:
         battery_config = json.load(f)
     params_list = [key for key in battery_config.keys() if "params_" in key]
@@ -417,7 +414,6 @@ def test():
                                         ::-1]  # ascending order
     battery_config["OCV_map_SOC"] = np.loadtxt(path_prefix + battery_config["OCV_map_SOC"])[::-1]  # ascending order
 
-    Q_initial = 3.5
     buffer_battery = Battery(config=battery_config)
     buffer_battery.battery_setup()
     buffer_battery.load_pack_props()
@@ -427,29 +423,28 @@ def test():
     c = -20  # discharging first
     voltages = []
     currents = []
-    for i in range(5):
-        v = buffer_battery.dynamics(c)
+    for _ in range(5):
+        buffer_battery.dynamics(c)
         currents.append(c)
     c = 10
-    for i in range(100):
-        v = buffer_battery.dynamics(c)
+    for _ in range(100):
+        buffer_battery.dynamics(c)
         currents.append(c)
     c = -10
-    for i in range(2):
-        v = buffer_battery.dynamics(c)
-        voltages.append(v)
+    for _ in range(2):
+        buffer_battery.dynamics(c)
         currents.append(c)
     c = 0
-    for i in range(200):
-        v = buffer_battery.dynamics(c)
+    for _ in range(200):
+        buffer_battery.dynamics(c)
         currents.append(c)
     c = 50
-    for i in range(5):
-        v = buffer_battery.dynamics(c)
+    for _ in range(5):
+        buffer_battery.dynamics(c)
         currents.append(c)
     c = 0  # charging (Amperes)
-    for i in range(200):
-        v = buffer_battery.dynamics(c)
+    for _ in range(200):
+        buffer_battery.dynamics(c)
         currents.append(c)
 
     fig, ax1 = plt.subplots()
