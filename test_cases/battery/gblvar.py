@@ -10,6 +10,14 @@ charging_sim_path_append = False
 #   simulation file path
 sim_file_path = ''
 
+# temperature data
+# month = 1   # todo: think of how to load in the month here
+# s = pd.read_csv('SolarData/SolarData_SanJose_2018-30min.csv', index_col='date')
+# cols = ['Month', 'Day', 'Hour', 'Temperature']
+# temps_data = pd.read_csv(temperature_data_path)[cols]
+# temps_data = temps_data[temps_data["Month"] == month]['Temperature']   # for one month
+
+
 # iteration number
 it = 0
 
@@ -39,22 +47,25 @@ v_pred = np.zeros((1, len(voltage_obj)))
 
 # transformer properties
 trans_dt = 10.0  # integration timestep [seconds]?
-trans_Ta = 20.0  # ambient temperature[C]
+trans_Ta = 20.0  # ambient temperature[C] {SLIGHTLY HIGHER THAN JUNE AVERAGE IN 2018}
 
 # TODO: find where all these transformer values were obtained from
+# transformer has various cooling modes that determine m and n for transformer
+# ONAF: Natural convection flow of oil through windings and radiators. Forced convection flow of air over radiators by fans
+# ONAN: Natural convection flow of oil through the windings and radiators. Natural convection flow of air over tank and radiation
 trans_R = 5.0   # ratio of copper loss to iron loss at rated load
 trans_tau_o = 2 * 60 * 60.0 # top oil time constant in seconds
 trans_tau_h = 6 * 60.0  # hotspot time constant in seconds
 trans_n = 0.9   # how did we get these numbers ?
 trans_m = 0.8   # how did we get these numbers ?
-trans_delta_theta_hs_rated = 28.0
-trans_delta_theta_oil_rated = 36.0
+trans_delta_theta_hs_rated = 28.0   # NEED TO DECIDE HOW IMPORTANT THESE WILL BE IN THE PAPER
+trans_delta_theta_oil_rated = 36.0  # todo: find good sources for these numbers
 
-trans_To0 = 30.0  # initial oil temperature [C]
-trans_Th0 = 60.0  # initial hot spot temperature [C]    # How is this set?
+trans_To0 = 30.0  # initial oil temperature [C] (assume we start at a point where oil is slightly hotter than ambient)
+trans_Th0 = 60.0  # initial hot spot temperature [C]    # How is this set? (should not matter long-term)
 trans_int_method = 'euler'  # integration method ['euler' or 'RK4']
 
-# Battery properties
 
+# Battery properties (deprecated)
 # bat_soc0 = 0.5
 # cap_E = 13500  # Wh

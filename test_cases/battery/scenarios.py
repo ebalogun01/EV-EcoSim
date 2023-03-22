@@ -19,6 +19,7 @@ num_vars = 6
 min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
+
 energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
 max_c_rates = [0.2, 0.5, 1, 1.5, 2]
 min_SOCs = [0.1, 0.2, 0.3]
@@ -30,7 +31,7 @@ def make_scenarios():
     idx = 0
     for Er in energy_ratings:
         for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx}
+            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'start_month': 6}
             scenarios_list.append(scenario)
             idx += 1
     return scenarios_list
@@ -43,7 +44,7 @@ def run(scenario):
 
 def run_scenarios_parallel():
     scenarios = make_scenarios()
-    start_idx = 0
+    start_idx = 24
     end_idx = 14
     num_cores = mp.cpu_count()
     if num_cores > 1:
@@ -54,13 +55,13 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 16
-    end_idx = 20
+    start_idx = 0
+    end_idx = 8
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:
-        process = mp.Process(target=run, args=(scenario,))
+        process = mp.get_context('spawn').Process(target=run, args=(scenario,))
         process.start()
         process.join()
 

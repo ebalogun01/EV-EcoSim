@@ -414,7 +414,9 @@ glm_house_dict[key_index] = {'name': 'L2_transformer',
                              'shunt_impedance': '339.610+336.934j'
                              }
 obj_type[key_index] = {'object': 'transformer_configuration'}
+
 key_index += 1  # this populates a list of all the objects and configs
+
 ######### L2 ENDS (initial trans config ends) HERE ###########
 
 num_transformers_list = []
