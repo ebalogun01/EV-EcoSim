@@ -12,6 +12,7 @@
 **.xls
 **.npy
 **.glm
+**results
 charging_sim/__pycache__
 **.Identifier
 BatteryData
@@ -21,7 +22,6 @@ Datasets
 env
 ev50
 **.dummy2.player
-test_cases
 test_cases/**.txt/
 test_cases/**.csv/
 mosek
