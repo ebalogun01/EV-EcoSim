@@ -26,3 +26,5 @@ test_cases/**.txt/
 test_cases/**.csv/
 mosek
 .idea
+**.idea/
+
