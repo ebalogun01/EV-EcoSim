@@ -46,14 +46,13 @@ nominal_voltage = []
 load_phases = []
 
 for i in obj_type_base.keys():
-    if ('object' in obj_type_base[i].keys()):
-
+    if 'object' in obj_type_base[i].keys():
         # modify load objects
         if 'load' in obj_type_base[i]['object']:
             if 'constant_power_A' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_A']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
                 load_phases.append('A')
 
             if 'A' in glm_dict_base[i]['phases']:
@@ -63,7 +62,7 @@ for i in obj_type_base.keys():
             if 'constant_power_B' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_B']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
                 load_phases.append('B')
 
             if 'B' in glm_dict_base[i]['phases']:
@@ -73,7 +72,7 @@ for i in obj_type_base.keys():
             if 'constant_power_C' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_C']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
                 load_phases.append('C')
 
             if 'C' in glm_dict_base[i]['phases']:
@@ -285,8 +284,7 @@ glm_house_dict[key_index] = {'name': 'triplex_line_config',
                              'diameter': '0.368'}
 obj_type[key_index] = {'object': 'triplex_line_configuration'}
 key_index = key_index + 1
-# TODO: model two cases for this work. One with 120/240 V and one with
-# TODO: find the source for these
+
 #   House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of the spot-load
 #   , so a future task will be to automate this. For now, the code doesn't break because the voltages are the same everywhere
 glm_house_dict[key_index] = {'name': 'house_transformer',
@@ -302,8 +300,6 @@ glm_house_dict[key_index] = {'name': 'house_transformer',
 obj_type[key_index] = {'object': 'transformer_configuration'}
 key_index = key_index + 1
 
-# TODO: add commercial building loads (need to know what voltage feeds into commercial buildings.
-
 ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION STARTS HERE ####
 
 #   Fast charging station transformer configuration
@@ -312,10 +308,10 @@ standard_rating = False
 glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                         'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
 num_charging_nodes = param_dict['num_dcfc_nodes']
-num_charging_stalls_per_node = 4  # make param later
-charging_stall_base_rating = 50  # kW (make param later)
-trans_standard_ratings = np.array([3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA # TODO: get references for these
-DCFC_voltage = 480  # volts (480 volts is the most common DCFC transformer Secondary now)
+num_charging_stalls_per_node = param_dict['num_dcfc_stalls_per_node']   # int
+charging_stall_base_rating = float(param_dict['charging_stall_base_rating'].split('_')[0])  # kW
+trans_standard_ratings = np.array([3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA
+DCFC_voltage = param_dict['dcfc_voltage']  # volts (480 volts is the most common DCFC transformer Secondary now)
 DCFC_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_node  # kw
 load_pf = 0.9  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
 DCFC_trans_power_rating_kVA = DCFC_trans_power_rating_kW / load_pf
@@ -324,7 +320,7 @@ if standard_rating:
     DCFC_trans_power_rating_kVA = proximal_std_rating
 charging_bus_subset_list = random.sample(list(glm_subset_dict_dcfc.values()), num_charging_nodes)
 
-#   TODO: find more accurate properties for the transformer
+#   TODO: verify these or get more configs
 #   This is the transformer configuration that is inherited for DCFC
 glm_house_dict[key_index] = {'name': 'dcfc_transformer',
                              'connect_type': 'WYE_WYE',
@@ -380,16 +376,12 @@ for meter_dict in charging_bus_subset_list:
 os.chdir(test_case_dir)
 np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # this stores all the nodes in which there is dcfc
 
-# CREATE TRANSFORMER RECORDERS FOR ONLY NODE WITH CHARGING TO GET POWER FLOWING OUT TO CHECK FOR OVERLOADING
-
-
 ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 
 num_transformers_list = []
-
 k = 0
 for i in range(len(bus_list)):
-    num_transformers = int(np.floor(abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more
+    num_transformers = int(np.floor(abs(spot_load_list[i]) / (20 * 1000)))  # assumes 20 homes per transformer
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
         # Triplex node
@@ -407,7 +399,7 @@ for i in range(len(bus_list)):
             reactive_power_df['tn_' + str(k)] = reactive_power_trans
 
         glm_house_dict[key_index] = {'name': 'tn_' + str(k),
-                                     'nominal_voltage': '120.00',
+                                     'cell_nominal_voltage': '120.00',
                                      'phases': str(load_phases[i]) + "S",
                                      'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                          '').replace(
@@ -427,17 +419,17 @@ for i in range(len(bus_list)):
         k = k + 1
 
 # select triplex nodes to put batteries
-# total_trans = k  # set this to 0 first
-# bat_buses = np.random.choice(np.arange(total_trans), num_batteries)
-#
-# bat_bus_obj = []
-# for i in range(num_batteries):
-#     bat_bus_obj.append('tn_' + str(bat_buses[i]))  # can probably use the bat bus during in-situ simulation
+total_trans = k  # set this to 0 first
+bat_buses = np.random.choice(np.arange(total_trans), num_batteries)
 
-# os.chdir(test_case_dir)
-# with open('bat_bus.txt', 'wb') as fp:
-#     pickle.dump(bat_bus_obj,
-#                 fp)  # this stores all the nodes in which the batteries reside. Can also be done post system initializaion
+bat_bus_obj = []
+for i in range(num_batteries):
+    bat_bus_obj.append('tn_' + str(bat_buses[i]))  # can probably use the bat bus during in-situ simulation
+
+os.chdir(test_case_dir)
+with open('bat_bus.txt', 'wb') as fp:
+    pickle.dump(bat_bus_obj,
+                fp)  # this stores all the nodes in which the batteries reside. Can also be done post system initializaion
 
 # write out glm file for secondary distribution
 out_dir = test_case_dir
