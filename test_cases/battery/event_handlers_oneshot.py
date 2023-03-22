@@ -45,14 +45,6 @@ for root, dirs, files, in os.walk('.', topdown=True):
                 L2_charging_nodes += ('_'.join(file.split('_')[4:6])[:-4]),
 
 os.chdir(current_dir)  # switch back into current directory
-# print(L2_charging_nodes, '\n', dcfc_nodes, '\n')
-# print(l2_net_loads[0])
-# print('DONE')
-# dcfc_net_loads = [pd.read_csv(f'{load_folder}charging_station_sim_{i}_{dcfc_nodes[i]}.csv')
-#                   ['station_net_grid_load_kW'].to_numpy() for i in range(len(dcfc_nodes))]
-#
-# l2_net_loads = [pd.read_csv(f'{load_folder}charging_station_sim_{i}_{L2_charging_nodes[i]}.csv')
-#                 ['station_net_grid_load_kW'].to_numpy() for i in range(len(L2_charging_nodes))]
 print("done loading loads.")
 # make a list of nodes and a list of the corresponding net_loads for that node
 
