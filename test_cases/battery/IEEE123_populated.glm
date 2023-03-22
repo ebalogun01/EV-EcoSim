@@ -7,7 +7,7 @@ clock {
 
 module tape;
 
-module event_handlers_oneshot;
+module event_handlers;
 
 module powerflow {
 	solver_method NR;

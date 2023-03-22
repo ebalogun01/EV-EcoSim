@@ -11,7 +11,7 @@ import cvxpy as cp
 path_prefix = os.getcwd()
 path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
 path_prefix.replace('\\', '/')
-OCV_SOC_linear_params = np.load(f'{path_prefix}/BatteryData/OCV_SOC_linear_params_NMC_25degC.npy')
+OCV_SOC_linear_params = 0
 
 
 class MPC:
@@ -84,9 +84,9 @@ class MPC:
         voltage = self.storage.OCV_map_voltage[indices[0]: indices[-1]].reshape(-1, 1)
         model = LinearRegression().fit(soc, voltage)
         self.battery_ocv_params = (model.coef_, model.intercept_)
-        plt.plot(model.coef_ * soc + model.intercept_)
-        plt.savefig("Param_plot.png")
-        plt.close('all')
+        # plt.plot(model.coef_ * soc + model.intercept_)
+        # plt.savefig("Param_plot.png")
+        # plt.close('all')
 
     def compute_control(self, load, price_vector):
         self.time += 1

@@ -14,7 +14,7 @@ from EVCharging import ChargingSim
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'test2_June' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
+save_folder_prefix = 'test_June' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
 
 # SET OPTIMIZATION SOLVER
 solver_options = ['GUROBI', 'MOSEK', 'ECOS']
@@ -45,10 +45,11 @@ central_storage = False  # toggle for central vs. decentralized storage
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 # TODO: include time-varying temperature for T_ambient
+print('TT')
 simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
 temperature_data = pd.read_csv('../../ambientData/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
-
+print('TL')
 global tic, toc  # used to time simulation
 tic = time.time()
 #####

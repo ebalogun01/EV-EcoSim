@@ -120,7 +120,6 @@ def on_precommit(t):
         name = gblvar.trans_list[i]
         data = gridlabd.get_object(name)
         trans_power_str = data['power_in']
-        # print(trans_power_str)
         pmag, pdeg = get_trans_power(trans_power_str)
         gblvar.trans_power.append(pmag / 1000)  # in units kVA
     if gblvar.it == 0:

@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from electricityPrices import PriceLoader
 from solar import Solar
 
-
 # plt.style.use('seaborn-darkgrid')  # optional
 minute_in_day = 1440
 
@@ -22,11 +21,12 @@ class ChargingSim:
     def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: 3/14/2023 changed loads to generated loads from Speech
-        num_evs = 1600
+        num_evs = 50
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
         data2018 = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')  # this is only 30 days data
+        print('SpeechData loaded...')
         charge_data = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')
         # charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')[:-1, ]/4
         # test_data = data2018[:-1, ]  # removing bad data
@@ -121,6 +121,7 @@ class ChargingSim:
         self.charging_locs = list(self.charging_sites.keys())
 
     def create_charging_stations_oneshot(self, power_nodes_list):
+        # todo: update this for oneshot simulation
         if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
             print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
             self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
@@ -195,7 +196,6 @@ class ChargingSim:
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
         self.scenario = scenario
-        print(scenario)
         if 'oneshot' in list(scenario.keys()):
             print("One shot optimization loading...")
             self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
