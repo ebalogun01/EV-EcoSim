@@ -51,7 +51,7 @@ for i in obj_type_base.keys():
             if 'constant_power_A' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_A']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
                 load_phases.append('A')
 
             if 'A' in glm_dict_base[i]['phases']:
@@ -61,7 +61,7 @@ for i in obj_type_base.keys():
             if 'constant_power_B' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_B']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
                 load_phases.append('B')
 
             if 'B' in glm_dict_base[i]['phases']:
@@ -71,7 +71,7 @@ for i in obj_type_base.keys():
             if 'constant_power_C' in glm_dict_base[i].keys():
                 spot_load_list.append(complex(glm_dict_base[i]['constant_power_C']))
                 bus_list.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
-                nominal_voltage.append(glm_dict_base[i]['cell_nominal_voltage'])
+                nominal_voltage.append(glm_dict_base[i]['nominal_voltage'])
                 load_phases.append('C')
 
             if 'C' in glm_dict_base[i]['phases']:
@@ -318,7 +318,7 @@ for i in range(len(bus_list)):
             reactive_power_df['tn_' + str(k)] = reactive_power_trans
 
         glm_house_dict[key_index] = {'name': 'tn_' + str(k),
-                                     'cell_nominal_voltage': '120.00',
+                                     'nominal_voltage': '120.00',
                                      'phases': str(load_phases[i]) + "S",
                                      'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                          '').replace(
