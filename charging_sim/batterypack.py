@@ -87,6 +87,8 @@ class Battery:
 
         # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
         self.SOC_track = [self.initial_SOC]
+        self.predicted_SOC = [self.initial_SOC]
+        self.pred_power = [0]
         self.SOH_track = [self.SOH]  # to be finished later
         self.calendar_aging = [0.0]  # tracking calendar aging
         self.cycle_aging = [0.0]  # tracking cycle aging
@@ -288,12 +290,14 @@ class Battery:
         import pandas as pd
         save_file_base = f'{str(self.id)}_{self.node}'
         data = {'SOC': self.SOC_track,
+                'SOC_pred': self.predicted_SOC,
                 'SOH': self.SOH_track,
                 'Voltage_pack': np.array(self.voltages),
                 'currents_pack': np.array(self.currents),
                 'cycle_aging': np.array(self.cycle_aging),
                 'calendar_aging': np.array(self.calendar_aging),
-                'power_kW': np.array(self.true_power)}
+                'power_kW': np.array(self.true_power),
+                'pred_power_kW': np.array(self.pred_power)}
         pd.DataFrame(data).to_csv(f'{save_prefix}/battery_sim_{save_file_base}.csv')
         total_cycles = 0.5 * self.total_amp_thruput / (self.topology[1] * (self.cell_nominal_cap + self.cap) / 2)
         np.savetxt(f'{save_prefix}/total_batt_cycles_{save_file_base}.csv', [total_cycles])
@@ -449,9 +453,9 @@ def test():
 
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    ax1.plot(buffer_battery.voltages, label='voltage')
+    ax1.plot_tables(buffer_battery.voltages, label='voltage')
     # ax2.plot(currents, color='k', label='current')
-    ax2.plot(buffer_battery.currents, color='r', ls='--', label='adjusted current')
+    ax2.plot_tables(buffer_battery.currents, color='r', ls='--', label='adjusted current')
     ax1.set_xlabel('Time step')
     ax1.set_ylabel('Voltage (V)')
     ax2.set_ylabel('Current (A)')

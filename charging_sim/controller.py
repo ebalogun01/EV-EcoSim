@@ -89,7 +89,6 @@ class MPC:
         plt.close('all')
 
     def compute_control(self, load, price_vector):
-        """This should never be run for centralized battery storage simulation"""
         self.time += 1
         control_action = None
         if self.control_battery:
@@ -113,18 +112,18 @@ class MPC:
         return control_action
 
     def get_battery_constraints(self, ev_load):
-        # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
+        # TODO: can toggle between battery initial soc and planned soc trajectory
         cells_series = self.storage.topology[0]
+
         mod_parallel = self.storage.topology[1]  # parallel modules count
         self.battery_OCV = self.storage.get_OCV() * cells_series  # sensing directly from the battery at each time-step
         self.storage_constraints = \
-            [self.battery_SOC[0] == self.storage.SOC,  # changing to deterministic
+            [self.battery_SOC[0] == self.battery_initial_SOC,  # changing to deterministic
              self.battery_SOC[1:] == self.battery_SOC[:-1] + (
                      self.resolution / 60 * self.battery_current) / (self.storage.cap * mod_parallel),
              cp.abs(self.battery_current) <= self.storage.max_current,
              self.solar.battery_power == self.battery_current_solar * self.battery_OCV / 1000,
              self.battery_power == self.battery_power_ev + self.battery_power_grid + self.solar.battery_power,
-             # self.battery_power == (self.battery_current * self.battery_OCV) / 1000,
              self.battery_SOC >= self.storage.min_SOC,
              self.battery_SOC <= self.storage.max_SOC,
              self.battery_power_ev == -self.battery_current_ev * self.battery_OCV / 1000,
@@ -153,7 +152,7 @@ class MPC:
         self.load = []
 
 
-class Oneshot2:
+class Oneshot:
     """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
     Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
 
@@ -191,7 +190,7 @@ class Oneshot2:
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
             self.pge_gamma = cp.Variable(1, integer=True)
-            self.pge_gamma_constraint = [self.pge_gamma >= 0]
+            self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
         self.battery_current = cp.Variable((num_steps, 1))

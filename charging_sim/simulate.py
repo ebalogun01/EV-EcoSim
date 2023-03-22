@@ -42,7 +42,7 @@ min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
 energy_ratings = [5e4, 10e4, 20e4, 40e4, 80e4]
-max_c_rates = [0.1, 0.2, 0.5, 1]
+max_c_rates = [0.1, 0.2, 0.5, 1, 2]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 

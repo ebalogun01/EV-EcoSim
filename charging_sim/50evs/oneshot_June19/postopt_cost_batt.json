@@ -1,0 +1,24 @@
+{
+ "battery_sim_0": {
+  "capital_loss_aging": 105.48687421729097,
+  "capital_loss_aging_per_day": 0.0026877972541387843,
+  "capital_cost": 138000.0,
+  "battery_LOL": 0.00015287952785114634,
+  "LOL_per_day": 5.0959842617048775e-06,
+  "battery_total_cost": 138105.48687421728,
+  "total_cost_per_day": 3.518916937830504,
+  "lcoe": 0.3595849956776008,
+  "lcoe_aging": 0.0002746559754285155
+ },
+ "battery_sim_1": {
+  "capital_loss_aging": 105.48687421729097,
+  "capital_loss_aging_per_day": 0.0026877972541387843,
+  "capital_cost": 138000.0,
+  "battery_LOL": 0.00015287952785114634,
+  "LOL_per_day": 5.0959842617048775e-06,
+  "battery_total_cost": 138105.48687421728,
+  "total_cost_per_day": 3.518916937830504,
+  "lcoe": 0.3595849956776008,
+  "lcoe_aging": 0.0002746559754285155
+ }
+}

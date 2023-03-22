@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 from electricityPrices import PriceLoader
 from solar import Solar
 
-minute_in_day = 1440
-plt.style.use('seaborn-darkgrid')  # optional
 
+# plt.style.use('seaborn-darkgrid')  # optional
+minute_in_day = 1440
 
 # TODO: COMPLETE SEPERATE CONFIGS FOR EACH CHARGING STATION GIVEN CONFIG (fast charging vs L2) and include relevant load data
 # clean code COMPLETELY
@@ -21,13 +21,15 @@ plt.style.use('seaborn-darkgrid')  # optional
 class ChargingSim:
     def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
         """Design charging sim as orchestrator for battery setup"""
-        # TODO: fix these literal paths below
+        # TODO: 3/14/2023 changed loads to generated loads from Speech
+        num_evs = 1600
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv') / 5
-        charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/CP_historical_data_2015_2017.csv') / 5
-        test_data = data2018[:-1, ]  # removing bad data
+        data2018 = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')  # this is only 30 days data
+        charge_data = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')
+        # charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')[:-1, ]/4
+        # test_data = data2018[:-1, ]  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.solar_config = None
@@ -42,7 +44,7 @@ class ChargingSim:
         self.control_start_index = 0
         self.control_shift = 0
         self.time = 0
-        self.test_data = test_data.flatten()
+        self.test_data = charge_data.flatten()
         self.num_charging_sites = num_charging_sites
         self.charging_locs = None
         self.charging_sites = {}
@@ -76,10 +78,8 @@ class ChargingSim:
     def load_battery_params(self):
         """ This loads the battery params directly into the sim, so parameters will be the same for all
         batteries unless otherwise specified. battery_config must be attributed to do this"""
-        # add the path prefix to make is system agnostic
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
-            # print("testing load battery params: ", params_key)
             self.battery_config[params_key] = np.loadtxt(
                 self.path_prefix + self.battery_config[params_key])  # replace path with true value
         # do the OCV maps as well; reverse directionality is important for numpy.interp function
@@ -89,34 +89,34 @@ class ChargingSim:
 
         # this should make those inputs just be the params
 
-    def create_battery_object(self, idx, loc, controller=None):
-        #  this stores all battery objects in the network
+    def create_battery_object(self, idx, node_prop, controller=None):
+        #  this creates and stores all battery objects in the network
         buffer_battery = Battery(config=self.battery_config, controller=controller)
-        buffer_battery.id, buffer_battery.node = idx, loc  # using one index to represent both id and location
-        buffer_battery.num_cells = buffer_battery.battery_setup_2()  # toggle between setup and setuo_2 to scale energy capacity using voltage changed this to try scaling voltage instead
+        buffer_battery.id, buffer_battery.node = idx, node_prop['node']
+        buffer_battery.num_cells = buffer_battery.battery_setup_2()  # toggle between setup and setuo_2 to scale kWh energy capacity using voltage changed this to try scaling voltage instead
         buffer_battery.load_pack_props()    # this is for simulating the entire pack at once
         self.battery_objects += buffer_battery,  # add to list of battery objects
         return buffer_battery
 
-    def create_charging_stations(self, power_nodes_list):
+    def create_charging_stations(self, power_nodes):
         # todo: upgrade this in the future to account for variable steps
         # add flexibility for multiple units at one charging node?
         # No need, can aggregate them and have a different arrival sampling method
-        if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
-            print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
-            self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
-        loc_list = random.sample(power_nodes_list, self.num_charging_sites)  # randomization of charging locations (not random for dcfc since they are the same)
-        for i in range(self.num_charging_sites):
+        loc_list = power_nodes
+        # make a list of dicts with varying capacities
+        # todo: change the starting point based on existing charging stations
+        for i in range(len(loc_list)):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
-            # TODO: change the below later
             self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
             controller = control.MPC(self.controller_config, storage=battery,
                                      solar=solar)  # need to change this to load based on the users controller python file?
-            self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
-            charging_station = ChargingStation(battery, self.charging_config, controller,
-                                               solar=solar)  # add controller and energy assets to charging station
-            self.charging_sites[loc_list[i]] = charging_station
+            self.charging_config['locator_index'], self.charging_config['location'] = i, loc_list[i]['node']
+            self.charging_config['L2'] = loc_list[i]['L2']
+            self.charging_config['DCFC'] = loc_list[i]['DCFC']
+            charging_station = ChargingStation(battery, self.charging_config, controller, solar=solar)
+            print(loc_list)
+            self.charging_sites[loc_list[i]['node']] = charging_station
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
@@ -131,8 +131,8 @@ class ChargingSim:
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
             # TODO: change the below later
             self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
-            controller = control.Oneshot2(self.controller_config, storage=battery,
-                                     solar=solar, num_steps=self.num_steps)  # todo: difference! uses oneshot controller
+            controller = control.Oneshot(self.controller_config, storage=battery,
+                                         solar=solar, num_steps=self.num_steps)  # todo: difference! uses oneshot controller
             self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
             charging_station = ChargingStation(battery, self.charging_config, controller,
                                                solar=solar)  # add controller and energy assets to charging station
@@ -190,6 +190,7 @@ class ChargingSim:
         return self.storage_sites
 
     def setup(self, power_nodes_list, scenario=None):
+        # changing power nodes list to dict to distinguish L2 for DCFC
         """This is used to set up charging station locations and simulations"""
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
@@ -243,14 +244,14 @@ class ChargingSim:
             self.control_start_index = stepsize * self.day_year_count
             todays_load = self.test_data[self.day_year_count*self.num_steps+self.time
                                          :self.num_steps*(self.day_year_count+1)+self.time] * 1 # this is where time comes in
-            assert todays_load.size == 96
-            todays_load.shape = (todays_load.size, 1)
+            todays_load = np.minimum(todays_load, charging_station.capacity)   # only accept capacity of charging station
+            todays_load = todays_load.reshape(-1, 1)
             for i in range(stepsize):
                 control_action = charging_station.controller.compute_control(todays_load, elec_price_vec)
                 charging_station.controller.load += todays_load[i],
                 buffer_battery.dynamics(control_action)
                 net_load = todays_load[0, 0] + buffer_battery.power - charging_station.solar.power[0, 0]   # moving horizon so always only pick the first one
-                charging_station.update_load(net_load, todays_load[0, 0])  # set current load for charging station # UPDATED 6/8/22
+                charging_station.update_load(net_load, todays_load[0, 0])   # in kW
             # check whether one year has passed (not relevant since we don't run one full year yet)
             if self.day_year_count % 365 == 0:
                 self.day_year_count = 0
@@ -268,11 +269,10 @@ class ChargingSim:
             buffer_battery = charging_station.storage
             todays_load = self.test_data[self.day_year_count * self.num_steps + self.time
                                          :self.num_steps * (self.day_year_count + 1) + self.time] * 1  # this is where time comes in
-            assert todays_load.size == self.num_steps
+            todays_load = np.minimum(todays_load, charging_station.capacity)
             todays_load = todays_load.reshape(-1, 1)
             control_actions = charging_station.controller.compute_control(todays_load, elec_price_vec)
             charging_station.controller.load = todays_load
-
             battery_powers = []
             for interval in range(self.num_steps):
                 charging_station.storage.dynamics(control_actions[interval, 0])
@@ -281,9 +281,7 @@ class ChargingSim:
             net_load = todays_load + np.array(buffer_battery.power).reshape(-1, 1) - charging_station.solar.power
             charging_station.update_load_oneshot(net_load, todays_load)
 
-        return
-
-    def load_results_summary(self, save_path_prefix, plot=True):
+    def load_results_summary(self, save_path_prefix, plot=False):
         # TODO: selecting option for desired statistics
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         for charging_station in self.stations_list:
