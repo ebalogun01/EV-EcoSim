@@ -46,7 +46,7 @@ class ChargingSim:
         self.time = 0
         self.test_data = charge_data.flatten()
         self.num_charging_sites = num_charging_sites
-        self.charging_locs = None
+        self.charging_locs = []
         self.charging_sites = {}
         self.stations_list = []
         self.battery_objects = []
@@ -196,14 +196,15 @@ class ChargingSim:
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
         self.scenario = scenario
-        if 'oneshot' in list(scenario.keys()):
-            print("One shot optimization loading...")
-            self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
-        else:
-            self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
-        self.initialize_price_loader(self.prices_config["month"])
-        self.initialize_aging_sim()  # Battery aging
-        self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
+        if self.scenario:
+            if 'oneshot' in list(scenario.keys()):
+                print("One shot optimization loading...")
+                self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
+            else:
+                self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
+            self.initialize_price_loader(self.prices_config["month"])
+            self.initialize_aging_sim()  # Battery aging
+            self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
 
     def update_scenario(self, scenario=None):
         if scenario:
