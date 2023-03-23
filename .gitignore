@@ -12,6 +12,7 @@
 **.xls
 **.npy
 **.glm
+**.json
 **results
 charging_sim/__pycache__
 **.Identifier
