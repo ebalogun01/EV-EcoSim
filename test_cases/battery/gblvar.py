@@ -41,6 +41,12 @@ with open('voltage_prop.txt', 'rb') as fp:
 vm = np.zeros((1, len(voltage_obj)))
 vp = np.zeros((1, len(voltage_obj)))
 v_pred = np.zeros((1, len(voltage_obj)))
+trans_Th = None
+trans_list = None
+trans_To = None
+trans_loading_percent = 0
+nom_vmag = None
+
 
 ####################### RESOURCE PROPERTIES ################################
 # move to other file format, maybe json, generated from feeder population code
