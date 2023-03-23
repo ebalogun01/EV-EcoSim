@@ -207,6 +207,7 @@ class ChargingSim:
 
     def update_scenario(self, scenario=None):
         if scenario:
+            self.prices_config['month'] = scenario['start_month']
             if self.solar_config:
                 self.solar_config['start_month'] = scenario['start_month']
             for key in scenario.keys():
