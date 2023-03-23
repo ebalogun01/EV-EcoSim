@@ -246,11 +246,12 @@ end_time = datetime.datetime(int(endtime_str[1:5]), int(endtime_str[6:8]), int(e
 
 data_use_filt = data_use[data_use.index >= start_time]
 data_use_filt = data_use_filt[data_use_filt.index < end_time]
+data_use = None     # clean up memory
 
-data_use_mat = np.asarray(data_use_filt[data_use.columns[6:-1]]) * 1000
+data_use_mat = np.asarray(data_use_filt[data_use_filt.columns[6:-1]]) * 1000
 agg_power = np.mean(data_use_mat, axis=1)
 admd = np.max(agg_power)
-admd = 3    # todo: add rationale
+admd = 3    # todo: add rationale (I think this is average power demand)
 
 # % generate glm for homes
 
@@ -420,8 +421,12 @@ key_index += 1  # this populates a list of all the objects and configs
 ######### L2 ENDS (initial trans config ends) HERE ###########
 
 num_transformers_list = []
-fraction_commercial_sec_node = 0.1
-contains_commercial_load = random.sample(list(range(len(bus_list))), max(int(fraction_commercial_sec_node * len(bus_list)), 1))
+fraction_commercial_sec_node = 0.3
+# CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD
+spot_load_magnitude = [abs(spot_load_list[i])/1000 for i in range(len(spot_load_list))]
+commercial_load_indices = [i for i in range(len(spot_load_list)) if spot_load_magnitude[i] > L2_trans_power_rating_kVA]
+
+contains_commercial_load = random.sample(commercial_load_indices, max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
 
 # select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)
 L2_charging_node_options = []
@@ -432,17 +437,17 @@ for i in range(len(bus_list)):
     commercial_load = False
     if i in contains_commercial_load:
         commercial_load = True
-        num_transformers = int(np.ceil(abs(spot_load_list[i]) / (L2_trans_power_rating_kVA * 1000)))    # np.floor because of higher kVA leads to no transformers and causes downstream errors
+        num_transformers = int(np.floor(abs(spot_load_list[i]) / (L2_trans_power_rating_kVA * 1000)))    # np.floor because of higher kVA leads to no transformers and causes downstream errors
     else:
-        num_transformers = int(np.ceil(abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
+        num_transformers = int(np.floor(abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):   # number of transformers per bus
         # Triplex node
         if commercial_load:
             # todo: is there a way to initially set loading?
-            num_houses = int(np.floor(param_dict['commercial_building_trans'] * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
+            num_houses = np.floor(L2_trans_power_rating_kVA * 0.85) * safety_factor / admd  # admd is the max power. 0.85 is the worst pf
         else:
-            num_houses = int(np.floor(20 * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
+            num_houses = np.floor(20 * 0.85) * safety_factor / admd  # admd is the max power. 0.85 is the worst pf
         real_power_trans = np.sum(
             data_use_mat[:, np.random.choice(np.arange(data_use_mat.shape[1]), size=(num_houses,))], axis=1)
         pf_trans = np.random.uniform(0.85, 1.0, size=real_power_trans.shape)    # sample power factor between 0.85 and 1.0
