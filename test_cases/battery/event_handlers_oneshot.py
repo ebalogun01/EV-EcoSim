@@ -74,7 +74,7 @@ def on_init(t):
 
 def on_precommit(t):
     ########################## UPDATES FROM GRIDLABD ##################################
-    control_res = 15  # minutes
+    control_res = 15  # minutes todo: make a param in the future
 
     # get clock from GridLAB-D
     clock = gridlabd.get_global("clock")
