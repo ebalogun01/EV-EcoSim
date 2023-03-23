@@ -437,17 +437,17 @@ for i in range(len(bus_list)):
     commercial_load = False
     if i in contains_commercial_load:
         commercial_load = True
-        num_transformers = int(np.floor(abs(spot_load_list[i]) / (L2_trans_power_rating_kVA * 1000)))    # np.floor because of higher kVA leads to no transformers and causes downstream errors
+        num_transformers = int((abs(spot_load_list[i]) / (L2_trans_power_rating_kVA * 1000)))    # np.floor because of higher kVA leads to no transformers and causes downstream errors
     else:
-        num_transformers = int(np.floor(abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
+        num_transformers = int((abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):   # number of transformers per bus
         # Triplex node
         if commercial_load:
             # todo: is there a way to initially set loading?
-            num_houses = np.floor(L2_trans_power_rating_kVA * 0.85) * safety_factor / admd  # admd is the max power. 0.85 is the worst pf
+            num_houses = int((L2_trans_power_rating_kVA * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
         else:
-            num_houses = np.floor(20 * 0.85) * safety_factor / admd  # admd is the max power. 0.85 is the worst pf
+            num_houses = int((20 * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
         real_power_trans = np.sum(
             data_use_mat[:, np.random.choice(np.arange(data_use_mat.shape[1]), size=(num_houses,))], axis=1)
         pf_trans = np.random.uniform(0.85, 1.0, size=real_power_trans.shape)    # sample power factor between 0.85 and 1.0
