@@ -77,9 +77,6 @@ class ChargingStation:
     def save_sim_data(self, save_prefix):
         import pandas as pd
         save_file_base = f'{str(self.id)}_{self.loc}'
-        print(len(self.controller.actions), len(self.storage.voltages), len(self.loads), len(self.solar_power_battery),
-              len(self.solar_power_grid),
-              len(self.total_load), len(self.solar_power_ev), len(self.storage.true_power), len(self.controller.costs))
         data = {'Control_current': self.controller.actions,
                 'battery_voltage': self.storage.voltages,
                 'station_net_grid_load_kW': self.loads,
