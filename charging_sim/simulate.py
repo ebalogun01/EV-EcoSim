@@ -3,11 +3,15 @@ from EVCharging import ChargingSim
 import multiprocessing as mp
 import numpy as np
 import json
-import sys
+import ast
 
 """This runs optimization offline without the power system or battery feedback. This is done to save time. Power 
 system states are then propagated post optimization to fully characterize what would have occurred if in-situ 
 optimization was done """
+
+#   GET THE PATH PREFIX FOR SAVING THE INPUTS
+path_prefix = os.getcwd()
+path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
 month = 6   # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
 day_minutes = 1440
@@ -15,23 +19,34 @@ opt_time_res = 15   # minutes
 num_days = 30  # determines optimization horizon
 num_steps = num_days * day_minutes//opt_time_res    # number of steps to initialize variables for opt
 
+
+# PRELOAD
+
+station_config = open(path_prefix+'/test_cases/battery/feeder_population/config.txt', 'r')
+param_dict = station_config.read()
+station_config.close()
+param_dict = ast.literal_eval(param_dict)
+L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
+dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
+
 # lood DCFC locations txt file
 print('...loading charging bus nodes')
 dcfc_nodes = np.loadtxt('../test_cases/battery/dcfc_bus.txt', dtype=str).tolist()     # this is for DC FAST charging
 if type(dcfc_nodes) is not list:
     dcfc_nodes = [dcfc_nodes]
+dcfc_dicts_list = []
+for node in dcfc_nodes:
+    dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
+
 L2_charging_nodes = np.loadtxt('../test_cases/battery/L2charging_bus.txt', dtype=str).tolist()    # this is for L2 charging
 if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
+l2_dicts_list = []
+for node in L2_charging_nodes:
+    l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
 num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
 
-# GET THE PATH PREFIX FOR SAVING THE INPUTS
-path_prefix = os.getcwd()
-path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-
-
-
-# RUN TYPE
+#   RUN TYPE
 sequential_run = True
 parallel_run = False
 single_run = False
@@ -63,7 +78,7 @@ def run(scenario):
     EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps)
     save_folder_prefix = 'oneshot_June' + str(scenario['index']) + '/'
     os.mkdir(save_folder_prefix)
-    EV_charging_sim.setup(dcfc_nodes + L2_charging_nodes, scenario=scenario)
+    EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:

@@ -120,24 +120,23 @@ class ChargingSim:
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
-    def create_charging_stations_oneshot(self, power_nodes_list):
+    def create_charging_stations_oneshot(self, power_nodes):
         # todo: update this for oneshot simulation
-        if min(len(power_nodes_list), self.num_charging_sites) < self.num_charging_sites:
-            print("Cannot assign more charging nodes than grid nodes...adjusting to the length of power nodes!")
-            self.num_charging_sites = min(len(power_nodes_list), self.num_charging_sites)
-        loc_list = random.sample(power_nodes_list,
-                                 self.num_charging_sites)  # randomization of charging locations (not random for dcfc since they are the same)
-        for i in range(self.num_charging_sites):
+        loc_list = power_nodes
+        # make a list of dicts with varying capacities
+        # todo: change the starting point based on existing charging stations
+        for i in range(len(loc_list)):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
-            # TODO: change the below later
             self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
             controller = control.Oneshot(self.controller_config, storage=battery,
-                                         solar=solar, num_steps=self.num_steps)  # todo: difference! uses oneshot controller
-            self.charging_config["locator_index"], self.charging_config["location"] = i, loc_list[i]
-            charging_station = ChargingStation(battery, self.charging_config, controller,
-                                               solar=solar)  # add controller and energy assets to charging station
-            self.charging_sites[loc_list[i]] = charging_station
+                                     solar=solar, num_steps=self.num_steps)  # need to change this to load based on the users controller python file?
+            self.charging_config['locator_index'], self.charging_config['location'] = i, loc_list[i]['node']
+            self.charging_config['L2'] = loc_list[i]['L2']
+            self.charging_config['DCFC'] = loc_list[i]['DCFC']
+            charging_station = ChargingStation(battery, self.charging_config, controller, solar=solar)
+            print(loc_list)
+            self.charging_sites[loc_list[i]['node']] = charging_station
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
 
