@@ -342,9 +342,8 @@ key_index += 1  # this populates a list of all the objects and configs
 ##########
 fast_charging = True
 if fast_charging:
-    """Not implemented yet, but we want to automate the creation of dedicated transformers if scenario is fast-charging"""
+    # Not implemented yet, but we want to automate the creation of dedicated transformers if scenario is fast-charging
     pass
-###############
 
 k = 0
 
@@ -382,7 +381,6 @@ np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # this stores all 
 
 # todo: level 2 is 208/240 V so need to reflect that as well (done)
 
-# CREATE TRANSFORMER RECORDERS FOR ONLY NODE WITH CHARGING TO GET POWER FLOWING OUT TO CHECK FOR OVERLOADING
 ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 
 
@@ -425,7 +423,6 @@ fraction_commercial_sec_node = 0.3
 # CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD
 spot_load_magnitude = [abs(spot_load_list[i])/1000 for i in range(len(spot_load_list))]
 commercial_load_indices = [i for i in range(len(spot_load_list)) if spot_load_magnitude[i] > L2_trans_power_rating_kVA]
-
 contains_commercial_load = random.sample(commercial_load_indices, max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
 
 # select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)

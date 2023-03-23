@@ -28,14 +28,14 @@ if type(dcfc_nodes) is not list:
     dcfc_nodes = [dcfc_nodes]
 dcfc_dicts_list = []
 for node in dcfc_nodes:
-    dcfc_dicts_list += {"DCFC": 700, "L2": 0, "node": node},
+    dcfc_dicts_list += {"DCFC": gblvar.scenario['dcfc_cap'], "L2": 0, "node": node},
 
 L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()    # this is for L2 charging
 if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
 l2_dicts_list = []
 for node in L2_charging_nodes:
-    l2_dicts_list += {"DCFC": 0, "L2": 500, "node": node},
+    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['L2_cap'], "node": node},
 
 gblvar.scenario['L2_nodes'] = L2_charging_nodes
 gblvar.scenario['dcfc_nodes'] = dcfc_nodes
