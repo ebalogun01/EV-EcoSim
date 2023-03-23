@@ -44,8 +44,7 @@ central_storage = False  # toggle for central vs. decentralized storage
 #####
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
-# TODO: include time-varying temperature for T_ambient
-simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+simulation_month = gblvar.scenario['start_month'] # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
 temperature_data = pd.read_csv('../../ambientData/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
@@ -53,7 +52,8 @@ global tic, toc  # used to time simulation
 tic = time.time()
 #####
 
-EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # Initialize Charging Simulation
+# Initialize Charging Simulation
+EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month=simulation_month)
 
 
 def on_init(t):

@@ -24,8 +24,6 @@ dcfc_net_loads = []
 l2_net_loads = []
 
 # LOAD THE NET INJECTIONS FROM OPTIMIZATION
-# todo: I need to get the node for each file automatically
-
 load_folder = save_folder_prefix
 
 print("loading loads...")
@@ -34,7 +32,6 @@ os.chdir(load_folder)
 
 for root, dirs, files, in os.walk('.', topdown=True):
     for file in files:
-        # print(file)
         if 'png' not in file and 'PGE' not in file and 'charging_station_sim' in file:
             if 'dcfc' in file:
                 print(file)
@@ -49,8 +46,7 @@ print("done loading loads.")
 # make a list of nodes and a list of the corresponding net_loads for that node
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
-# TODO: include time-varying temperature for T_ambient: DONE
-simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+simulation_month = gblvar.scenario['start_month']  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
 temperature_data = pd.read_csv('../../ambientData/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 

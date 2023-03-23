@@ -16,7 +16,7 @@ station_config.close()
 param_dict = ast.literal_eval(param_dict)
 L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
-
+start_month = int(str(param_dict['starttime']).split('-')[1])
 
 # RUN TYPE
 sequential_run = True
