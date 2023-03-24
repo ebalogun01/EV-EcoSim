@@ -13,7 +13,7 @@ optimization was done """
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
-month = 6   # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+month = 6  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
 day_minutes = 1440
 opt_time_res = 15   # minutes
 num_days = 30  # determines optimization horizon
@@ -98,7 +98,7 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 0
+    start_idx = 24
     end_idx = len(energy_ratings) * len(max_c_rates)
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
@@ -106,6 +106,11 @@ def run_scenarios_sequential():
     # d = 1
     for scenario in scenarios:
         scenario["L2_nodes"] = L2_charging_nodes
+        scenario["dcfc_nodes"] = dcfc_nodes
+        if dcfc_dicts_list:
+            scenario["dcfc_caps"] = [station["DCFC"] for station in dcfc_dicts_list]
+        if l2_dicts_list:
+            scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
         run(scenario)
         # d += 1
 

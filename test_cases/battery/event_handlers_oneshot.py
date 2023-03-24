@@ -32,6 +32,9 @@ os.chdir(load_folder)
 
 for root, dirs, files, in os.walk('.', topdown=True):
     for file in files:
+        if file == 'scenario.json':
+            with open(file, 'r') as scenario:
+                gblvar.scenario = json.load(scenario)
         if 'png' not in file and 'PGE' not in file and 'charging_station_sim' in file:
             if 'dcfc' in file:
                 print(file)
@@ -40,6 +43,7 @@ for root, dirs, files, in os.walk('.', topdown=True):
             else:
                 l2_net_loads += pd.read_csv(file)['station_net_grid_load_kW'].to_numpy(),
                 L2_charging_nodes += ('_'.join(file.split('_')[4:6])[:-4]),
+
 
 os.chdir(current_dir)  # switch back into current directory
 print("done loading loads.")
@@ -96,7 +100,6 @@ def on_precommit(t):
     elif gblvar.it > 1:
         gblvar.vm = np.concatenate((gblvar.vm, vm_array.reshape(1, -1)), axis=0)
         gblvar.vp = np.concatenate((gblvar.vp, vp_array.reshape(1, -1)), axis=0)
-    # print(vm_array[-1])
 
     # get transformer ratings and possibly other properties if first timestep
     if gblvar.it == 0:
@@ -129,7 +132,6 @@ def on_precommit(t):
 
     # propagate transformer state
     sim.sim_transformer(temperature_data=temperature_data)
-    # sim.sim_transformer()
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 

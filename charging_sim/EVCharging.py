@@ -21,7 +21,7 @@ class ChargingSim:
     def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
         """Design charging sim as orchestrator for battery setup"""
         # TODO: 3/14/2023 changed loads to generated loads from Speech
-        num_evs = 50
+        num_evs = 200
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
@@ -93,7 +93,7 @@ class ChargingSim:
         #  this creates and stores all battery objects in the network
         buffer_battery = Battery(config=self.battery_config, controller=controller)
         buffer_battery.id, buffer_battery.node = idx, node_prop['node']
-        buffer_battery.num_cells = buffer_battery.battery_setup_2()  # toggle between setup and setuo_2 to scale kWh energy capacity using voltage changed this to try scaling voltage instead
+        buffer_battery.num_cells = buffer_battery.battery_setup()  # toggle between setup and setuo_2 to scale kWh energy capacity using voltage changed this to try scaling voltage instead
         buffer_battery.load_pack_props()    # this is for simulating the entire pack at once
         self.battery_objects += buffer_battery,  # add to list of battery objects
         return buffer_battery
