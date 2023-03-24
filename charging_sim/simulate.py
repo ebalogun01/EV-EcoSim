@@ -4,6 +4,7 @@ import multiprocessing as mp
 import numpy as np
 import json
 import ast
+from utils import month_days
 
 """This runs optimization offline without the power system or battery feedback. This is done to save time. Power 
 system states are then propagated post optimization to fully characterize what would have occurred if in-situ 
@@ -14,11 +15,11 @@ path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
 month = 6  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+month_str = list(month_days.keys())[month-1]
 day_minutes = 1440
 opt_time_res = 15   # minutes
 num_days = 30  # determines optimization horizon
 num_steps = num_days * day_minutes//opt_time_res    # number of steps to initialize variables for opt
-
 
 # PRELOAD
 
@@ -76,7 +77,8 @@ def make_scenarios():
 
 def run(scenario):
     EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps)
-    save_folder_prefix = 'oneshot_June' + str(scenario['index']) + '/'
+    #TODO: set month str
+    save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
     os.mkdir(save_folder_prefix)
     EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
     EV_charging_sim.multistep()
