@@ -1,1 +1,0 @@
-{"pack_energy_cap": 50000.0, "max_c_rate": 0.1, "index": 0, "opt_solver": "GUROBI", "oneshot": true, "start_month": 6, "L2_nodes": ["tn_72"]}
