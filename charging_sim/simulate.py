@@ -14,13 +14,12 @@ optimization was done """
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
-month = 6  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
-month_str = list(month_days.keys())[month-1]
+# month = 6  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+
 day_minutes = 1440
 opt_time_res = 15   # minutes
 num_days = 30  # determines optimization horizon
 num_steps = num_days * day_minutes//opt_time_res    # number of steps to initialize variables for opt
-
 # PRELOAD
 
 station_config = open(path_prefix+'/test_cases/battery/feeder_population/config.txt', 'r')
@@ -29,6 +28,8 @@ station_config.close()
 param_dict = ast.literal_eval(param_dict)
 L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
+month = int(str(param_dict['starttime']).split('-')[1])  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+month_str = list(month_days.keys())[month-1]
 
 # lood DCFC locations txt file
 print('...loading charging bus nodes')

@@ -28,7 +28,7 @@ num_vars = 6
 min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
-month = 6
+# month = 6
 energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
 max_c_rates = [0.2, 0.5, 1, 1.5, 2]
 min_SOCs = [0.1, 0.2, 0.3]
@@ -40,7 +40,7 @@ def make_scenarios():
     idx = 0
     for Er in energy_ratings:
         for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'start_month': month,
+            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'start_month': start_month,
                         'L2_cap': L2_station_cap, 'dcfc_cap': dcfc_station_cap}
             scenarios_list.append(scenario)
             idx += 1
