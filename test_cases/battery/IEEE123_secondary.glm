@@ -51,7 +51,7 @@ object load {
 object transformer {
 	name dcfc_trans_0;
 	phases "ABC";
-	from "meter_63";
+	from "meter_66";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
 }
@@ -115,9 +115,9 @@ object transformer {
 
 object triplex_node {
 	name tn_3;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -125,14 +125,14 @@ object transformer {
 	phases CS;
 	from meter_4;
 	to tn_3;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_4;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -140,22 +140,22 @@ object transformer {
 	phases CS;
 	from meter_4;
 	to tn_4;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_5;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 5000+2500j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_5;
 	phases CS;
-	from meter_5;
+	from meter_4;
 	to tn_5;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
@@ -168,7 +168,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_6;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_6;
 	configuration L2_transformer;
 }
@@ -183,7 +183,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_7;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_7;
 	configuration L2_transformer;
 }
@@ -198,7 +198,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_8;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_8;
 	configuration L2_transformer;
 }
@@ -213,7 +213,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_9;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_9;
 	configuration L2_transformer;
 }
@@ -228,7 +228,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_10;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_10;
 	configuration L2_transformer;
 }
@@ -243,7 +243,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_11;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_11;
 	configuration L2_transformer;
 }
@@ -258,7 +258,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_12;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_12;
 	configuration L2_transformer;
 }
@@ -273,7 +273,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_13;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_13;
 	configuration L2_transformer;
 }
@@ -288,7 +288,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_14;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_14;
 	configuration L2_transformer;
 }
@@ -303,7 +303,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_15;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_15;
 	configuration L2_transformer;
 }
@@ -318,31 +318,31 @@ object triplex_node {
 object transformer {
 	name trip_trans_16;
 	phases CS;
-	from meter_6;
+	from meter_4;
 	to tn_16;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_17;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_17;
 	phases CS;
-	from meter_6;
+	from meter_5;
 	to tn_17;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_18;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -350,14 +350,14 @@ object transformer {
 	phases CS;
 	from meter_6;
 	to tn_18;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_19;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -365,14 +365,14 @@ object transformer {
 	phases CS;
 	from meter_6;
 	to tn_19;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_20;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases AS;
-	power_12 5000+2500j;
+	power_12 2000+1000j;
 }
 
 object transformer {
@@ -380,65 +380,65 @@ object transformer {
 	phases AS;
 	from meter_7;
 	to tn_20;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_21;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases AS;
-	power_12 8000+4000j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_21;
 	phases AS;
-	from meter_9;
+	from meter_7;
 	to tn_21;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_22;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases AS;
-	power_12 8000+4000j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_22;
 	phases AS;
-	from meter_9;
+	from meter_7;
 	to tn_22;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_23;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases AS;
-	power_12 5000+2500j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_23;
 	phases AS;
-	from meter_10;
+	from meter_7;
 	to tn_23;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_24;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_24;
 	phases AS;
-	from meter_11;
+	from meter_7;
 	to tn_24;
 	configuration L2_transformer;
 }
@@ -447,13 +447,13 @@ object triplex_node {
 	name tn_25;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_25;
 	phases AS;
-	from meter_11;
+	from meter_7;
 	to tn_25;
 	configuration L2_transformer;
 }
@@ -462,67 +462,67 @@ object triplex_node {
 	name tn_26;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_26;
 	phases AS;
-	from meter_11;
+	from meter_7;
 	to tn_26;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_27;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_27;
 	phases AS;
-	from meter_11;
+	from meter_9;
 	to tn_27;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_28;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_28;
 	phases AS;
-	from meter_11;
+	from meter_9;
 	to tn_28;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_29;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_29;
 	phases AS;
-	from meter_11;
+	from meter_10;
 	to tn_29;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_30;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -530,14 +530,14 @@ object transformer {
 	phases AS;
 	from meter_11;
 	to tn_30;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_31;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -545,35 +545,35 @@ object transformer {
 	phases AS;
 	from meter_11;
 	to tn_31;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_32;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_32;
-	phases AS;
-	from meter_11;
+	phases BS;
+	from meter_12;
 	to tn_32;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_33;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_33;
-	phases AS;
-	from meter_11;
+	phases CS;
+	from meter_16;
 	to tn_33;
 	configuration L2_transformer;
 }
@@ -581,14 +581,14 @@ object transformer {
 object triplex_node {
 	name tn_34;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_34;
-	phases AS;
-	from meter_11;
+	phases CS;
+	from meter_16;
 	to tn_34;
 	configuration L2_transformer;
 }
@@ -596,14 +596,14 @@ object transformer {
 object triplex_node {
 	name tn_35;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_35;
-	phases AS;
-	from meter_11;
+	phases CS;
+	from meter_16;
 	to tn_35;
 	configuration L2_transformer;
 }
@@ -611,14 +611,14 @@ object transformer {
 object triplex_node {
 	name tn_36;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_36;
-	phases AS;
-	from meter_11;
+	phases CS;
+	from meter_16;
 	to tn_36;
 	configuration L2_transformer;
 }
@@ -626,38 +626,38 @@ object transformer {
 object triplex_node {
 	name tn_37;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_37;
-	phases AS;
-	from meter_11;
+	phases CS;
+	from meter_16;
 	to tn_37;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_38;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_38;
-	phases BS;
-	from meter_12;
+	phases CS;
+	from meter_16;
 	to tn_38;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_39;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -665,14 +665,14 @@ object transformer {
 	phases CS;
 	from meter_16;
 	to tn_39;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_40;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -680,35 +680,35 @@ object transformer {
 	phases CS;
 	from meter_16;
 	to tn_40;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_41;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 5000+2500j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_41;
 	phases CS;
-	from meter_17;
+	from meter_16;
 	to tn_41;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_42;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_42;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_16;
 	to tn_42;
 	configuration L2_transformer;
 }
@@ -716,14 +716,14 @@ object transformer {
 object triplex_node {
 	name tn_43;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_43;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_16;
 	to tn_43;
 	configuration L2_transformer;
 }
@@ -731,14 +731,14 @@ object transformer {
 object triplex_node {
 	name tn_44;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_44;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_16;
 	to tn_44;
 	configuration L2_transformer;
 }
@@ -746,14 +746,14 @@ object transformer {
 object triplex_node {
 	name tn_45;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_45;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_16;
 	to tn_45;
 	configuration L2_transformer;
 }
@@ -761,38 +761,38 @@ object transformer {
 object triplex_node {
 	name tn_46;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_46;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_16;
 	to tn_46;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_47;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_47;
-	phases AS;
-	from meter_19;
+	phases CS;
+	from meter_17;
 	to tn_47;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_48;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -800,14 +800,14 @@ object transformer {
 	phases AS;
 	from meter_19;
 	to tn_48;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_49;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
@@ -815,50 +815,50 @@ object transformer {
 	phases AS;
 	from meter_19;
 	to tn_49;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_50;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_50;
 	phases AS;
-	from meter_19;
+	from meter_20;
 	to tn_50;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_51;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_51;
 	phases AS;
-	from meter_19;
+	from meter_20;
 	to tn_51;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_52;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_52;
-	phases AS;
-	from meter_19;
+	phases BS;
+	from meter_22;
 	to tn_52;
 	configuration L2_transformer;
 }
@@ -866,14 +866,14 @@ object transformer {
 object triplex_node {
 	name tn_53;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_53;
-	phases AS;
-	from meter_19;
+	phases BS;
+	from meter_22;
 	to tn_53;
 	configuration L2_transformer;
 }
@@ -881,14 +881,14 @@ object transformer {
 object triplex_node {
 	name tn_54;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_54;
-	phases AS;
-	from meter_19;
+	phases BS;
+	from meter_22;
 	to tn_54;
 	configuration L2_transformer;
 }
@@ -896,53 +896,53 @@ object transformer {
 object triplex_node {
 	name tn_55;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_55;
-	phases AS;
-	from meter_19;
+	phases BS;
+	from meter_22;
 	to tn_55;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_56;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_56;
-	phases AS;
-	from meter_20;
+	phases BS;
+	from meter_22;
 	to tn_56;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_57;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_57;
-	phases AS;
-	from meter_20;
+	phases BS;
+	from meter_22;
 	to tn_57;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_58;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -950,14 +950,14 @@ object transformer {
 	phases BS;
 	from meter_22;
 	to tn_58;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_59;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
@@ -965,80 +965,80 @@ object transformer {
 	phases BS;
 	from meter_22;
 	to tn_59;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_60;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_60;
-	phases CS;
-	from meter_24;
+	phases BS;
+	from meter_22;
 	to tn_60;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_61;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_61;
-	phases CS;
-	from meter_24;
+	phases BS;
+	from meter_22;
 	to tn_61;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_62;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_62;
-	phases AS;
-	from meter_28;
+	phases BS;
+	from meter_22;
 	to tn_62;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_63;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_63;
-	phases AS;
-	from meter_28;
+	phases BS;
+	from meter_22;
 	to tn_63;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_64;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_64;
-	phases AS;
-	from meter_29;
+	phases BS;
+	from meter_22;
 	to tn_64;
 	configuration L2_transformer;
 }
@@ -1046,14 +1046,14 @@ object transformer {
 object triplex_node {
 	name tn_65;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_65;
-	phases AS;
-	from meter_29;
+	phases BS;
+	from meter_22;
 	to tn_65;
 	configuration L2_transformer;
 }
@@ -1061,14 +1061,14 @@ object transformer {
 object triplex_node {
 	name tn_66;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_66;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_66;
 	configuration L2_transformer;
 }
@@ -1076,14 +1076,14 @@ object transformer {
 object triplex_node {
 	name tn_67;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_67;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_67;
 	configuration L2_transformer;
 }
@@ -1091,14 +1091,14 @@ object transformer {
 object triplex_node {
 	name tn_68;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_68;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_68;
 	configuration L2_transformer;
 }
@@ -1106,14 +1106,14 @@ object transformer {
 object triplex_node {
 	name tn_69;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_69;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_69;
 	configuration L2_transformer;
 }
@@ -1121,14 +1121,14 @@ object transformer {
 object triplex_node {
 	name tn_70;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_70;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_70;
 	configuration L2_transformer;
 }
@@ -1136,14 +1136,14 @@ object transformer {
 object triplex_node {
 	name tn_71;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_71;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_71;
 	configuration L2_transformer;
 }
@@ -1151,14 +1151,14 @@ object transformer {
 object triplex_node {
 	name tn_72;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_72;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_72;
 	configuration L2_transformer;
 }
@@ -1166,14 +1166,14 @@ object transformer {
 object triplex_node {
 	name tn_73;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_73;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_73;
 	configuration L2_transformer;
 }
@@ -1181,14 +1181,14 @@ object transformer {
 object triplex_node {
 	name tn_74;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_74;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_74;
 	configuration L2_transformer;
 }
@@ -1196,14 +1196,14 @@ object transformer {
 object triplex_node {
 	name tn_75;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_75;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_75;
 	configuration L2_transformer;
 }
@@ -1211,14 +1211,14 @@ object transformer {
 object triplex_node {
 	name tn_76;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_76;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_76;
 	configuration L2_transformer;
 }
@@ -1226,119 +1226,119 @@ object transformer {
 object triplex_node {
 	name tn_77;
 	nominal_voltage 240.00;
-	phases AS;
+	phases CS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_77;
-	phases AS;
-	from meter_29;
+	phases CS;
+	from meter_24;
 	to tn_77;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_78;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_78;
 	phases CS;
-	from meter_30;
+	from meter_24;
 	to tn_78;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_79;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_79;
 	phases CS;
-	from meter_30;
+	from meter_24;
 	to tn_79;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_80;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_80;
-	phases CS;
-	from meter_31;
+	phases AS;
+	from meter_28;
 	to tn_80;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_81;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_81;
-	phases CS;
-	from meter_31;
+	phases AS;
+	from meter_28;
 	to tn_81;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_82;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_82;
-	phases CS;
-	from meter_31;
+	phases AS;
+	from meter_29;
 	to tn_82;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_83;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_83;
-	phases CS;
-	from meter_31;
+	phases AS;
+	from meter_29;
 	to tn_83;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_84;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_84;
 	phases CS;
-	from meter_31;
+	from meter_30;
 	to tn_84;
 	configuration L2_transformer;
 }
@@ -1347,13 +1347,13 @@ object triplex_node {
 	name tn_85;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_85;
 	phases CS;
-	from meter_31;
+	from meter_30;
 	to tn_85;
 	configuration L2_transformer;
 }
@@ -1362,13 +1362,13 @@ object triplex_node {
 	name tn_86;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_86;
 	phases CS;
-	from meter_31;
+	from meter_30;
 	to tn_86;
 	configuration L2_transformer;
 }
@@ -1377,13 +1377,13 @@ object triplex_node {
 	name tn_87;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_87;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_87;
 	configuration L2_transformer;
 }
@@ -1392,13 +1392,13 @@ object triplex_node {
 	name tn_88;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_88;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_88;
 	configuration L2_transformer;
 }
@@ -1407,13 +1407,13 @@ object triplex_node {
 	name tn_89;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_89;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_89;
 	configuration L2_transformer;
 }
@@ -1422,13 +1422,13 @@ object triplex_node {
 	name tn_90;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_90;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_90;
 	configuration L2_transformer;
 }
@@ -1437,13 +1437,13 @@ object triplex_node {
 	name tn_91;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_91;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_91;
 	configuration L2_transformer;
 }
@@ -1452,13 +1452,13 @@ object triplex_node {
 	name tn_92;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_92;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_92;
 	configuration L2_transformer;
 }
@@ -1467,88 +1467,88 @@ object triplex_node {
 	name tn_93;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_93;
 	phases CS;
-	from meter_32;
+	from meter_30;
 	to tn_93;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_94;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_94;
-	phases AS;
-	from meter_33;
+	phases CS;
+	from meter_30;
 	to tn_94;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_95;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_95;
-	phases AS;
-	from meter_33;
+	phases CS;
+	from meter_30;
 	to tn_95;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_96;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_96;
 	phases CS;
-	from meter_34;
+	from meter_30;
 	to tn_96;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_97;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_97;
 	phases CS;
-	from meter_34;
+	from meter_30;
 	to tn_97;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_98;
 	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_98;
-	phases AS;
-	from meter_35;
+	phases CS;
+	from meter_31;
 	to tn_98;
 	configuration house_transformer;
 }
@@ -1556,14 +1556,14 @@ object transformer {
 object triplex_node {
 	name tn_99;
 	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_99;
-	phases AS;
-	from meter_35;
+	phases CS;
+	from meter_32;
 	to tn_99;
 	configuration house_transformer;
 }
@@ -1578,7 +1578,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_100;
 	phases AS;
-	from meter_37;
+	from meter_33;
 	to tn_100;
 	configuration house_transformer;
 }
@@ -1593,112 +1593,112 @@ object triplex_node {
 object transformer {
 	name trip_trans_101;
 	phases AS;
-	from meter_37;
+	from meter_33;
 	to tn_101;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_102;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_102;
-	phases BS;
-	from meter_38;
+	phases CS;
+	from meter_34;
 	to tn_102;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_103;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_103;
-	phases BS;
-	from meter_39;
+	phases CS;
+	from meter_34;
 	to tn_103;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_104;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 5000+2500j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_104;
 	phases CS;
-	from meter_41;
+	from meter_34;
 	to tn_104;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_105;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_105;
-	phases AS;
-	from meter_42;
+	phases CS;
+	from meter_34;
 	to tn_105;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_106;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_106;
-	phases BS;
-	from meter_43;
+	phases CS;
+	from meter_34;
 	to tn_106;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_107;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_107;
-	phases BS;
-	from meter_43;
+	phases CS;
+	from meter_34;
 	to tn_107;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_108;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_108;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_108;
 	configuration L2_transformer;
 }
@@ -1706,14 +1706,14 @@ object transformer {
 object triplex_node {
 	name tn_109;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_109;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_109;
 	configuration L2_transformer;
 }
@@ -1721,14 +1721,14 @@ object transformer {
 object triplex_node {
 	name tn_110;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_110;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_110;
 	configuration L2_transformer;
 }
@@ -1736,14 +1736,14 @@ object transformer {
 object triplex_node {
 	name tn_111;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_111;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_111;
 	configuration L2_transformer;
 }
@@ -1751,14 +1751,14 @@ object transformer {
 object triplex_node {
 	name tn_112;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_112;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_112;
 	configuration L2_transformer;
 }
@@ -1766,14 +1766,14 @@ object transformer {
 object triplex_node {
 	name tn_113;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_113;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_113;
 	configuration L2_transformer;
 }
@@ -1781,14 +1781,14 @@ object transformer {
 object triplex_node {
 	name tn_114;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_114;
-	phases AS;
-	from meter_45;
+	phases CS;
+	from meter_34;
 	to tn_114;
 	configuration L2_transformer;
 }
@@ -1796,89 +1796,89 @@ object transformer {
 object triplex_node {
 	name tn_115;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_115;
-	phases AS;
-	from meter_46;
+	phases CS;
+	from meter_34;
 	to tn_115;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_116;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_116;
 	phases AS;
-	from meter_46;
+	from meter_35;
 	to tn_116;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_117;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_117;
 	phases AS;
-	from meter_46;
+	from meter_35;
 	to tn_117;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_118;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_118;
 	phases AS;
-	from meter_46;
+	from meter_37;
 	to tn_118;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_119;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_119;
 	phases AS;
-	from meter_46;
+	from meter_37;
 	to tn_119;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_120;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_120;
-	phases AS;
-	from meter_46;
+	phases BS;
+	from meter_38;
 	to tn_120;
 	configuration L2_transformer;
 }
@@ -1886,59 +1886,59 @@ object transformer {
 object triplex_node {
 	name tn_121;
 	nominal_voltage 240.00;
-	phases AS;
+	phases BS;
 	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_121;
-	phases AS;
-	from meter_46;
+	phases BS;
+	from meter_38;
 	to tn_121;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_122;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_122;
-	phases AS;
-	from meter_47;
+	phases BS;
+	from meter_38;
 	to tn_122;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_123;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_123;
-	phases AS;
-	from meter_47;
+	phases BS;
+	from meter_38;
 	to tn_123;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_124;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_124;
 	phases BS;
-	from meter_47;
+	from meter_38;
 	to tn_124;
 	configuration L2_transformer;
 }
@@ -1947,13 +1947,13 @@ object triplex_node {
 	name tn_125;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_125;
 	phases BS;
-	from meter_47;
+	from meter_38;
 	to tn_125;
 	configuration L2_transformer;
 }
@@ -1962,73 +1962,73 @@ object triplex_node {
 	name tn_126;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_126;
 	phases BS;
-	from meter_47;
+	from meter_38;
 	to tn_126;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_127;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_127;
 	phases BS;
-	from meter_47;
+	from meter_39;
 	to tn_127;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_128;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_128;
-	phases BS;
-	from meter_47;
+	phases CS;
+	from meter_41;
 	to tn_128;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_129;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_129;
-	phases BS;
-	from meter_47;
+	phases AS;
+	from meter_42;
 	to tn_129;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_130;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_130;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_130;
 	configuration L2_transformer;
 }
@@ -2037,13 +2037,13 @@ object triplex_node {
 	name tn_131;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_131;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_131;
 	configuration L2_transformer;
 }
@@ -2052,13 +2052,13 @@ object triplex_node {
 	name tn_132;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_132;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_132;
 	configuration L2_transformer;
 }
@@ -2067,13 +2067,13 @@ object triplex_node {
 	name tn_133;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_133;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_133;
 	configuration L2_transformer;
 }
@@ -2082,13 +2082,13 @@ object triplex_node {
 	name tn_134;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_134;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_134;
 	configuration L2_transformer;
 }
@@ -2097,13 +2097,13 @@ object triplex_node {
 	name tn_135;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_135;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_135;
 	configuration L2_transformer;
 }
@@ -2112,13 +2112,13 @@ object triplex_node {
 	name tn_136;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_136;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_136;
 	configuration L2_transformer;
 }
@@ -2127,448 +2127,448 @@ object triplex_node {
 	name tn_137;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_137;
 	phases BS;
-	from meter_47;
+	from meter_43;
 	to tn_137;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_138;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_138;
-	phases CS;
-	from meter_47;
+	phases BS;
+	from meter_43;
 	to tn_138;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_139;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_139;
-	phases CS;
-	from meter_47;
+	phases BS;
+	from meter_43;
 	to tn_139;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_140;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_140;
-	phases AS;
-	from meter_48;
+	phases BS;
+	from meter_43;
 	to tn_140;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_141;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_141;
-	phases AS;
-	from meter_48;
+	phases BS;
+	from meter_43;
 	to tn_141;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_142;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_142;
-	phases AS;
-	from meter_48;
+	phases BS;
+	from meter_43;
 	to tn_142;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_143;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_143;
-	phases AS;
-	from meter_48;
+	phases BS;
+	from meter_43;
 	to tn_143;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_144;
 	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	phases AS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_144;
-	phases BS;
-	from meter_48;
+	phases AS;
+	from meter_45;
 	to tn_144;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_145;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_145;
-	phases BS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_145;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_146;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_146;
-	phases BS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_146;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_147;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_147;
-	phases BS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_147;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_148;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_148;
-	phases CS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_148;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_149;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_149;
-	phases CS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_149;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_150;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_150;
-	phases CS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_150;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_151;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_151;
-	phases CS;
-	from meter_48;
+	phases AS;
+	from meter_46;
 	to tn_151;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_152;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_152;
 	phases AS;
-	from meter_49;
+	from meter_47;
 	to tn_152;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_153;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_153;
 	phases AS;
-	from meter_49;
+	from meter_47;
 	to tn_153;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_154;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_154;
-	phases AS;
-	from meter_49;
+	phases BS;
+	from meter_47;
 	to tn_154;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_155;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_155;
-	phases AS;
-	from meter_49;
+	phases BS;
+	from meter_47;
 	to tn_155;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_156;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_156;
-	phases AS;
-	from meter_49;
+	phases CS;
+	from meter_47;
 	to tn_156;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_157;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_157;
-	phases AS;
-	from meter_49;
+	phases CS;
+	from meter_47;
 	to tn_157;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_158;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_158;
 	phases AS;
-	from meter_49;
+	from meter_48;
 	to tn_158;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_159;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_159;
 	phases AS;
-	from meter_49;
+	from meter_48;
 	to tn_159;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_160;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_160;
 	phases AS;
-	from meter_49;
+	from meter_48;
 	to tn_160;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_161;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_161;
 	phases AS;
-	from meter_49;
+	from meter_48;
 	to tn_161;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_162;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
-}
-
-object transformer {
-	name trip_trans_162;
-	phases AS;
-	from meter_49;
-	to tn_162;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_163;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
-}
-
-object transformer {
-	name trip_trans_163;
-	phases AS;
-	from meter_49;
-	to tn_163;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_164;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
-}
-
-object transformer {
-	name trip_trans_164;
-	phases AS;
-	from meter_49;
-	to tn_164;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_165;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2058.823529411765+1470.5882352941176j;
-}
-
-object transformer {
-	name trip_trans_165;
-	phases AS;
-	from meter_49;
-	to tn_165;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_166;
 	nominal_voltage 120.00;
 	phases BS;
 	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
-	name trip_trans_166;
+	name trip_trans_162;
 	phases BS;
-	from meter_49;
+	from meter_48;
+	to tn_162;
+	configuration house_transformer;
+}
+
+object triplex_node {
+	name tn_163;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
+}
+
+object transformer {
+	name trip_trans_163;
+	phases BS;
+	from meter_48;
+	to tn_163;
+	configuration house_transformer;
+}
+
+object triplex_node {
+	name tn_164;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
+}
+
+object transformer {
+	name trip_trans_164;
+	phases BS;
+	from meter_48;
+	to tn_164;
+	configuration house_transformer;
+}
+
+object triplex_node {
+	name tn_165;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
+}
+
+object transformer {
+	name trip_trans_165;
+	phases BS;
+	from meter_48;
+	to tn_165;
+	configuration house_transformer;
+}
+
+object triplex_node {
+	name tn_166;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 10000+7142.857142857143j;
+}
+
+object transformer {
+	name trip_trans_166;
+	phases CS;
+	from meter_48;
 	to tn_166;
 	configuration house_transformer;
 }
@@ -2576,14 +2576,14 @@ object transformer {
 object triplex_node {
 	name tn_167;
 	nominal_voltage 120.00;
-	phases BS;
+	phases CS;
 	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_167;
-	phases BS;
-	from meter_49;
+	phases CS;
+	from meter_48;
 	to tn_167;
 	configuration house_transformer;
 }
@@ -2591,14 +2591,14 @@ object transformer {
 object triplex_node {
 	name tn_168;
 	nominal_voltage 120.00;
-	phases BS;
+	phases CS;
 	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_168;
-	phases BS;
-	from meter_49;
+	phases CS;
+	from meter_48;
 	to tn_168;
 	configuration house_transformer;
 }
@@ -2606,59 +2606,59 @@ object transformer {
 object triplex_node {
 	name tn_169;
 	nominal_voltage 120.00;
-	phases BS;
+	phases CS;
 	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_169;
-	phases BS;
-	from meter_49;
+	phases CS;
+	from meter_48;
 	to tn_169;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_170;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 7000+4000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_170;
-	phases CS;
+	phases AS;
 	from meter_49;
 	to tn_170;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_171;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 7000+4000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_171;
-	phases CS;
+	phases AS;
 	from meter_49;
 	to tn_171;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_172;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_172;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_172;
 	configuration L2_transformer;
 }
@@ -2666,14 +2666,14 @@ object transformer {
 object triplex_node {
 	name tn_173;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_173;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_173;
 	configuration L2_transformer;
 }
@@ -2681,14 +2681,14 @@ object transformer {
 object triplex_node {
 	name tn_174;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_174;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_174;
 	configuration L2_transformer;
 }
@@ -2696,14 +2696,14 @@ object transformer {
 object triplex_node {
 	name tn_175;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_175;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_175;
 	configuration L2_transformer;
 }
@@ -2711,14 +2711,14 @@ object transformer {
 object triplex_node {
 	name tn_176;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_176;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_176;
 	configuration L2_transformer;
 }
@@ -2726,14 +2726,14 @@ object transformer {
 object triplex_node {
 	name tn_177;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_177;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_177;
 	configuration L2_transformer;
 }
@@ -2741,14 +2741,14 @@ object transformer {
 object triplex_node {
 	name tn_178;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_178;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_178;
 	configuration L2_transformer;
 }
@@ -2756,14 +2756,14 @@ object transformer {
 object triplex_node {
 	name tn_179;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_179;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_179;
 	configuration L2_transformer;
 }
@@ -2771,14 +2771,14 @@ object transformer {
 object triplex_node {
 	name tn_180;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_180;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_180;
 	configuration L2_transformer;
 }
@@ -2786,14 +2786,14 @@ object transformer {
 object triplex_node {
 	name tn_181;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_181;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_181;
 	configuration L2_transformer;
 }
@@ -2801,14 +2801,14 @@ object transformer {
 object triplex_node {
 	name tn_182;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_182;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_182;
 	configuration L2_transformer;
 }
@@ -2816,14 +2816,14 @@ object transformer {
 object triplex_node {
 	name tn_183;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases AS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_183;
-	phases CS;
-	from meter_50;
+	phases AS;
+	from meter_49;
 	to tn_183;
 	configuration L2_transformer;
 }
@@ -2831,14 +2831,14 @@ object transformer {
 object triplex_node {
 	name tn_184;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_184;
-	phases CS;
-	from meter_50;
+	phases BS;
+	from meter_49;
 	to tn_184;
 	configuration L2_transformer;
 }
@@ -2846,119 +2846,119 @@ object transformer {
 object triplex_node {
 	name tn_185;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_185;
-	phases CS;
-	from meter_50;
+	phases BS;
+	from meter_49;
 	to tn_185;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_186;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_186;
-	phases AS;
-	from meter_51;
+	phases BS;
+	from meter_49;
 	to tn_186;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_187;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_187;
-	phases AS;
-	from meter_52;
+	phases BS;
+	from meter_49;
 	to tn_187;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_188;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_188;
-	phases AS;
-	from meter_52;
+	phases BS;
+	from meter_49;
 	to tn_188;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_189;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_189;
-	phases AS;
-	from meter_53;
+	phases BS;
+	from meter_49;
 	to tn_189;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_190;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_190;
-	phases AS;
-	from meter_53;
+	phases BS;
+	from meter_49;
 	to tn_190;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_191;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_191;
-	phases AS;
-	from meter_55;
+	phases BS;
+	from meter_49;
 	to tn_191;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_192;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_192;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_192;
 	configuration L2_transformer;
 }
@@ -2967,13 +2967,13 @@ object triplex_node {
 	name tn_193;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_193;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_193;
 	configuration L2_transformer;
 }
@@ -2982,13 +2982,13 @@ object triplex_node {
 	name tn_194;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_194;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_194;
 	configuration L2_transformer;
 }
@@ -2997,13 +2997,13 @@ object triplex_node {
 	name tn_195;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_195;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_195;
 	configuration L2_transformer;
 }
@@ -3012,13 +3012,13 @@ object triplex_node {
 	name tn_196;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_196;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_196;
 	configuration L2_transformer;
 }
@@ -3027,13 +3027,13 @@ object triplex_node {
 	name tn_197;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_197;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_197;
 	configuration L2_transformer;
 }
@@ -3042,13 +3042,13 @@ object triplex_node {
 	name tn_198;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_198;
 	phases BS;
-	from meter_56;
+	from meter_49;
 	to tn_198;
 	configuration L2_transformer;
 }
@@ -3057,13 +3057,13 @@ object triplex_node {
 	name tn_199;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_199;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_199;
 	configuration L2_transformer;
 }
@@ -3072,13 +3072,13 @@ object triplex_node {
 	name tn_200;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_200;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_200;
 	configuration L2_transformer;
 }
@@ -3087,13 +3087,13 @@ object triplex_node {
 	name tn_201;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_201;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_201;
 	configuration L2_transformer;
 }
@@ -3102,13 +3102,13 @@ object triplex_node {
 	name tn_202;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_202;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_202;
 	configuration L2_transformer;
 }
@@ -3117,13 +3117,13 @@ object triplex_node {
 	name tn_203;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_203;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_203;
 	configuration L2_transformer;
 }
@@ -3132,13 +3132,13 @@ object triplex_node {
 	name tn_204;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_204;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_204;
 	configuration L2_transformer;
 }
@@ -3147,13 +3147,13 @@ object triplex_node {
 	name tn_205;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_205;
 	phases BS;
-	from meter_58;
+	from meter_49;
 	to tn_205;
 	configuration L2_transformer;
 }
@@ -3162,13 +3162,13 @@ object triplex_node {
 	name tn_206;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_206;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_206;
 	configuration L2_transformer;
 }
@@ -3177,13 +3177,13 @@ object triplex_node {
 	name tn_207;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_207;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_207;
 	configuration L2_transformer;
 }
@@ -3192,13 +3192,13 @@ object triplex_node {
 	name tn_208;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_208;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_208;
 	configuration L2_transformer;
 }
@@ -3207,13 +3207,13 @@ object triplex_node {
 	name tn_209;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_209;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_209;
 	configuration L2_transformer;
 }
@@ -3222,13 +3222,13 @@ object triplex_node {
 	name tn_210;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_210;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_210;
 	configuration L2_transformer;
 }
@@ -3237,43 +3237,43 @@ object triplex_node {
 	name tn_211;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2000+1000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_211;
 	phases BS;
-	from meter_59;
+	from meter_49;
 	to tn_211;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_212;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 7000+4000j;
 }
 
 object transformer {
 	name trip_trans_212;
-	phases BS;
-	from meter_59;
+	phases CS;
+	from meter_49;
 	to tn_212;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_213;
 	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
+	phases CS;
+	power_12 7000+4000j;
 }
 
 object transformer {
 	name trip_trans_213;
-	phases AS;
-	from meter_60;
+	phases CS;
+	from meter_49;
 	to tn_213;
 	configuration house_transformer;
 }
@@ -3288,7 +3288,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_214;
 	phases CS;
-	from meter_62;
+	from meter_50;
 	to tn_214;
 	configuration house_transformer;
 }
@@ -3303,7 +3303,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_215;
 	phases CS;
-	from meter_62;
+	from meter_50;
 	to tn_215;
 	configuration house_transformer;
 }
@@ -3312,13 +3312,13 @@ object triplex_node {
 	name tn_216;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_216;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_216;
 	configuration L2_transformer;
 }
@@ -3327,13 +3327,13 @@ object triplex_node {
 	name tn_217;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_217;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_217;
 	configuration L2_transformer;
 }
@@ -3342,13 +3342,13 @@ object triplex_node {
 	name tn_218;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_218;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_218;
 	configuration L2_transformer;
 }
@@ -3357,13 +3357,13 @@ object triplex_node {
 	name tn_219;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_219;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_219;
 	configuration L2_transformer;
 }
@@ -3372,13 +3372,13 @@ object triplex_node {
 	name tn_220;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_220;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_220;
 	configuration L2_transformer;
 }
@@ -3387,13 +3387,13 @@ object triplex_node {
 	name tn_221;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_221;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_221;
 	configuration L2_transformer;
 }
@@ -3402,88 +3402,88 @@ object triplex_node {
 	name tn_222;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_222;
 	phases AS;
-	from meter_63;
+	from meter_51;
 	to tn_222;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_223;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_223;
 	phases AS;
-	from meter_63;
+	from meter_52;
 	to tn_223;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_224;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_224;
 	phases AS;
-	from meter_63;
+	from meter_52;
 	to tn_224;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_225;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_225;
 	phases AS;
-	from meter_63;
+	from meter_53;
 	to tn_225;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_226;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_226;
 	phases AS;
-	from meter_63;
+	from meter_53;
 	to tn_226;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_227;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_227;
 	phases AS;
-	from meter_63;
+	from meter_55;
 	to tn_227;
 	configuration L2_transformer;
 }
@@ -3492,13 +3492,13 @@ object triplex_node {
 	name tn_228;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_228;
 	phases AS;
-	from meter_63;
+	from meter_55;
 	to tn_228;
 	configuration L2_transformer;
 }
@@ -3507,148 +3507,148 @@ object triplex_node {
 	name tn_229;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_229;
 	phases AS;
-	from meter_63;
+	from meter_55;
 	to tn_229;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_230;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10714.285714285714+5000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_230;
-	phases BS;
-	from meter_64;
+	phases AS;
+	from meter_55;
 	to tn_230;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_231;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10714.285714285714+5000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_231;
-	phases BS;
-	from meter_64;
+	phases AS;
+	from meter_55;
 	to tn_231;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_232;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10714.285714285714+5000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_232;
-	phases BS;
-	from meter_64;
+	phases AS;
+	from meter_55;
 	to tn_232;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_233;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10714.285714285714+5000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_233;
-	phases BS;
-	from meter_64;
+	phases AS;
+	from meter_55;
 	to tn_233;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_234;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_234;
-	phases AS;
-	from meter_65;
+	phases BS;
+	from meter_56;
 	to tn_234;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_235;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 7000+5000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_235;
-	phases AS;
-	from meter_65;
+	phases BS;
+	from meter_56;
 	to tn_235;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_236;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 7000+5000j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_236;
 	phases BS;
-	from meter_65;
+	from meter_56;
 	to tn_236;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_237;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 7000+5000j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_237;
 	phases BS;
-	from meter_65;
+	from meter_56;
 	to tn_237;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_238;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_238;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_56;
 	to tn_238;
 	configuration L2_transformer;
 }
@@ -3656,14 +3656,14 @@ object transformer {
 object triplex_node {
 	name tn_239;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_239;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_56;
 	to tn_239;
 	configuration L2_transformer;
 }
@@ -3671,14 +3671,14 @@ object transformer {
 object triplex_node {
 	name tn_240;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_240;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_56;
 	to tn_240;
 	configuration L2_transformer;
 }
@@ -3686,14 +3686,14 @@ object transformer {
 object triplex_node {
 	name tn_241;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_241;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_241;
 	configuration L2_transformer;
 }
@@ -3701,14 +3701,14 @@ object transformer {
 object triplex_node {
 	name tn_242;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_242;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_242;
 	configuration L2_transformer;
 }
@@ -3716,14 +3716,14 @@ object transformer {
 object triplex_node {
 	name tn_243;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_243;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_243;
 	configuration L2_transformer;
 }
@@ -3731,14 +3731,14 @@ object transformer {
 object triplex_node {
 	name tn_244;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_244;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_244;
 	configuration L2_transformer;
 }
@@ -3746,14 +3746,14 @@ object transformer {
 object triplex_node {
 	name tn_245;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_245;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_245;
 	configuration L2_transformer;
 }
@@ -3761,14 +3761,14 @@ object transformer {
 object triplex_node {
 	name tn_246;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_246;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_246;
 	configuration L2_transformer;
 }
@@ -3776,89 +3776,89 @@ object transformer {
 object triplex_node {
 	name tn_247;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_247;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_58;
 	to tn_247;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_248;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_248;
-	phases CS;
-	from meter_65;
+	phases BS;
+	from meter_59;
 	to tn_248;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_249;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_249;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_60;
 	to tn_249;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_250;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_250;
 	phases CS;
-	from meter_65;
+	from meter_62;
 	to tn_250;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_251;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_251;
 	phases CS;
-	from meter_65;
+	from meter_62;
 	to tn_251;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_252;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_252;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_252;
 	configuration L2_transformer;
 }
@@ -3866,14 +3866,14 @@ object transformer {
 object triplex_node {
 	name tn_253;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_253;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_253;
 	configuration L2_transformer;
 }
@@ -3881,14 +3881,14 @@ object transformer {
 object triplex_node {
 	name tn_254;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_254;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_254;
 	configuration L2_transformer;
 }
@@ -3896,14 +3896,14 @@ object transformer {
 object triplex_node {
 	name tn_255;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_255;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_255;
 	configuration L2_transformer;
 }
@@ -3911,14 +3911,14 @@ object transformer {
 object triplex_node {
 	name tn_256;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_256;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_256;
 	configuration L2_transformer;
 }
@@ -3926,14 +3926,14 @@ object transformer {
 object triplex_node {
 	name tn_257;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_257;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_257;
 	configuration L2_transformer;
 }
@@ -3941,14 +3941,14 @@ object transformer {
 object triplex_node {
 	name tn_258;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_258;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_258;
 	configuration L2_transformer;
 }
@@ -3956,14 +3956,14 @@ object transformer {
 object triplex_node {
 	name tn_259;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_259;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_259;
 	configuration L2_transformer;
 }
@@ -3971,14 +3971,14 @@ object transformer {
 object triplex_node {
 	name tn_260;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_260;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_260;
 	configuration L2_transformer;
 }
@@ -3986,14 +3986,14 @@ object transformer {
 object triplex_node {
 	name tn_261;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_261;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_261;
 	configuration L2_transformer;
 }
@@ -4001,14 +4001,14 @@ object transformer {
 object triplex_node {
 	name tn_262;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_262;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_262;
 	configuration L2_transformer;
 }
@@ -4016,14 +4016,14 @@ object transformer {
 object triplex_node {
 	name tn_263;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_263;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_263;
 	configuration L2_transformer;
 }
@@ -4031,14 +4031,14 @@ object transformer {
 object triplex_node {
 	name tn_264;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_264;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_264;
 	configuration L2_transformer;
 }
@@ -4046,14 +4046,14 @@ object transformer {
 object triplex_node {
 	name tn_265;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_265;
-	phases CS;
-	from meter_65;
+	phases AS;
+	from meter_63;
 	to tn_265;
 	configuration L2_transformer;
 }
@@ -4061,14 +4061,14 @@ object transformer {
 object triplex_node {
 	name tn_266;
 	nominal_voltage 120.00;
-	phases CS;
+	phases BS;
 	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_266;
-	phases CS;
-	from meter_66;
+	phases BS;
+	from meter_64;
 	to tn_266;
 	configuration house_transformer;
 }
@@ -4076,14 +4076,14 @@ object transformer {
 object triplex_node {
 	name tn_267;
 	nominal_voltage 120.00;
-	phases CS;
+	phases BS;
 	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_267;
-	phases CS;
-	from meter_66;
+	phases BS;
+	from meter_64;
 	to tn_267;
 	configuration house_transformer;
 }
@@ -4091,14 +4091,14 @@ object transformer {
 object triplex_node {
 	name tn_268;
 	nominal_voltage 120.00;
-	phases CS;
+	phases BS;
 	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_268;
-	phases CS;
-	from meter_66;
+	phases BS;
+	from meter_64;
 	to tn_268;
 	configuration house_transformer;
 }
@@ -4106,14 +4106,14 @@ object transformer {
 object triplex_node {
 	name tn_269;
 	nominal_voltage 120.00;
-	phases CS;
+	phases BS;
 	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_269;
-	phases CS;
-	from meter_66;
+	phases BS;
+	from meter_64;
 	to tn_269;
 	configuration house_transformer;
 }
@@ -4122,13 +4122,13 @@ object triplex_node {
 	name tn_270;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_270;
 	phases AS;
-	from meter_68;
+	from meter_65;
 	to tn_270;
 	configuration house_transformer;
 }
@@ -4137,43 +4137,43 @@ object triplex_node {
 	name tn_271;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	power_12 7000+5000j;
 }
 
 object transformer {
 	name trip_trans_271;
 	phases AS;
-	from meter_69;
+	from meter_65;
 	to tn_271;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_272;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_272;
-	phases AS;
-	from meter_69;
+	phases BS;
+	from meter_65;
 	to tn_272;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_273;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_273;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_273;
 	configuration L2_transformer;
 }
@@ -4181,14 +4181,14 @@ object transformer {
 object triplex_node {
 	name tn_274;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_274;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_274;
 	configuration L2_transformer;
 }
@@ -4196,14 +4196,14 @@ object transformer {
 object triplex_node {
 	name tn_275;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_275;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_275;
 	configuration L2_transformer;
 }
@@ -4211,14 +4211,14 @@ object transformer {
 object triplex_node {
 	name tn_276;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_276;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_276;
 	configuration L2_transformer;
 }
@@ -4226,14 +4226,14 @@ object transformer {
 object triplex_node {
 	name tn_277;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_277;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_277;
 	configuration L2_transformer;
 }
@@ -4241,14 +4241,14 @@ object transformer {
 object triplex_node {
 	name tn_278;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_278;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_278;
 	configuration L2_transformer;
 }
@@ -4256,59 +4256,59 @@ object transformer {
 object triplex_node {
 	name tn_279;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_279;
-	phases AS;
-	from meter_70;
+	phases BS;
+	from meter_65;
 	to tn_279;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_280;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_280;
-	phases AS;
-	from meter_71;
+	phases BS;
+	from meter_65;
 	to tn_280;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_281;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_281;
-	phases AS;
-	from meter_71;
+	phases BS;
+	from meter_65;
 	to tn_281;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_282;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_282;
-	phases CS;
-	from meter_73;
+	phases BS;
+	from meter_65;
 	to tn_282;
 	configuration L2_transformer;
 }
@@ -4316,14 +4316,14 @@ object transformer {
 object triplex_node {
 	name tn_283;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_283;
-	phases CS;
-	from meter_73;
+	phases BS;
+	from meter_65;
 	to tn_283;
 	configuration L2_transformer;
 }
@@ -4331,14 +4331,14 @@ object transformer {
 object triplex_node {
 	name tn_284;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_284;
-	phases CS;
-	from meter_73;
+	phases BS;
+	from meter_65;
 	to tn_284;
 	configuration L2_transformer;
 }
@@ -4346,14 +4346,14 @@ object transformer {
 object triplex_node {
 	name tn_285;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	phases BS;
+	power_12 2058.823529411765+1470.5882352941176j;
 }
 
 object transformer {
 	name trip_trans_285;
-	phases CS;
-	from meter_73;
+	phases BS;
+	from meter_65;
 	to tn_285;
 	configuration L2_transformer;
 }
@@ -4362,13 +4362,13 @@ object triplex_node {
 	name tn_286;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_286;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_286;
 	configuration L2_transformer;
 }
@@ -4377,13 +4377,13 @@ object triplex_node {
 	name tn_287;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_287;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_287;
 	configuration L2_transformer;
 }
@@ -4392,13 +4392,13 @@ object triplex_node {
 	name tn_288;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_288;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_288;
 	configuration L2_transformer;
 }
@@ -4407,13 +4407,13 @@ object triplex_node {
 	name tn_289;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_289;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_289;
 	configuration L2_transformer;
 }
@@ -4422,13 +4422,13 @@ object triplex_node {
 	name tn_290;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_290;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_290;
 	configuration L2_transformer;
 }
@@ -4437,13 +4437,13 @@ object triplex_node {
 	name tn_291;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_291;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_291;
 	configuration L2_transformer;
 }
@@ -4452,13 +4452,13 @@ object triplex_node {
 	name tn_292;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_292;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_292;
 	configuration L2_transformer;
 }
@@ -4467,13 +4467,13 @@ object triplex_node {
 	name tn_293;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_293;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_293;
 	configuration L2_transformer;
 }
@@ -4482,13 +4482,13 @@ object triplex_node {
 	name tn_294;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_294;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_294;
 	configuration L2_transformer;
 }
@@ -4497,88 +4497,88 @@ object triplex_node {
 	name tn_295;
 	nominal_voltage 240.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_295;
 	phases CS;
-	from meter_73;
+	from meter_65;
 	to tn_295;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_296;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_296;
 	phases CS;
-	from meter_74;
+	from meter_65;
 	to tn_296;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_297;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_297;
 	phases CS;
-	from meter_74;
+	from meter_65;
 	to tn_297;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_298;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_298;
 	phases CS;
-	from meter_75;
+	from meter_65;
 	to tn_298;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_299;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases CS;
-	power_12 8000+4000j;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_299;
 	phases CS;
-	from meter_75;
+	from meter_65;
 	to tn_299;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_300;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_300;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_300;
 	configuration L2_transformer;
 }
@@ -4586,14 +4586,14 @@ object transformer {
 object triplex_node {
 	name tn_301;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_301;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_301;
 	configuration L2_transformer;
 }
@@ -4601,14 +4601,14 @@ object transformer {
 object triplex_node {
 	name tn_302;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_302;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_302;
 	configuration L2_transformer;
 }
@@ -4616,14 +4616,14 @@ object transformer {
 object triplex_node {
 	name tn_303;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_303;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_303;
 	configuration L2_transformer;
 }
@@ -4631,14 +4631,14 @@ object transformer {
 object triplex_node {
 	name tn_304;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_304;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_304;
 	configuration L2_transformer;
 }
@@ -4646,14 +4646,14 @@ object transformer {
 object triplex_node {
 	name tn_305;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_305;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_305;
 	configuration L2_transformer;
 }
@@ -4661,14 +4661,14 @@ object transformer {
 object triplex_node {
 	name tn_306;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_306;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_306;
 	configuration L2_transformer;
 }
@@ -4676,14 +4676,14 @@ object transformer {
 object triplex_node {
 	name tn_307;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_307;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_307;
 	configuration L2_transformer;
 }
@@ -4691,14 +4691,14 @@ object transformer {
 object triplex_node {
 	name tn_308;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_308;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_308;
 	configuration L2_transformer;
 }
@@ -4706,14 +4706,14 @@ object transformer {
 object triplex_node {
 	name tn_309;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_309;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_309;
 	configuration L2_transformer;
 }
@@ -4721,14 +4721,14 @@ object transformer {
 object triplex_node {
 	name tn_310;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_310;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_310;
 	configuration L2_transformer;
 }
@@ -4736,14 +4736,14 @@ object transformer {
 object triplex_node {
 	name tn_311;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_311;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_311;
 	configuration L2_transformer;
 }
@@ -4751,14 +4751,14 @@ object transformer {
 object triplex_node {
 	name tn_312;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_312;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_312;
 	configuration L2_transformer;
 }
@@ -4766,89 +4766,89 @@ object transformer {
 object triplex_node {
 	name tn_313;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2258.064516129032+1612.9032258064517j;
 }
 
 object transformer {
 	name trip_trans_313;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_65;
 	to tn_313;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_314;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_314;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_66;
 	to tn_314;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_315;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_315;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_66;
 	to tn_315;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_316;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_316;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_66;
 	to tn_316;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_317;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 10714.285714285714+5000j;
 }
 
 object transformer {
 	name trip_trans_317;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_66;
 	to tn_317;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_318;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_318;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_318;
 	configuration L2_transformer;
 }
@@ -4857,13 +4857,13 @@ object triplex_node {
 	name tn_319;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_319;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_319;
 	configuration L2_transformer;
 }
@@ -4872,13 +4872,13 @@ object triplex_node {
 	name tn_320;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_320;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_320;
 	configuration L2_transformer;
 }
@@ -4887,13 +4887,13 @@ object triplex_node {
 	name tn_321;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_321;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_321;
 	configuration L2_transformer;
 }
@@ -4902,13 +4902,13 @@ object triplex_node {
 	name tn_322;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_322;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_322;
 	configuration L2_transformer;
 }
@@ -4917,13 +4917,13 @@ object triplex_node {
 	name tn_323;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_323;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_323;
 	configuration L2_transformer;
 }
@@ -4932,133 +4932,133 @@ object triplex_node {
 	name tn_324;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_324;
 	phases AS;
-	from meter_76;
+	from meter_68;
 	to tn_324;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_325;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_325;
 	phases AS;
-	from meter_76;
+	from meter_69;
 	to tn_325;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_326;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_326;
 	phases AS;
-	from meter_76;
+	from meter_69;
 	to tn_326;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_327;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_327;
 	phases AS;
-	from meter_76;
+	from meter_70;
 	to tn_327;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_328;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_328;
 	phases AS;
-	from meter_76;
+	from meter_71;
 	to tn_328;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_329;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_329;
 	phases AS;
-	from meter_76;
+	from meter_71;
 	to tn_329;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_330;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_330;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_73;
 	to tn_330;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_331;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_331;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_73;
 	to tn_331;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_332;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_332;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_332;
 	configuration L2_transformer;
 }
@@ -5066,14 +5066,14 @@ object transformer {
 object triplex_node {
 	name tn_333;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_333;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_333;
 	configuration L2_transformer;
 }
@@ -5081,14 +5081,14 @@ object transformer {
 object triplex_node {
 	name tn_334;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_334;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_334;
 	configuration L2_transformer;
 }
@@ -5096,14 +5096,14 @@ object transformer {
 object triplex_node {
 	name tn_335;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_335;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_335;
 	configuration L2_transformer;
 }
@@ -5111,14 +5111,14 @@ object transformer {
 object triplex_node {
 	name tn_336;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_336;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_336;
 	configuration L2_transformer;
 }
@@ -5126,14 +5126,14 @@ object transformer {
 object triplex_node {
 	name tn_337;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_337;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_337;
 	configuration L2_transformer;
 }
@@ -5141,14 +5141,14 @@ object transformer {
 object triplex_node {
 	name tn_338;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_338;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_338;
 	configuration L2_transformer;
 }
@@ -5156,14 +5156,14 @@ object transformer {
 object triplex_node {
 	name tn_339;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_339;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_339;
 	configuration L2_transformer;
 }
@@ -5171,14 +5171,14 @@ object transformer {
 object triplex_node {
 	name tn_340;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_340;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_340;
 	configuration L2_transformer;
 }
@@ -5186,14 +5186,14 @@ object transformer {
 object triplex_node {
 	name tn_341;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_341;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_341;
 	configuration L2_transformer;
 }
@@ -5201,14 +5201,14 @@ object transformer {
 object triplex_node {
 	name tn_342;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_342;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_342;
 	configuration L2_transformer;
 }
@@ -5216,59 +5216,59 @@ object transformer {
 object triplex_node {
 	name tn_343;
 	nominal_voltage 240.00;
-	phases AS;
-	power_12 2234.0425531914893+1702.127659574468j;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_343;
-	phases AS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_343;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_344;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_344;
-	phases BS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_344;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_345;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	nominal_voltage 240.00;
+	phases CS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_345;
-	phases BS;
-	from meter_76;
+	phases CS;
+	from meter_74;
 	to tn_345;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_346;
 	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_346;
-	phases BS;
-	from meter_76;
+	phases CS;
+	from meter_75;
 	to tn_346;
 	configuration house_transformer;
 }
@@ -5276,173 +5276,173 @@ object transformer {
 object triplex_node {
 	name tn_347;
 	nominal_voltage 120.00;
-	phases BS;
-	power_12 10000+7142.857142857143j;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_347;
-	phases BS;
-	from meter_76;
+	phases CS;
+	from meter_75;
 	to tn_347;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_348;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_348;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_348;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_349;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_349;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_349;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_350;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_350;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_350;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_351;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_351;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_351;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_352;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_352;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_352;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_353;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
 	name trip_trans_353;
-	phases CS;
+	phases AS;
 	from meter_76;
 	to tn_353;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_354;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_354;
-	phases CS;
+	phases BS;
 	from meter_76;
 	to tn_354;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_355;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_355;
-	phases CS;
+	phases BS;
 	from meter_76;
 	to tn_355;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_356;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_356;
-	phases CS;
+	phases BS;
 	from meter_76;
 	to tn_356;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_357;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
 	name trip_trans_357;
-	phases CS;
+	phases BS;
 	from meter_76;
 	to tn_357;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_358;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -5450,14 +5450,14 @@ object transformer {
 	phases CS;
 	from meter_76;
 	to tn_358;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_359;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -5465,14 +5465,14 @@ object transformer {
 	phases CS;
 	from meter_76;
 	to tn_359;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_360;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -5480,14 +5480,14 @@ object transformer {
 	phases CS;
 	from meter_76;
 	to tn_360;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_361;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -5495,20 +5495,20 @@ object transformer {
 	phases CS;
 	from meter_76;
 	to tn_361;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_362;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_362;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_362;
 	configuration L2_transformer;
 }
@@ -5516,14 +5516,14 @@ object transformer {
 object triplex_node {
 	name tn_363;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_363;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_363;
 	configuration L2_transformer;
 }
@@ -5531,14 +5531,14 @@ object transformer {
 object triplex_node {
 	name tn_364;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_364;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_364;
 	configuration L2_transformer;
 }
@@ -5546,14 +5546,14 @@ object transformer {
 object triplex_node {
 	name tn_365;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_365;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_365;
 	configuration L2_transformer;
 }
@@ -5561,14 +5561,14 @@ object transformer {
 object triplex_node {
 	name tn_366;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_366;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_366;
 	configuration L2_transformer;
 }
@@ -5576,14 +5576,14 @@ object transformer {
 object triplex_node {
 	name tn_367;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_367;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_367;
 	configuration L2_transformer;
 }
@@ -5591,14 +5591,14 @@ object transformer {
 object triplex_node {
 	name tn_368;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_368;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_368;
 	configuration L2_transformer;
 }
@@ -5606,14 +5606,14 @@ object transformer {
 object triplex_node {
 	name tn_369;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_369;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_369;
 	configuration L2_transformer;
 }
@@ -5621,14 +5621,14 @@ object transformer {
 object triplex_node {
 	name tn_370;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_370;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_370;
 	configuration L2_transformer;
 }
@@ -5636,14 +5636,14 @@ object transformer {
 object triplex_node {
 	name tn_371;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_371;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_371;
 	configuration L2_transformer;
 }
@@ -5651,14 +5651,14 @@ object transformer {
 object triplex_node {
 	name tn_372;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_372;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_372;
 	configuration L2_transformer;
 }
@@ -5666,14 +5666,14 @@ object transformer {
 object triplex_node {
 	name tn_373;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_373;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_373;
 	configuration L2_transformer;
 }
@@ -5681,14 +5681,14 @@ object transformer {
 object triplex_node {
 	name tn_374;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_374;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_374;
 	configuration L2_transformer;
 }
@@ -5696,179 +5696,179 @@ object transformer {
 object triplex_node {
 	name tn_375;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2258.064516129032+1612.9032258064517j;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_375;
-	phases CS;
-	from meter_76;
+	phases BS;
+	from meter_77;
 	to tn_375;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_376;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_376;
-	phases BS;
-	from meter_77;
+	phases AS;
+	from meter_79;
 	to tn_376;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_377;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_377;
-	phases BS;
-	from meter_77;
+	phases AS;
+	from meter_79;
 	to tn_377;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_378;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_378;
 	phases BS;
-	from meter_77;
+	from meter_80;
 	to tn_378;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_379;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_379;
 	phases BS;
-	from meter_77;
+	from meter_80;
 	to tn_379;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_380;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_380;
-	phases BS;
-	from meter_77;
+	phases AS;
+	from meter_82;
 	to tn_380;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_381;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_381;
-	phases BS;
-	from meter_77;
+	phases AS;
+	from meter_82;
 	to tn_381;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_382;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_382;
-	phases BS;
-	from meter_77;
+	phases CS;
+	from meter_83;
 	to tn_382;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_383;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_383;
-	phases BS;
-	from meter_77;
+	phases CS;
+	from meter_84;
 	to tn_383;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_384;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_384;
-	phases BS;
-	from meter_77;
+	phases CS;
+	from meter_85;
 	to tn_384;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_385;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases CS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_385;
-	phases BS;
-	from meter_77;
+	phases CS;
+	from meter_85;
 	to tn_385;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_386;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_386;
 	phases BS;
-	from meter_77;
+	from meter_86;
 	to tn_386;
 	configuration L2_transformer;
 }
@@ -5877,13 +5877,13 @@ object triplex_node {
 	name tn_387;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_387;
 	phases BS;
-	from meter_77;
+	from meter_86;
 	to tn_387;
 	configuration L2_transformer;
 }
@@ -5892,13 +5892,13 @@ object triplex_node {
 	name tn_388;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_388;
 	phases BS;
-	from meter_77;
+	from meter_86;
 	to tn_388;
 	configuration L2_transformer;
 }
@@ -5907,58 +5907,58 @@ object triplex_node {
 	name tn_389;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_389;
 	phases BS;
-	from meter_77;
+	from meter_86;
 	to tn_389;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_390;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_390;
-	phases AS;
-	from meter_79;
+	phases BS;
+	from meter_86;
 	to tn_390;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_391;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_391;
-	phases AS;
-	from meter_79;
+	phases BS;
+	from meter_86;
 	to tn_391;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_392;
 	nominal_voltage 240.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_392;
 	phases BS;
-	from meter_80;
+	from meter_86;
 	to tn_392;
 	configuration L2_transformer;
 }
@@ -5973,7 +5973,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_393;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_393;
 	configuration L2_transformer;
 }
@@ -5988,7 +5988,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_394;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_394;
 	configuration L2_transformer;
 }
@@ -6003,7 +6003,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_395;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_395;
 	configuration L2_transformer;
 }
@@ -6018,7 +6018,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_396;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_396;
 	configuration L2_transformer;
 }
@@ -6033,7 +6033,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_397;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_397;
 	configuration L2_transformer;
 }
@@ -6048,7 +6048,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_398;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_398;
 	configuration L2_transformer;
 }
@@ -6063,7 +6063,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_399;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_399;
 	configuration L2_transformer;
 }
@@ -6078,7 +6078,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_400;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_400;
 	configuration L2_transformer;
 }
@@ -6093,7 +6093,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_401;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_401;
 	configuration L2_transformer;
 }
@@ -6108,7 +6108,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_402;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_402;
 	configuration L2_transformer;
 }
@@ -6123,7 +6123,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_403;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_403;
 	configuration L2_transformer;
 }
@@ -6138,7 +6138,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_404;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_404;
 	configuration L2_transformer;
 }
@@ -6153,24 +6153,24 @@ object triplex_node {
 object transformer {
 	name trip_trans_405;
 	phases BS;
-	from meter_80;
+	from meter_87;
 	to tn_405;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_406;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_406;
-	phases AS;
-	from meter_82;
+	phases BS;
+	from meter_87;
 	to tn_406;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
@@ -6183,97 +6183,97 @@ object triplex_node {
 object transformer {
 	name trip_trans_407;
 	phases AS;
-	from meter_82;
+	from meter_88;
 	to tn_407;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_408;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_408;
-	phases CS;
-	from meter_83;
+	phases AS;
+	from meter_88;
 	to tn_408;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_409;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_409;
-	phases CS;
-	from meter_83;
+	phases BS;
+	from meter_90;
 	to tn_409;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_410;
-	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	nominal_voltage 120.00;
+	phases BS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_410;
-	phases CS;
-	from meter_83;
+	phases BS;
+	from meter_90;
 	to tn_410;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_411;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_411;
 	phases CS;
-	from meter_83;
+	from meter_92;
 	to tn_411;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_412;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2000+1000j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_412;
 	phases CS;
-	from meter_83;
+	from meter_92;
 	to tn_412;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_413;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_413;
-	phases CS;
-	from meter_83;
+	phases AS;
+	from meter_94;
 	to tn_413;
 	configuration L2_transformer;
 }
@@ -6281,89 +6281,89 @@ object transformer {
 object triplex_node {
 	name tn_414;
 	nominal_voltage 240.00;
-	phases CS;
-	power_12 2000+1000j;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_414;
-	phases CS;
-	from meter_83;
+	phases AS;
+	from meter_94;
 	to tn_414;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_415;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_415;
-	phases CS;
-	from meter_84;
+	phases AS;
+	from meter_94;
 	to tn_415;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_416;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_416;
-	phases CS;
-	from meter_85;
+	phases AS;
+	from meter_94;
 	to tn_416;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_417;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_417;
-	phases CS;
-	from meter_85;
+	phases AS;
+	from meter_94;
 	to tn_417;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_418;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 5000+2500j;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_418;
-	phases BS;
-	from meter_86;
+	phases AS;
+	from meter_94;
 	to tn_418;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_419;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_419;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_419;
 	configuration L2_transformer;
 }
@@ -6371,14 +6371,14 @@ object transformer {
 object triplex_node {
 	name tn_420;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_420;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_420;
 	configuration L2_transformer;
 }
@@ -6386,14 +6386,14 @@ object transformer {
 object triplex_node {
 	name tn_421;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_421;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_421;
 	configuration L2_transformer;
 }
@@ -6401,14 +6401,14 @@ object transformer {
 object triplex_node {
 	name tn_422;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_422;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_422;
 	configuration L2_transformer;
 }
@@ -6416,14 +6416,14 @@ object transformer {
 object triplex_node {
 	name tn_423;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_423;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_423;
 	configuration L2_transformer;
 }
@@ -6431,14 +6431,14 @@ object transformer {
 object triplex_node {
 	name tn_424;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_424;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_424;
 	configuration L2_transformer;
 }
@@ -6446,14 +6446,14 @@ object transformer {
 object triplex_node {
 	name tn_425;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_425;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_425;
 	configuration L2_transformer;
 }
@@ -6461,76 +6461,76 @@ object transformer {
 object triplex_node {
 	name tn_426;
 	nominal_voltage 240.00;
-	phases BS;
+	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_426;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_94;
 	to tn_426;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_427;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_427;
 	phases BS;
-	from meter_87;
+	from meter_95;
 	to tn_427;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_428;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_428;
 	phases BS;
-	from meter_87;
+	from meter_96;
 	to tn_428;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_429;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_429;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_98;
 	to tn_429;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_430;
-	nominal_voltage 240.00;
-	phases BS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	nominal_voltage 120.00;
+	phases AS;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_430;
-	phases BS;
-	from meter_87;
+	phases AS;
+	from meter_98;
 	to tn_430;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
@@ -6543,7 +6543,7 @@ object triplex_node {
 object transformer {
 	name trip_trans_431;
 	phases BS;
-	from meter_87;
+	from meter_99;
 	to tn_431;
 	configuration L2_transformer;
 }
@@ -6558,82 +6558,82 @@ object triplex_node {
 object transformer {
 	name trip_trans_432;
 	phases BS;
-	from meter_87;
+	from meter_99;
 	to tn_432;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_433;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_433;
-	phases AS;
-	from meter_88;
+	phases BS;
+	from meter_99;
 	to tn_433;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_434;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
+	nominal_voltage 240.00;
+	phases BS;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_434;
-	phases AS;
-	from meter_88;
+	phases BS;
+	from meter_99;
 	to tn_434;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_435;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_435;
 	phases BS;
-	from meter_90;
+	from meter_99;
 	to tn_435;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_436;
-	nominal_voltage 120.00;
+	nominal_voltage 240.00;
 	phases BS;
-	power_12 8000+4000j;
+	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_436;
 	phases BS;
-	from meter_90;
+	from meter_99;
 	to tn_436;
-	configuration house_transformer;
+	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_437;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_437;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_437;
 	configuration L2_transformer;
 }
@@ -6641,14 +6641,14 @@ object transformer {
 object triplex_node {
 	name tn_438;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_438;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_438;
 	configuration L2_transformer;
 }
@@ -6656,14 +6656,14 @@ object transformer {
 object triplex_node {
 	name tn_439;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_439;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_439;
 	configuration L2_transformer;
 }
@@ -6671,14 +6671,14 @@ object transformer {
 object triplex_node {
 	name tn_440;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_440;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_440;
 	configuration L2_transformer;
 }
@@ -6686,14 +6686,14 @@ object transformer {
 object triplex_node {
 	name tn_441;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_441;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_441;
 	configuration L2_transformer;
 }
@@ -6701,14 +6701,14 @@ object transformer {
 object triplex_node {
 	name tn_442;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_442;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_442;
 	configuration L2_transformer;
 }
@@ -6716,14 +6716,14 @@ object transformer {
 object triplex_node {
 	name tn_443;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_443;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_443;
 	configuration L2_transformer;
 }
@@ -6731,119 +6731,119 @@ object transformer {
 object triplex_node {
 	name tn_444;
 	nominal_voltage 240.00;
-	phases CS;
+	phases BS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
 	name trip_trans_444;
-	phases CS;
-	from meter_92;
+	phases BS;
+	from meter_99;
 	to tn_444;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_445;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_445;
 	phases CS;
-	from meter_92;
+	from meter_100;
 	to tn_445;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_446;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_446;
 	phases CS;
-	from meter_92;
+	from meter_100;
 	to tn_446;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_447;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_447;
 	phases CS;
-	from meter_92;
+	from meter_102;
 	to tn_447;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_448;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_448;
 	phases CS;
-	from meter_92;
+	from meter_103;
 	to tn_448;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_449;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_449;
 	phases CS;
-	from meter_92;
+	from meter_103;
 	to tn_449;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_450;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases CS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_450;
 	phases CS;
-	from meter_92;
+	from meter_104;
 	to tn_450;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_451;
 	nominal_voltage 120.00;
-	phases AS;
+	phases CS;
 	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_451;
-	phases AS;
-	from meter_94;
+	phases CS;
+	from meter_104;
 	to tn_451;
 	configuration house_transformer;
 }
@@ -6851,14 +6851,14 @@ object transformer {
 object triplex_node {
 	name tn_452;
 	nominal_voltage 120.00;
-	phases AS;
+	phases BS;
 	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_452;
-	phases AS;
-	from meter_94;
+	phases BS;
+	from meter_106;
 	to tn_452;
 	configuration house_transformer;
 }
@@ -6867,13 +6867,13 @@ object triplex_node {
 	name tn_453;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_453;
 	phases BS;
-	from meter_95;
+	from meter_106;
 	to tn_453;
 	configuration house_transformer;
 }
@@ -6882,13 +6882,13 @@ object triplex_node {
 	name tn_454;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_454;
 	phases BS;
-	from meter_96;
+	from meter_107;
 	to tn_454;
 	configuration house_transformer;
 }
@@ -6896,239 +6896,239 @@ object transformer {
 object triplex_node {
 	name tn_455;
 	nominal_voltage 120.00;
-	phases AS;
+	phases BS;
 	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_455;
-	phases AS;
-	from meter_98;
+	phases BS;
+	from meter_107;
 	to tn_455;
 	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_456;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_456;
-	phases AS;
-	from meter_98;
-	to tn_456;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_457;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_457;
-	phases BS;
-	from meter_99;
-	to tn_457;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_458;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_458;
-	phases BS;
-	from meter_99;
-	to tn_458;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_459;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_459;
-	phases CS;
-	from meter_100;
-	to tn_459;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_460;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_460;
-	phases CS;
-	from meter_100;
-	to tn_460;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_461;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 5000+2500j;
-}
-
-object transformer {
-	name trip_trans_461;
-	phases CS;
-	from meter_102;
-	to tn_461;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_462;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_462;
-	phases CS;
-	from meter_103;
-	to tn_462;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_463;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_463;
-	phases CS;
-	from meter_103;
-	to tn_463;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_464;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_464;
-	phases CS;
-	from meter_104;
-	to tn_464;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_465;
-	nominal_voltage 120.00;
-	phases CS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_465;
-	phases CS;
-	from meter_104;
-	to tn_465;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_466;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_466;
-	phases BS;
-	from meter_106;
-	to tn_466;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_467;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_467;
-	phases BS;
-	from meter_106;
-	to tn_467;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_468;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_468;
-	phases BS;
-	from meter_107;
-	to tn_468;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_469;
-	nominal_voltage 120.00;
-	phases BS;
-	power_12 8000+4000j;
-}
-
-object transformer {
-	name trip_trans_469;
-	phases BS;
-	from meter_107;
-	to tn_469;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_470;
 	nominal_voltage 240.00;
 	phases AS;
 	power_12 2352.9411764705883+1176.4705882352941j;
 }
 
 object transformer {
-	name trip_trans_470;
+	name trip_trans_456;
 	phases AS;
 	from meter_109;
+	to tn_456;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_457;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_457;
+	phases AS;
+	from meter_109;
+	to tn_457;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_458;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_458;
+	phases AS;
+	from meter_109;
+	to tn_458;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_459;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_459;
+	phases AS;
+	from meter_109;
+	to tn_459;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_460;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_460;
+	phases AS;
+	from meter_109;
+	to tn_460;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_461;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_461;
+	phases AS;
+	from meter_109;
+	to tn_461;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_462;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_462;
+	phases AS;
+	from meter_109;
+	to tn_462;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_463;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_463;
+	phases AS;
+	from meter_109;
+	to tn_463;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_464;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_464;
+	phases AS;
+	from meter_109;
+	to tn_464;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_465;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_465;
+	phases AS;
+	from meter_109;
+	to tn_465;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_466;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_466;
+	phases AS;
+	from meter_109;
+	to tn_466;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_467;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_467;
+	phases AS;
+	from meter_109;
+	to tn_467;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_468;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_468;
+	phases AS;
+	from meter_109;
+	to tn_468;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_469;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2352.9411764705883+1176.4705882352941j;
+}
+
+object transformer {
+	name trip_trans_469;
+	phases AS;
+	from meter_109;
+	to tn_469;
+	configuration L2_transformer;
+}
+
+object triplex_node {
+	name tn_470;
+	nominal_voltage 240.00;
+	phases AS;
+	power_12 2000+1000j;
+}
+
+object transformer {
+	name trip_trans_470;
+	phases AS;
+	from meter_111;
 	to tn_470;
 	configuration L2_transformer;
 }
@@ -7137,13 +7137,13 @@ object triplex_node {
 	name tn_471;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_471;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_471;
 	configuration L2_transformer;
 }
@@ -7152,13 +7152,13 @@ object triplex_node {
 	name tn_472;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_472;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_472;
 	configuration L2_transformer;
 }
@@ -7167,13 +7167,13 @@ object triplex_node {
 	name tn_473;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_473;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_473;
 	configuration L2_transformer;
 }
@@ -7182,13 +7182,13 @@ object triplex_node {
 	name tn_474;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_474;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_474;
 	configuration L2_transformer;
 }
@@ -7197,13 +7197,13 @@ object triplex_node {
 	name tn_475;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_475;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_475;
 	configuration L2_transformer;
 }
@@ -7212,464 +7212,74 @@ object triplex_node {
 	name tn_476;
 	nominal_voltage 240.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 2000+1000j;
 }
 
 object transformer {
 	name trip_trans_476;
 	phases AS;
-	from meter_109;
+	from meter_111;
 	to tn_476;
 	configuration L2_transformer;
 }
 
 object triplex_node {
 	name tn_477;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_477;
 	phases AS;
-	from meter_109;
+	from meter_112;
 	to tn_477;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_478;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_478;
 	phases AS;
-	from meter_109;
+	from meter_113;
 	to tn_478;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_479;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 8000+4000j;
 }
 
 object transformer {
 	name trip_trans_479;
 	phases AS;
-	from meter_109;
+	from meter_113;
 	to tn_479;
-	configuration L2_transformer;
+	configuration house_transformer;
 }
 
 object triplex_node {
 	name tn_480;
-	nominal_voltage 240.00;
+	nominal_voltage 120.00;
 	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
+	power_12 5000+2500j;
 }
 
 object transformer {
 	name trip_trans_480;
 	phases AS;
-	from meter_109;
-	to tn_480;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_481;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_481;
-	phases AS;
-	from meter_109;
-	to tn_481;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_482;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_482;
-	phases AS;
-	from meter_109;
-	to tn_482;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_483;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_483;
-	phases AS;
-	from meter_109;
-	to tn_483;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_484;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_484;
-	phases AS;
-	from meter_111;
-	to tn_484;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_485;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_485;
-	phases AS;
-	from meter_111;
-	to tn_485;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_486;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_486;
-	phases AS;
-	from meter_111;
-	to tn_486;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_487;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_487;
-	phases AS;
-	from meter_111;
-	to tn_487;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_488;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_488;
-	phases AS;
-	from meter_111;
-	to tn_488;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_489;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_489;
-	phases AS;
-	from meter_111;
-	to tn_489;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_490;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2000+1000j;
-}
-
-object transformer {
-	name trip_trans_490;
-	phases AS;
-	from meter_111;
-	to tn_490;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_491;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
-}
-
-object transformer {
-	name trip_trans_491;
-	phases AS;
-	from meter_112;
-	to tn_491;
-	configuration house_transformer;
-}
-
-object triplex_node {
-	name tn_492;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_492;
-	phases AS;
-	from meter_113;
-	to tn_492;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_493;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_493;
-	phases AS;
-	from meter_113;
-	to tn_493;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_494;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_494;
-	phases AS;
-	from meter_113;
-	to tn_494;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_495;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_495;
-	phases AS;
-	from meter_113;
-	to tn_495;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_496;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_496;
-	phases AS;
-	from meter_113;
-	to tn_496;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_497;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_497;
-	phases AS;
-	from meter_113;
-	to tn_497;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_498;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_498;
-	phases AS;
-	from meter_113;
-	to tn_498;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_499;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_499;
-	phases AS;
-	from meter_113;
-	to tn_499;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_500;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_500;
-	phases AS;
-	from meter_113;
-	to tn_500;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_501;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_501;
-	phases AS;
-	from meter_113;
-	to tn_501;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_502;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_502;
-	phases AS;
-	from meter_113;
-	to tn_502;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_503;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_503;
-	phases AS;
-	from meter_113;
-	to tn_503;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_504;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_504;
-	phases AS;
-	from meter_113;
-	to tn_504;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_505;
-	nominal_voltage 240.00;
-	phases AS;
-	power_12 2352.9411764705883+1176.4705882352941j;
-}
-
-object transformer {
-	name trip_trans_505;
-	phases AS;
-	from meter_113;
-	to tn_505;
-	configuration L2_transformer;
-}
-
-object triplex_node {
-	name tn_506;
-	nominal_voltage 120.00;
-	phases AS;
-	power_12 5000+2500j;
-}
-
-object transformer {
-	name trip_trans_506;
-	phases AS;
 	from meter_114;
-	to tn_506;
+	to tn_480;
 	configuration house_transformer;
 }
 

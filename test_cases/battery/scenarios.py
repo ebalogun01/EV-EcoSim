@@ -66,7 +66,7 @@ def run_scenarios_parallel():
 
 def run_scenarios_sequential():
     start_idx = 0
-    end_idx = 8
+    end_idx = 25
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
