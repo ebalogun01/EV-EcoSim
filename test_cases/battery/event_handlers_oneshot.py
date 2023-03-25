@@ -14,7 +14,7 @@ sys.path.append('../../../EV50_cosimulation/charging_sim')
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = f'oneshot_{gblvar.scenario["start_month"]}{gblvar.scenario["index"]}/'
+save_folder_prefix = f'oneshot_{gblvar.scenario["month_str"]}{gblvar.scenario["index"]}/'
 
 # lood DCFC locations txt file
 print('...loading charging bus nodes')
@@ -25,6 +25,7 @@ l2_net_loads = []
 
 # LOAD THE NET INJECTIONS FROM OPTIMIZATION
 load_folder = save_folder_prefix
+print("working with folder ", load_folder)
 
 print("loading loads...")
 current_dir = os.getcwd()

@@ -2,12 +2,14 @@ import multiprocessing as mp
 import sys
 import gblvar
 import ast
+
 # import time
 
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
     gblvar.charging_sim_path_append = True
     # print('append 1')
+from utils import month_days
 
 # GET STATION CONFIGURATIONS
 station_config = open('feeder_population/config.txt', 'r')
@@ -17,6 +19,7 @@ param_dict = ast.literal_eval(param_dict)
 L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
 start_month = int(str(param_dict['starttime']).split('-')[1])
+month_str = list(month_days.keys())[start_month-1]
 
 # RUN TYPE
 sequential_run = True
@@ -41,7 +44,7 @@ def make_scenarios():
     for Er in energy_ratings:
         for c_rate in max_c_rates:
             scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'start_month': start_month,
-                        'L2_cap': L2_station_cap, 'dcfc_cap': dcfc_station_cap}
+                        'L2_cap': L2_station_cap, 'dcfc_cap': dcfc_station_cap, 'month_str': month_str}
             scenarios_list.append(scenario)
             idx += 1
     return scenarios_list
