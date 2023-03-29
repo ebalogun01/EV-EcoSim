@@ -14,7 +14,7 @@ from EVCharging import ChargingSim
 path_prefix = os.getcwd()
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'test_June' + str(gblvar.scenario['index']) + '/'  # how can I permanently save this state?
+save_folder_prefix = f'{gblvar.scenario["month_str"]}{gblvar.scenario["index"]}/'  # how can I permanently save this state?
 
 # SET OPTIMIZATION SOLVER
 solver_options = ['GUROBI', 'MOSEK', 'ECOS']
