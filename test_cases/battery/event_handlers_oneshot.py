@@ -176,10 +176,6 @@ def on_precommit(t):
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
     import voltdump2
-    voltdump2.parse_voltages(save_folder_prefix)
-    np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
-    np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
-    np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
     pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
@@ -189,6 +185,13 @@ def on_term(t):
                index=False)  # included saving transformer loading percentages
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile)
+    # gblvar = None
+    gblvar.p_df, gblvar.q_df, gblvar.p_array, gblvar.q_array = None, None, None, None
+    gblvar.trans_Th, gblvar.trans_To, gblvar.trans_loading_percent = None, None, None
+    voltdump2.parse_voltages(save_folder_prefix)
+    # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
+    # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
+    np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
     print("Total run time: ", (time.time() - tic) / 60, "minutes")
     return True
 
