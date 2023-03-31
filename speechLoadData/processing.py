@@ -16,7 +16,7 @@ dt_idx = pd.DatetimeIndex(list(range(0, num_nano_secs, step)), tz="UTC", freq=f'
 #%%
 # todo: THIS TAKES IN THE 1MIN SPEECH DATA AND RESAMPLES IT TO 15 MIN INTERVALS FOR OPTIMIZATION
 num_days = 30
-num_evs = 1600
+num_evs = 3200
 path_prefix = f'IndividualSessionsOutputData_{num_evs}/total_load_profiles_'
 for day in range(num_days):
     in_data = pd.read_csv(f'{path_prefix}{day}.csv').set_index(dt_idx)
