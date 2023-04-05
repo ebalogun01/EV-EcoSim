@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 14})
+
 
 '''This will be used for post simulation additional charging station cost analyses'''
 
@@ -60,7 +62,7 @@ class CostEstimator:
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
 
-    def calcultate_solar_cost(self):
+    def calculate_solar_cost(self):
         """ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html """
         lcoe = 350
         return lcoe
@@ -134,16 +136,18 @@ class CostEstimator:
         lb = np.zeros(num_steps)
         alph = 1
         interp = True
-        ax.plot(x_vals, total_load_plot, color='tab:red')
-        ax.plot(x_vals, net_load_plot, color='tab:green')
-        ax.fill_between(x_vals, lb, total_load_plot, color='tab:red',
+        total_load_color = 'purple'
+        net_load_color = 'orange'
+        ax.plot(x_vals, total_load_plot, color=f'tab:{total_load_color}')
+        ax.plot(x_vals, net_load_plot, color=f'tab:{net_load_color}')
+        ax.fill_between(x_vals, lb, total_load_plot, color=f'tab:{total_load_color}',
                         label=labels[0], interpolate=interp, alpha=alph)
 
-        ax.fill_between(x_vals, lb, net_load_plot, color='tab:green',
+        ax.fill_between(x_vals, lb, net_load_plot, color=f'tab:{net_load_color}',
                         where=(total_load_plot >= net_load_plot), label=labels[1], interpolate=interp, alpha=alph)
 
         ax.fill_between(x_vals, total_load_plot, net_load_plot, where=(total_load_plot <= net_load_plot),
-                        color='tab:green', interpolate=interp, alpha=alph)
+                        color=f'tab:{net_load_color}', interpolate=interp, alpha=alph)
         ax.set_ylim(bottom=0)
         ax.set_xlim(left=0, right=round(max(x_vals)))
         plt.xlabel('Hour of day')

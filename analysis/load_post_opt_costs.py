@@ -79,8 +79,8 @@ def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None,
 
 
 def plot_stacked_bar(elec_costs, batt_costs, save_plot_path=None, solar_costs=None):
-    capacities = [f'{str(size)} kWh' for size in elec_costs.columns]
-    c_rate_idx = 1
+    capacities = [f'{str(size)}' for size in elec_costs.columns]
+    c_rate_idx = 0  # ONLY CHANGE THIS IF LOOKING AT OTHER C-RATES
     cost_component = {}
     if solar_costs is not None:
         cost_component['Solar'] = solar_costs.to_numpy()[c_rate_idx]
@@ -98,6 +98,7 @@ def plot_stacked_bar(elec_costs, batt_costs, save_plot_path=None, solar_costs=No
         p = ax.bar(capacities, cost, label=name, bottom=bottom)
         bottom += cost
     plt.ylabel("Cost (Dollars/kWh)")
+    plt.xlabel("Energy Capacity (kWh)")
     ax.set_title('Levelized cost')
     ax.legend()
     fig.tight_layout()
@@ -113,12 +114,15 @@ def plot_stacked_bar(elec_costs, batt_costs, save_plot_path=None, solar_costs=No
     p = ax.bar(capacities, net_cost)
     ax.set_title('Net levelized cost (system + elec)')
     plt.ylabel("Cost (Dollars/kWh)")
+    plt.xlabel("Energy Capacity (kWh)")
+    fig.tight_layout()
     if save_plot_path:
         plt.savefig(f'{save_plot_path}/net_expediture.png')
         plt.close('all')
 
 
-def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost=False):
+def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost=True):
+    #TODO: reminder to toggle transformer cost on and off
     estimator = CostEstimator(days_count)
     #   calculated values are populated in their respective scenario directories
     if batt_cost:
@@ -155,15 +159,16 @@ def collate_results(month):
             elec_costs = json.load(f)
             elec_total_cost = elec_costs['charging_station_sim_0']['cost_per_kWh']
             print(elec_costs)
-        # with open('postopt_trans_lol.json', "r") as f:
-        #     trans_lol = json.load(f)
-        #     avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
+        avg_trans_lol = 0
+        with open('postopt_trans_lol.json', "r") as f:
+            trans_lol = json.load(f)
+            avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
 
         battery_dtable[energy].loc[c_rate] = batt_total_cost
         electricity_cost_dtable[energy].loc[c_rate] = elec_total_cost
         batt_aging_dtable[energy].loc[c_rate] = batt_aging_cost
         solar_dtable[energy].loc[c_rate] = 0.10     # dollars/kWh
-        # trans_dtable[energy].loc[c_rate] = avg_trans_lol
+        trans_dtable[energy].loc[c_rate] = avg_trans_lol
         os.chdir(main_dir)
     print("Electricity levelized cost table\n", electricity_cost_dtable)
     collated_dir = f'{month}_oneshot_collated_results'
@@ -198,10 +203,9 @@ def collate_results(month):
 
 
 if __name__ == '__main__':
-    desired_month = 'June'
+    desired_month = 'January'
     days = 30  # number of days
     for i in range(len(energy_ratings) * len(max_c_rates)):
-        # result_dir = f'results/{desired_month}_nomax_{i}'
         result_dir = f'results/oneshot_{desired_month}{i}'
         run_results(result_dir, days)
     collate_results(desired_month)
