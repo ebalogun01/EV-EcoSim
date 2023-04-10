@@ -57,8 +57,8 @@ def run(scenario):
 
 def run_scenarios_parallel():
     scenarios = make_scenarios()
-    start_idx = 24
-    end_idx = 14
+    start_idx = 0
+    end_idx = 3
     num_cores = mp.cpu_count()
     if num_cores > 1:
         use_cores_count = min(num_cores - 2, end_idx - start_idx)  # leave one out
@@ -68,8 +68,8 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 0
-    end_idx = 25
+    start_idx = 13
+    end_idx = 14
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]

@@ -168,7 +168,7 @@ obj_type_base[key_index] = {'module': python_module}
 glm_dict_base[key_index] = {}
 
 # add script on term statement
-sync_list_base.append('script on_term "python3 voltdump2.py";')
+# sync_list_base.append('script on_term "python3 voltdump2.py";')
 
 # add voltdump
 key_index = max(glm_dict_base.keys()) + 1
@@ -422,8 +422,11 @@ num_transformers_list = []
 fraction_commercial_sec_node = 0.3
 # CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD
 spot_load_magnitude = [abs(spot_load_list[i])/1000 for i in range(len(spot_load_list))]
-commercial_load_indices = [i for i in range(len(spot_load_list)) if spot_load_magnitude[i] > L2_trans_power_rating_kVA]
-contains_commercial_load = random.sample(commercial_load_indices, max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
+commercial_load_indices = []
+contains_commercial_load = []
+if num_L2_charging_nodes > 0:
+    commercial_load_indices = [i for i in range(len(spot_load_list)) if spot_load_magnitude[i] > L2_trans_power_rating_kVA]
+    contains_commercial_load = random.sample(commercial_load_indices, max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
 
 # select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)
 L2_charging_node_options = []

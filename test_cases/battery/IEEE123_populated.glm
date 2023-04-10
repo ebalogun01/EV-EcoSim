@@ -1,13 +1,13 @@
 #set minimum_timestep=60
 
 clock {
-	starttime '2018-01-01 00:00:00';
-	stoptime '2018-01-30 23:59:00';
+	starttime '2018-06-01 00:00:00';
+	stoptime '2018-06-30 23:59:00';
 }
 
 module tape;
 
-module event_handlers_oneshot;
+module event_handlers;
 
 module powerflow {
 	solver_method NR;
@@ -2401,6 +2401,4 @@ object voltdump {
 	interval 60;
 	version 1;
 }
-
-script on_term "python3 voltdump2.py";
 

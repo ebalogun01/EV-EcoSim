@@ -106,8 +106,7 @@ def on_precommit(t):
     if gblvar.it == 0:
         gblvar.trans_rated_s = []
         gblvar.trans_loading_percent = []
-        for i in range(len(gblvar.trans_list)):
-            name = gblvar.trans_list[i]
+        for name in gblvar.trans_list:
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
             trans_config_name = data['configuration']
             data = gridlabd.get_object(trans_config_name)
@@ -116,8 +115,7 @@ def on_precommit(t):
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
-    for i in range(len(gblvar.trans_list)):
-        name = gblvar.trans_list[i]
+    for name in gblvar.trans_list:
         data = gridlabd.get_object(name)
         trans_power_str = data['power_in']
         pmag, pdeg = get_trans_power(trans_power_str)
@@ -137,7 +135,7 @@ def on_precommit(t):
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
     # calculate base_power and pf quantities to set for this timestep
-    name_list_base_power = list(gblvar.p_df.columns)
+    name_list_base_power = tuple(gblvar.p_df.columns)
     if gblvar.it == 0:
         np.savetxt(f'{save_folder_prefix}base_loads.csv', name_list_base_power, fmt="%s")  # save base loads list on first step
     set_power_vec = np.zeros((len(name_list_base_power),), dtype=complex)
@@ -156,7 +154,7 @@ def on_precommit(t):
         # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             node_index = L2_charging_nodes.index(name)
-            total_node_load = l2_net_loads[node_index][int(gblvar.it / control_res)] * 1000  # for L2
+            total_node_load = l2_net_loads[node_index][gblvar.it // control_res] * 1000  # for L2
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
@@ -164,7 +162,7 @@ def on_precommit(t):
     prop_2 = 'constant_power_B'
     prop_3 = 'constant_power_C'
     for node_index, name in enumerate(dcfc_nodes):
-        total_node_load = dcfc_net_loads[node_index][int(gblvar.it / control_res)] * 1000  # converting to watts
+        total_node_load = dcfc_net_loads[node_index][gblvar.it // control_res] * 1000  # converting to watts
         gridlabd.set_value(name, prop_1, str(total_node_load / 3))  # balancing dcfc load between 3-phase
         gridlabd.set_value(name, prop_2, str(total_node_load / 3))
         gridlabd.set_value(name, prop_3, str(total_node_load / 3))
@@ -175,11 +173,11 @@ def on_precommit(t):
 
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
-    import voltdump2
+    # import voltdump2
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
-    pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
-                                                                         index=False)
+    # pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
+    #                                                                      index=False)
     pd.DataFrame(data=gblvar.trans_loading_percent, columns=gblvar.trans_list). \
         to_csv(f'{save_folder_prefix}/trans_loading_percent.csv',
                index=False)  # included saving transformer loading percentages
@@ -188,7 +186,7 @@ def on_term(t):
     # gblvar = None
     gblvar.p_df, gblvar.q_df, gblvar.p_array, gblvar.q_array = None, None, None, None
     gblvar.trans_Th, gblvar.trans_To, gblvar.trans_loading_percent = None, None, None
-    voltdump2.parse_voltages(save_folder_prefix)
+    # voltdump2.parse_voltages(save_folder_prefix)
     # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
     # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
     np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
@@ -212,10 +210,9 @@ def find(criteria):
                 result.append(f'{item["class"]}:{item["id"]}')
     return result
 
-
 def get_voltage():
     """Get voltage string from GridLAB-D and process it into float"""
-    #   TODO: find a way to ignore the nodes that have no voltage (zero-load)
+    #   TODO: find a way to ignore the nodes that have no voltage (zero-load) and improve this code
 
     vm_array = np.zeros((len(gblvar.voltage_obj),))
     vp_array = np.zeros((len(gblvar.voltage_prop),))
@@ -262,11 +259,9 @@ def get_voltage():
 
 def get_trans_power(trans_power_str):
     """Get power at transformer as a string and process it into a float"""
-
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:
         if 'd' not in trans_power_str:
-            # print(trans_power_str)  # removed x with throws error
             raise IOError('Missing string in transformer power string')
 
         trans_power_str = trans_power_str.replace('e-', '(')
@@ -281,7 +276,6 @@ def get_trans_power(trans_power_str):
         strtemp = trans_power_str.rstrip('d').replace('+', ',+').replace('-', ',-').split(',')
         pmag = float(strtemp[1])
         pdeg = float(strtemp[2])
-
     else:
         strtemp = trans_power_str.rstrip('j').replace('+', ',+').replace('-', ',-').split(',')
 
