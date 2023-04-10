@@ -178,6 +178,7 @@ def collate_results(month):
     electricity_cost_dtable.to_csv(f'{collated_dir}/{month}_elec_costs_per_day.csv')
     (electricity_cost_dtable + battery_dtable).to_csv(f'{collated_dir}/Total_{month}_costs_per_day.csv')
     batt_aging_dtable.to_csv(f'{collated_dir}/{month}_battery_aging_costs_per_day.csv')
+    trans_dtable.to_csv(f'{collated_dir}/{month}_trans_aging_per_day.csv')
     plot_tables(batt_dtable=battery_dtable, elec_cost_dtable=electricity_cost_dtable,
                 batt_aging_table=batt_aging_dtable,
                 trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir)
