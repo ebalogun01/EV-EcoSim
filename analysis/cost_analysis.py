@@ -235,3 +235,44 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
+
+    def calculate_elec_cost(self, result_dir, PGE_seperate_file=True):
+        current_dir = os.getcwd()
+        os.chdir(result_dir)
+        result_dict = {}
+        price_per_block = 95.56  # ($/Block)
+        overage_fee = 3.82  # ($/kW)
+        for root, dirs, files, in os.walk(".", topdown=True):
+            for file in files:
+                path_lst = file.split("_")
+                if 'station' in path_lst and 'block' not in path_lst and 'plot.png' not in path_lst:
+                    total_grid_load = pd.read_csv(file)['station_total_load_kW'].to_numpy()[1:]
+                    net_grid_load = total_grid_load
+                    net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)['station_solar_load_ev'].to_numpy()[
+                                                                  1:] + pd.read_csv(file)['battery_power'].to_numpy()[
+                                                                        1:]
+                    total_energy = total_grid_load.sum() * self.resolution / 60
+                    max_load = total_grid_load.max()
+                    average_load = total_grid_load.mean()
+                    self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f'{file.split(".")[0]}_',
+                                    labels=["total demand", "net demand with DER"])
+                    if PGE_seperate_file:
+                        block_subscription = int(np.loadtxt(f'PGE_block_{file}')[1])
+                    else:
+                        block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy().max())
+                    subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
+                    penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)
+                    TOU_cost = np.sum(self.TOU_rates * net_grid_load) * self.resolution / 60  # ($)
+                    electricity_cost = TOU_cost + penalty_cost + subscription_cost
+                    result_dict[f'charging_station_sim_{path_lst[3]}'] = {"TOU_cost": TOU_cost,
+                                                                          "subscription_cost": subscription_cost,
+                                                                          "penalty_cost": penalty_cost,
+                                                                          "total_elec_cost": electricity_cost,
+                                                                          "cost_per_day": electricity_cost / self.num_days,
+                                                                          "max_load": max_load,
+                                                                          "avg_load": average_load,
+                                                                          "cost_per_kWh": electricity_cost / total_energy}
+        with open("postopt_cost_charging.json", 'w') as config_file_path:
+            json.dump(result_dict, config_file_path, indent=1)  # save to JSON
+        os.chdir(current_dir)  # go back to initial dir
+        return result_dict

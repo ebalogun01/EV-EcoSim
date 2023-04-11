@@ -4,7 +4,8 @@ import pandas as pd
 import os
 
 # C:\Users\ebalo\OneDrive - Stanford\EV50_cosimulation\ResultsSolarDeterministic\July_5stations
-simulation_results_folder = 'C:/Users/ebalo/OneDrive - Stanford/EV50_cosimulation/1600evs/ah_scaling/Jan_solar'
+# simulation_results_folder = 'C:/Users/ebalo/OneDrive - Stanford/EV50_cosimulation/1600evs/ah_scaling/Jan_solar'
+simulation_results_folder = '../charging_sim/3200evs/ah_scaling/voltparse'
 os.chdir(simulation_results_folder)
 fig_width, fig_height = 10, 6
 font_size = 14
@@ -22,7 +23,8 @@ for root, dirs, files, in os.walk(".", topdown=True):
                 # print(os.path.join(root, subname))
         print(os.getcwd())
         # os.chdir(os.path.join(root, subname))
-        voltages = pd.read_csv('voltages.csv', engine='pyarrow')[:end_idx]  # read this as sparse or eliminate nodes with 0 values for V
+        voltages = pd.read_csv('voltages.csv', on_bad_lines='skip')[:end_idx]  # read this as sparse or eliminate nodes with 0 values for V
+        # above includes patch for skipping problematic lines, but needs to be fixed in voltdump2.py later
         plt.close('all')
         # process voltages
         cols = list(voltages.columns)
@@ -106,12 +108,12 @@ for root, dirs, files, in os.walk(".", topdown=True):
         plt.close()
 
         plt.figure(figsize=(fig_width, fig_height))
-        plt.hist(np.ndarray.flatten(norm_v), bins=100, range=[0.7, 1.08])
+        plt.hist(np.ndarray.flatten(norm_v), bins=100, range=[0.85, 1.15])
         plt.ylabel('Count', fontsize=16)
         plt.xlabel('Voltage (p.u.)', fontsize=16)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', labelsize=16)
-        plt.xlim([0.7, 1.08])
+        plt.xlim([0.85, 1.15])
         plt.grid()
         plt.tight_layout()
         plt.savefig('vhist.png')

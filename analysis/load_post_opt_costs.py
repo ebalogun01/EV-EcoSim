@@ -88,7 +88,7 @@ def plot_stacked_bar(elec_costs, batt_costs, save_plot_path=None, solar_costs=No
     cost_component['Electricity'] = elec_costs.to_numpy()[c_rate_idx]
 
     width = 0.6  # the width of the bars: can also be len(x) sequence
-    neg_cost = False
+    neg_cost = False    # need to build a more robust solution to this in the future
     fig, ax = plt.subplots()
     bottom = np.zeros(len(capacities))
 
@@ -121,7 +121,7 @@ def plot_stacked_bar(elec_costs, batt_costs, save_plot_path=None, solar_costs=No
         plt.close('all')
 
 
-def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost=True):
+def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost=False):
     #TODO: reminder to toggle transformer cost on and off
     estimator = CostEstimator(days_count)
     #   calculated values are populated in their respective scenario directories
@@ -133,7 +133,10 @@ def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost
         estimator.calculate_trans_loss_of_life(result_dir)
 
 
-def collate_results(month):
+def collate_results(month, solar=True):
+    solar_lcoe = 0
+    if solar:
+        solar_lcoe = 0.078
     main_dir = os.getcwd()
     data_table = pd.DataFrame(
         {energy_rating / 1000: np.zeros(len(max_c_rates)).tolist() for energy_rating in energy_ratings})
@@ -160,14 +163,15 @@ def collate_results(month):
             elec_total_cost = elec_costs['charging_station_sim_0']['cost_per_kWh']
             print(elec_costs)
         avg_trans_lol = 0
-        with open('postopt_trans_lol.json', "r") as f:
-            trans_lol = json.load(f)
-            avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
+        # with open('postopt_trans_lol.json', "r") as f:
+        #     trans_lol = json.load(f)
+        #     avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
 
         battery_dtable[energy].loc[c_rate] = batt_total_cost
         electricity_cost_dtable[energy].loc[c_rate] = elec_total_cost
         batt_aging_dtable[energy].loc[c_rate] = batt_aging_cost
-        solar_dtable[energy].loc[c_rate] = 0.10     # dollars/kWh
+
+        solar_dtable[energy].loc[c_rate] = solar_lcoe   # dollars/kWh
         trans_dtable[energy].loc[c_rate] = avg_trans_lol
         os.chdir(main_dir)
     print("Electricity levelized cost table\n", electricity_cost_dtable)
@@ -176,7 +180,7 @@ def collate_results(month):
         os.mkdir(collated_dir)
     battery_dtable.to_csv(f'{collated_dir}/{month}_battery_costs_per_day.csv')
     electricity_cost_dtable.to_csv(f'{collated_dir}/{month}_elec_costs_per_day.csv')
-    (electricity_cost_dtable + battery_dtable).to_csv(f'{collated_dir}/Total_{month}_costs_per_day.csv')
+    (electricity_cost_dtable + battery_dtable + solar_dtable).to_csv(f'{collated_dir}/Total_{month}_costs_per_day.csv')
     batt_aging_dtable.to_csv(f'{collated_dir}/{month}_battery_aging_costs_per_day.csv')
     trans_dtable.to_csv(f'{collated_dir}/{month}_trans_aging_per_day.csv')
     plot_tables(batt_dtable=battery_dtable, elec_cost_dtable=electricity_cost_dtable,
@@ -204,7 +208,7 @@ def collate_results(month):
 
 
 if __name__ == '__main__':
-    desired_month = 'January'
+    desired_month = 'June'
     days = 30  # number of days
     for i in range(len(energy_ratings) * len(max_c_rates)):
         result_dir = f'results/oneshot_{desired_month}{i}'
