@@ -30,6 +30,8 @@ L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
 month = int(str(param_dict['starttime']).split('-')[1])  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
 month_str = list(month_days.keys())[month-1]
+# month = 1
+# month_str = list(month_days.keys())[month - 1]
 
 # lood DCFC locations txt file
 print('...loading charging bus nodes')
@@ -59,6 +61,8 @@ min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
 energy_ratings = [5e4, 10e4, 20e4, 40e4, 80e4]
+# energy_ratings = [0]
+# max_c_rates = [0.00001]
 max_c_rates = [0.1, 0.2, 0.5, 1, 2]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
@@ -77,8 +81,7 @@ def make_scenarios():
 
 
 def run(scenario):
-    EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps)
-    #TODO: set month str
+    EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps, month=month)
     save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
     os.mkdir(save_folder_prefix)
     EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
@@ -101,7 +104,7 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 24
+    start_idx = 0
     end_idx = len(energy_ratings) * len(max_c_rates)
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()

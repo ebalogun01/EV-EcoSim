@@ -10,7 +10,7 @@
   "sample_start_idx": 0,
   "sample_end_idx": 96,
   "area": 1,
-  "rating": 0.00,
+  "rating": 0.08,
   "num steps": 96,
   "dollar_per_m2": 6,
   "notes": "rating is in MW, dollar per m2 is for post optimization (can look into including it during optimization, MONTH IS INDEXED FROM 1 not O"

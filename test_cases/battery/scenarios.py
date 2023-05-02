@@ -33,7 +33,7 @@ max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
 # month = 6
 energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
-max_c_rates = [0.2, 0.5, 1, 1.5, 2]
+max_c_rates = [0.1, 0.2, 0.5, 1, 2]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
@@ -68,9 +68,9 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 13
-    end_idx = 14
-    idx_list = list(range(start_idx, end_idx))
+    start_idx = 15
+    end_idx = 25
+    idx_list = list(range(start_idx, end_idx, 5))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:

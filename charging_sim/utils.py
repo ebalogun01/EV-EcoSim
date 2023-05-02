@@ -73,7 +73,7 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
     return cost_electricity
 
 
-def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power=True, max_power_pen=10000):
+def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power=True, max_power_pen=100000):
     """This will need to use a heuristic and take the average conservative estimate for gamma"""
     net_grid_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
     TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_grid_load)) * controller.resolution/60     # ($)

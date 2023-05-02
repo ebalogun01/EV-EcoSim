@@ -94,7 +94,7 @@ class MPC:
         if self.control_battery:
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
+            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=True)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
                                        solar=self.solar, time=0, name="Test_Case_" + str(self.storage.id),
@@ -113,8 +113,8 @@ class MPC:
 
     def get_battery_constraints(self, ev_load):
         # TODO: can toggle between battery initial soc and planned soc trajectory
+        eps = 0.0001
         cells_series = self.storage.topology[0]
-
         mod_parallel = self.storage.topology[1]  # parallel modules count
         self.battery_OCV = self.storage.get_OCV() * cells_series  # sensing directly from the battery at each time-step
         self.storage_constraints = \
@@ -140,7 +140,7 @@ class MPC:
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
+             ev_load + self.battery_power_ev - self.solar.ev_power >= eps  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              ]
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
@@ -223,7 +223,7 @@ class Oneshot:
             # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
-            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
+            electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=True)
             objective = build_objective(objective_mode, electricity_cost, linear_aging_cost)
             opt_problem = Optimization(objective_mode, objective, self, load, self.resolution, None, self.storage,
                                        solar=self.solar, time=0, name=f"Test_Case_{str(self.storage.id)}", solver=self.config['opt_solver'])
@@ -241,6 +241,7 @@ class Oneshot:
 
     def get_battery_constraints(self, ev_load):
         # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
+        eps = 0.000
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
         self.battery_OCV = self.storage.get_OCV() * cells_series    # sensing directly from the battery at each time-step
@@ -268,7 +269,7 @@ class Oneshot:
              self.battery_current_ev <= cp.multiply(self.storage.max_current, self.batt_binary_var_ev),
 
              # # need to make sure battery is not discharging and charging at the same time with lower 2 constraints
-             ev_load + self.battery_power_ev - self.solar.ev_power >= 0  # energy balance
+             ev_load + self.battery_power_ev - self.solar.ev_power >= eps  # energy balance
              # allows injecting back to the grid; we can decide if it is wasted or not
              ]
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
