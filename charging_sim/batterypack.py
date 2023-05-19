@@ -253,7 +253,7 @@ class Battery:
         self.SOC_list += SOC,
 
     def update_max_current(self, verbose=False):
-        self.max_current = self.max_c_rate * self.cap
+        self.max_current = self.max_c_rate * self.cap * self.topology[1]
         if verbose:
             print("Maximum allowable current updated.")
 
