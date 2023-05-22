@@ -128,12 +128,12 @@ def run_results(case_dir, days_count, batt_cost=True, elec_cost=True, trans_cost
     if batt_cost:
         estimator.calculate_battery_cost(case_dir)
     if elec_cost:
-        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_seperate_file=True)
+        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_seperate_file=False)
     if trans_cost:
         estimator.calculate_trans_loss_of_life(result_dir)
 
 
-def collate_results(month, solar=True):
+def collate_results(month, solar=True, trans=True, oneshot=False):
     solar_lcoe = 0
     if solar:
         solar_lcoe = 0.078
@@ -148,7 +148,10 @@ def collate_results(month, solar=True):
     trans_dtable = copy.deepcopy(data_table)
     solar_dtable = copy.deepcopy(data_table)
     for i in range(len(energy_ratings) * len(max_c_rates)):
-        resul_dir = f'results/oneshot_{month}{i}'
+        if oneshot:
+            resul_dir = f'results/oneshot_{month}{i}'
+        else:
+            resul_dir = f'results/{month}{i}'
         os.chdir(resul_dir)
         with open('scenario.json', "r") as f:
             scenario = json.load(f)
@@ -163,9 +166,10 @@ def collate_results(month, solar=True):
             elec_total_cost = elec_costs['charging_station_sim_0']['cost_per_kWh']
             print(elec_costs)
         avg_trans_lol = 0
-        # with open('postopt_trans_lol.json', "r") as f:
-        #     trans_lol = json.load(f)
-        #     avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
+        if trans:
+            with open('postopt_trans_lol.json', "r") as f:
+                trans_lol = json.load(f)
+                avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
 
         battery_dtable[energy].loc[c_rate] = batt_total_cost
         electricity_cost_dtable[energy].loc[c_rate] = elec_total_cost
@@ -175,7 +179,10 @@ def collate_results(month, solar=True):
         trans_dtable[energy].loc[c_rate] = avg_trans_lol
         os.chdir(main_dir)
     print("Electricity levelized cost table\n", electricity_cost_dtable)
-    collated_dir = f'{month}_oneshot_collated_results'
+    if oneshot:
+        collated_dir = f'{month}_oneshot_collated_results'
+    else:
+        collated_dir = f'{month}_mpc_collated_results'
     if not os.path.isdir(collated_dir):
         os.mkdir(collated_dir)
     battery_dtable.to_csv(f'{collated_dir}/{month}_battery_costs_per_day.csv')
@@ -209,8 +216,15 @@ def collate_results(month, solar=True):
 
 if __name__ == '__main__':
     desired_month = 'June'
-    days = 30  # number of days
-    for i in range(len(energy_ratings) * len(max_c_rates)):
-        result_dir = f'results/oneshot_{desired_month}{i}'
-        run_results(result_dir, days)
+    # redo 7, 15
+    # oneshot = False
+    # days = 30  # number of days
+    # for i in range(0, len(energy_ratings) * len(max_c_rates)):
+    #     # if i == 7:
+    #     #     continue
+    #     if oneshot:
+    #         result_dir = f'results/oneshot_{desired_month}{i}'
+    #     else:
+    #         result_dir = f'results/{desired_month}{i}'
+    #     run_results(result_dir, days, trans_cost=True)
     collate_results(desired_month)

@@ -94,10 +94,10 @@ class CostEstimator:
                     if PGE_seperate_file:
                         block_subscription = int(np.loadtxt(f'PGE_block_{file}')[1])
                     else:
-                        block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy().max())
+                        block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy()[1])
                     subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
                     penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)
-                    TOU_cost = np.sum(self.TOU_rates * net_grid_load) * self.resolution / 60  # ($)
+                    TOU_cost = np.sum(self.TOU_rates[0:net_grid_load.shape[0]] * net_grid_load) * self.resolution / 60  # ($)
                     electricity_cost = TOU_cost + penalty_cost + subscription_cost
                     result_dict[f'charging_station_sim_{path_lst[3]}'] = {"TOU_cost": TOU_cost,
                                                                           "subscription_cost": subscription_cost,
@@ -134,20 +134,20 @@ class CostEstimator:
         net_load_plot = net_load[start_day * 96:start_day * 96 + num_steps]
 
         lb = np.zeros(num_steps)
-        alph = 1
+        alph = 0.3
         interp = True
-        total_load_color = 'purple'
+        total_load_color = 'blue'
         net_load_color = 'orange'
         ax.plot(x_vals, total_load_plot, color=f'tab:{total_load_color}')
         ax.plot(x_vals, net_load_plot, color=f'tab:{net_load_color}')
         ax.fill_between(x_vals, lb, total_load_plot, color=f'tab:{total_load_color}',
                         label=labels[0], interpolate=interp, alpha=alph)
-
-        ax.fill_between(x_vals, lb, net_load_plot, color=f'tab:{net_load_color}',
-                        where=(total_load_plot >= net_load_plot), label=labels[1], interpolate=interp, alpha=alph)
-
-        ax.fill_between(x_vals, total_load_plot, net_load_plot, where=(total_load_plot <= net_load_plot),
-                        color=f'tab:{net_load_color}', interpolate=interp, alpha=alph)
+        #
+        ax.fill_between(x_vals, lb, net_load_plot, color=f'tab:{net_load_color}', label=labels[1], interpolate=interp,
+                        alpha=alph)
+        #
+        # ax.fill_between(x_vals, total_load_plot, net_load_plot, where=(total_load_plot <= net_load_plot),
+        #                 color=f'tab:{net_load_color}', interpolate=interp, alpha=alph)
         ax.set_ylim(bottom=0)
         ax.set_xlim(left=0, right=round(max(x_vals)))
         plt.xlabel('Hour of day')
