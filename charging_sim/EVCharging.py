@@ -246,6 +246,9 @@ class ChargingSim:
             self.control_start_index = stepsize * self.day_year_count
             todays_load = self.test_data[self.day_year_count*self.num_steps+self.time
                                          :self.num_steps*(self.day_year_count+1)+self.time] * 1 # this is where time comes in
+            plt.plot(todays_load)
+            plt.savefig('test_{}.png'.format(self.day_year_count))
+            plt.close()
             todays_load = np.minimum(todays_load, charging_station.capacity)   # only accept capacity of charging station
             todays_load = todays_load.reshape(-1, 1)
             for i in range(stepsize):

@@ -92,6 +92,8 @@ class Battery:
         self.calendar_aging = [0.0]    # tracking calendar aging
         self.cycle_aging = [0.0]   # tracking cycle aging
         self.control_power = np.array([])
+        print(self.initial_SOC)
+        print(self.OCV_map_SOC, self.OCV_map_voltage)
 
         self.voltage = np.interp(self.initial_SOC, self.OCV_map_SOC, self.OCV_map_voltage)  # this is wrong
         self.voltages = [self.voltage]  # to be updated at each time-step (seems expensive)
@@ -101,6 +103,7 @@ class Battery:
         self.SOC = self.initial_SOC
         self.SOC_list = [self.initial_SOC]
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)   # optional
+        self.R_cell = self.Ro + self.R1 + self.R2
 
         self.Q_initial = 0  # include the units here
         self.control_current = []   # changed to a list - will be more efficient
@@ -310,7 +313,7 @@ class Battery:
         pd.DataFrame(data).to_csv(f'{save_prefix}/battery_sim_{save_file_base}.csv')
         total_cycles = 0.5*self.total_amp_thruput / ((self.cell_nominal_cap + self.cap) / 2)
         np.savetxt(f'{save_prefix}/total_batt_cycles_{save_file_base}.csv', [total_cycles])
-        np.savetxt(f'{save_prefix}/pack_resistance_{save_file_base}.csv', [self.R_pack])
+        # np.savetxt(f'{save_prefix}/pack_resistance_{save_file_base}.csv', [self.R_pack])
         print('***** Successfully saved simulation outputs to: ', f'battery_sim_{save_file_base}.csv')
         print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
@@ -324,7 +327,7 @@ class Battery:
         """This changes the battery params depending on the number of cycles"""
         pass
     
-    def dynamics(self, current, simulate_pack=True):
+    def dynamics(self, current):
         # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
         #  state equations
         self.state_eqn(current)     # this updates the battery states
@@ -367,60 +370,17 @@ class Battery:
         self.total_amp_thruput += abs(current) * self.dt  # cycle counting
         return self.voltage
 
-    def dynamics_pack(self, current, simulate_pack=True):
-        # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
-        #  state equations
-        self.state_eqn_pack(current)  # this updates the battery states
-
-        if self.voltage > self.max_voltage:
-            print("charge current too high! Max voltage exceeded")
-            # we de-rate the current if voltage is too high (exceeds max prescribed v)
-            # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
-            current -= (self.voltage - self.max_voltage) / self.R_cell  # changed from just Ro
-            self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
-            print("max testing voltage is: ", self.voltage)
-            self.state_eqn(current, append=False)
-            print("max testing voltage is: ",
-                  self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
-            self.currents[-1] = current
-            self.power = (self.max_voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
-            self.true_power[-1] = self.power
-            self.SOC = self.SOC + current * self.dt / self.cap
-            self.voltages += self.max_voltage,  # numpy array
-            self.track_SOC(self.SOC)
-            self.total_amp_thruput += abs(current) * self.dt  # cycle counting
-            return self.voltage
-        elif self.voltage < self.min_voltage:
-            print("discharge current too high ! Min voltage exceeded")
-            current += (self.min_voltage - self.voltage) / self.R_cell
-            self.state_eqn(current, append=False)
-            self.currents[-1] = current
-            self.power = (self.voltage * self.topology[0]) * (self.current * self.topology[1]) / 1000
-            self.true_power[-1] = self.power
-            self.voltage = self.min_voltage
-            self.voltages += self.min_voltage,
-            self.SOC = self.SOC + current * self.dt / self.cap
-            self.track_SOC(self.SOC)
-            self.total_amp_thruput += abs(current) * self.dt  # cycle counting
-            return self.voltage
-
-        self.current = current
-        self.SOC = self.SOC + current * self.dt / self.cap
-        self.voltages += self.voltage,  # numpy array
-        self.track_SOC(self.SOC)
-        self.total_amp_thruput += abs(current) * self.dt  # cycle counting
-        return self.voltage
-
     def thermal_dynamics(self):
         """This models the battery's thermal state """
         #   using the lumped-sum capacitance model
 
     def state_eqn(self, current, append=True):
         """This holds the discretized state equations containing the battery dynamics at the cell-level."""
-        self.current = current  # added 01/09/22 to fix bug
+        self.current = current
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
         self.Ro = self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)
+        self.R_cell = self.Ro + self.R1 + self.R2
         #   state equations
         self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
         self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
@@ -445,22 +405,21 @@ class Battery:
         self.C2 *= self.topology[1]
         self.R_pack = self.Ro + self.R1 + self.R2
 
-
-    def state_eqn_pack(self, current, append=True):
-        """This holds the discretized state equations containing the battery dynamics at the cell-level."""
-        self.current = current  # added 01/09/22 to fix bug
-        dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
-        self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage) * self.topology[0]
-        self.Ro = (self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)) * self.topology[0]/self.topology[1]
-        #   state equations
-        #TODO: done: only modify currents for number of cells in parallel
-        self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
-        self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
-        self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
-        self.power = self.voltage * self.current / 1000  # kw
-        if append:
-            self.currents += current,
-            self.true_power += self.power,
+    # def state_eqn_pack(self, current, append=True):
+    #     """This holds the discretized state equations containing the battery dynamics at the cell-level."""
+    #     self.current = current  # added 01/09/22 to fix bug
+    #     dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
+    #     self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage) * self.topology[0]
+    #     self.Ro = (self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)) * self.topology[0]/self.topology[1]
+    #     #   state equations
+    #     #TODO: done: only modify currents for number of cells in parallel
+    #     self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
+    #     self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
+    #     self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
+    #     self.power = self.voltage * self.current / 1000  # kw
+    #     if append:
+    #         self.currents += current,
+    #         self.true_power += self.power,
 
     def get_OCV(self):
         return np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)

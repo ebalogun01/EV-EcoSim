@@ -88,6 +88,7 @@ class BatterySim:
             battery.SOC_list[-(self.num_steps + 1):])  # change this to the list? Done after one complete day
         # print("SOC is: ", SOC_vector)
         # TODO: changed del DOD to absolute value!!
+        # print('SOC: ', SOC_vector)
         del_DOD = np.abs(np.round(SOC_vector[0:self.num_steps] - SOC_vector[1:], 5))  # just for numerical convenience. Have this list be updated, given the resolution we want to solve!!!
         # print("del DOD: ", del_DOD)
         # print("Current Voltage is ", battery.voltage)
@@ -98,7 +99,7 @@ class BatterySim:
         avg_voltage = np.sqrt(np.average(real_voltage ** 2))  # quadratic mean voltage for aging
         # print("average voltage: ", avg_voltage, "regular avg: ", np.average(real_voltage))
         beta_cap = 7.348 * 10**-3 * (avg_voltage - 3.695)**2 + 7.6 * 10**-4 + 4.081 * 10**-3 * del_DOD
-        beta_cap /= 340.3652
+        beta_cap /= 4765.113
         # print('Beta Cap is, ', beta_cap)
         beta_res = 2.153 * 10**-4 * (avg_voltage - 3.725)**2 - 1.521 * 10**-5 + 2.798 * 10**-4 * del_DOD
         beta_minimum = 1.5 * 10**-5
@@ -143,7 +144,7 @@ class BatterySim:
         # I THINK THIS MUST BE ESTIMATED IN DAYS? AND I THINK IT HAS TO BE CUMULATIVE? NOT PER TIMESTEP?
         alpha_cap = (7.543 * avg_voltage - 23.75) * 10**6 * math.exp(-6976 / self.ambient_temp)  # aging factors
         alpha_res = (5.270 * avg_voltage - 16.32) * 10**5 * math.exp(-5986 / self.ambient_temp)  # temp in K
-        alpha_cap /= 340.3652   # scaling factor to match our data
+        alpha_cap /= 4765.113   # scaling factor to match our data
         capacity_fade = alpha_cap * (self.time / self.num_daily_steps)**0.75 * 2.15 / battery.cell_nominal_cap
         # for each time-step (this is scaled up for current cell)
         resistance_growth = alpha_res * (self.time / self.num_daily_steps) ** 0.75 * 2.15 / battery.cell_nominal_cap

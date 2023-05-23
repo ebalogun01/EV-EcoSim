@@ -18,7 +18,7 @@ path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosi
 
 day_minutes = 1440
 opt_time_res = 15   # minutes
-num_days = 30  # determines optimization horizon
+num_days = 1  # determines optimization horizon
 num_steps = num_days * day_minutes//opt_time_res    # number of steps to initialize variables for opt
 # PRELOAD
 
