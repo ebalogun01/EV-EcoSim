@@ -123,7 +123,7 @@ class BatterySim:
         """This uses the electrochemical and impedance-based model per Johannes et. Al"""
         cap_fade = self.get_aging_value(battery)[0]
         battery.SOH -= cap_fade  # change this to nom rating
-        battery.SOH_track.append(battery.SOH[0])
+        battery.SOH_track += battery.SOH,
         battery.cap = battery.SOH * battery.cell_nominal_cap
         battery.Qmax = battery.max_SOC * battery.cap
         battery.true_capacity_loss += cap_fade
