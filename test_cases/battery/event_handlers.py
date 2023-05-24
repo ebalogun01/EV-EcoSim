@@ -165,7 +165,7 @@ def on_precommit(t):
         # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
-            total_node_load += charger.get_current_load()*1000*0  # for L2 (converting to Watts)
+            total_node_load += charger.get_current_load()*1000  # for L2 (converting to Watts)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
@@ -174,7 +174,7 @@ def on_precommit(t):
     prop_3 = 'constant_power_C'
     for name in dcfc_nodes:
         charger = EV_charging_sim.get_charger_obj_by_loc(name)
-        total_node_load_watts = charger.get_current_load()*1000*0  # converting to watts
+        total_node_load_watts = charger.get_current_load()*1000  # converting to watts
         gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
         gridlabd.set_value(name, prop_2, str(total_node_load_watts / 3))
         gridlabd.set_value(name, prop_3, str(total_node_load_watts / 3))
@@ -186,11 +186,11 @@ def on_precommit(t):
 
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
-    import voltdump2
-    voltdump2.parse_voltages(save_folder_prefix)
+    # import voltdump2
+    # voltdump2.parse_voltages(save_folder_prefix)
     EV_charging_sim.load_results_summary(save_folder_prefix)
-    np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
-    np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
+    # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
+    # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
     np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)    # nominal voltage magnitude (use in analysis)
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
