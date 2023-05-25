@@ -23,7 +23,7 @@ for params_key in params_list:
 # do the OCV maps as well; reverse directionality is important for numpy.interp function
 c["OCV_map_voltage"] = np.loadtxt(f'../{c["OCV_map_voltage"]}')[::-1]
 c["OCV_map_SOC"] = np.loadtxt(f'../{c["OCV_map_SOC"]}')[::-1]
-c['SOC'] = 0.0
+c['SOC'] = 1e-8
 
 
 # INITIALIZE MODULES
@@ -31,8 +31,8 @@ battery = Battery(config=c)
 aging = BatterySim(0, num_steps=1, res=1/60)
 
 current = scipy.io.loadmat(file)['I_full_vec_M1_NMC25degC']
-for i in range(len(current)):
-    battery.dynamics(current[i])
+for i in range(current.shape[0]):
+    battery.dynamics(current[i, 0])
     if i > 0:
         aging.run(battery)
         print('Second: ', i, 'Current: ', current[i, 0], 'Capacity: ', battery.cap)
@@ -42,8 +42,11 @@ for i in range(len(current)):
 
 # WHEN DONE PLOT STUFF
 print("Battery Capacity is: ", battery.cap)
-plt.plot(battery.SOH_track[::1000])
+plt.plot(battery.SOH_track)
 plt.xlabel('Time-step')
 plt.ylabel('SOH')
-battery.save_sim_data('.')
-print("Battery Capacity is: ", battery.cap)
+plt.show()
+np.savetxt('Capacity_verification.csv', np.array(battery.SOH_track) * c['capacity'])
+
+c_int = np.cumsum(current)
+cycles = c_int / (3600 * c['capacity'] * 2)
