@@ -80,7 +80,6 @@ def run_scenarios_sequential():
     start_idx = 0
     end_idx = 10
     idx_list = list(range(start_idx, end_idx, 1))
-    # idx_list = [start_idx, end_idx]
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:
