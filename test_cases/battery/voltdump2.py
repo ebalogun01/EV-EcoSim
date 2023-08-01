@@ -1,8 +1,13 @@
+"""This file comprises the functions for parsing the voltages at every single timestep from the powerflow simulation
+into a readable, clean csv"""
+
 import csv
 import glmptime as glmptime
 
 
 def parse_voltages(path_prefix):
+    """This function parses the voltages from gridLabD module into a readable csv
+    Inputs: path_prefix - path defining folder in which to save the new voltages.csv file"""
     data = {}
     nodes = ["Timestamp"]
     lastnodes = []
@@ -17,8 +22,6 @@ def parse_voltages(path_prefix):
                 if tpos > 0:
                     timestamp = row[0][tpos + 4:tpos + 27]
                     timestamp = glmptime.glmptime(timestamp)
-                    # if "00:00:00" in str(timestamp):
-                    #	print(timestamp)
                     data[timestamp] = []
                     timezone = row[0][tpos + 24:tpos + 27]
                 header = []
@@ -33,17 +36,13 @@ def parse_voltages(path_prefix):
             else:
                 try:
                     node = row[0]
-                    # A = complex(float(row[1]),float(row[2]))
                     Ar = float(row[1])
                     Ai = float(row[2])
-                    # B = complex(float(row[3]),float(row[4]))
                     Br = float(row[3])
                     Bi = float(row[4])
-                    # C = complex(float(row[5]),float(row[6]))
                     Cr = float(row[5])
                     Ci = float(row[6])
                     if f"{node}_Ar" not in nodes:
-                        # nodes.extend([node+"_A",node+"_B",node+"_C"])
                         nodes.extend(
                             [
                                 f"{node}_Ar",
@@ -54,9 +53,7 @@ def parse_voltages(path_prefix):
                                 f"{node}_Ci",
                             ]
                         )
-                    # data[timestamp].extend([A,B,C])
                     data[timestamp].extend([Ar, Ai, Br, Bi, Cr, Ci])
-
                 except:
                     print(f"ERROR: ignored row '{row}'")
 
@@ -67,5 +64,4 @@ def parse_voltages(path_prefix):
         for key in sorted(data.keys()):
             row = [key.strftime("%Y-%m-%dT%H:%M:%S%z")]
             row.extend("{0:.6f}".format(value) for value in data[key])
-            # row.append("%g%+gd" % (value.real,value.imag))
             writer.writerow(row)

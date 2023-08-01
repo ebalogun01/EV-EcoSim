@@ -1,3 +1,7 @@
+"""This file is mainly used to run scenarios in parallel (if enough CPUs) or sequentially,
+ without having to modify and rerun the simulation each time.
+ Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates"""
+
 import multiprocessing as mp
 import sys
 import gblvar
@@ -32,13 +36,14 @@ min_power = 0
 max_power = 0
 power_ratings = []  # this should be redundant for max_c_rate
 # month = 6
-energy_ratings = [8e4, 10e4, 15e4, 20e4, 25e4]
+energy_ratings = [5e4, 10e4, 20e4, 40e4, 80e4]
 max_c_rates = [0.1, 0.2, 0.5, 1, 2]
 min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
 
 def make_scenarios():
+    """This is used to make the list of scenarios (dicts) that are used to run the simulations"""
     scenarios_list = []
     idx = 0
     for Er in energy_ratings:
@@ -56,6 +61,8 @@ def run(scenario):
 
 
 def run_scenarios_parallel():
+    """This runs c-rate-energy scenarios in parallel, using the multi-core processor of the PC.
+    User should have enough cores and RAM, as if not enough, can lead to entire process freezing"""
     scenarios = make_scenarios()
     start_idx = 0
     end_idx = 3
@@ -68,9 +75,12 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    start_idx = 15
-    end_idx = 25
-    idx_list = list(range(start_idx, end_idx, 5))
+    """Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
+    which is a combination of all the capacities and c-rates"""
+    start_idx = 0
+    end_idx = 10
+    idx_list = list(range(start_idx, end_idx, 1))
+    # idx_list = [start_idx, end_idx]
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:

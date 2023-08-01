@@ -1,8 +1,8 @@
+"""This file hosts the charging simulation class, in charge of orchestrating the entire simulation."""
 from chargingStation import ChargingStation
 import json
 import os
 import numpy as np
-import random
 from batterypack import Battery
 from batteryAgingSim import BatterySim
 import controller as control  # FILE WITH CONTROL MODULE
@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 from electricityPrices import PriceLoader
 from solar import Solar
 
-# plt.style.use('seaborn-darkgrid')  # optional
-minute_in_day = 1440
+MINUTES_IN_DAY = 1440
 
 # TODO: COMPLETE SEPERATE CONFIGS FOR EACH CHARGING STATION GIVEN CONFIG (fast charging vs L2) and include relevant load data
 # clean code COMPLETELY
@@ -29,8 +28,6 @@ class ChargingSim:
         data2018 = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')  # this is only 30 days data
         print('SpeechData loaded...')
         charge_data = np.loadtxt(f'{path_prefix}/speechLoadData/speechWeekdayLoad{num_evs}.csv')
-        # charge_data = np.genfromtxt(f'{path_prefix}/CP_ProjectData/power_data_2018.csv')[:-1, ]/4
-        # test_data = data2018[:-1, ]  # removing bad data
         self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.solar_config = None
@@ -55,7 +52,7 @@ class ChargingSim:
         self.site_net_loads = []
         self.resolution = resolution
         if not num_steps:
-            self.num_steps = int(minute_in_day / resolution)
+            self.num_steps = int(MINUTES_IN_DAY / resolution)
         else:
             self.num_steps = num_steps
         self.aging_sim = None  # This gets updated later
@@ -63,6 +60,10 @@ class ChargingSim:
         self.scenario = None    # to be updated later
 
     def load_config(self):
+        """Loads all the relevant configurations and includes them in the simulation attributes.
+        Inputs: None.
+        Returns: None."""
+
         # use master config for loading other configs also change all these paths from literal
         configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
@@ -78,7 +79,9 @@ class ChargingSim:
 
     def load_battery_params(self):
         """ This loads the battery params directly into the sim, so parameters will be the same for all
-        batteries unless otherwise specified. battery_config must be attributed to do this"""
+        batteries unless otherwise specified. battery_config must be attributed to do this.
+        Inputs: None.
+        Returns: None."""
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
             self.battery_config[params_key] = np.loadtxt(
@@ -91,6 +94,12 @@ class ChargingSim:
         # this should make those inputs just be the params
 
     def create_battery_object(self, idx, node_prop, controller=None):
+        """Creates and stores all battery modules/objects in the network.
+        Inputs: idx - Battery identification index.
+                none_prop - Dictionary of Node properties; includes location, node type (L2 or DCFC).
+                controller - Controller assigned to the battery object.
+        Returns: buffer_battery - The battery object that is created.
+        """
         #  this creates and stores all battery objects in the network
         buffer_battery = Battery(config=self.battery_config, controller=controller)
         buffer_battery.id, buffer_battery.node = idx, node_prop['node']
@@ -221,7 +230,7 @@ class ChargingSim:
 
     def update_steps(self, steps):
         self.steps += steps
-        if self.steps == minute_in_day / self.resolution:
+        if self.steps == MINUTES_IN_DAY / self.resolution:
             self.day_year_count += 1
 
     @staticmethod
