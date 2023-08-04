@@ -1,28 +1,15 @@
+""" This file hosts the battery degradation module as described in Balogun Et. Al:
+https://doi.org/10.36227/techrxiv.23596725.v2 """
 import numpy as np
 import math
 
 
-"""Will likely import all batteries with their respective power profiles to update the SOH for each of them"""
-
-
 # TODO: How to model power delivery as a function of time, temperature, SOC and SOH at every time step. Cap as a...
-#  function of discharge rate Fixed capacity
-#  How to locate batteries spatially
-#  Control Signals given to battery may vary slightly from response. How is the discharge current of battery controlled?
 #  Is there a relationship between controls cost (temp control etc) with increasing power delivery by battery?
 #  How can we incorporate this response delay due to chemistry or reaction responsiveness into simulation?
-#  Finishing these will be great first battery sim environment. Maybe ignore details for now.
 #  Think about creating a few degradation models from literature.
 #  Need to obtain battery discharge curves for real simulation; can we get sample discharge curves or is it necessary?
-#  I want to understand the communication protocol between EV and Station when plugged in and how that will affect batt.
-#  How is the power from the battery mixed with that from the grid? I assume voltage must match.
-#  Need voltage vs SOC curves to use to infer voltage from SOC so degradation can be computed (depends on C-rate too!).
-#  Determining a battery’s state of charge from voltage measurement is  vague enough if current is moving
-#  through the battery. The vagaries increase exponentially if no current is moving through the battery.
-#  Available capacity is dependent on rate of discharge. This will ideally be dynamic in sim but static in control algo.
 #  Need to consider Peukert's law: https://en.wikipedia.org/wiki/Peukert%27s_law
-#  Topologies for batteries in series vs. parallel and how does affect design as well. Voltage/current boosting.
-#  SOC vs. Voltage vs. Discharge Rate
 #  How does solution improve with horizon length (how far is looking ahead important (for MPC no point but computation
 #  can become expensive. Horizon length 'N' vs. optimal savings analysis.
 #  I see how RL can be used here to learn a policy with time. Opt. Algo with improve itself based on feedback from aging
@@ -39,9 +26,8 @@ class BatterySim:
         beta_res: resistance growth aging factor for cycle aging
         alpha_res: resistance growth aging factor for calendar aging
     Assumptions:
-        Homogenous battery with dynamics modelled as one big cell
-        Constant temperature profile in vicinity of battery
-        SOC is observable with no error (this is important for other state approximation (voltage)
+        Homogenous battery with dynamics modelled as one big cell.
+        Constant temperature profile in vicinity of battery.
         """
 
     def __init__(self, datetime, num_steps, res=15):
@@ -57,30 +43,6 @@ class BatterySim:
         # BM = BatteryMaps()
         # self.response_surface = BM.get_response_surface()[0]  # this is used to infer voltage from other states
         # Include battery chemistry later.
-
-    def infer_voltage(self, battery):
-        """This method is used to estimate the voltage from estimated SOC, temp, and current. Do this before
-        simulating the degradation.
-
-        DEPRECATING!!! """
-        # First estimate the SOC
-        # for battery in self.battery_objects:
-        SOC = battery.SOC.value[0, 0]
-        for i in range(1):
-            SOC = battery.SOC.value[i, 0]
-            current = round(battery.current.value[i, 0], 8)  # numerical issue here
-            # print("BATTERY CURRENT IS: ", current)
-            if current <= 0:  # Discharge Dynamics
-                # print(current, SOC)
-                true_voltage = self.response_surface([abs(current), SOC])[0]
-            else:  # Charge Dynamics
-                # print(current, SOC)
-                true_voltage = self.response_surface([0, SOC])[
-                                   0] + current * 0.076  # estimated as OCV + bias for now...RC is low so not t
-            battery.true_voltage = np.append(battery.true_voltage, true_voltage)
-            # battery.current_voltage = true_voltage
-            #   knowledge of battery degradation is somewhat assumed here, making opt problem more optimal than will really be
-        battery.true_power.append(np.multiply(battery.true_voltage[1:], battery.current.value) / 1000)
 
     def get_cyc_aging(self, battery):
         """Detailed aging for simulation environment. Per Johannes Et. Al"""
@@ -136,8 +98,6 @@ class BatterySim:
         battery.resistance_growth += res_growth
 
     def get_calendar_aging(self, battery):
-        # TODO: This currently runs the aging for an entire day after each iteration run. Will need to formulate
-        #  learning architecture
         """Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)"""
         voltages = np.array(battery.voltages[-2:]) / battery.topology[0]   # this should include the prior voltage no?
         avg_voltage = np.average(voltages)  # mean voltage for aging
@@ -170,7 +130,6 @@ class BatterySim:
     def run(self, battery):
         """need to slightly change this for now
         MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME"""
-        # for battery in self.battery_objects:
         self.update_capacity(battery)
         # print("Battery Aging and Response Estimated")
 

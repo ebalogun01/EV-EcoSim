@@ -1,5 +1,5 @@
 """This file comprises the functions for parsing the voltages at every single timestep from the powerflow simulation
-into a readable, clean csv"""
+into a readable, clean csv."""
 
 import csv
 import glmptime as glmptime
@@ -7,7 +7,9 @@ import glmptime as glmptime
 
 def parse_voltages(path_prefix):
     """This function parses the voltages from gridLabD module into a readable csv
-    Inputs: path_prefix - path defining folder in which to save the new voltages.csv file"""
+    Inputs: path_prefix - path defining folder in which to save the new voltages.csv file.
+    Returns: None.
+    """
     data = {}
     nodes = ["Timestamp"]
     lastnodes = []

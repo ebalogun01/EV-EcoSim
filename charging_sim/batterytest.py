@@ -1,3 +1,5 @@
+"""@author: Emmanuel Balogun. Testing file for E.Balogun. Please ignore"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from battery import Battery

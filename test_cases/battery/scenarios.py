@@ -7,12 +7,11 @@ import sys
 import gblvar
 import ast
 
-# import time
-
+# Preamble.
 if not gblvar.charging_sim_path_append:
     sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
     gblvar.charging_sim_path_append = True
-    # print('append 1')
+
 from utils import month_days
 
 # GET STATION CONFIGURATIONS
@@ -43,7 +42,10 @@ max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
 
 def make_scenarios():
-    """This is used to make the list of scenarios (dicts) that are used to run the simulations"""
+    """This is used to make the list of scenarios (dicts) that are used to run the simulations.
+    Inputs: None. However, it uses preloaded global functions from a config.txt file.
+    Returns: None.
+    """
     scenarios_list = []
     idx = 0
     for Er in energy_ratings:
@@ -56,13 +58,19 @@ def make_scenarios():
 
 
 def run(scenario):
+    """Runs a scenario.
+    Input: scenario - the scenario a user would like to run.
+    Returns: None.
+    """
     import master_sim
     master_sim.run(scenario)
 
 
 def run_scenarios_parallel():
     """This runs c-rate-energy scenarios in parallel, using the multi-core processor of the PC.
-    User should have enough cores and RAM, as if not enough, can lead to entire process freezing"""
+    User should have enough cores and RAM, as if not enough, can lead to entire process freezing.
+    Inputs: None.
+    Returns: None."""
     scenarios = make_scenarios()
     start_idx = 0
     end_idx = 3
@@ -76,7 +84,9 @@ def run_scenarios_parallel():
 
 def run_scenarios_sequential():
     """Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
-    which is a combination of all the capacities and c-rates"""
+    which is a combination of all the capacities and c-rates.
+    Inputs: None.
+    Returns: None."""
     start_idx = 0
     end_idx = 10
     idx_list = list(range(start_idx, end_idx, 1))
@@ -89,7 +99,9 @@ def run_scenarios_sequential():
 
 
 def run_scenario_single():
-    """This function just runs one scenario"""
+    """Runs only one scenario from a user specified configuration file.
+    Inputs: None.
+    Returns: None."""
     # Keep changing this for each run
     Er_idx = 0
     c_rate_idx = 2

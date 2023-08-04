@@ -1,3 +1,7 @@
+"""This file is the main power-horse for the EV-Ecosim. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in EV-Ecosim. This file imports all simulated objects and their children,
+which is then run in the co-simulation environment."""
+
 import os
 import sys
 import numpy as np
@@ -57,7 +61,12 @@ EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month
 
 
 def on_init(t):
-    """Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd"""
+    """
+    This defines the actions to take at very beginning of simulation,
+    like getting objects and properties from gridlabd.
+    Inputs: t - arbitrary placeholder.
+    Returns: True - arbitray value.
+    """
     # get object lists from GridLAB-D
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
@@ -79,7 +88,9 @@ def on_init(t):
 
 
 def on_precommit(t):
-    ########################## UPDATES FROM GRIDLABD ##################################
+    """ about precommit
+    Inputs: INPUT DESCRIPTION HERE
+    Returns: OUTPUT DESCRIPTION HERE"""
 
     # get clock from GridLAB-D
     clock = gridlabd.get_global("clock")
@@ -147,9 +158,8 @@ def on_precommit(t):
             gblvar.it] * 1j
 
     if gblvar.it % EV_charging_sim.resolution == 0:
-        """only step when controller time matches pf..based on resolution.
-        This ensures allows for varied resolution for ev-charging vs pf solver"""
-        # print("Global time is: ", gblvar.it)
+        # only step when controller time matches pf..based on resolution.
+        # This ensures allows for varied resolution for ev-charging vs pf solver"""
         num_steps = 1
         # get loads from EV charging station
         EV_charging_sim.step(num_steps)
@@ -185,7 +195,8 @@ def on_precommit(t):
 
 
 def on_term(t):
-    """Stuff to do at the very end of the whole simulation, like saving data"""
+    """Actions taken at the very end of the whole simulation, like saving data.
+    One can comment out actions that one does not require."""
     # import voltdump2
     # voltdump2.parse_voltages(save_folder_prefix)
     EV_charging_sim.load_results_summary(save_folder_prefix)
@@ -204,9 +215,12 @@ def on_term(t):
     return True
 
 
-def find(criteria):
-    """Finding objects in gridlabd that satisfy certain criteria"""
-
+def find(criteria: str):
+    """
+    Finding objects in gridlabd that satisfy certain criteria
+    Input: criteria (str) - the criteria for returning gridlabd objects
+    Returns: list of objects that satisfy criteria.
+    """
     finder = criteria.split("=")
     if len(finder) < 2:
         raise IOError("find(criteria='key=value'): criteria syntax error")
@@ -270,7 +284,12 @@ def get_voltage():
 
 
 def get_trans_power(trans_power_str):
-    """Get power at transformer as a string and process it into a float"""
+    """
+    Obtains power at transformer as a string and processes it into a float.
+    Inputs: trans_power_string - transformer power as a string.
+    Returns: pmag - Power magnitude.
+             deg - Angle between pmag (apparent power) and the real axis on the complex power plane.
+    """
 
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:

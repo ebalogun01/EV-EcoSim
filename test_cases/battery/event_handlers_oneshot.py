@@ -1,3 +1,10 @@
+"""
+Non-MPC mode. Very similar program with event_handlers.py. This file is the main power-horse for the EV-Ecosim. It includes the
+modules that allow GridLabD to interact with all the custom-built modules developed in EV-Ecosim. This file imports
+all simulated objects and their children, which is then run in the co-simulation environment.
+This file is only used when offline battery optimization is done, after which a user wants to simulate the effects on
+the grid (without any state feedback).
+"""
 import os
 import sys
 import numpy as np
@@ -31,6 +38,7 @@ print("loading loads...")
 current_dir = os.getcwd()
 os.chdir(load_folder)
 
+# Preamble for loading scenario.
 for root, dirs, files, in os.walk('.', topdown=True):
     for file in files:
         if file == 'scenario.json':
@@ -60,7 +68,11 @@ tic = time.time()
 
 
 def on_init(t):
-    """Stuff to do at very beginning of simulation, like getting objects and properties from gridlabd"""
+    """
+    This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.
+    Inputs: t - arbitrary placeholder.
+    Returns: True - arbitray value.
+    """
     # get object lists from GridLAB-D
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
@@ -78,7 +90,13 @@ def on_init(t):
 
 
 def on_precommit(t):
-    ########################## UPDATES FROM GRIDLABD ##################################
+    """
+    Handles the states updates and obtaining information from GridLab-D at each time step.
+    This handle actions during simulation.
+    Inputs: t - arbitrary placeholder.
+    Returns: True - arbitrary value.
+    """
+
     control_res = 15  # minutes todo: make a param in the future
 
     # get clock from GridLAB-D
@@ -172,7 +190,11 @@ def on_precommit(t):
 
 
 def on_term(t):
-    """Stuff to do at the very end of the whole simulation, like saving data"""
+    """
+    Actions taken at the very end of the whole simulation, like saving data. Can comment out undesired actions.
+    Inputs: t - arbitrary (user does not interface with this).
+    Returns: True - arbitrary.
+    """
     # import voltdump2
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
@@ -195,7 +217,11 @@ def on_term(t):
 
 
 def find(criteria):
-    """Finding objects in gridlabd that satisfy certain criteria"""
+    """
+    Finding objects in gridlabd that satisfy certain criteria
+    Input: criteria (str) - the criteria for returning gridlabd objects
+    Returns: list of objects that satisfy criteria.
+    """
     finder = criteria.split("=")
     if len(finder) < 2:
         raise IOError("find(criteria='key=value'): criteria syntax error")
@@ -210,8 +236,11 @@ def find(criteria):
                 result.append(f'{item["class"]}:{item["id"]}')
     return result
 
+
 def get_voltage():
-    """Get voltage string from GridLAB-D and process it into float"""
+    """Get voltage string from GridLAB-D and process it into float.
+    Returns: vm"""
+
     #   TODO: find a way to ignore the nodes that have no voltage (zero-load) and improve this code
 
     vm_array = np.zeros((len(gblvar.voltage_obj),))
@@ -258,7 +287,12 @@ def get_voltage():
 
 
 def get_trans_power(trans_power_str):
-    """Get power at transformer as a string and process it into a float"""
+    """
+    Obtains power at transformer as a string and processes it into a float.
+    Inputs: trans_power_string - transformer power as a string.
+    Returns: pmag - Power magnitude.
+            deg - Angle between pmag (apparent power) and the real axis on the complex power plane.
+    """
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:
         if 'd' not in trans_power_str:

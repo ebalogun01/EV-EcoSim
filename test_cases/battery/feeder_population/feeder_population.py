@@ -1,4 +1,16 @@
 # %%
+"""This file is the first step for running EV-Ecosim. It takes in a base Gridlab-D Model (GLM) file,
+and modifies that file by including secondary distribution, home loads, and EV Charging station and transformers.
+Once this script is done running, it returns the new GLM as <initial_glm_name>_populated.glm and
+<initial_glm_name>_secondary.glm, which are used to run the simulation. These files are saved in the 'test_case_dir'
+specified in config.txt.
+Inputs: config.txt and base GLMs
+Output: Modified GLM files
+        real_power.csv - Real power; this is residential real load timeseries file per node/bus
+        reactive_power.csv - Reactive power; this is residential reactive load timeseries file per node/bus
+        dcfc_bus.txt - DC fast charging bus locations; this is used in co-simulation
+        L2charging_bus.txt - L2 charging bus locations; this is used in co-simulation."""
+
 import glm_mod_functions
 import os
 import pandas
@@ -7,6 +19,13 @@ import numpy as np
 import ast
 import pickle
 import random
+
+# TODO: check all capacitor banks on and voltage
+#  regulators
+# all the caps are set to manual and they should be automatic
+# Check if the nominal voltages are correct for the regulator dead bands
+# what is most normal for simulating the 123 network
+#
 
 # read config file
 path_prefix = os.getcwd()
@@ -20,23 +39,26 @@ f.close()
 param_dict = ast.literal_eval(param_dict)
 
 feeder_name = param_dict['feeder_name']
-set_sd = param_dict['set_sd']   # what is sd?
+set_sd = param_dict['set_sd']  # what is sd?
 mean_scale = param_dict['mean_scale']
-base_file_dir = path_prefix+param_dict['base_file_dir']
-test_case_dir = path_prefix+param_dict['test_case_dir']
-load_data_dir = path_prefix+param_dict['load_data_dir']
+base_file_dir = path_prefix + param_dict['base_file_dir']
+test_case_dir = path_prefix + param_dict['test_case_dir']
+load_data_dir = path_prefix + param_dict['load_data_dir']
 box_pts = param_dict['box_pts']
 starttime_str = param_dict['starttime']
 endtime_str = param_dict['endtime']
 python_module = param_dict['python_module']
-safety_factor = param_dict['safety_factor'] # this helps to account with loading
+safety_factor = param_dict['safety_factor']  # this helps to account with loading
+pf_min = param_dict['min_power_factor']   # minimum power factor
+pf_max = param_dict['max_power_factor']   # maximum power factor
+
 
 base_glm_file = feeder_name + '.glm'
 print('Loading original glm')
 glm_dict_base, obj_type_base, globals_list_base, include_list_base, sync_list_base = glm_mod_functions.load_base_glm(
     base_file_dir, base_glm_file)
 
-print('Modifying properties')
+print('Modifying glm properties...')
 spot_load_list = []
 bus_list = []
 bus_list_voltage = []
@@ -79,7 +101,6 @@ for i in obj_type_base.keys():
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"').replace('load', 'meter'))
                 prop_voltage.append('voltage_C')
 
-
         # get rid of regulator control
         elif 'regulator_configuration' in obj_type_base[i]['object']:
             if 'Control' in glm_dict_base[i].keys():
@@ -113,8 +134,7 @@ for i in obj_type_base.keys():
 
 # change all load objects to meters (change property names throughout and delete load properties) todo: add rationale
 for i in obj_type_base.keys():
-    if ('object' in obj_type_base[i].keys()):
-
+    if 'object' in obj_type_base[i].keys():
         if 'load' in obj_type_base[i]['object']:
             glm_dict_base = glm_mod_functions.replace_load_w_meter(glm_dict_base, glm_dict_base[i]['name'],
                                                                    glm_dict_base[i]['name'].replace('load', 'meter'),
@@ -125,7 +145,7 @@ include_list_base.append('#include "' + feeder_name + '_secondary.glm' + '";')
 # delete existing recorders
 rec_del_index = []
 for i in obj_type_base.keys():
-    if ('object' in obj_type_base[i].keys()):
+    if 'object' in obj_type_base[i].keys():
         if 'recorder' in obj_type_base[i]['object']:
             rec_del_index.append(i)
 for i in rec_del_index:
@@ -154,10 +174,10 @@ glm_dict_base[key_index] = {'name': 'dummy_obj',
 # add tape module if not already there
 tape_bool = False
 for i in obj_type_base.keys():
-    if ('module' in obj_type_base[i].keys()):
+    if 'module' in obj_type_base[i].keys():
         if 'tape' in obj_type_base[i]['module']:
             tape_bool = True
-if tape_bool == False:
+if not tape_bool:
     key_index = max(glm_dict_base.keys()) + 1
     obj_type_base[key_index] = {'module': 'tape'}
     glm_dict_base[key_index] = {}
@@ -180,12 +200,12 @@ glm_dict_base[key_index] = {'name': '"voltdump"',
                             'version': '1'}
 
 # check if minimum timestep is already set
-if ('#set minimum_timestep=60' in globals_list_base) == False:
+if '#set minimum_timestep=60' in globals_list_base is False:
     globals_list_base.append('#set minimum_timestep=60')
 
 # delete clock object
 for i in obj_type_base.keys():
-    if ('clock' in obj_type_base[i].keys()):
+    if 'clock' in obj_type_base[i].keys():
         clock_del_index = i
 del glm_dict_base[clock_del_index]
 
@@ -195,7 +215,7 @@ glm_dict_base[clock_del_index] = {'starttime': starttime_str,
 
 # remove powerflow object
 for i in obj_type_base.keys():
-    if ('module' in obj_type_base[i].keys()):
+    if 'module' in obj_type_base[i].keys():
         if 'powerflow' in obj_type_base[i]['module']:
             pf_del_index = i
 del glm_dict_base[pf_del_index]
@@ -207,11 +227,8 @@ glm_dict_base[pf_del_index] = {'solver_method': 'NR',
                                'solver_profile_enable': 'true',
                                'solver_profile_filename': '"solver_nr_out.csv"'}
 
-# find electable meter nodes for imputing fast-charging - take only the 3-phase meter nodes
-
-
 # write new glm file
-print('writing new glm file')
+print('writing new glm file...')
 out_dir = test_case_dir
 file_name = feeder_name + '_populated.glm'
 glm_mod_functions.write_base_glm(glm_dict_base, obj_type_base, globals_list_base, include_list_base, out_dir, file_name,
@@ -225,7 +242,6 @@ with open('voltage_prop.txt', 'wb') as fp:
     pickle.dump(prop_voltage, fp)
 
 # % load residential load data
-
 os.chdir(load_data_dir)
 data_use = pandas.read_csv('data_2015_use.csv')
 
@@ -246,12 +262,12 @@ end_time = datetime.datetime(int(endtime_str[1:5]), int(endtime_str[6:8]), int(e
 
 data_use_filt = data_use[data_use.index >= start_time]
 data_use_filt = data_use_filt[data_use_filt.index < end_time]
-data_use = None     # clean up memory
+data_use = None  # clean up memory
 
 data_use_mat = np.asarray(data_use_filt[data_use_filt.columns[6:-1]]) * 1000
 agg_power = np.mean(data_use_mat, axis=1)
 admd = np.max(agg_power)
-admd = 3    # todo: add rationale (I think this is average power demand)
+admd = 3  # After diversity maximum demand
 
 # % generate glm for homes
 
@@ -285,10 +301,13 @@ glm_house_dict[key_index] = {'name': 'triplex_line_config',
                              'diameter': '0.368'}
 obj_type[key_index] = {'object': 'triplex_line_configuration'}
 key_index = key_index + 1
+
 # TODO: model two cases for this work. One with 120/240 V and one with
 # TODO: find the source for these
-#   House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of the spot-load
-#   , so a future task will be to automate this. For now, the code doesn't break because the voltages are the same everywhere
+#  House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of
+#  the spot-load so a future task will be to automate this.
+#  For now, the code doesn't break because the voltages are the same everywhere
+
 glm_house_dict[key_index] = {'name': 'house_transformer',
                              'connect_type': 'SINGLE_PHASE_CENTER_TAPPED',
                              'install_type': 'PADMOUNT',
@@ -302,23 +321,24 @@ glm_house_dict[key_index] = {'name': 'house_transformer',
 obj_type[key_index] = {'object': 'transformer_configuration'}
 key_index = key_index + 1
 
-
 ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION STARTS HERE ####
 
-#   Fast charging station transformer configuration
-# need to find only meters with ABC phases (3-phase) for DCFC connection
-standard_rating = False
+# Fast charging station transformer configuration
+# find only meters with ABC phases (3-phase) for DCFC connection
+standard_rating = True  # use standard transformer ratings, not arbitrary
 glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                         'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
 num_fast_charging_nodes = param_dict['num_dcfc_nodes']
-num_charging_stalls_per_node = param_dict['num_dcfc_stalls_per_node']   # int
+num_charging_stalls_per_node = param_dict['num_dcfc_stalls_per_node']  # int
 charging_stall_base_rating = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0])  # kW
-trans_standard_ratings = np.array([3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA # TODO: get references for these
-DCFC_voltage = param_dict['dcfc_voltage']   # volts (480 volts is the most common DCFC transformer Secondary now)
-DCFC_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_node  # kw
+trans_standard_ratings = np.array(
+    [3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA # TODO: get references for these
+DCFC_voltage = param_dict['dcfc_voltage']  # volts (480 volts is the most common DCFC transformer Secondary now)
+DCFC_trans_power_rating_kW = charging_stall_base_rating * 1  # kw base rating X number of stalls will oversize it for load
 load_pf = 0.95  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
 DCFC_trans_power_rating_kVA = DCFC_trans_power_rating_kW / load_pf
-proximal_std_rating = trans_standard_ratings[np.argmin(np.abs(trans_standard_ratings - DCFC_trans_power_rating_kVA))]   # find the closest transformer rating
+proximal_std_rating = trans_standard_ratings[
+    np.argmin(np.abs(trans_standard_ratings - DCFC_trans_power_rating_kVA))]  # find the closest transformer rating
 if standard_rating:
     DCFC_trans_power_rating_kVA = proximal_std_rating
 charging_bus_subset_list = random.sample(list(glm_subset_dict_dcfc.values()), num_fast_charging_nodes)
@@ -338,7 +358,6 @@ glm_house_dict[key_index] = {'name': 'dcfc_transformer',
 obj_type[key_index] = {'object': 'transformer_configuration'}
 key_index += 1  # this populates a list of all the objects and configs
 
-
 ##########
 fast_charging = True
 if fast_charging:
@@ -355,7 +374,8 @@ for meter_dict in charging_bus_subset_list:
                                  'load_class': 'C',
                                  'nominal_voltage': str(DCFC_voltage),
                                  'phases': 'ABCN',
-                                 # this phase is currently hard-coded because we know we want to only connect to 3-phase connection
+                                 # this phase is currently
+                                 # hard-coded because we know we want to only connect to 3-phase connection
                                  'constant_power_A': '0.0+0.0j',
                                  'constant_power_B': '0.0+0.0j',
                                  'constant_power_C': '0.0+0.0j'}  # the powers get populated in simulation
@@ -383,20 +403,20 @@ np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # this stores all 
 
 ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 
-
 ######### L2 STARTS HERE ###########
 #   This is the transformer configuration that is inherited for L2 208-240V
 standard_rating = True
 glm_subset_dict_L2 = {key: subdict for key, subdict in glm_dict_base.items() if
-                        'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
+                      'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
 num_L2_charging_nodes = param_dict['num_l2_nodes']
 num_charging_stalls_per_node = param_dict['num_l2_stalls_per_node']  # make param later
-charging_stall_base_rating = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) # kW (make param later)
-L2_voltage = param_dict['l2_voltage']    # Volts (usually 208 - 240V)
+charging_stall_base_rating = float(param_dict['l2_charging_stall_base_rating'].split('_')[0])  # kW (make param later)
+L2_voltage = param_dict['l2_voltage']  # Volts (usually 208 - 240V)
 L2_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_node  # kw
 load_pf = 0.95  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
 L2_trans_power_rating_kVA = L2_trans_power_rating_kW / load_pf
-proximal_std_rating = trans_standard_ratings[np.argmin(np.abs(trans_standard_ratings - L2_trans_power_rating_kVA))]   # find the closest transformer rating
+proximal_std_rating = trans_standard_ratings[
+    np.argmin(np.abs(trans_standard_ratings - L2_trans_power_rating_kVA))]  # find the closest transformer rating
 if standard_rating:
     L2_trans_power_rating_kVA = proximal_std_rating
     print(f'Using standard {L2_trans_power_rating_kVA} kVA rating for L2 chargers')
@@ -421,12 +441,14 @@ key_index += 1  # this populates a list of all the objects and configs
 num_transformers_list = []
 fraction_commercial_sec_node = 0.3
 # CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD
-spot_load_magnitude = [abs(spot_load_list[i])/1000 for i in range(len(spot_load_list))]
+spot_load_magnitude = [abs(spot_load_list[i]) / 1000 for i in range(len(spot_load_list))]
 commercial_load_indices = []
 contains_commercial_load = []
 if num_L2_charging_nodes > 0:
-    commercial_load_indices = [i for i in range(len(spot_load_list)) if spot_load_magnitude[i] > L2_trans_power_rating_kVA]
-    contains_commercial_load = random.sample(commercial_load_indices, max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
+    commercial_load_indices = [i for i in range(len(spot_load_list)) if
+                               spot_load_magnitude[i] > L2_trans_power_rating_kVA]
+    contains_commercial_load = random.sample(commercial_load_indices,
+                                             max(int(fraction_commercial_sec_node * len(commercial_load_indices)), 1))
 
 # select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)
 L2_charging_node_options = []
@@ -437,20 +459,22 @@ for i in range(len(bus_list)):
     commercial_load = False
     if i in contains_commercial_load:
         commercial_load = True
-        num_transformers = int((abs(spot_load_list[i]) / (L2_trans_power_rating_kVA * 1000)))    # np.floor because of higher kVA leads to no transformers and causes downstream errors
+        num_transformers = int((abs(spot_load_list[i]) / (
+                L2_trans_power_rating_kVA * 1000)))  # np.floor because of higher kVA leads to no transformers and causes downstream errors
     else:
-        num_transformers = int((abs(spot_load_list[i]) / (20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
+        num_transformers = int((abs(spot_load_list[i]) / (
+                20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
     num_transformers_list.append(num_transformers)
-    for j in range(num_transformers):   # number of transformers per bus
+    for j in range(num_transformers):  # number of transformers per bus
         # Triplex node
         if commercial_load:
             # todo: is there a way to initially set loading?
-            num_houses = int((L2_trans_power_rating_kVA * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
+            num_houses = int((L2_trans_power_rating_kVA * pf_min) * safety_factor / admd)
         else:
-            num_houses = int((20 * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
+            num_houses = int((20 * pf_min) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
         real_power_trans = np.sum(
             data_use_mat[:, np.random.choice(np.arange(data_use_mat.shape[1]), size=(num_houses,))], axis=1)
-        pf_trans = np.random.uniform(0.85, 1.0, size=real_power_trans.shape)    # sample power factor between 0.85 and 1.0
+        pf_trans = np.random.uniform(pf_min, pf_max, size=real_power_trans.shape)  # sample power factor
         reactive_power_trans = np.multiply(real_power_trans, np.tan(np.arccos(pf_trans)))
 
         if k == 0:
@@ -467,8 +491,8 @@ for i in range(len(bus_list)):
                                          'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                              '').replace(
                                              ')',
-                                             '')}  # I think the +3 is a bug or an ad-hoc way to make base case run normally
-            L2_charging_node_options += f'tn_{k}',     # add this into options for L2 charging site for sim
+                                             '')}  # +3 is an ad-hoc way to make base case run normally
+            L2_charging_node_options += f'tn_{k}',  # add this into options for L2 charging site for sim
         else:
             glm_house_dict[key_index] = {'name': 'tn_' + str(k),
                                          'nominal_voltage': '120.00',
@@ -476,7 +500,7 @@ for i in range(len(bus_list)):
                                          'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                              '').replace(
                                              ')',
-                                             '')}  # I think the +3 is a bug or an ad-hoc way to make base case run normally
+                                             '')}  # +3 is an ad-hoc way to make base case run normally
         obj_type[key_index] = {'object': 'triplex_node'}
         key_index = key_index + 1
         # TODO: reduced the above based on num transformers to ensure that things run normally.
@@ -498,7 +522,7 @@ for i in range(len(bus_list)):
         key_index = key_index + 1
         k = k + 1
 
-# Now get the desired L2 charging locs
+# Now get the desired L2 charging locs and save them for simulation
 L2_charging_bus_subset_list = random.sample(L2_charging_node_options, num_L2_charging_nodes)
 os.chdir(test_case_dir)
 np.savetxt('L2charging_bus.txt', L2_charging_bus_subset_list, fmt="%s")
@@ -508,7 +532,7 @@ out_dir = test_case_dir
 file_name = feeder_name + '_secondary.glm'
 glm_mod_functions.write_base_glm(glm_house_dict, obj_type, globals_list, include_list, out_dir, file_name, sync_list)
 
-# save load data (EMMANUEL- THESE ARE TYPICALLY UNCONTROLLABLE LOADS)
+# save load data (THESE ARE TYPICALLY UNCONTROLLABLE LOADS)
 os.chdir(test_case_dir)
 real_power_df.to_csv('real_power.csv', index=False)
 reactive_power_df.to_csv('reactive_power.csv', index=False)

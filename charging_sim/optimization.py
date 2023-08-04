@@ -1,3 +1,4 @@
+"""Contains the Optimization class, which is used by controller to solve the optimization problem."""
 import cvxpy as cp
 
 
@@ -8,6 +9,19 @@ class Optimization:
     # TODO: change all refs to battery_constraints to call controller
     def __init__(self, objective_type, objective, controller, power_demand, time_res, transformer, battery, time=0,
                  name=None, solar=None, solver='GUROBI'):
+        """
+        Inputs: objective_type - the type of objective.
+                objective - the cvxpy objective function.
+                controller - the controller object that uses the solution to the optimization problem.
+                power_demand - the power demand input to the controller.
+                time_res - time resolution (default 15 minutes).
+                battery - battery object.
+                transformer - transformer object, set to None for now, always.
+                time - time index.
+                name - optimization name.
+                solar - Solar object.
+                solver - cvxpy solver to use.
+        """
         self._objective_type = objective_type
         self._objective = objective
         self._name = name
@@ -69,12 +83,22 @@ class Optimization:
         return cost_electricity
 
     def get_battery_constraint(self):
+        """
+        Returns battery constraint lists.
+        Inputs: None.
+        Returns: List of battery constraints.
+        """
         return self.battery_constraints
 
     def get_market_constraints(self):
         return self.market_constraints
 
     def aggregate_constraints(self):
+        """
+        Aggregates all module constraints into one constraints list.
+        Input: None.
+        Returns: None.
+        """
         if self.battery_constraints:  # fix this later to call battery directly
             self._constraints.extend(self.battery_constraints)
         if self.market_constraints:
@@ -86,8 +110,9 @@ class Optimization:
         return self._constraints
 
     def run(self):
-        """runs an instance of the problem
-        Using ecos as default solver as it gives the lowest optimal value"""
+        """
+        Runs this instance of the optimization problem.
+        """
         self.aggregate_constraints()  # aggregate constraints
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
         self.problem = problem

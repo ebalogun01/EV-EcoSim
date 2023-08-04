@@ -17,8 +17,8 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'July_test/'
-num_charging_nodes = 0 # needs to come in as input initially & should be initialized prior from the feeder population
+save_folder_prefix = 'June_test/'
+num_charging_nodes = 0  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
@@ -150,19 +150,19 @@ def on_precommit(t):
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
     import voltdump2
-    voltdump2.parse_voltages(save_folder_prefix)
     if num_charging_nodes:
         EV_charging_sim.load_results_summary(save_folder_prefix)
-    np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
-    np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
+    # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
+    # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
     np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
-    pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
-                                                                         index=False)
+    # pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
+    #                                                                      index=False)
     pd.DataFrame(data=gblvar.trans_loading_percent, columns=gblvar.trans_list). \
         to_csv(f'{save_folder_prefix}/trans_loading_percent.csv',
                index=False)  # included saving transformer loading percentages
+    voltdump2.parse_voltages(save_folder_prefix)
     print("Total run time: ", (time.time() - tic) / 60, "minutes")
 
 

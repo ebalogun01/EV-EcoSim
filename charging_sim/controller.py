@@ -1,5 +1,5 @@
+"""This file contains the controller classes used for DER optimization and control within EV-Ecosim"""
 import os
-# import pandas as pd
 import matplotlib.pyplot as plt
 from optimization import Optimization
 from utils import build_objective, build_electricity_cost, num_steps, build_cost_PGE_BEV2S
@@ -15,8 +15,7 @@ OCV_SOC_linear_params = 0
 
 
 class MPC:
-    """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
-    Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
+    """This class uses an MPC control scheme for producing control currents to the BESS."""
 
     def __init__(self, config, storage=None, solar=None):
         self.config = config
@@ -25,11 +24,6 @@ class MPC:
         self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
         self.reshaped_data = np.reshape(self.current_testdata,
                                         self.current_testdata.size)  # flatten data for efficient indexing
-        # self.one_step_data = self.reshaped_data[-48:]  # one step LSTM uses last 48 time steps to predict the next, need
-        # self.std_data = np.std(self.current_testdata, 0)  # from training distribution
-        # self.std_data[self.std_data == 0] = 1
-        # self.mean_data = np.mean(self.current_testdata, 0)
-        # self.scaled_test_data = (self.current_testdata - self.mean_data) / self.std_data  # should use history
         self.storage = storage
         self.storage_constraints = None
 
@@ -77,7 +71,9 @@ class MPC:
         self.current_testdata = np.genfromtxt(path_prefix + self.config["simulation_load"])[:-1, ] * 1
 
     def load_battery_ocv(self):
-        """Learns the battery OCV Parameters from data"""
+        """Learns the battery OCV Parameters from data and sets the relevant class attribute.
+        Inputs - None.
+        Returns - None."""
         from sklearn.linear_model import LinearRegression
         indices = ((self.storage.OCV_map_SOC <= 0.9) & (self.storage.OCV_map_SOC >= 0.2)).nonzero()[0]
         soc = self.storage.OCV_map_SOC[indices[0]: indices[-1]].reshape(-1, 1)
@@ -89,6 +85,12 @@ class MPC:
         # plt.close('all')
 
     def compute_control(self, load, price_vector):
+        """
+        Optimization-based control actions are computed and passed to the battery.
+        Inputs: load - This is the power demand from the charging station.
+                price_vector - This is usually the time of use (TOU) rate of the charging station.
+        Returns: control_action - Current signals to control the DER system for arbitrage.
+        """
         self.time += 1
         control_action = None
         if self.control_battery:
@@ -112,6 +114,11 @@ class MPC:
         return control_action
 
     def get_battery_constraints(self, ev_load):
+        """
+        Creates and updates the battery constraints required to be satisfied by the controller.
+        Inputs: ev_load - This is the power demand from the charging station.
+        Returns: storage_constraints - List of battery constraints to be respected.
+        """
         # TODO: can toggle between battery initial soc and planned soc trajectory
         eps = 1e-8
         cells_series = self.storage.topology[0]
@@ -153,8 +160,8 @@ class MPC:
 
 
 class Oneshot:
-    """TODO: need to code-in a deterministic scenario that does not run in an MPC fashion.
-    Compare how RMSE in future load trajectory impacts the cost of station design in terms of Storage"""
+    """This class uses an offline control scheme for producing control currents to the BESS.
+    This is non-MPC and cannot use state feedback in control simulation."""
 
     def __init__(self, config, storage=None, solar=None, num_steps=96):
         self.config = config
@@ -206,7 +213,9 @@ class Oneshot:
         self.actions = [self.action]
 
     def load_battery_ocv(self):
-        """Learns the battery OCV Parameters from data"""
+        """Learns the battery OCV Parameters from data and sets the relevant class attribute.
+        Inputs - None.
+        Returns - None."""
         from sklearn.linear_model import LinearRegression
         indices = ((self.storage.OCV_map_SOC <= 0.9) & (self.storage.OCV_map_SOC >= 0.2)).nonzero()[0]
         soc = self.storage.OCV_map_SOC[indices[0]: indices[-1]].reshape(-1, 1)
@@ -218,9 +227,14 @@ class Oneshot:
         plt.close('all')
 
     def compute_control(self, load, price_vector):
+        """
+        Optimization-based control actions are computed and passed to the battery.
+        Inputs: load - This is the power demand from the charging station.
+                price_vector - This is usually the time of use (TOU) rate of the charging station.
+        Returns: control_action - Current signals to control the DER system for arbitrage.
+        """
         control_action = None
         if self.control_battery:
-            # battery_constraints = self.get_battery_constraints(predicted_load)  # battery constraints
             objective_mode = "Electricity Cost"  # Need to update objective modes to include cost function design
             linear_aging_cost = 0  # based on simple model and predicted control actions - Change this to zero
             electricity_cost = build_cost_PGE_BEV2S(self, load, price_vector, penalize_max_power=False)
@@ -240,7 +254,10 @@ class Oneshot:
         return control_action
 
     def get_battery_constraints(self, ev_load):
-        # TODO: TRACK WASTED SOLAR ENERGY OR THE AMOUNT THAT CAN BE INJECTED BACK INTO THE GRID
+        """ Creates and updates the battery constraints required to be satisfied by the controller.
+        Inputs: ev_load - This is the power demand from the charging station.
+        Returns: storage_constraints - List of battery constraints to be respected.
+        """
         eps = 0.000
         cells_series = self.storage.topology[0]
         mod_parallel = self.storage.topology[1]  # parallel modules count
