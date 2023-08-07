@@ -277,7 +277,7 @@ class ChargingSim:
         return self.site_net_loads
 
     def multistep(self):
-        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps, desired_shape=(self.num_steps, 1))  # time already accounted for
+        elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)  # time already accounted for
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             p = charging_station.controller.solar.get_power(self.time, self.num_steps, desired_shape=(self.num_steps, 1))  # can set month for multi-month sim later
             buffer_battery = charging_station.storage

@@ -1,18 +1,12 @@
 """This file is mainly used to run scenarios in parallel (if enough CPUs) or sequentially,
  without having to modify and rerun the simulation each time.
  Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates"""
-
+# import charging_sim
 import multiprocessing as mp
-import sys
-import gblvar
 import ast
+# import charging_sim
+from charging_sim import utils
 
-# Preamble.
-if not gblvar.charging_sim_path_append:
-    sys.path.append('../../../EV50_cosimulation/charging_sim')  # change this
-    gblvar.charging_sim_path_append = True
-
-from utils import month_days
 
 # GET STATION CONFIGURATIONS
 station_config = open('feeder_population/config.txt', 'r')

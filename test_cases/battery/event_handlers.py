@@ -1,9 +1,7 @@
 """This file is the main power-horse for the EV-Ecosim. It includes the modules that allow GridLabD to interact
 with all the custom-built modules developed in EV-Ecosim. This file imports all simulated objects and their children,
 which is then run in the co-simulation environment."""
-
 import os
-import sys
 import numpy as np
 import gridlabd
 import sim
@@ -11,8 +9,8 @@ import time
 import gblvar
 import json
 import pandas as pd
-sys.path.append('../../../EV50_cosimulation/charging_sim')
-from EVCharging import ChargingSim
+from ...charging_sim.EVCharging import ChargingSim
+
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -62,10 +60,9 @@ EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month
 
 def on_init(t):
     """
-    This defines the actions to take at very beginning of simulation,
-    like getting objects and properties from gridlabd.
+    This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.
     Inputs: t - arbitrary placeholder.
-    Returns: True - arbitray value.
+    Returns: True - arbitrary value.
     """
     # get object lists from GridLAB-D
     print("Gridlabd Init Begin...")
