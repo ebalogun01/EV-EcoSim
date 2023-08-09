@@ -10,7 +10,7 @@ import json
 # TODO: load the battery and simulate it using the load profiles from Simona data
 # TODO: plot the aging path to see how it goes...perform comparisons
 num_steps = 1
-file = '../BatteryData/W9_cycle.mat'
+file = '../battery_data/W9_cycle.mat'
 
 
 #   LOAD BATTERY CONFIG

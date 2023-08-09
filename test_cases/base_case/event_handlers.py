@@ -24,7 +24,7 @@ central_storage = False  # toggle for central vs. decentralized storage
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 # TODO: include time-varying temperature for T_ambient
 simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
-temperature_data = pd.read_csv('../../ambientData/trans_ambientT_timeseries.csv')
+temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 

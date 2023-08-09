@@ -9,7 +9,7 @@ import time
 import gblvar
 import json
 import pandas as pd
-from charging_sim.EVCharging import ChargingSim
+from charging_sim.orchestrator import ChargingSim
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -46,7 +46,7 @@ central_storage = False  # toggle for central vs. decentralized storage
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = gblvar.scenario['start_month'] # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
-temperature_data = pd.read_csv('../../ambientData/trans_ambientT_timeseries.csv')
+temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 global tic, toc  # used to time simulation

@@ -3,7 +3,7 @@ system states are then propagated post optimization to fully characterize what w
 optimization was done """
 
 import os
-from EVCharging import ChargingSim
+from orchestrator import ChargingSim
 import multiprocessing as mp
 import numpy as np
 import json
