@@ -193,8 +193,8 @@ def on_precommit(t):
 def on_term(t):
     """Actions taken at the very end of the whole simulation, like saving data.
     One can comment out actions that one does not require."""
-    # import voltdump2
-    # voltdump2.parse_voltages(save_folder_prefix)
+    import voltdump2
+    voltdump2.parse_voltages(save_folder_prefix)
     EV_charging_sim.load_results_summary(save_folder_prefix)
     # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
     # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)

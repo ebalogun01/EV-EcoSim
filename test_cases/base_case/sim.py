@@ -1,3 +1,4 @@
+"""This file simulates the transformer thermal state by propagating it forward at each time step """
 import numpy as np
 import gblvar
 import sys
@@ -5,9 +6,13 @@ sys.path.append('../..')
 
 
 def sim_transformer(temperature_data=None):
-    """Propagate transformer state from previous timestep to current timestep (currently it is a minute resolution data
-    simulated in 10 seconds increment)
-    Nonlinear model from Swift et. Al (2001) Make this a class in next iteration"""
+    """
+    Propagate transformer state from previous timestep to current timestep (currently it is a minute resolution data
+    simulated in 10 seconds increment).
+    Nonlinear model from Swift et. Al (2001).
+    Inputs: temperature_data - ambient temperature data for a given region.
+    Returns: -1, just arbitrarily.
+    """
 
     #   if first timestep, initialize state of transformer
     if gblvar.it == 0:
