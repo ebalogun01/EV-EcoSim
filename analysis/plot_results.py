@@ -19,7 +19,7 @@ NUM_DAYS = 30   # can change this depending on the desired number of days
 end_idx = DAY_MINUTES * NUM_DAYS
 plt.rcParams.update({'font.size': FONT_SIZE})
 
-for root, dirs, files, in os.walk("", topdown=True):
+for root, dirs, files, in os.walk(".", topdown=True):
     for name in dirs:
         curr_dir = os.getcwd()
         os.chdir(os.path.join(root, name))
@@ -135,4 +135,4 @@ for root, dirs, files, in os.walk("", topdown=True):
         plt.close()
         print("Finished creating voltage plots.")
 
-        os.chdir("../..")
+        os.chdir("..")

@@ -15,17 +15,17 @@ import os
 class Battery:
     """
      Properties:
-        properties are mainly controlled in the battery config file 'battery.json'
-         max-c-rate determines the power capacity of the cell as a multiple of the value of the energy capacity
-         max voltage(V)
-         min Voltage (V)
-         nominal energy (kWh)
-         id (-)
-         ambient temperature (C)
+         Properties are mainly controlled in the battery config file 'battery.json'.
+         max-c-rate determines the power capacity of the cell as a multiple of the value of the energy capacity.
+         max voltage(V).
+         min Voltage (V).
+         nominal energy (kWh).
+         id (-).
+         ambient temperature (C).
 
      Assumptions:
-         efficiency already incorporates resistance; improve later.
-         assumes linear aging model for SOH, SOC, and voltage variation, but relaxed by parameter update.
+         Efficiency already incorporates resistance; improve later.
+         Assumes linear aging model for SOH, SOC, and voltage variation, but relaxed by parameter update.
          Temperature variation in battery environment is negligible.
 
     """

@@ -5,7 +5,7 @@
 import multiprocessing as mp
 import ast
 import sys
-sys.path.append('../../charging_sim')
+sys.path.append('../../../EV50_cosimulation/charging_sim')
 from utils import month_days
 
 

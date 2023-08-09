@@ -18,7 +18,7 @@ class Battery:
     """
     Each instantiation of this class must include at least a config file, which contains the dynamical constraints of
     the battery.
-     Properties:
+    Properties:
          Properties are mainly controlled in the battery config file 'battery.json'
          max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.
          max voltage(V) - maximum allowable battery voltage.
