@@ -9,8 +9,7 @@ import time
 import gblvar
 import json
 import pandas as pd
-from ...charging_sim.EVCharging import ChargingSim
-
+from charging_sim.EVCharging import ChargingSim
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -136,7 +135,7 @@ def on_precommit(t):
         gblvar.trans_loading_percent = np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np
     else:
         gblvar.trans_loading_percent = np.vstack((gblvar.trans_loading_percent,
-                                             np.array(gblvar.trans_power).reshape(1, -1)/gblvar.trans_rated_s_np))   # done
+                                                  np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np))   # done
 
     ####################### SIMULATE ##################################
 

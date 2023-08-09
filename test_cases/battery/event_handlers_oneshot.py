@@ -15,7 +15,7 @@ import gblvar
 import json
 import pandas as pd
 
-sys.path.append('../../../EV50_cosimulation/charging_sim')
+sys.path.append('../../charging_sim')
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -39,7 +39,7 @@ current_dir = os.getcwd()
 os.chdir(load_folder)
 
 # Preamble for loading scenario.
-for root, dirs, files, in os.walk('.', topdown=True):
+for root, dirs, files, in os.walk('', topdown=True):
     for file in files:
         if file == 'scenario.json':
             with open(file, 'r') as scenario:

@@ -4,8 +4,9 @@
 # import charging_sim
 import multiprocessing as mp
 import ast
-# import charging_sim
-from charging_sim import utils
+import sys
+sys.path.append('../../../EV50_cosimulation/charging_sim')
+from utils import month_days
 
 
 # GET STATION CONFIGURATIONS
@@ -19,9 +20,9 @@ start_month = int(str(param_dict['starttime']).split('-')[1])
 month_str = list(month_days.keys())[start_month-1]
 
 # RUN TYPE
-sequential_run = True
+sequential_run = False
 parallel_run = False
-single_run = False
+single_run = True
 
 # BATTERY SCENARIOS
 num_vars = 6
@@ -97,12 +98,11 @@ def run_scenario_single():
     Inputs: None.
     Returns: None."""
     # Keep changing this for each run
+    scenarios_list = make_scenarios()
     Er_idx = 0
     c_rate_idx = 2
     idx = 2
-    scenario = {'pack_energy_cap': energy_ratings[Er_idx],
-                'max_c_rate': max_c_rates[c_rate_idx],
-                'index': idx}
+    scenario = scenarios_list[0]
     run(scenario)
 
 

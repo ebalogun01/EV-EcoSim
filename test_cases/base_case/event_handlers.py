@@ -6,7 +6,7 @@ import pandas as pd
 import time
 import gblvar
 import sim
-sys.path.append('../../../EV50_cosimulation/charging_sim')
+sys.path.append('../../charging_sim')
 from EVCharging import ChargingSim
 
 print("*****EV Charging Station Simulation Imported Successfully*****")
@@ -100,7 +100,7 @@ def on_precommit(t):
         gblvar.trans_loading_percent = np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np
     else:
         gblvar.trans_loading_percent = np.vstack((gblvar.trans_loading_percent,
-                                             np.array(gblvar.trans_power).reshape(1, -1)/gblvar.trans_rated_s_np))   # done
+                                                  np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np))   # done
 
     ####################### SIMULATE ##################################
     # propagate transformer state

@@ -126,13 +126,13 @@ class CostEstimator:
         return result_dict
 
     def transformer_cost(self):
-        """Cannot find good resource data for this yet"""
+        """Cannot find good resource data for this yet."""
         return NotImplementedError
 
     @staticmethod
     def plot_loads(total_load, net_load, prefix=None, labels: list = None):
         """Creates plots overlaying load and net loads for post-simulation visualization.
-        Inputs: total_load - Overall EV load demand at node,
+        Inputs: total_load - Overall EV load demand at node, can include building load if controllable.
                 net_load - total_load minus DER buffer.
                 prefix - Plot file label prefix.
                 labels - Legend labels for each plotted curve.
