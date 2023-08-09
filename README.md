@@ -28,17 +28,17 @@ proprietary Pecan Street Data.
 ### charging_sim
 
 Hosts the implementation of the physical modules, including:
-`battery.py` - Battery cell module.
-`batterypack.py` - Battery pack module.
-`batteryAgingSim.py` - Battery aging module.
-`controller.py` - Controller module.
-`chargingStation.py` - Charging station module.
-`electricityPrices.py` - Electricity prices module. 
-`optimization.py` - Optimization module.
-`orchestrator.py` - Simulation orchestrator module.
-`solar.py` - Solar PV module.
-`utils.py` - Hosts utility functions used by some modules.
-`simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
+##### `battery.py` - Battery cell module. 
+##### `batterypack.py` - Battery pack module.
+##### `batteryAgingSim.py` - Battery aging module.
+##### `controller.py` - Controller module.
+##### `chargingStation.py` - Charging station module.
+##### `electricityPrices.py` - Electricity prices module. 
+##### `optimization.py` - Optimization module.
+##### `orchestrator.py` - Simulation orchestrator module.
+##### `solar.py` - Solar PV module.
+##### `utils.py` - Hosts utility functions used by some modules.
+##### `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
 
 It also hosts the `configs` folder which includes the configuration files for all the relevant modules.
 
@@ -71,10 +71,10 @@ Scripts for populating base feeder models with time-varying loads and resources 
 
 Co-simulation cases. 
 
-`base_case`- Reads voltage from GridLAB-D and writes power injections at each timestep (no EV charging or DER).  
-`rlsf` - base_case plus implements a recursive least squares filter to estimate network model online (not used).
-`battery` - base_case plus transformer thermal model plus DER integration (included battery and solar).
-`transformer` - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model (not used).
+##### `base_case`- Reads voltage from GridLAB-D and writes power injections at each timestep (no EV charging or DER).  
+##### `rlsf` - base_case plus implements a recursive least squares filter to estimate network model online (not used).
+##### `battery` - base_case plus transformer thermal model plus DER integration (included battery and solar).
+##### `transformer` - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model (not used).
 
 
 
