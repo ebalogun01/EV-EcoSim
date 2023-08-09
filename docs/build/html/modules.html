@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EV50_cosimulation &#8212; EV-Ecosim 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=af2ce170"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="analysis package" href="analysis.html" />
+    <link rel="prev" title="Welcome to EV-Ecosim’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="ev50-cosimulation">
+<h1>EV50_cosimulation<a class="headerlink" href="#ev50-cosimulation" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">analysis package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.cost_analysis">analysis.cost_analysis module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator"><code class="docutils literal notranslate"><span class="pre">CostEstimator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_LCOE"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_LCOE()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_battery_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_electricity_cost_PGEBEV2s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_solar_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_trans_loss_of_life()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_loads"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_loads()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_power"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_power()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_soc"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.solar_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.transformer_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.transformer_degradation_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.transformer_degradation_cost()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#analysis-load-post-opt-costs-module">analysis.load_post_opt_costs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#analysis-plot-results-module">analysis.plot_results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charging_sim.html">charging_sim package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-battery-module">charging_sim.battery module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.batteryAgingSim">charging_sim.batteryAgingSim module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim"><code class="docutils literal notranslate"><span class="pre">BatterySim</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.LFP_cal_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.LFP_cal_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.LFP_cyc_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.LFP_cyc_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.NMC_cal_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.NMC_cal_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.NMC_cyc_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.NMC_cyc_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_aging_value"><code class="docutils literal notranslate"><span class="pre">BatterySim.get_aging_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_calendar_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.get_calendar_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_cyc_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.get_cyc_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_total_aging"><code class="docutils literal notranslate"><span class="pre">BatterySim.get_total_aging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.run"><code class="docutils literal notranslate"><span class="pre">BatterySim.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.update_capacity"><code class="docutils literal notranslate"><span class="pre">BatterySim.update_capacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.batteryAgingSim.BatterySim.update_resistance"><code class="docutils literal notranslate"><span class="pre">BatterySim.update_resistance()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-batterypack-module">charging_sim.batterypack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-batterytest-module">charging_sim.batterytest module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.capacitor">charging_sim.capacitor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.capacitor.Capacitor"><code class="docutils literal notranslate"><span class="pre">Capacitor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-chargingstation-module">charging_sim.chargingStation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-controller-module">charging_sim.controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-electricityprices-module">charging_sim.electricityPrices module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.optimization">charging_sim.optimization module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization"><code class="docutils literal notranslate"><span class="pre">Optimization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.add_demand_charge"><code class="docutils literal notranslate"><span class="pre">Optimization.add_demand_charge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.aggregate_constraints"><code class="docutils literal notranslate"><span class="pre">Optimization.aggregate_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.build_battery_cost"><code class="docutils literal notranslate"><span class="pre">Optimization.build_battery_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.build_electricity_cost"><code class="docutils literal notranslate"><span class="pre">Optimization.build_electricity_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.build_emissions_cost"><code class="docutils literal notranslate"><span class="pre">Optimization.build_emissions_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.build_transformer_cost"><code class="docutils literal notranslate"><span class="pre">Optimization.build_transformer_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.get_battery_constraint"><code class="docutils literal notranslate"><span class="pre">Optimization.get_battery_constraint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.get_constraints"><code class="docutils literal notranslate"><span class="pre">Optimization.get_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.get_final_states"><code class="docutils literal notranslate"><span class="pre">Optimization.get_final_states()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.get_market_constraints"><code class="docutils literal notranslate"><span class="pre">Optimization.get_market_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.objective"><code class="docutils literal notranslate"><span class="pre">Optimization.objective()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.Optimization.run"><code class="docutils literal notranslate"><span class="pre">Optimization.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.optimization.test"><code class="docutils literal notranslate"><span class="pre">test()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-orchestrator-module">charging_sim.orchestrator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#charging-sim-simulate-module">charging_sim.simulate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.solar">charging_sim.solar module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar"><code class="docutils literal notranslate"><span class="pre">Solar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.downscale"><code class="docutils literal notranslate"><span class="pre">Solar.downscale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.get_constraints"><code class="docutils literal notranslate"><span class="pre">Solar.get_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.get_power"><code class="docutils literal notranslate"><span class="pre">Solar.get_power()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.get_solar_output"><code class="docutils literal notranslate"><span class="pre">Solar.get_solar_output()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.modify_res"><code class="docutils literal notranslate"><span class="pre">Solar.modify_res()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="charging_sim.html#charging_sim.solar.Solar.update_history"><code class="docutils literal notranslate"><span class="pre">Solar.update_history()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.solar.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.utils">charging_sim.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.PGE_BEV2_S"><code class="docutils literal notranslate"><span class="pre">PGE_BEV2_S()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.add_power_profile_to_object"><code class="docutils literal notranslate"><span class="pre">add_power_profile_to_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.build_cost_PGE_BEV2S"><code class="docutils literal notranslate"><span class="pre">build_cost_PGE_BEV2S()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.build_electricity_cost"><code class="docutils literal notranslate"><span class="pre">build_electricity_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.build_objective"><code class="docutils literal notranslate"><span class="pre">build_objective()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="charging_sim.html#charging_sim.utils.load_prices"><code class="docutils literal notranslate"><span class="pre">load_prices()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feeder_population.html">feeder_population package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.load_base_glm"><code class="docutils literal notranslate"><span class="pre">load_base_glm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter_old"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter_old()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_base_glm"><code class="docutils literal notranslate"><span class="pre">write_base_glm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_class_dict"><code class="docutils literal notranslate"><span class="pre">write_class_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_clock_dict"><code class="docutils literal notranslate"><span class="pre">write_clock_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_filter_dict"><code class="docutils literal notranslate"><span class="pre">write_filter_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_mod_dict"><code class="docutils literal notranslate"><span class="pre">write_mod_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_obj_dict"><code class="docutils literal notranslate"><span class="pre">write_obj_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test_cases.html">test_cases package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="test_cases.base_case.html">test_cases.base_case package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-event-handlers-module">test_cases.base_case.event_handlers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-gblvar-module">test_cases.base_case.gblvar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-glmptime-module">test_cases.base_case.glmptime module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-master-sim-module">test_cases.base_case.master_sim module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-sim-module">test_cases.base_case.sim module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-voltdump2-module">test_cases.base_case.voltdump2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#module-test_cases.base_case">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="test_cases.battery.html">test_cases.battery package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-data-analysis-module">test_cases.battery.data_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-event-handlers-module">test_cases.battery.event_handlers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-event-handlers-oneshot-module">test_cases.battery.event_handlers_oneshot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-gblvar-module">test_cases.battery.gblvar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-glmptime-module">test_cases.battery.glmptime module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-master-sim-module">test_cases.battery.master_sim module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-parse-voltages-module">test_cases.battery.parse_voltages module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-scenarios-module">test_cases.battery.scenarios module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-sim-module">test_cases.battery.sim module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-voltdump2-module">test_cases.battery.voltdump2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#module-test_cases.battery">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html#module-test_cases">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">EV-Ecosim</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">EV50_cosimulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">analysis package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">charging_sim package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">feeder_population package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html">test_cases package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to EV-Ecosim’s documentation!</a></li>
+      <li>Next: <a href="analysis.html" title="next chapter">analysis package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Emmanuel Balogun.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

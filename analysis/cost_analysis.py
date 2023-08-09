@@ -35,7 +35,7 @@ class CostEstimator:
             scenario = json.load(f)
         result_dict = {}
         capital_cost = self.battery_price_per_kWh / 1000 * scenario['pack_energy_cap']
-        for root, dirs, files, in os.walk(".", topdown=True):
+        for root, dirs, files, in os.walk("", topdown=True):
             for file in files:
                 path_lst = file.split("_")
                 if 'battery' in path_lst and 'plot.png' not in path_lst:
@@ -80,7 +80,7 @@ class CostEstimator:
         result_dict = {}
         price_per_block = 95.56  # ($/Block) # need to make these agnostic for now just leave as is
         overage_fee = 3.82  # ($/kW)
-        for root, dirs, files, in os.walk(".", topdown=True):
+        for root, dirs, files, in os.walk("", topdown=True):
             for file in files:
                 path_lst = file.split("_")
                 if 'station' in path_lst and 'block' not in path_lst and 'plot.png' not in path_lst:
@@ -253,7 +253,7 @@ class CostEstimator:
             scenario = json.load(f)
         # save the charging buses
         result_dict = {}
-        for root, dirs, files, in os.walk(".", topdown=True):
+        for root, dirs, files, in os.walk("", topdown=True):
             for file in files:
                 if 'trans_Th' in file:
                     trans_Th_data = pd.read_csv(file)

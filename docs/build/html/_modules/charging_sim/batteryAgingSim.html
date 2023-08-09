@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>charging_sim.batteryAgingSim &#8212; EV-Ecosim 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for charging_sim.batteryAgingSim</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; This file hosts the battery degradation module as described in Balogun Et. Al:</span>
+<span class="sd">https://doi.org/10.36227/techrxiv.23596725.v2 &quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+
+<span class="c1"># TODO: How to model power delivery as a function of time, temperature, SOC and SOH at every time step. Cap as a...</span>
+<span class="c1">#  Is there a relationship between controls cost (temp control etc) with increasing power delivery by battery?</span>
+<span class="c1">#  How can we incorporate this response delay due to chemistry or reaction responsiveness into simulation?</span>
+<span class="c1">#  Think about creating a few degradation models from literature.</span>
+<span class="c1">#  Need to obtain battery discharge curves for real simulation; can we get sample discharge curves or is it necessary?</span>
+<span class="c1">#  Need to consider Peukert&#39;s law: https://en.wikipedia.org/wiki/Peukert%27s_law</span>
+<span class="c1">#  How does solution improve with horizon length (how far is looking ahead important (for MPC no point but computation</span>
+<span class="c1">#  can become expensive. Horizon length &#39;N&#39; vs. optimal savings analysis.</span>
+<span class="c1">#  I see how RL can be used here to learn a policy with time. Opt. Algo with improve itself based on feedback from aging</span>
+<span class="c1">#  sim module.</span>
+
+
+<div class="viewcode-block" id="BatterySim"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim">[docs]</a><span class="k">class</span> <span class="nc">BatterySim</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Current aging model is for LiNiMnCoO2 battery cells. Need to populate more aging models for analyses.</span>
+<span class="sd">    Link to Paper: https://www.sciencedirect.com/science/article/pii/S0378775314001876</span>
+
+<span class="sd">    Params:</span>
+<span class="sd">        beta_cap: capacity fade aging factor for cycle aging</span>
+<span class="sd">        alpha_cap capacity fade aging factor for calendar aging</span>
+<span class="sd">        beta_res: resistance growth aging factor for cycle aging</span>
+<span class="sd">        alpha_res: resistance growth aging factor for calendar aging</span>
+<span class="sd">    Assumptions:</span>
+<span class="sd">        Homogenous battery with dynamics modelled as one big cell.</span>
+<span class="sd">        Constant temperature profile in vicinity of battery.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_steps</span>
+        <span class="c1"># self.battery_objects = battery_objects  # storing all battery objects in a list maintained by sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># because calendar aging is in days, so for each num time_steps for resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ambient_temp</span> <span class="o">=</span> <span class="mi">23</span> <span class="o">+</span> <span class="mi">273</span>  <span class="c1"># absolute temp in K</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aging_params</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># to be updated later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_daily_steps</span> <span class="o">=</span> <span class="mi">96</span>  <span class="c1"># to be configured later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span>  <span class="c1"># minutes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="mf">4.85</span>  <span class="c1"># Ah</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_caps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># BM = BatteryMaps()</span>
+        <span class="c1"># self.response_surface = BM.get_response_surface()[0]  # this is used to infer voltage from other states</span>
+        <span class="c1"># Include battery chemistry later.</span>
+
+<div class="viewcode-block" id="BatterySim.get_cyc_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_cyc_aging">[docs]</a>    <span class="k">def</span> <span class="nf">get_cyc_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Detailed aging for simulation environment. Per Johannes Et. Al&quot;&quot;&quot;</span>
+        <span class="n">SOC_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="n">battery</span><span class="o">.</span><span class="n">SOC_list</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):])</span>  <span class="c1"># change this to the list? Done after one complete day</span>
+        <span class="c1"># print(&quot;SOC is: &quot;, SOC_vector)</span>
+        <span class="c1"># TODO: changed del DOD to absolute value!!</span>
+        <span class="c1"># print(&#39;SOC: &#39;, SOC_vector)</span>
+        <span class="n">del_DOD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">SOC_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">]</span> <span class="o">-</span> <span class="n">SOC_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="mi">5</span><span class="p">))</span>  <span class="c1"># just for numerical convenience. Have this list be updated, given the resolution we want to solve!!!</span>
+        <span class="c1"># print(&quot;del DOD: &quot;, del_DOD)</span>
+        <span class="c1"># print(&quot;Current Voltage is &quot;, battery.voltage)</span>
+        <span class="c1"># del_DOD[del_DOD &lt; 0] = 0  # remove the charging parts in profile to get DOD</span>
+        <span class="n">del_DOD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">del_DOD</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>   <span class="c1"># total cycle depth is half one depth - DOUBLE-CHECK IF THIS IS ACCURATE</span>
+        <span class="c1"># del_DOD = np.max(SOC_vector) - np.min(SOC_vector) # this is not entirely accurate</span>
+        <span class="n">real_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span> <span class="o">/</span> <span class="n">battery</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="c1"># this should include the prior voltage no?</span>
+        <span class="n">avg_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">real_voltage</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># quadratic mean voltage for aging</span>
+        <span class="c1"># print(&quot;average voltage: &quot;, avg_voltage, &quot;regular avg: &quot;, np.average(real_voltage))</span>
+        <span class="n">beta_cap</span> <span class="o">=</span> <span class="mf">7.348</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_voltage</span> <span class="o">-</span> <span class="mf">3.695</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">7.6</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">4</span> <span class="o">+</span> <span class="mf">4.081</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">3</span> <span class="o">*</span> <span class="n">del_DOD</span>
+        <span class="n">beta_cap</span> <span class="o">/=</span> <span class="mf">4880.285045</span>
+        <span class="c1"># print(&#39;Beta Cap is, &#39;, beta_cap)</span>
+        <span class="n">beta_res</span> <span class="o">=</span> <span class="mf">2.153</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_voltage</span> <span class="o">-</span> <span class="mf">3.725</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.521</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">5</span> <span class="o">+</span> <span class="mf">2.798</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">4</span> <span class="o">*</span> <span class="n">del_DOD</span>
+        <span class="n">beta_minimum</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">5</span>
+        <span class="k">if</span> <span class="n">beta_res</span> <span class="o">&lt;</span> <span class="n">beta_minimum</span><span class="p">:</span>
+            <span class="n">beta_res</span> <span class="o">=</span> <span class="n">beta_minimum</span>  <span class="c1"># there is a minimum aging factor that needs to be fixed</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">current</span> <span class="o">/</span> <span class="n">battery</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># in Ah</span>
+
+        <span class="n">capacity_fade</span> <span class="o">=</span> <span class="n">beta_cap</span> <span class="o">*</span> <span class="n">Q</span> <span class="o">**</span> <span class="mf">0.5</span>     <span class="c1"># time is one day for both</span>
+        <span class="c1"># capacity_fade = beta_cap * Qmax**0.5 * 2.15 / battery.cell_nominal_cap # time is one day for both</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">cycle_aging</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capacity_fade</span><span class="p">)</span>
+        <span class="c1"># print(&#39;Q: {}, del DOD: {}, cap fade: {}&#39;.format(Q, del_DOD, capacity_fade))</span>
+        <span class="n">resistance_growth</span> <span class="o">=</span> <span class="n">beta_res</span> <span class="o">*</span> <span class="n">Q</span>
+        <span class="c1"># resistance_growth = beta_res * Q * 2.15 / battery.cell_nominal_cap</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">true_capacity_loss</span> <span class="o">=</span> <span class="n">capacity_fade</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_caps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta_cap</span><span class="p">)</span>
+        <span class="c1"># print(&quot;Aging factor beta,&quot;, beta_cap)</span>
+        <span class="c1"># change return function to np.sum later after debugging</span>
+        <span class="k">return</span> <span class="n">capacity_fade</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">resistance_growth</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatterySim.update_capacity"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.update_capacity">[docs]</a>    <span class="k">def</span> <span class="nf">update_capacity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This uses the electrochemical and impedance-based model per Johannes et. Al&quot;&quot;&quot;</span>
+        <span class="n">cap_fade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aging_value</span><span class="p">(</span><span class="n">battery</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">SOH</span> <span class="o">-=</span> <span class="n">cap_fade</span>  <span class="c1"># change this to nom rating</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">SOH_track</span> <span class="o">+=</span> <span class="n">battery</span><span class="o">.</span><span class="n">SOH</span><span class="p">,</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">battery</span><span class="o">.</span><span class="n">SOH</span> <span class="o">*</span> <span class="n">battery</span><span class="o">.</span><span class="n">cell_nominal_cap</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">Qmax</span> <span class="o">=</span> <span class="n">battery</span><span class="o">.</span><span class="n">max_SOC</span> <span class="o">*</span> <span class="n">battery</span><span class="o">.</span><span class="n">cap</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">true_capacity_loss</span> <span class="o">+=</span> <span class="n">cap_fade</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">true_aging</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cap_fade</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatterySim.update_resistance"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.update_resistance">[docs]</a>    <span class="k">def</span> <span class="nf">update_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This uses the electrochemical and impedance-based model per Johannes et. Al&quot;&quot;&quot;</span>
+        <span class="n">res_growth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aging_value</span><span class="p">(</span><span class="n">battery</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">+=</span> <span class="n">res_growth</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">resistance_growth</span> <span class="o">+=</span> <span class="n">res_growth</span></div>
+
+<div class="viewcode-block" id="BatterySim.get_calendar_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_calendar_aging">[docs]</a>    <span class="k">def</span> <span class="nf">get_calendar_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)&quot;&quot;&quot;</span>
+        <span class="n">voltages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span> <span class="o">/</span> <span class="n">battery</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># this should include the prior voltage no?</span>
+        <span class="n">avg_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">voltages</span><span class="p">)</span>  <span class="c1"># mean voltage for aging</span>
+        <span class="c1"># I THINK THIS MUST BE ESTIMATED IN DAYS? AND I THINK IT HAS TO BE CUMULATIVE? NOT PER TIMESTEP?</span>
+        <span class="n">alpha_cap</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.543</span> <span class="o">*</span> <span class="n">avg_voltage</span> <span class="o">-</span> <span class="mf">23.75</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">6976</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambient_temp</span><span class="p">)</span>  <span class="c1"># aging factors</span>
+        <span class="n">alpha_res</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.270</span> <span class="o">*</span> <span class="n">avg_voltage</span> <span class="o">-</span> <span class="mf">16.32</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">5986</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambient_temp</span><span class="p">)</span>  <span class="c1"># temp in K</span>
+        <span class="n">alpha_cap</span> <span class="o">/=</span> <span class="mf">4880.285045</span>  <span class="c1"># scaling factor to match our data</span>
+        <span class="n">capacity_fade</span> <span class="o">=</span> <span class="n">alpha_cap</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_daily_steps</span><span class="p">)</span><span class="o">**</span><span class="mf">0.75</span>
+        <span class="c1"># for each time-step (this is scaled up for current cell)</span>
+        <span class="n">resistance_growth</span> <span class="o">=</span> <span class="n">alpha_res</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_daily_steps</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.75</span>
+        <span class="c1"># for each time-step (this is scaled up for current cell)</span>
+        <span class="c1"># battery.true_capacity_loss = capacity_fade  # this is wrong</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">capacity_fade</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">battery</span><span class="o">.</span><span class="n">calendar_aging</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capacity_fade</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">capacity_fade</span><span class="p">,</span> <span class="n">resistance_growth</span>  <span class="c1"># due to interval which degradation is implemented</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">capacity_fade</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">resistance_growth</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatterySim.get_total_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_total_aging">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cyc_aging</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_calendar_aging</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatterySim.get_aging_value"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.get_aging_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_aging_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns the actual aging value lost after a cvxpy run...&quot;&quot;&quot;</span>
+        <span class="n">cap_fade_cycle</span><span class="p">,</span> <span class="n">res_growth_cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cyc_aging</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span>  <span class="c1"># this infers first</span>
+        <span class="n">cap_fade_calendar</span><span class="p">,</span> <span class="n">res_growth_cal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_calendar_aging</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span>
+        <span class="c1"># print(&quot;Cycle aging: {}, Calendar aging: {}&quot;.format(cap_fade_cycle, cap_fade_calendar))</span>
+        <span class="n">capacity_fade</span> <span class="o">=</span> <span class="n">cap_fade_cycle</span> <span class="o">+</span> <span class="n">cap_fade_calendar</span>
+        <span class="n">res_growth</span> <span class="o">=</span> <span class="n">res_growth_cal</span> <span class="o">+</span> <span class="n">res_growth_cycle</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">capacity_fade</span><span class="p">,</span> <span class="n">res_growth</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="BatterySim.run"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;need to slightly change this for now</span>
+<span class="sd">        MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_capacity</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span></div>
+        <span class="c1"># print(&quot;Battery Aging and Response Estimated&quot;)</span>
+
+<div class="viewcode-block" id="BatterySim.NMC_cal_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.NMC_cal_aging">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">NMC_cal_aging</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatterySim.NMC_cyc_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.NMC_cyc_aging">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">NMC_cyc_aging</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatterySim.LFP_cal_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.LFP_cal_aging">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">LFP_cal_aging</span><span class="p">():</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatterySim.LFP_cyc_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batteryAgingSim.BatterySim.LFP_cyc_aging">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">LFP_cyc_aging</span><span class="p">():</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Emmanuel Balogun.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

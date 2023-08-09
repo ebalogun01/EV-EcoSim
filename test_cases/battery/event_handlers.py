@@ -9,7 +9,7 @@ import time
 import gblvar
 import json
 import pandas as pd
-from charging_sim.orchestrator import ChargingSim
+from src.charging_sim import ChargingSim
 
 # get the desired path prefix
 path_prefix = os.getcwd()
