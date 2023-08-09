@@ -1,5 +1,5 @@
 """Contains pricing structure and electricity data. Should contain attribute that spits out vector of prices depending
-on whatever pricing scheme is being used..."""
+on whatever pricing scheme is being used."""
 
 import numpy as np
 import pandas as pd
@@ -14,7 +14,8 @@ from utils import PGE_BEV2_S
 # Off-peak: all other times
 
 class PriceLoader:
-    """module for laoding prices, Undecided if this should. UPDATE HARD-CODED PATHS"""
+    """This class pre-loads prices and is mainly used pre-simulation.
+     Undecided if this should. UPDATE HARD-CODED PATHS"""
 
     def __init__(self, config, path_prefix=None):
         self.path_prefix = path_prefix
@@ -25,16 +26,32 @@ class PriceLoader:
                                 12: 365}
         self.month = -100  # July
 
-    def get_prices(self, start_idx, num_steps, desired_shape=(96, 1), month=7):
+    def get_prices(self, start_idx, num_steps, month=7):
+        """
+        Returns time-of-use (TOU) rate prices from data. This assumes TOU rates do not change day-to-day.
+        Inputs: start_idx - starting index to pull the price vector from.
+                num_steps - cardinality of the price vector being returned.
+        Returns: price_vector - the tou price vector desired from the inputs.
+        """
         price_vector = self.data_np[start_idx:start_idx + num_steps]
-        price_vector = np.reshape(price_vector, desired_shape)
+        price_vector = price_vector.reshape(-1, 1)
         return price_vector
 
     def set_month_data(self, month):
+        """
+        Sets the month for which the prices will be obtained.
+        Inputs: month - month to set the data to.
+        Returns: None.
+        """
         if self.month != month:
             self.data_np = self.data.to_numpy()[self.month_start_idx[month] * 96:self.month_start_idx[month + 1] * 96]
 
     def downscale(self, input_res, output_res):
+        """
+        Downscales the price data into a finer resolution, similar to what Pandas does. Typically only used once
+        Inputs: input_res - resolution of the input.
+                output_res - resolution of the output.
+        """
         input_data_shape = len(self.data_np[:, 0])
         num_repetitions = int(input_res / output_res)
         assert num_repetitions == 4  # JUST AN INITIAL CHECK, REMOVE LATER
@@ -51,7 +68,7 @@ class PriceLoader:
 
 
 def main():
-    """Run this mainly to generate new downscaled data or for testing"""
+    """Run this mainly to generate new downscaled data or for testing."""
     import os
     import json
     path_prefix = os.getcwd()

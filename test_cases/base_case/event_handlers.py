@@ -2,10 +2,11 @@ import os
 import sys
 import numpy as np
 import gridlabd
+import pandas as pd
 import time
 import gblvar
 import sim
-sys.path.append('../../../EV50_cosimulation/charging_sim')
+sys.path.append('../../charging_sim')
 from EVCharging import ChargingSim
 
 print("*****EV Charging Station Simulation Imported Successfully*****")
@@ -16,9 +17,16 @@ print("*****EV Charging Station Simulation Imported Successfully*****")
 path_prefix = os.getcwd()
 path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 path_prefix.replace('\\', '/')
-save_folder_prefix = 'July_test/'
-num_charging_nodes = 0 # needs to come in as input initially & should be initialized prior from the feeder population
+save_folder_prefix = 'June_test/'
+num_charging_nodes = 0  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
+
+# AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
+# TODO: include time-varying temperature for T_ambient
+simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
+temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
+
 
 # Sets up the simulation module with Charging sites and batteries
 global tic
@@ -70,12 +78,14 @@ def on_precommit(t):
     # get transformer ratings and possibly other properties if first timestep
     if gblvar.it == 0:
         gblvar.trans_rated_s = []
+        gblvar.trans_loading_percent = []
         for i in range(len(gblvar.trans_list)):
             name = gblvar.trans_list[i]
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
             trans_config_name = data['configuration']
             data = gridlabd.get_object(trans_config_name)
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
+        gblvar.trans_rated_s_np = np.array(gblvar.trans_rated_s).reshape(1, -1)
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
@@ -86,10 +96,15 @@ def on_precommit(t):
         # print(trans_power_str)
         pmag, pdeg = get_trans_power(trans_power_str)
         gblvar.trans_power.append(pmag / 1000)  # in units kVA
+    if gblvar.it == 0:
+        gblvar.trans_loading_percent = np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np
+    else:
+        gblvar.trans_loading_percent = np.vstack((gblvar.trans_loading_percent,
+                                                  np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np))   # done
 
     ####################### SIMULATE ##################################
     # propagate transformer state
-    sim.sim_transformer()
+    sim.sim_transformer(temperature_data)
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
 
@@ -97,7 +112,7 @@ def on_precommit(t):
     name_list_base_power = list(gblvar.p_df.columns)
     set_power_vec = np.zeros((len(name_list_base_power),), dtype=complex)
     # print("Global time is: ", gblvar.it)
-    if gblvar.it % EV_charging_sim.resolution == 0:
+    if num_charging_nodes and gblvar.it % EV_charging_sim.resolution == 0:
         """only step when controller time matches pf..based on resolution.
         This ensures varying resolution for ev-charging vs pf solver"""
         # get loads from EV charging station
@@ -134,18 +149,20 @@ def on_precommit(t):
 
 def on_term(t):
     """Stuff to do at the very end of the whole simulation, like saving data"""
-    import pandas as pd
     import voltdump2
-    voltdump2.parse_voltages(save_folder_prefix)
     if num_charging_nodes:
         EV_charging_sim.load_results_summary(save_folder_prefix)
-    np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
-    np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
+    # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
+    # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
     np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
                                                                          index=False)
-    pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
-                                                                         index=False)
+    # pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
+    #                                                                      index=False)
+    pd.DataFrame(data=gblvar.trans_loading_percent, columns=gblvar.trans_list). \
+        to_csv(f'{save_folder_prefix}/trans_loading_percent.csv',
+               index=False)  # included saving transformer loading percentages
+    voltdump2.parse_voltages(save_folder_prefix)
     print("Total run time: ", (time.time() - tic) / 60, "minutes")
 
 
