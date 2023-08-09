@@ -9,7 +9,7 @@ plt.rcParams.update({'font.size': 16})
 
 
 class CostEstimator:
-    """This class is used to calculate levelized cost of DER assets in EV-Ecosim"""
+    """This class is used to calculate levelized cost of DER assets in EV-Ecosim."""
     def __init__(self, num_days):
         self.trans_price_dict = {}
         self.dcfc = False  # boolean for determining if transformer is 480 or 240V
@@ -62,7 +62,7 @@ class CostEstimator:
         return result_dict
 
     def calculate_solar_cost(self):
-        """ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html
+        """Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html
         Values are pulled from the NREL solar cost calculator."""
         pass
 
