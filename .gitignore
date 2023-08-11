@@ -13,6 +13,13 @@
 **.npy
 **.glm
 **.json
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/public/logo192.png
+!frontend/public/logo512.png
+!frontend/public/manifest.json
+!frontend/public/robots.txt
 **results
 charging_sim/__pycache__
 **.Identifier
