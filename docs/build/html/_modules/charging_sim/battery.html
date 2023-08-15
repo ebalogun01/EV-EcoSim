@@ -255,7 +255,7 @@
 <span class="sd">        Deprecate this later for this object.</span>
 
 <span class="sd">        :param: None.</span>
-<span class="sd">        :return sum(aging_cal): Linear aging result.</span>
+<span class="sd">        :return: Linear calendar aging result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">life_cal_years</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="n">seconds_in_min</span> <span class="o">=</span> <span class="mi">60</span>
@@ -395,7 +395,7 @@
 <span class="sd">        :param current: Battery cycle current in amperes.</span>
 <span class="sd">        :type current: float or np.float().</span>
 <span class="sd">        :return: Battery response voltage.</span>
-<span class="sd">        :rtype: Float.</span>
+<span class="sd">        :rtype: float.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state_eqn</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>     <span class="c1"># this updates the battery states</span>
 
@@ -605,7 +605,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, Emmanuel Balogun.
+      &copy;2023, Emmanuel Balogun, Stanford University S3L Lab.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>

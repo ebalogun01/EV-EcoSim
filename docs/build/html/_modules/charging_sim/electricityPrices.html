@@ -60,9 +60,11 @@
 <div class="viewcode-block" id="PriceLoader.get_prices"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.get_prices">[docs]</a>    <span class="k">def</span> <span class="nf">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns time-of-use (TOU) rate prices from data. This assumes TOU rates do not change day-to-day.</span>
-<span class="sd">        Inputs: start_idx - starting index to pull the price vector from.</span>
-<span class="sd">                num_steps - cardinality of the price vector being returned.</span>
-<span class="sd">        Returns: price_vector - the tou price vector desired from the inputs.</span>
+
+<span class="sd">        :param int start_idx: Starting index from which to price vector will start.</span>
+<span class="sd">        :param int num_steps: Cardinality of the price vector being returned.</span>
+<span class="sd">        :param int month: Month for which the price vector will be obtained (for example, 1 - Jan, 12 - December).</span>
+<span class="sd">        :return ndarray price_vector: The TOU price vector, which is a numpy array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">price_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
         <span class="n">price_vector</span> <span class="o">=</span> <span class="n">price_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -71,6 +73,12 @@
 <div class="viewcode-block" id="PriceLoader.set_month_data"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.set_month_data">[docs]</a>    <span class="k">def</span> <span class="nf">set_month_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the month for which the prices will be obtained.</span>
+
+<span class="sd">        :param month: Month to set the data to.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
 <span class="sd">        Inputs: month - month to set the data to.</span>
 <span class="sd">        Returns: None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -35,26 +35,29 @@
 
 <div class="viewcode-block" id="Optimization"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization">[docs]</a><span class="k">class</span> <span class="nc">Optimization</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructor for the overall optimization problem solved by the optimization-based controller.</span>
+<span class="sd">    * Designed to include future cost functions such as transformer degradation and battery aging.</span>
+<span class="sd">    * Limited to convex and Mixed Integer programs, depending on the selected solver.</span>
+<span class="sd">    * Note, each desired solver must be installed separately on user&#39;s PC for a successful run.</span>
+
+<span class="sd">    :param objective_type: Type of objective problem being optimizaed.</span>
+<span class="sd">    :param objective: CVXPY objective function object.</span>
+<span class="sd">    :param controller: Controller object.</span>
+<span class="sd">    :param power_demand: Power demand at the Charging Station.</span>
+<span class="sd">    :param time_res: Time resolution of problem data.</span>
+<span class="sd">    :param transformer: Transformer object (optional, not implemented yet).</span>
+<span class="sd">    :param battery: Battery object.</span>
+<span class="sd">    :param time: Time Counter</span>
+<span class="sd">    :param name: Optimization identifier.</span>
+<span class="sd">    :param solar: Solar Object</span>
+<span class="sd">    :param str solver: Available backend solver to invoke (ECOS, MOSEK, GUROBI, etc.).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: change all refs to battery_constraints to call controller</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objective_type</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">power_demand</span><span class="p">,</span> <span class="n">time_res</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">battery</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;GUROBI&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        :param objective_type: Type of objective problem being optimizaed.</span>
-<span class="sd">        :param objective: CVXPY objective function object.</span>
-<span class="sd">        :param controller: Controller object.</span>
-<span class="sd">        :param power_demand: Power demand at the Charging Station.</span>
-<span class="sd">        :param time_res: Time resolution of problem data.</span>
-<span class="sd">        :param transformer: Transformer object (optional, not implemented yet).</span>
-<span class="sd">        :param battery: Battery object.</span>
-<span class="sd">        :param time: Time Counter</span>
-<span class="sd">        :param name: Optimization identifier.</span>
-<span class="sd">        :param solar: Solar Object</span>
-<span class="sd">        :param str solver: Available backend solver to invoke (ECOS, MOSEK, GUROBI, etc.).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objective_type</span> <span class="o">=</span> <span class="n">objective_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objective</span> <span class="o">=</span> <span class="n">objective</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
@@ -76,61 +79,55 @@
         <span class="k">if</span> <span class="n">solar</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;solar&#39;</span><span class="p">,</span> <span class="n">solar</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Optimization.objective"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.objective">[docs]</a>    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div>
-
 <div class="viewcode-block" id="Optimization.build_emissions_cost"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.build_emissions_cost">[docs]</a>    <span class="k">def</span> <span class="nf">build_emissions_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds emission cost to be included in the objective function (future work).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Optimization.build_battery_cost"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.build_battery_cost">[docs]</a>    <span class="k">def</span> <span class="nf">build_battery_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build battery cost (to be implemented in future version).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Optimization.build_transformer_cost"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.build_transformer_cost">[docs]</a>    <span class="k">def</span> <span class="nf">build_transformer_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build Transformer cost (to be implemented in future version).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Optimization.add_demand_charge"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.add_demand_charge">[docs]</a>    <span class="k">def</span> <span class="nf">add_demand_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charge</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optimizing for demand charge by simply minimizing each daily max</span>
-<span class="sd">        MIGHT NOT USE THIS FOR NOW&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Including demand charge in the objective function (Deprecated).</span>
+
+<span class="sd">        :param charge: Demand charge ($/kW).</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">load</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c1"># placeholder</span>
         <span class="n">cost</span> <span class="o">=</span> <span class="n">charge</span> <span class="o">*</span> <span class="n">load</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_charge</span> <span class="o">+</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_discharge</span> <span class="o">-</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Optimization.build_electricity_cost"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.build_electricity_cost">[docs]</a>    <span class="k">def</span> <span class="nf">build_electricity_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="n">demand_charge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># to be used later. For now, keep as-is.</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Need to update from home load right now; maybe this can be useful in future opt.&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?</span>
-        <span class="n">lam</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># this needs to be guided</span>
-        <span class="n">sparsity_cost_factor</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># dynamically determine this in future based on load * cost</span>
-        <span class="n">sparsity_cost</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_charge</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> \
-                        <span class="n">cp</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_discharge</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">cost_electricity</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">cp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_charge</span> <span class="o">+</span>
-                                                                           <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_discharge</span> <span class="o">-</span>
-                                                                           <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span>
-                                                                           <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="p">)))))</span> <span class="o">+</span> \
-                           <span class="n">sparsity_cost_factor</span> <span class="o">*</span> <span class="n">sparsity_cost</span>
-        <span class="k">if</span> <span class="n">demand_charge</span><span class="p">:</span>
-            <span class="n">demand_charge_cost</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">pos</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_charge</span> <span class="o">+</span>
-                                                       <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_discharge</span> <span class="o">-</span>
-                                                       <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="p">)))</span>
-            <span class="n">cost_electricity</span> <span class="o">+=</span> <span class="n">demand_charge_cost</span>
-        <span class="k">return</span> <span class="n">cost_electricity</span></div>
-
 <div class="viewcode-block" id="Optimization.get_battery_constraint"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.get_battery_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">get_battery_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns battery constraint lists.</span>
-<span class="sd">        Inputs: None.</span>
-<span class="sd">        Returns: List of battery constraints.</span>
+<span class="sd">        Returns the list of battery constraints within the controller.</span>
+
+<span class="sd">        :return: Battery constraints.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_constraints</span></div>
 
-<div class="viewcode-block" id="Optimization.get_market_constraints"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.get_market_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_market_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_constraints</span></div>
-
 <div class="viewcode-block" id="Optimization.aggregate_constraints"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.aggregate_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Aggregates all module constraints into one constraints list.</span>
-<span class="sd">        Input: None.</span>
-<span class="sd">        Returns: None.</span>
+<span class="sd">        Aggregates all the constraints into one constraint list within the object.</span>
+
+<span class="sd">        :return: None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_constraints</span><span class="p">:</span>  <span class="c1"># fix this later to call battery directly</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">battery_constraints</span><span class="p">)</span>
@@ -140,11 +137,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Optimization.get_constraints"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the constraints list.</span>
+
+<span class="sd">        :return: List of all constraints within the problem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span></div>
 
 <div class="viewcode-block" id="Optimization.run"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Runs this instance of the optimization problem.</span>
+<span class="sd">        Runs an instance of the optimization problem.</span>
+
+<span class="sd">        :return float: Optimal objective value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_constraints</span><span class="p">()</span>  <span class="c1"># aggregate constraints</span>
         <span class="n">problem</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">Minimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objective</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="p">)</span>
@@ -152,21 +156,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_per_opt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="c1"># print(problem.status) ACTIVATE LATER</span>
-        <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="Optimization.get_final_states"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization.get_final_states">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_final_states</span><span class="p">(</span><span class="n">battery</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SOC battery: &quot;</span><span class="p">,</span> <span class="n">battery</span><span class="o">.</span><span class="n">getSOC</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">battery</span><span class="o">.</span><span class="n">getSOC</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is solely used for testing&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">test</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
 </pre></div>
 
           </div>

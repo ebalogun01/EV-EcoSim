@@ -38,106 +38,149 @@
 </section>
 <section id="module-analysis.cost_analysis">
 <span id="analysis-cost-analysis-module"></span><h2>analysis.cost_analysis module<a class="headerlink" href="#module-analysis.cost_analysis" title="Permalink to this heading">¶</a></h2>
-<p>This file hosts the CostEstimator Class, which estimates the cost of the different grid and DER components
+<p>This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components
 from the simulation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis.cost_analysis.</span></span><span class="sig-name descname"><span class="pre">CostEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_days</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class is used to calculate levelized cost of DER assets in EV-Ecosim.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_LCOE">
-<span class="sig-name descname"><span class="pre">calculate_LCOE</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_LCOE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_LCOE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate levelized cost of electricity for storage</p>
-</dd></dl>
-
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_days</strong> – The number of days for which the calculation is run.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_battery_cost">
 <span class="sig-name descname"><span class="pre">calculate_battery_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_battery_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_battery_cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input: result_dir - directory in which to save the results dictionary
-Returns: result_dict - dictionary of results</p>
+<dd><p>Calculates the battery costs and updates the different cost components, including LCOE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result_dir</strong> – Directory in which to save the results dictionary.</p>
+</dd>
+<dt class="field-even">Return dict result_dict<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of results.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s">
 <span class="sig-name descname"><span class="pre">calculate_electricity_cost_PGEBEV2s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PGE_separate_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_electricity_cost_PGEBEV2s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the overall electricity PGEBEV2S cost for a given scenario.
-Inputs: result_dir - Directory in which the result is saved.</p>
-<blockquote>
-<div><p>PGE_separate_file - Boolean to note if PGE cost block is in a separate file.</p>
-</div></blockquote>
-<p>Returns: result_dict - A dictionary comprising all the cost components and their dollar amounts.</p>
+<dd><p>Calculates the overall electricity PGEBEV2S cost for a given scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result_dir</strong> (<em>str</em>) – Directory in which the result is saved.</p></li>
+<li><p><strong>PGE_separate_file</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return dict result_dict<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary comprising all the cost components and their dollar amounts.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_solar_cost">
 <span class="sig-name descname"><span class="pre">calculate_solar_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_solar_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_solar_cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ref: <a class="reference external" href="https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html">https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</a>
-Values are pulled from the NREL solar cost calculator.</p>
+<dd><p>Values are pulled from the NREL solar cost calculator.
+Ref: <a class="reference external" href="https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html">https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</a>
+To be deprecated soon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">
 <span class="sig-name descname"><span class="pre">calculate_trans_loss_of_life</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_trans_loss_of_life"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimates the expected transformer loss of life.
-Inputs: result_dir - Directory in which the loss results is saved.
-Returns: result_dict - Dictionary of transformer losses.</p>
+<dd><p>Estimates the expected transformer loss of life.</p>
+<p>Reference:
+<a href="#id1"><span class="problematic" id="id2">*</span></a>5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result_dir</strong> – Directory in which the loss results is saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of transformer losses.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.plot_loads">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.plot_loads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.plot_loads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates plots overlaying load and net loads for post-simulation visualization.
-Inputs: total_load - Overall EV load demand at node, can include building load if controllable.</p>
-<blockquote>
-<div><p>net_load - total_load minus DER buffer.
-prefix - Plot file label prefix.
-labels - Legend labels for each plotted curve.</p>
-</div></blockquote>
-<p>Returns: None - Creates and saves plots.</p>
+<dd><p>Creates plots overlaying load and net loads for post-simulation visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_load</strong> – Overall EV load demand at node, can include building load if controllable.</p></li>
+<li><p><strong>net_load</strong> – total_load minus DER buffer.</p></li>
+<li><p><strong>prefix</strong> – Plot file label prefix.</p></li>
+<li><p><strong>labels</strong> – Legend labels for each plotted curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.plot_power">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.plot_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.plot_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the controller predicted and true power of the battery system.
-Inputs: power - True power.</p>
-<blockquote>
-<div><p>soc_pred - Controller predicted power.
-prefix - Plot file label prefix.
-labels - Legend labels for each plotted curve.</p>
-</div></blockquote>
-<p>Returns: None - Creates and saves plots</p>
+<dd><p>Plots the controller predicted and true power of the battery system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>power</strong> – True power.</p></li>
+<li><p><strong>power_pred</strong> – Controller predicted power.</p></li>
+<li><p><strong>prefix</strong> – Plot file label prefix.</p></li>
+<li><p><strong>labels</strong> – Legend labels for each plotted curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.plot_soc">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_soc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soc_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.plot_soc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.plot_soc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the controller predicted and true state of charge of the battery system.
-Inputs: soc - True state of charge.</p>
-<blockquote>
-<div><p>soc_pred - Controller predicted state of charge.
-prefix - Plot file label prefix.
-labels - Legend labels for each plotted curve.</p>
-</div></blockquote>
-<p>Returns: None - Creates and saves plots</p>
+<dd><p>Plots the controller predicted and true state of charge of the battery system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>soc</strong> – True state of charge.</p></li>
+<li><p><strong>soc_pred</strong> – Controller predicted state of charge.</p></li>
+<li><p><strong>prefix</strong> – Plot file label prefix.</p></li>
+<li><p><strong>labels</strong> – Legend labels for each plotted curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.solar_cost">
 <span class="sig-name descname"><span class="pre">solar_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.solar_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.solar_cost" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the overall capital cost of the solar system.
+Not fully implemented.
+:param str result_dir: Location to save the result.
+:return: Solar PV capital cost.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.transformer_cost">
 <span class="sig-name descname"><span class="pre">transformer_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.transformer_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.transformer_cost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cannot find good resource data for this yet.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.transformer_degradation_cost">
-<span class="sig-name descname"><span class="pre">transformer_degradation_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.transformer_degradation_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.transformer_degradation_cost" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -150,6 +193,8 @@ labels - Legend labels for each plotted curve.</p>
 </section>
 <section id="module-analysis">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-analysis" title="Permalink to this heading">¶</a></h2>
+<p>This module runs the post-simulation cost calculations for DER assets and transformer aging.
+This module also estimates the voltage violations within the distribution network.</p>
 </section>
 </section>
 
@@ -215,7 +260,7 @@ labels - Legend labels for each plotted curve.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, Emmanuel Balogun.
+      &copy;2023, Emmanuel Balogun, Stanford University S3L Lab.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
