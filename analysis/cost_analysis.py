@@ -273,7 +273,7 @@ class CostEstimator:
         Estimates the expected transformer loss of life.
 
         Reference:
-        * 5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.
+        *5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.
 
         :param result_dir: Directory in which the loss results is saved.
         :return: Dictionary of transformer losses.

@@ -99,8 +99,21 @@ calculation modules and voltage impacts on the distribution grid.
 Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
 install packages listed in the environment manually (RECOMMENDED)
 Ensure gridlabd is installed by following recommended installation method.
-### To run:
-For "battery" test case, navigate to `test_cases/battery` and run scenarios.py using `python3 scenarios.py`
-For base case, navigate to `test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
 
+For battery test case:
+* Navigate to `test_cases/battery/feeder_population` and run `feeder_population.py`. This uses the 
+  `test_cases/battery/feeder_population/config.txt` settings to prepare the power system and populate the secondary
+  distribution network with time-varying base loads, EV charging stations, with the required transformers.
+* Once confirmed that `feeder_population.py` has run successfully and generates the required `IEEE123_secondary.glm` and
+  `IEEE123_populated.glm` files, you are done with the initial pre-simulation run prep.
+* Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py`
+
+For base case:
+* Navigate to `EV50_cosimulation/feeder_population` and run `feeder_population.py`. This uses the 
+  `./feeder_population/config.txt` settings to prepare the power system and populate the secondary distribution network \
+  with time-varying base loads
+* Navigate to `test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
+
+## Post-simulation analysis
+ * TODO
 
