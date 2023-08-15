@@ -224,7 +224,7 @@ class Battery:
         Deprecate this later for this object.
 
         :param: None.
-        :return sum(aging_cal): Linear aging result.
+        :return: Linear calendar aging result.
         """
         life_cal_years = 10
         seconds_in_min = 60
@@ -364,7 +364,7 @@ class Battery:
         :param current: Battery cycle current in amperes.
         :type current: float or np.float().
         :return: Battery response voltage.
-        :rtype: Float.
+        :rtype: float.
         """
         self.state_eqn(current)     # this updates the battery states
 

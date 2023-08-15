@@ -29,7 +29,7 @@ class Battery:
 
     :param battery_type: Type of battery (inconsequential to current dynamics).
     :param node: The node/bus in the distribution network in which the battery resides.
-    :param self.config: Battery configuration file containing the main attributes of the battery.
+    :param config: Battery configuration file containing the main attributes of the battery.
     :param controller: Controller for the battery.
     :returns: Battery object.
     """
