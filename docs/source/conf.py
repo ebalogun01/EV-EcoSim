@@ -10,9 +10,10 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
+sys.path.append('../../EV50_cosimulation/charging_sim')
 
 project = 'EV-Ecosim'
-copyright = '2023, Emmanuel Balogun'
+copyright = '2023, Emmanuel Balogun, Stanford University S3L Lab'
 author = 'Emmanuel Balogun'
 release = '1.0.0'
 

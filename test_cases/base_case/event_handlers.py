@@ -1,15 +1,15 @@
+"""This module is the main power-horse for the EV-Ecosim. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in EV-Ecosim. This file imports all simulated objects and their children,
+which is then run in the co-simulation environment."""
+
 import os
-import sys
 import numpy as np
 import gridlabd
 import pandas as pd
 import time
 import gblvar
 import sim
-sys.path.append('../../charging_sim')
-from EVCharging import ChargingSim
-
-print("*****EV Charging Station Simulation Imported Successfully*****")
+from charging_sim.orchestrator import ChargingSim
 
 #   will later remove some import flags but leaving here for potential debugging
 
@@ -22,7 +22,6 @@ num_charging_nodes = 0  # needs to come in as input initially & should be initia
 central_storage = False  # toggle for central vs. decentralized storage
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
-# TODO: include time-varying temperature for T_ambient
 simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
 temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
@@ -36,6 +35,12 @@ EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix)  # In
 
 
 def on_init(t):
+    """
+    This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.
+
+    :param t: arbitrary placeholder.
+    :return: True - arbitrary value.
+    """
     # get object lists from GridLAB-D
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
@@ -46,7 +51,7 @@ def on_init(t):
     gblvar.trans_list = find("class=transformer")
     gblvar.transconfig_list = find("class=transformer_configuration")
 
-    # Configure EV charging simulation...NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
+    # NEED TO maybe INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
     EV_charging_sim.setup(list(gblvar.tn_list))
     print("Making results directory at: ", save_folder_prefix)
     os.mkdir(save_folder_prefix)
@@ -55,6 +60,12 @@ def on_init(t):
 
 
 def on_precommit(t):
+    """
+    This runs the simulation, propagating all the states of the necessary physical objects and the grid.
+
+    :param t: Arbitrary placeholder.
+    :return: True
+    """
     clock = gridlabd.get_global("clock")
     print(f'****  {str(clock)}  ****')
 
@@ -148,7 +159,13 @@ def on_precommit(t):
 
 
 def on_term(t):
-    """Stuff to do at the very end of the whole simulation, like saving data"""
+    """
+    Actions taken at the very end of the whole simulation, like saving data.
+    Data not required can be commented out on the relevant line.
+
+    :param t: Default placeholder (do not change).
+    :return: True.
+    """
     import voltdump2
     if num_charging_nodes:
         EV_charging_sim.load_results_summary(save_folder_prefix)
@@ -167,6 +184,12 @@ def on_term(t):
 
 
 def find(criteria):
+    """
+    Finds and returns objects in gridlabd that satisfy certain criteria.
+
+    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :return: list of objects that satisfy the criteria.
+    """
     finder = criteria.split("=")
     if len(finder) < 2:
         raise SyntaxError("find(criteria='key=value'): criteria syntax error")
@@ -183,7 +206,14 @@ def find(criteria):
 
 
 def get_voltage():
-    """Get voltage string from GridLAB-D and process it into float"""
+    """
+    Obtains voltage string from GridLAB-D and processes it into float. GridLABD returns voltages in various
+    formats, thus this processes the string voltages from the different formats into float. For more
+    information on the formats, see the GridLabD powerflow user guide.
+
+    :return: Processed voltage magnitude and voltage phase arrays.
+    :rtype: ndarray(float).
+    """
     #   TODO: find a way to ignore the nodes that have no voltage (zero-load)
     vm_array, vp_array = np.zeros((len(gblvar.voltage_obj),)), np.zeros((len(gblvar.voltage_prop),))
     for i in range(len(gblvar.voltage_obj)):
@@ -225,7 +255,13 @@ def get_voltage():
 
 
 def get_trans_power(trans_power_str):
-    """Get power at transformer as a string and process it into a float"""
+    """
+    Obtains power at transformer as a string and processes it into a float.
+
+    :param trans_power_str: Transformer power as a string.
+    :return pmag: Power magnitude.
+    :return deg: Angle between pmag (apparent power) and the real axis on the complex power plane.
+    """
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:
         if 'd' not in trans_power_str:

@@ -1,5 +1,5 @@
 """
-This file contains the program for the battery pack class.
+This module contains the program for the battery pack class.
 This battery class model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most
 purposes.
 """
@@ -16,51 +16,53 @@ import pandas as pd
 
 class Battery:
     """
-    Each instantiation of this class must include at least a config file, which contains the dynamical constraints of
-    the battery.
-     Properties:
-         Properties are mainly controlled in the battery config file 'battery.json'
-         max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.
-         max voltage(V) - maximum allowable battery voltage.
-         min Voltage (V) - minimum allowable battery voltage.
-         nominal energy (kWh) - energy deliverable to the battery.
-         id (-)
-         ambient temperature (C).
+    Each instantiation of this class must include at least a config file, which contains the physical
+    constraints and properties of the battery.
+
+    Properties are mainly controlled in the battery config file 'battery.json'
+        * max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.
+        * max voltage(V) - maximum allowable battery voltage.
+        * min Voltage (V) - minimum allowable battery voltage.
+        * nominal energy (kWh) - energy deliverable to the battery.
+        * id (-).
+        * Ambient temperature (Celsius).
+
+    :param battery_type: Type of battery (inconsequential to current dynamics).
+    :param node: The node/bus in the distribution network in which the battery resides.
+    :param self.config: Battery configuration file containing the main attributes of the battery.
+    :param controller: Controller for the battery.
+    :returns: Battery object.
     """
 
     def __init__(self, battery_type=None, node=None, config=None, controller=None):
-        """
-        Battery initialization.
-        Inputs: battery_type - simply battery type for informational purposes
-                node - The location (node/bus) that the battery resides within the power network.
-                config - Configuration file for the battery class. Some entries can be user-determined.
-                controller - Controller used to send current signals to Battery modules.
-        """
 
         self.node = node  # This is used for battery location.
-        #   TODO: need to include resolution and others
-        self.controller = controller
-        self.resolution = config["resolution"]
-        self.dt = config["resolution"] / 60  # in hours
-        self.cap = config["cell_nominal_cap"]  # Ah
-        self.cell_nominal_cap = config["cell_nominal_cap"]
-        self.R_cell = config["resistance"]  # single cell resistance
-        self.R_pack = None  # overall pack resistance
-        self._eff = config["round-trip_efficiency"]
-        self.max_c_rate = config["max_c_rate"]
+        self.battery_type = None    #: Initial value: None.
+        self.controller = controller    #: Initial value: None.
+        self.config = config    #: Initial value: None.
+
+        self.resolution = self.config["resolution"]
+        self.dt = self.config["resolution"] / 60  # (Hours)
+        self.cap = self.config["cell_nominal_cap"]  # Unit: Ah.
+        self.cell_nominal_cap = self.config["cell_nominal_cap"]
+        self.R_cell = self.config["resistance"]  # Single cell resistance.
+        self.R_pack = None  #: Overall pack resistance.
+        self._eff = self.config["round-trip_efficiency"]
+        self.max_c_rate = self.config["max_c_rate"]
+
         self.battery_cost = 200  # this is in $/kWh
-        self.To = 273.15 + 23  # ambient temperature   (USE THE SAME INPUT AS TRANSFORMER AGING MODEL
-        self.T = self.To  # initialize at atmposheric temperature
-        # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours
+        self.To = 273.15 + 23  # Ambient temperature.
+        self.T = self.To  # initialize at atmospheric temperature.
+        # self.nominal_energy = config["cell_nominal_energy"]     # Watts-hours.
 
         # LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL
-        self.params_0_cycles = config["params_0_cycles"]
-        self.params_25_cycles = config["params_25_cycles"]
-        self.params_75_cycles = config["params_75_cycles"]
-        self.params_125_cycles = config["params_125_cycles"]
+        self.params_0_cycles = self.config["params_0_cycles"]
+        self.params_25_cycles = self.config["params_25_cycles"]
+        self.params_75_cycles = self.config["params_75_cycles"]
+        self.params_125_cycles = self.config["params_125_cycles"]
         # TODO: think about how to load these parameter changes over time
-        self.OCV_map_SOC = config["OCV_map_SOC"]  # update these two as well
-        self.OCV_map_voltage = config["OCV_map_voltage"]  # update these two as well
+        self.OCV_map_SOC = self.config["OCV_map_SOC"]  # update these two as well
+        self.OCV_map_voltage = self.config["OCV_map_voltage"]  # update these two as well
 
         self.max_current = self.max_c_rate * self.cap  # figure out a way to have these update automatically
         self.A_Ro = self.params_0_cycles[0]
@@ -75,21 +77,21 @@ class Battery:
         self.iR1 = 0
         self.iR2 = 0
 
-        self.max_voltage = config["max_cell_voltage"]
-        self.pack_max_voltage = config["pack_max_voltage"]
-        self.min_voltage = config["min_cell_voltage"]  # for each cell
-        self.pack_max_Ah = config["pack_max_Ah"]  # this is used in battery_setup_2 to scale voltage instead of curr
-        self.pack_nom_Ah = config["pack_nom_Ah"]
-        self.cell_nominal_voltage = config["nominal_cell_voltage"]  # for each cell
+        self.max_voltage = self.config["max_cell_voltage"]
+        self.pack_max_voltage = self.config["pack_max_voltage"]
+        self.min_voltage = self.config["min_cell_voltage"]  # for each cell
+        self.pack_max_Ah = self.config["pack_max_Ah"]  # this is used in battery_setup_2 to scale voltage instead of curr
+        self.pack_nom_Ah = self.config["pack_nom_Ah"]
+        self.cell_nominal_voltage = self.config["nominal_cell_voltage"]  # for each cell
         self.nominal_energy = self.cell_nominal_voltage * self.cell_nominal_cap
-        self.Qmax = config["SOC_max"] * self.cap
-        self.Qmin = config["SOC_min"] * self.cap
-        self.initial_SOC = config["SOC"]
-        self.min_SOC = config["SOC_min"]
-        self.max_SOC = config["SOC_max"]
-        self.OCV = config["max_cell_voltage"]
-        self.SOH = config["SOH"]
-        self.daily_self_discharge = config["daily_self_discharge"]
+        self.Qmax = self.config["SOC_max"] * self.cap
+        self.Qmin = self.config["SOC_min"] * self.cap
+        self.initial_SOC = self.config["SOC"]
+        self.min_SOC = self.config["SOC_min"]
+        self.max_SOC = self.config["SOC_max"]
+        self.OCV = self.config["max_cell_voltage"]
+        self.SOH = self.config["SOH"]
+        self.daily_self_discharge = self.config["daily_self_discharge"]
 
         # battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)
         self.SOC_track = [self.initial_SOC]
@@ -116,7 +118,7 @@ class Battery:
         self.power = 0
         self.current = 0
         self.true_power = [0]
-        self.start = config["start_time"]
+        self.start = self.config["start_time"]
         self.MPC_Control = {'Q': [], 'P': []}  # tracks the control actions for the MPC control
         self.size = 100  # what does this mean?...I should use this for accounting how much power I CAN DEMAND
         self.cell_count = 0
@@ -138,16 +140,17 @@ class Battery:
         self.location = None
         self.savings = None
         self.state_of_charge = None
-        self.nominal_pack_voltage = config["pack_voltage"]  # to be initialized later
-        self.pack_energy_capacity = config["pack_energy_cap"]  # battery rating this is in Watt-hours (Wh)
-        self.nominal_pack_cap = None  # will be set in battery setup
+        self.nominal_pack_voltage = self.config["pack_voltage"]  # to be initialized later
+        self.pack_energy_capacity = self.config["pack_energy_cap"]  # battery rating this is in Watt-hours (Wh)
+        self.nominal_pack_cap = None  #: This will be set in :py:meth:battery_setup.
         self.predicted_voltages = []
         self.operating_voltages = []
 
     def get_true_power(self):
         """Returns the power in or out of the battery.
-        Input: None.
-        Returns: Last power output of battery object."""
+
+        :param : None.
+        :return : Last power output of battery object."""
         return np.array(self.true_power)
 
     def battery_setup(self):
@@ -155,12 +158,13 @@ class Battery:
         This sets up the series-parallel configuration of the cells,
         given the capacity and voltage of the battery. Scales up Ah capacity, not voltage. Voltage in this setup is
         fixed by the battery json file while the Ah capacity is floating and determined by the given pack voltage and
-        energy capacity (Wh).
-        Capacity (Wh).
-        Voltage (V).
-        params: (cell_amp_hrs (Ah), cell_voltage (V).
-        Inputs: None.
-        Returns: None. Updates battery topology."""
+        Energy Capacity.
+
+        * Energy capacity (Wh).
+        * Voltage (V).
+
+        :return: None. Updates battery topology.
+        """
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
         print(f"**** Pre-initialized nominal pack voltage is {self.nominal_pack_voltage}")
@@ -190,11 +194,12 @@ class Battery:
         Scales up voltage instead of current capacity (Ah), thereby using more cells in series
         for the same battery energy rating. pack_max_AH property is set in config and fixed. Voltage is determined
         by the pack energy capacity (Watt-hours) and the maximum amp-hour capacity.
-        Capacity (Wh).
-        Voltage (V).
-        params: (cell_amp_hrs (Ah), cell_voltage (V)
-        Inputs: None.
-        Returns: None. Updates battery topology.
+
+        * Capacity (Wh).
+        * cell_amp_hrs (Ah), cell_voltage (V)
+
+        :param : None.
+        :return : None. Updates battery topology.
         """
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
@@ -216,10 +221,13 @@ class Battery:
               )
 
     def est_calendar_aging(self):
-        """Estimates the constant calendar aging of the battery. this is solely time-dependent.
-        Deprecate this later for this object
-        Inputs: None.
-        Outputs: Linear aging result."""
+        """
+        Estimates the constant calendar aging of the battery. this is solely time-dependent.
+        Deprecate this later for this object.
+
+        :param: None.
+        :return sum(aging_cal): Linear aging result.
+        """
         life_cal_years = 10
         seconds_in_min = 60
         seconds_in_year = 31556952
@@ -230,8 +238,9 @@ class Battery:
     def est_cyc_aging(self):
         """Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.
         Deprecate this later for this object.
-        Inputs: None.
-        Returns: CVXPY objective describing cycle aging function.
+
+        :param : None.
+        :return cycle aging: CVXPY objective describing cycle aging function.
         """
         seconds_in_min = 60
         life_cyc = 4500  # change this to be input in the config file
@@ -241,37 +250,47 @@ class Battery:
     def get_power_profile(self, months):
         """
         Returns the power profile of the battery for a certain number of months.
-        Input: months - months for which to obtain power profile.
+
+        :param months: Months for which to obtain power profile.
         Returns: Dictionary of power profiles for each month in months.
         """
         return {month: self.power_profile[month] for month in months}
 
     def get_total_aging(self):
         """Returns the total capacity life loss the battery has experienced so far.
-        Inputs: None.
-        Returns: Estimated cycle + calendar aging of cell/battery."""
+
+        :param: None.
+        :return: Estimated cycle + calendar aging of cell/battery."""
         return self.est_cyc_aging() + self.est_calendar_aging()
 
     def update_capacity(self):
         """This is not true capacity but anticipated capacity based on linear model.
-        This will be deferred to controller. TO BE DEPRECATED."""
+        This will be deferred to controller. TO BE DEPRECATED.
+        """
         aging_value = self.get_aging_value() * 0.2  # do not multiply by 0.2 to keep comparable
         self.total_aging += aging_value
         self.linear_aging += aging_value,
-        self.update_max_current()
+        # self.update_max_current()
 
     def track_SOC(self, SOC):
         """Updates the states of charge state Vector of the battery.
-        Inputs: SOC - state of charge. This is a self-called function.
-        Returns: None. """
+
+        :param: SOC - state of charge. This is a self-called function.
+        :return: None. """
         self.SOC_track += SOC,
         self.SOC_list += SOC,
 
     def get_aging_value(self):
-        """returns the actual aging value lost after a cvxpy run..."""
+        """Returns the actual aging value lost after a cvxpy run.
+
+        :returns: Cycle aging + Calendar aging.
+        """
         return self.est_cyc_aging() + self.est_calendar_aging()
 
     def get_roundtrip_efficiency(self):
+        """Returns the estimated round-trip efficiency.
+
+        :returns boolean: self._eff"""
         return self._eff
 
     def update_max_current(self, verbose=False):
@@ -289,7 +308,8 @@ class Battery:
     def visualize(self, option: str):
         """ TO BE DEPRECATED.
         Plots visualizations and save battery states desired by user.
-        Inputs: option - only uses one option right now."""
+
+        :param: option - only uses one option right now."""
         if type(option) == str:
             plt.style.use('seaborn-darkgrid')
             plotting_values = getattr(self, option)
@@ -313,8 +333,11 @@ class Battery:
     def save_sim_data(self, save_prefix):
         """Saves all relevant battery data over the given simulation. Usually called from the battery object
         upon conclusion of simulation.
-        Inputs: save_prefix - desired folder in which all the files will be saved.
-        Returns: None - saves output files in the desired folder."""
+
+        :param save_prefix: desired folder in which all the files will be saved.
+        :type save_prefix: str.
+        :return : None, saves output files in the desired folder.
+        """
         save_file_base = f'{str(self.id)}_{self.node}'
         data = {'SOC': self.SOC_track,
                 'SOC_pred': self.predicted_SOC,
@@ -335,8 +358,12 @@ class Battery:
     def dynamics(self, current):
         """Propagates the state of the battery forward one step.
         It takes as input current load (amperes) from the Battery controller and update the battery power.
-        Inputs: current (amperes).
-        Returns: battery response voltage (V)."""
+
+        :param current: Battery cycle current in amperes.
+        :type current: float or np.float().
+        :return: Battery response voltage.
+        :rtype: Float.
+        """
         self.state_eqn(current)  # this updates the battery states
 
         if self.voltage > self.max_voltage:
@@ -382,8 +409,9 @@ class Battery:
         """Updates all properties from cell to pack level using.
         Method used in ref Balogun Et. Al http://dx.doi.org/10.36227/techrxiv.23596725.v2 .
         Uses initial properties/states to update from cell into pack properties for simulation.
-        Inputs: None.
-        Returns: None."""
+
+        :param: None.
+        :return: None."""
         # first get the series resistance and capacitance
         self.R1 *= self.topology[0]
         self.R2 *= self.topology[0]
@@ -404,10 +432,11 @@ class Battery:
         """Contains discretized state equations containing the battery dynamics at the pack-level;
         ref here: G. L. Plett, Battery management systems, Volume I: Battery modeling. Artech House, 2015, vol. 1.
 
-        Inputs: Current - current in amperes from controller to propagate state forward by one step.
+        :param boolean append: Decides if to track powers within the ::B battery object.
+        :param float current: Current - current in amperes from controller to propagate state forward by one step.
                 append - defaults to True. This decides tracking of currents and power over time. Desirable for post-
                 optimization analyses.
-        Returns: None; appends current state into the state history vectors.
+        :return: None; appends current state into the state history vectors.
         """
         self.current = current  # added 01/09/22 to fix bug
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
@@ -427,11 +456,16 @@ class Battery:
     def get_OCV(self):
         """Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge
         SoC via interpolation.
-        Returns: Open Circuit Voltage (OCV) at battery's current SoC."""
+        The OCV-SOC map is obtained a-priori (pre-simulation).
+
+        :param: None.
+        :return: Open Circuit Voltage (OCV) at battery's current SoC."""
         return np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
 
     def thermal_dynamics(self):
-        """This models the battery's thermal state. Updates internal and surface temperature of the battery."""
+        """This models the battery's thermal state. Updates internal and surface temperature of the battery.
+        Not available in this version.
+        """
         #   using the lumped-sum capacitance model
         # TODO: have someone work on this.
         return NotImplementedError

@@ -29,9 +29,11 @@ class PriceLoader:
     def get_prices(self, start_idx, num_steps, month=7):
         """
         Returns time-of-use (TOU) rate prices from data. This assumes TOU rates do not change day-to-day.
-        Inputs: start_idx - starting index to pull the price vector from.
-                num_steps - cardinality of the price vector being returned.
-        Returns: price_vector - the tou price vector desired from the inputs.
+
+        :param int start_idx: Starting index from which to price vector will start.
+        :param int num_steps: Cardinality of the price vector being returned.
+        :param int month: Month for which the price vector will be obtained (for example, 1 - Jan, 12 - December).
+        :return ndarray price_vector: The TOU price vector, which is a numpy array.
         """
         price_vector = self.data_np[start_idx:start_idx + num_steps]
         price_vector = price_vector.reshape(-1, 1)
@@ -40,6 +42,12 @@ class PriceLoader:
     def set_month_data(self, month):
         """
         Sets the month for which the prices will be obtained.
+
+        :param month: Month to set the data to.
+        :return: None.
+        """
+        """
+        
         Inputs: month - month to set the data to.
         Returns: None.
         """
