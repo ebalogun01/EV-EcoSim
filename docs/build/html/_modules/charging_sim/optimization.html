@@ -34,24 +34,26 @@
 
 
 <div class="viewcode-block" id="Optimization"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.optimization.Optimization">[docs]</a><span class="k">class</span> <span class="nc">Optimization</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a class for the optimization problem we will solve. It contains all necessary attributes</span>
-<span class="sd">    that fully define the optimization problem.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: change all refs to battery_constraints to call controller</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objective_type</span><span class="p">,</span> <span class="n">objective</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">power_demand</span><span class="p">,</span> <span class="n">time_res</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">battery</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;GUROBI&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Inputs: objective_type - the type of objective.</span>
-<span class="sd">                objective - the cvxpy objective function.</span>
-<span class="sd">                controller - the controller object that uses the solution to the optimization problem.</span>
-<span class="sd">                power_demand - the power demand input to the controller.</span>
-<span class="sd">                time_res - time resolution (default 15 minutes).</span>
-<span class="sd">                battery - battery object.</span>
-<span class="sd">                transformer - transformer object, set to None for now, always.</span>
-<span class="sd">                time - time index.</span>
-<span class="sd">                name - optimization name.</span>
-<span class="sd">                solar - Solar object.</span>
-<span class="sd">                solver - cvxpy solver to use.</span>
+
+<span class="sd">        :param objective_type: Type of objective problem being optimizaed.</span>
+<span class="sd">        :param objective: CVXPY objective function object.</span>
+<span class="sd">        :param controller: Controller object.</span>
+<span class="sd">        :param power_demand: Power demand at the Charging Station.</span>
+<span class="sd">        :param time_res: Time resolution of problem data.</span>
+<span class="sd">        :param transformer: Transformer object (optional, not implemented yet).</span>
+<span class="sd">        :param battery: Battery object.</span>
+<span class="sd">        :param time: Time Counter</span>
+<span class="sd">        :param name: Optimization identifier.</span>
+<span class="sd">        :param solar: Solar Object</span>
+<span class="sd">        :param str solver: Available backend solver to invoke (ECOS, MOSEK, GUROBI, etc.).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objective_type</span> <span class="o">=</span> <span class="n">objective_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objective</span> <span class="o">=</span> <span class="n">objective</span>

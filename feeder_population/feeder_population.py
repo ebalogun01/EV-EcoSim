@@ -337,9 +337,11 @@ for i in range(len(bus_list)):
         k = k + 1
 
 # write out glm file for secondary distribution
+print('Writing secondary distribution glm...')
 out_dir = test_case_dir
 file_name = feeder_name + '_secondary.glm'
 glm_mod_functions.write_base_glm(glm_house_dict, obj_type, globals_list, include_list, out_dir, file_name, sync_list)
+print('Done writing secondary distribution glm.')
 
 # save load data
 os.chdir(test_case_dir)

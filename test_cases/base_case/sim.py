@@ -1,19 +1,19 @@
-"""This file simulates the transformer thermal state by propagating it forward at each time step """
+"""This module contains the transformer thermal state function by propagating it forward at each time step """
+
 import numpy as np
 import gblvar
 import sys
-sys.path.append('../..')
+# sys.path.append('../..')
 
 
 def sim_transformer(temperature_data=None):
     """
-    Propagate transformer state from previous timestep to current timestep (currently it is a minute resolution data
-    simulated in 10 seconds increment).
-    Nonlinear model from Swift et. Al (2001).
-    Inputs: temperature_data - ambient temperature data for a given region.
-    Returns: -1, just arbitrarily.
-    """
+    Propagates transformer state from previous timestep to current timestep (currently it is a minute resolution data
+    simulated in 10 seconds increment). Nonlinear model from Swift et. Al (2001).
 
+    :param temperature_data: Environmental ambient temperature data.
+    :return: -1, arbitrary default return value. It is not used.
+    """
     #   if first timestep, initialize state of transformer
     if gblvar.it == 0:
         gblvar.trans_To = np.ones((1, len(gblvar.trans_list))) * float(gblvar.trans_To0)

@@ -4,8 +4,8 @@
 'box_pts':60,
 'base_file_dir':'/feeders',
 'test_case_dir':'/test_cases/base_case',
-'load_data_dir':'/baseloadData',
+'load_data_dir':'/base_load_data',
 'starttime':"'2018-07-01 00:00:00'",
-'endtime':"'2018-07-31 23:59:59'",
+'endtime':"'2018-07-02 23:59:59'",
 'python_module':'event_handlers',
 'safety_factor':0.1}

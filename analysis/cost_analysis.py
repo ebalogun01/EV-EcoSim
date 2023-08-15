@@ -1,15 +1,24 @@
-"""This file hosts the CostEstimator Class, which estimates the cost of the different grid and DER components
-from the simulation."""
+"""
+This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components
+from the simulation.
+"""
+
 import os
 import numpy as np
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 16})
+
+PLOT_FONT_SIZE = 16
+plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
 
 
 class CostEstimator:
-    """This class is used to calculate levelized cost of DER assets in EV-Ecosim."""
+    """
+    This class is used to calculate levelized cost of DER assets in EV-Ecosim.
+
+    :param num_days: The number of days for which the calculation is run.
+    """
     def __init__(self, num_days):
         self.trans_price_dict = {}
         self.dcfc = False  # boolean for determining if transformer is 480 or 240V
@@ -27,8 +36,12 @@ class CostEstimator:
         # todo: cannot find good source for 2400/240V transformer prices
 
     def calculate_battery_cost(self, result_dir):
-        """Input: result_dir - directory in which to save the results dictionary
-        Returns: result_dict - dictionary of results """
+        """
+        Calculates the battery costs and updates the different cost components, including LCOE.
+
+        :param result_dir: Directory in which to save the results dictionary.
+        :return dict result_dict: Dictionary of results.
+        """
         current_dir = os.getcwd()
         os.chdir(result_dir)
         with open('scenario.json', "r") as f:
@@ -62,19 +75,23 @@ class CostEstimator:
         return result_dict
 
     def calculate_solar_cost(self):
-        """Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html
-        Values are pulled from the NREL solar cost calculator."""
-        pass
+        """
+        Values are pulled from the NREL solar cost calculator.
+        Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html
+        To be deprecated soon.
 
-    def calculate_LCOE(self):
-        """Estimate levelized cost of electricity for storage"""
-        return NotImplementedError
+        :return: None
+        """
+        return
 
     def calculate_electricity_cost_PGEBEV2s(self, result_dir, PGE_separate_file=True):
-        """Calculates the overall electricity PGEBEV2S cost for a given scenario.
-        Inputs: result_dir - Directory in which the result is saved.
-                PGE_separate_file - Boolean to note if PGE cost block is in a separate file.
-        Returns: result_dict - A dictionary comprising all the cost components and their dollar amounts."""
+        """
+        Calculates the overall electricity PGEBEV2S cost for a given scenario.
+
+        :param str result_dir: Directory in which the result is saved.
+        :param PGE_separate_file:
+        :return dict result_dict: A dictionary comprising all the cost components and their dollar amounts.
+        """
         current_dir = os.getcwd()
         os.chdir(result_dir)
         result_dict = {}
@@ -131,12 +148,14 @@ class CostEstimator:
 
     @staticmethod
     def plot_loads(total_load, net_load, prefix=None, labels: list = None):
-        """Creates plots overlaying load and net loads for post-simulation visualization.
-        Inputs: total_load - Overall EV load demand at node, can include building load if controllable.
-                net_load - total_load minus DER buffer.
-                prefix - Plot file label prefix.
-                labels - Legend labels for each plotted curve.
-        Returns: None - Creates and saves plots.
+        """
+        Creates plots overlaying load and net loads for post-simulation visualization.
+
+        :param total_load: Overall EV load demand at node, can include building load if controllable.
+        :param net_load: total_load minus DER buffer.
+        :param prefix: Plot file label prefix.
+        :param labels: Legend labels for each plotted curve.
+        :return: None.
         """
         plt.close('all')
         num_days = 1
@@ -172,12 +191,15 @@ class CostEstimator:
 
     @staticmethod
     def plot_soc(soc, soc_pred, prefix=None, labels: list = None):
-        """Plots the controller predicted and true state of charge of the battery system.
-        Inputs: soc - True state of charge.
-                soc_pred - Controller predicted state of charge.
-                prefix - Plot file label prefix.
-                labels - Legend labels for each plotted curve.
-        Returns: None - Creates and saves plots"""
+        """
+        Plots the controller predicted and true state of charge of the battery system.
+
+        :param soc: True state of charge.
+        :param soc_pred: Controller predicted state of charge.
+        :param prefix: Plot file label prefix.
+        :param labels: Legend labels for each plotted curve.
+        :return: None.
+        """
         error_abs_mean = np.mean(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)
         MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)
         np.savetxt('abs_percent_err_soc.csv', [error_abs_mean])
@@ -204,12 +226,15 @@ class CostEstimator:
 
     @staticmethod
     def plot_power(power, power_pred, prefix=None, labels: list = None):
-        """Plots the controller predicted and true power of the battery system.
-        Inputs: power - True power.
-                soc_pred - Controller predicted power.
-                prefix - Plot file label prefix.
-                labels - Legend labels for each plotted curve.
-        Returns: None - Creates and saves plots"""
+        """
+        Plots the controller predicted and true power of the battery system.
+
+        :param power: True power.
+        :param power_pred: Controller predicted power.
+        :param prefix: Plot file label prefix.
+        :param labels: Legend labels for each plotted curve.
+        :return: None.
+        """
         error_abs_mean = np.mean(np.abs((power - power_pred) / (power + 1e-6)) * 100)
         MAPE = np.max(np.abs((power - power_pred) / (power + 1e-6)) * 100)
         np.savetxt('abs_percent_err_power.csv', [error_abs_mean])
@@ -234,19 +259,25 @@ class CostEstimator:
             return
         plt.savefig('power_plot.png')
 
-    def transformer_degradation_cost(self):
-        cost = self.trans_cost_per_kVA
-        return NotImplementedError
-
     def solar_cost(self, result_dir):
+        """
+        Calculates the overall capital cost of the solar system.
+        Not fully implemented.
+        :param str result_dir: Location to save the result.
+        :return: Solar PV capital cost.
+        """
         return self.solar_rating * 1e6 / 150 * self.solar_price_per_m2  # approximate area using 150W/m2
 
     def calculate_trans_loss_of_life(self, result_dir):
-        """Estimates the expected transformer loss of life.
-        Inputs: result_dir - Directory in which the loss results is saved.
-        Returns: result_dict - Dictionary of transformer losses.
         """
-        # Per 5.11.3 of IEEE Std C57.12.00-2010, a minimum normal insulation life expectancy of 180 000 hours is expected
+        Estimates the expected transformer loss of life.
+
+        Reference:
+        * 5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.
+
+        :param result_dir: Directory in which the loss results is saved.
+        :return: Dictionary of transformer losses.
+        """
         current_dir = os.getcwd()
         os.chdir(result_dir)
         with open('scenario.json', "r") as f:
@@ -277,45 +308,3 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
-
-    # def calculate_elec_cost(self, result_dir, PGE_separate_file=True):
-    #     """TO BE DEPRECATED."""
-    #     current_dir = os.getcwd()
-    #     os.chdir(result_dir)
-    #     result_dict = {}
-    #     price_per_block = 95.56  # ($/Block)
-    #     overage_fee = 3.82  # ($/kW)
-    #     for root, dirs, files, in os.walk(".", topdown=True):
-    #         for file in files:
-    #             path_lst = file.split("_")
-    #             if 'station' in path_lst and 'block' not in path_lst and 'plot.png' not in path_lst:
-    #                 total_grid_load = pd.read_csv(file)['station_total_load_kW'].to_numpy()[1:]
-    #                 net_grid_load = total_grid_load
-    #                 net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)['station_solar_load_ev'].to_numpy()[
-    #                                                               1:] + pd.read_csv(file)['battery_power'].to_numpy()[
-    #                                                                     1:]
-    #                 total_energy = total_grid_load.sum() * self.resolution / 60
-    #                 max_load = total_grid_load.max()
-    #                 average_load = total_grid_load.mean()
-    #                 self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f'{file.split(".")[0]}_',
-    #                                 labels=["total demand", "net demand with DER"])
-    #                 if PGE_separate_file:
-    #                     block_subscription = int(np.loadtxt(f'PGE_block_{file}')[1])
-    #                 else:
-    #                     block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy().max())
-    #                 subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
-    #                 penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)
-    #                 TOU_cost = np.sum(self.TOU_rates * net_grid_load) * self.resolution / 60  # ($)
-    #                 electricity_cost = TOU_cost + penalty_cost + subscription_cost
-    #                 result_dict[f'charging_station_sim_{path_lst[3]}'] = {"TOU_cost": TOU_cost,
-    #                                                                       "subscription_cost": subscription_cost,
-    #                                                                       "penalty_cost": penalty_cost,
-    #                                                                       "total_elec_cost": electricity_cost,
-    #                                                                       "cost_per_day": electricity_cost / self.num_days,
-    #                                                                       "max_load": max_load,
-    #                                                                       "avg_load": average_load,
-    #                                                                       "cost_per_kWh": electricity_cost / total_energy}
-    #     with open("postopt_cost_charging.json", 'w') as config_file_path:
-    #         json.dump(result_dict, config_file_path, indent=1)  # save to JSON
-    #     os.chdir(current_dir)  # go back to initial dir
-    #     return result_dict

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>charging_sim.chargingStation &#8212; EV-Ecosim 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for charging_sim.chargingStation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Hosts the Charging Station class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">num_steps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<div class="viewcode-block" id="ChargingStation"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation">[docs]</a><span class="k">class</span> <span class="nc">ChargingStation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The charging station class produces a load with a power factor parameter that determines its reactive</span>
+<span class="sd">    load contribution, if any. It also retains all information of all power injection at its grid node/bus.</span>
+<span class="sd">    It is initialized with its location, capacity, etc. This class ingests the battery, solar and controller modules</span>
+<span class="sd">    to which it is assigned.</span>
+
+<span class="sd">    :param object storage: Storage object assigned to the charging station.</span>
+<span class="sd">    :param dict config:</span>
+<span class="sd">    :param object controller: Charging station controller object.</span>
+<span class="sd">    :param object solar: Charging station solar object. Default is None.</span>
+<span class="sd">    :param str status: Charging station status. Default &#39;idle&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;idle&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;locator_index&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;L2_power_cap&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dcfc_power_cap&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar</span> <span class="o">=</span> <span class="n">solar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_load</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_ev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_grid</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_battery</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># this is in kilo-watts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cooling_pump</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># properties of the charging station cooling pump</span>
+        <span class="c1"># COOLING LOAD SHOULD BE A FUNCTION OF CURRENT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this is used with the new pge rate schedule</span>
+
+<div class="viewcode-block" id="ChargingStation.is_charging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.is_charging">[docs]</a>    <span class="k">def</span> <span class="nf">is_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span></div>
+
+<div class="viewcode-block" id="ChargingStation.update_load"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.update_load">[docs]</a>    <span class="k">def</span> <span class="nf">update_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net_grid_load</span><span class="p">,</span> <span class="n">ev_load</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the charging station loads, including DER assets. MPC mode.</span>
+
+<span class="sd">        :param net_grid_load: Net load charging station pulls from the grid.</span>
+<span class="sd">        :param ev_load: Electric Vehicle charging demand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span> <span class="o">=</span> <span class="n">net_grid_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">+=</span> <span class="n">net_grid_load</span><span class="p">,</span>  <span class="c1"># net load station pulls from grid, not load from EV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_load</span> <span class="o">+=</span> <span class="n">ev_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_ev</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_grid</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">grid_power</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_battery</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">pge_gamma</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">predicted_SOC</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_SOC</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># initial soc is never predicted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">pred_power</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span></div>
+
+<div class="viewcode-block" id="ChargingStation.update_load_oneshot"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.update_load_oneshot">[docs]</a>    <span class="k">def</span> <span class="nf">update_load_oneshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net_grid_load</span><span class="p">,</span> <span class="n">ev_load</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the charging station loads, including DER assets. Offline mode (Non-MPC).</span>
+
+<span class="sd">        :param net_grid_load: Net load charging station pulls from the grid.</span>
+<span class="sd">        :param ev_load: Electric Vehicle charging demand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span> <span class="o">=</span> <span class="n">net_grid_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">net_grid_load</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>  <span class="c1"># net load station pulls from grid, not load from EV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_load</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">ev_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_power</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_ev</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_grid</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">grid_power</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_battery</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">pge_gamma</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">predicted_SOC</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_SOC</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">1</span><span class="p">:])</span> <span class="c1"># shape is 1 bigger than others</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">pred_power</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ChargingStation.is_EV_arrived"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.is_EV_arrived">[docs]</a>    <span class="k">def</span> <span class="nf">is_EV_arrived</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EV is currently at Station &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ChargingStation.update_status"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.update_status">[docs]</a>    <span class="k">def</span> <span class="nf">update_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the current status of the EV charging station.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">power</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;in-use&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Charging station is currently occupied.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;idle&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Charging station is currently idle.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingStation.set_current_load"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.set_current_load">[docs]</a>    <span class="k">def</span> <span class="nf">set_current_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the current load of the charging station.</span>
+
+<span class="sd">        :param load: Load in kW.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingStation.get_current_load"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.get_current_load">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current load of the charging station.</span>
+
+<span class="sd">        :return: Current load (kW) of the charging station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_load</span></div>
+
+<div class="viewcode-block" id="ChargingStation.save_sim_data"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.save_sim_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param save_prefix: Path string to save the data from simulation.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+        <span class="n">save_file_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loc</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Control_current&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">actions</span><span class="p">,</span>
+                <span class="s1">&#39;battery_voltage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span>
+                <span class="s1">&#39;station_net_grid_load_kW&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">,</span>
+                <span class="s1">&#39;station_total_load_kW&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_load</span><span class="p">,</span>
+                <span class="s1">&#39;station_solar_load_ev&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_ev</span><span class="p">,</span>
+                <span class="s1">&#39;station_solar_grid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_grid</span><span class="p">,</span>
+                <span class="s1">&#39;station_solar_battery&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_power_battery</span><span class="p">,</span>
+                <span class="s1">&#39;battery_power&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">true_power</span><span class="p">,</span>
+                <span class="s1">&#39;average_cost_per_interval&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">costs</span>
+                <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span><span class="p">))</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;PGE_power_blocks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_prefix</span><span class="si">}</span><span class="s1">/PGE_block_charging_station_sim_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pge_blocks</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_prefix</span><span class="si">}</span><span class="s1">/charging_station_sim_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;***** Successfully saved simulation outputs to: &#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;charging_station_sim_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingStation.visualize"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.chargingStation.ChargingStation.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualizing charging station states.</span>
+
+<span class="sd">        :param option: plotting option.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">actions</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Control current&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time Steps (count)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Control_action_station</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">option</span> <span class="o">!=</span> <span class="s2">&quot;storage&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time Steps (count)&quot;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;Load_profile_station</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Option chosen is not an attribute! Please choose relevant option&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;storage&quot;</span><span class="p">:</span>
+            <span class="n">battery</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">predicted_voltages</span><span class="p">)</span>  <span class="c1"># currently needs to be fixed, minor bug</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage (V)&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;True Voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;Controller Estimated Voltage&#39;</span><span class="p">])</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;voltage_plot_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_Sim.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Emmanuel Balogun.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

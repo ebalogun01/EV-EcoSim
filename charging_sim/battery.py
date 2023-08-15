@@ -3,6 +3,7 @@ import numpy as np
 from utils import num_steps
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
 
 # Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.
 
@@ -14,20 +15,22 @@ import os
 
 class Battery:
     """
-     Properties:
-         Properties are mainly controlled in the battery config file 'battery.json'.
-         max-c-rate determines the power capacity of the cell as a multiple of the value of the energy capacity.
-         max voltage(V).
-         min Voltage (V).
-         nominal energy (kWh).
-         id (-).
-         ambient temperature (C).
+    Each instantiation of this class must include at least a config file, which contains the physical
+    constraints and properties of the battery.
 
-     Assumptions:
-         Efficiency already incorporates resistance; improve later.
-         Assumes linear aging model for SOH, SOC, and voltage variation, but relaxed by parameter update.
-         Temperature variation in battery environment is negligible.
+    Properties are mainly controlled in the battery config file 'battery.json'
+        * max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.
+        * max voltage(V) - maximum allowable battery voltage.
+        * min Voltage (V) - minimum allowable battery voltage.
+        * nominal energy (kWh) - energy deliverable to the battery.
+        * id (-).
+        * Ambient temperature (Celsius).
 
+    :param battery_type: Type of battery (inconsequential to current dynamics).
+    :param node: The node/bus in the distribution network in which the battery resides.
+    :param self.config: Battery configuration file containing the main attributes of the battery.
+    :param controller: Controller for the battery.
+    :returns: Battery object.
     """
 
     def __init__(self, battery_type=None, node=None, config=None, controller=None):
@@ -147,9 +150,15 @@ class Battery:
 
     def battery_setup(self):
         """
-        Capacity (Wh)
-        Voltage (V)
-        params: (cell_amp_hrs (Ah), cell_voltage (V)"""
+        This sets up the series-parallel configuration of the cells,
+        given the capacity and voltage of the battery. Scales up Ah capacity, not voltage. Voltage in this setup is
+        fixed by the battery json file while the Ah capacity is floating and determined by the given pack voltage and
+        Energy Capacity.
+
+        * Energy capacity (Wh).
+        * Voltage (V).
+
+        :return: None. Updates battery topology."""
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
         print("**** Pre-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
@@ -176,10 +185,16 @@ class Battery:
 
     def battery_setup_2(self):
         """
-        This will scale up voltage instead of current capacity (Ah).
-        Capacity (Wh)
-        Voltage (V)
-        params: (cell_amp_hrs (Ah), cell_voltage (V)"""
+        Scales up voltage instead of current capacity (Ah), thereby using more cells in series
+        for the same battery energy rating. pack_max_AH property is set in config and fixed. Voltage is determined
+        by the pack energy capacity (Watt-hours) and the maximum amp-hour capacity.
+
+        * Capacity (Wh).
+        * cell_amp_hrs (Ah), cell_voltage (V)
+
+        :param : None.
+        :return : None. Updates battery topology.
+        """
         # number of modules in parallel should be determined by the power rating and Voltage
         # should use nominal voltage and max allowable current
         # print("**** Pre-initialized nominal pack voltage is {}".format(self.nominal_pack_voltage))
@@ -203,16 +218,14 @@ class Battery:
               f"no. cells in series is: {no_cells_series} \n. No modules in parallel is: {no_modules_parallel}"
               )
 
-    def battery_setup_tesla(self, model=3):
-        """Using TESLA mode to setup battery config. TO BE IMPLEMENTED LATER"""
-        if model == 3:
-            pass
-        elif model == 's':
-            pass
-
     def est_calendar_aging(self):
-        """Estimates the constant calendar aging of the battery. this is solely time-dependent.
-        Deprecate this later for this object"""
+        """
+        Estimates the constant calendar aging of the battery. this is solely time-dependent.
+        Deprecate this later for this object.
+
+        :param: None.
+        :return sum(aging_cal): Linear aging result.
+        """
         life_cal_years = 10
         seconds_in_min = 60
         seconds_in_year = 31556952
@@ -221,21 +234,35 @@ class Battery:
         return np.sum(aging_cal)
 
     def est_cyc_aging(self):
-        """Creates linear battery ageing model per hesse. et al, and returns its cvx object.
-        Deprecate this later for this object"""
+        """
+        Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.
+        Deprecate this later for this object.
+
+        :param : None.
+        :return cycle aging: CVXPY objective describing cycle aging function.
+        """
         seconds_in_min = 60
         life_cyc = 4500     # change this to be input in the config file
         return (0.5 * (np.sum(abs(self.current * self.voltage))*self.resolution / seconds_in_min)) /\
             (life_cyc / 0.2 * self.nominal_energy)
 
     def get_power_profile(self, months):
+        """
+        Returns the power profile of the battery for a certain number of months.
+
+        :param months: Months for which to obtain power profile.
+        Returns: Dictionary of power profiles for each month in months.
+        """
         return {month: self.power_profile[month] for month in months}
 
     def get_total_aging(self):
         return self.est_cyc_aging() + self.est_calendar_aging()
 
     def get_aging_value(self):
-        """returns the actual aging value lost after a cvxpy run..."""
+        """Returns the total capacity life loss the battery has experienced so far.
+
+        :param: None.
+        :return: Estimated cycle + calendar aging of cell/battery."""
         return self.est_cyc_aging() + self.est_calendar_aging()
 
     def update_capacity(self):
@@ -258,6 +285,10 @@ class Battery:
         self.Q_initial = self.Q.value[action_length]
 
     def track_SOC(self, SOC):
+        """Updates the states of charge state Vector of the battery.
+
+        :param: SOC - state of charge. This is a self-called function.
+        :return: None. """
         self.SOC_track += SOC,
         self.SOC_list += SOC,
 
@@ -300,8 +331,13 @@ class Battery:
         np.savetxt(f'voltage_sim_{self.id}.csv', self.voltage)
 
     def save_sim_data(self, save_prefix):
-        """working on this, not tested yet"""
-        import pandas as pd
+        """Saves all relevant battery data over the given simulation. Usually called from the battery object
+        upon conclusion of simulation.
+
+        :param save_prefix: desired folder in which all the files will be saved.
+        :type save_prefix: str.
+        :return : None, saves output files in the desired folder.
+        """
         save_file_base = f'{str(self.id)}_{self.node}'
         data = {'SOC': self.SOC_track,
                 'SOH': self.SOH_track,
@@ -317,19 +353,19 @@ class Battery:
         print('***** Successfully saved simulation outputs to: ', f'battery_sim_{save_file_base}.csv')
         print("Est. tot. no. of cycles is: ", total_cycles, 'cycles')
 
-    def visualize_voltages(self):
-        pass
-
-    def learn_params(self):
-        pass
-
     def update_params(self):
         """This changes the battery params depending on the number of cycles"""
         pass
     
     def dynamics(self, current):
-        # currently, dynamics assumes cells are perfectly balanced- Can we account for imbalanced cells later?
-        #  state equations
+        """Propagates the state of the battery forward one step.
+        It takes as input current load (amperes) from the Battery controller and update the battery power.
+
+        :param current: Battery cycle current in amperes.
+        :type current: float or np.float().
+        :return: Battery response voltage.
+        :rtype: Float.
+        """
         self.state_eqn(current)     # this updates the battery states
 
         if self.voltage > self.max_voltage:
@@ -371,11 +407,19 @@ class Battery:
         return self.voltage
 
     def thermal_dynamics(self):
-        """This models the battery's thermal state """
+        """Not Implemented yet. Future work. """
         #   using the lumped-sum capacitance model
 
     def state_eqn(self, current, append=True):
-        """This holds the discretized state equations containing the battery dynamics at the cell-level."""
+        """Contains discretized state equations containing the battery dynamics at the pack-level;
+        ref here: G. L. Plett, Battery management systems, Volume I: Battery modeling. Artech House, 2015, vol. 1.
+
+        :param boolean append: Decides if to track powers within the ::B battery object.
+        :param float current: Current - current in amperes from controller to propagate state forward by one step.
+                append - defaults to True. This decides tracking of currents and power over time. Desirable for post-
+                optimization analyses.
+        :return: None; appends current state into the state history vectors.
+        """
         self.current = current
         dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
         self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
@@ -390,39 +434,15 @@ class Battery:
             self.currents += current,
             self.true_power += self.power,
 
-    def load_pack_props(self):
-        # TODO: write a method that builds a pack from cells in any config
-        # first get the series resistance and capacitance
-        self.R1 *= self.topology[0]
-        self.R2 *= self.topology[0]
-        self.C1 /= self.topology[0]
-        self.C2 /= self.topology[0]
-
-        # now obtain the overall parallel resistance
-        self.R1 /= self.topology[1]
-        self.R2 /= self.topology[1]     # each new parallel path reduces the overall resistance
-        self.C1 *= self.topology[1]
-        self.C2 *= self.topology[1]
-        self.R_pack = self.Ro + self.R1 + self.R2
-
-    # def state_eqn_pack(self, current, append=True):
-    #     """This holds the discretized state equations containing the battery dynamics at the cell-level."""
-    #     self.current = current  # added 01/09/22 to fix bug
-    #     dt = self.dt * 3600  # convert from hour to seconds for dynamics equations but not SOC
-    #     self.OCV = np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage) * self.topology[0]
-    #     self.Ro = (self.B_Ro * np.exp(self.SOC) + self.A_Ro * np.exp(self.C_Ro * self.SOC)) * self.topology[0]/self.topology[1]
-    #     #   state equations
-    #     #TODO: done: only modify currents for number of cells in parallel
-    #     self.iR1 = np.exp(-dt / (self.R1 * self.C1)) * self.iR1 + (1 - np.exp(-dt / (self.R1 * self.C1))) * current
-    #     self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
-    #     self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
-    #     self.power = self.voltage * self.current / 1000  # kw
-    #     if append:
-    #         self.currents += current,
-    #         self.true_power += self.power,
-
     def get_OCV(self):
+        """Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge
+        SoC via interpolation.
+        The OCV-SOC map is obtained a-priori (pre-simulation).
+
+        :param: None.
+        :return: Open Circuit Voltage (OCV) at battery's current SoC."""
         return np.interp(self.SOC, self.OCV_map_SOC, self.OCV_map_voltage)
+
 
 #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
 def test():

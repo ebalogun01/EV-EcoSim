@@ -36,8 +36,279 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
-<section id="charging-sim-battery-module">
-<h2>charging_sim.battery module<a class="headerlink" href="#charging-sim-battery-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.battery">
+<span id="charging-sim-battery-module"></span><h2>charging_sim.battery module<a class="headerlink" href="#module-charging_sim.battery" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.battery.</span></span><span class="sig-name descname"><span class="pre">Battery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Each instantiation of this class must include at least a config file, which contains the physical
+constraints and properties of the battery.</p>
+<dl class="simple">
+<dt>Properties are mainly controlled in the battery config file ‘battery.json’</dt><dd><ul class="simple">
+<li><p>max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.</p></li>
+<li><p>max voltage(V) - maximum allowable battery voltage.</p></li>
+<li><p>min Voltage (V) - minimum allowable battery voltage.</p></li>
+<li><p>nominal energy (kWh) - energy deliverable to the battery.</p></li>
+<li><p>id (-).</p></li>
+<li><p>Ambient temperature (Celsius).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_type</strong> – Type of battery (inconsequential to current dynamics).</p></li>
+<li><p><strong>node</strong> – The node/bus in the distribution network in which the battery resides.</p></li>
+<li><p><strong>self.config</strong> – Battery configuration file containing the main attributes of the battery.</p></li>
+<li><p><strong>controller</strong> – Controller for the battery.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Battery object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.battery_setup">
+<span class="sig-name descname"><span class="pre">battery_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.battery_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.battery_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This sets up the series-parallel configuration of the cells,
+given the capacity and voltage of the battery. Scales up Ah capacity, not voltage. Voltage in this setup is
+fixed by the battery json file while the Ah capacity is floating and determined by the given pack voltage and
+Energy Capacity.</p>
+<ul class="simple">
+<li><p>Energy capacity (Wh).</p></li>
+<li><p>Voltage (V).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. Updates battery topology.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.battery_setup_2">
+<span class="sig-name descname"><span class="pre">battery_setup_2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.battery_setup_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.battery_setup_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales up voltage instead of current capacity (Ah), thereby using more cells in series
+for the same battery energy rating. pack_max_AH property is set in config and fixed. Voltage is determined
+by the pack energy capacity (Watt-hours) and the maximum amp-hour capacity.</p>
+<ul class="simple">
+<li><p>Capacity (Wh).</p></li>
+<li><p>cell_amp_hrs (Ah), cell_voltage (V)</p></li>
+</ul>
+<p>:param : None.
+:return : None. Updates battery topology.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.dynamics">
+<span class="sig-name descname"><span class="pre">dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Propagates the state of the battery forward one step.
+It takes as input current load (amperes) from the Battery controller and update the battery power.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current</strong> (<em>float</em><em> or </em><em>np.float</em><em>(</em><em>)</em><em>.</em>) – Battery cycle current in amperes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Battery response voltage.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Float.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.est_calendar_aging">
+<span class="sig-name descname"><span class="pre">est_calendar_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.est_calendar_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.est_calendar_aging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the constant calendar aging of the battery. this is solely time-dependent.
+Deprecate this later for this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Return sum(aging_cal)<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linear aging result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.est_cyc_aging">
+<span class="sig-name descname"><span class="pre">est_cyc_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.est_cyc_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.est_cyc_aging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.
+Deprecate this later for this object.</p>
+<p>:param : None.
+:return cycle aging: CVXPY objective describing cycle aging function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_OCV">
+<span class="sig-name descname"><span class="pre">get_OCV</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_OCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_OCV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge
+SoC via interpolation.
+The OCV-SOC map is obtained a-priori (pre-simulation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Open Circuit Voltage (OCV) at battery’s current SoC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_Ro">
+<span class="sig-name descname"><span class="pre">get_Ro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_Ro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_Ro" title="Permalink to this definition">¶</a></dt>
+<dd><p>This can be updated later to include current…
+Deprecate this possibly</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_aging_value">
+<span class="sig-name descname"><span class="pre">get_aging_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_aging_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_aging_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total capacity life loss the battery has experienced so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated cycle + calendar aging of cell/battery.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_power_profile">
+<span class="sig-name descname"><span class="pre">get_power_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">months</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_power_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_power_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the power profile of the battery for a certain number of months.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>months</strong> – Months for which to obtain power profile.</p>
+</dd>
+</dl>
+<p>Returns: Dictionary of power profiles for each month in months.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_properties">
+<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_roundtrip_efficiency">
+<span class="sig-name descname"><span class="pre">get_roundtrip_efficiency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_roundtrip_efficiency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_roundtrip_efficiency" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_total_aging">
+<span class="sig-name descname"><span class="pre">get_total_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_total_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_total_aging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.get_true_power">
+<span class="sig-name descname"><span class="pre">get_true_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.get_true_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.get_true_power" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.save_sim_data">
+<span class="sig-name descname"><span class="pre">save_sim_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.save_sim_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.save_sim_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all relevant battery data over the given simulation. Usually called from the battery object
+upon conclusion of simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_prefix</strong> (<em>str.</em>) – desired folder in which all the files will be saved.</p>
+</dd>
+</dl>
+<p>:return : None, saves output files in the desired folder.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.save_states">
+<span class="sig-name descname"><span class="pre">save_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.save_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.save_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.state_eqn">
+<span class="sig-name descname"><span class="pre">state_eqn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.state_eqn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.state_eqn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains discretized state equations containing the battery dynamics at the pack-level;
+ref here: G. L. Plett, Battery management systems, Volume I: Battery modeling. Artech House, 2015, vol. 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>append</strong> (<em>boolean</em>) – Decides if to track powers within the ::B battery object.</p></li>
+<li><p><strong>current</strong> (<em>float</em>) – Current - current in amperes from controller to propagate state forward by one step.
+append - defaults to True. This decides tracking of currents and power over time. Desirable for post-
+optimization analyses.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None; appends current state into the state history vectors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.thermal_dynamics">
+<span class="sig-name descname"><span class="pre">thermal_dynamics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.thermal_dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.thermal_dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented yet. Future work.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.track_SOC">
+<span class="sig-name descname"><span class="pre">track_SOC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SOC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.track_SOC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.track_SOC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the states of charge state Vector of the battery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>SOC - state of charge. This is a self-called function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.update_SOC">
+<span class="sig-name descname"><span class="pre">update_SOC</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.update_SOC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.update_SOC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.update_capacity">
+<span class="sig-name descname"><span class="pre">update_capacity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.update_capacity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.update_capacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is not true capacity but anticipated capacity based on linear model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.update_max_current">
+<span class="sig-name descname"><span class="pre">update_max_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.update_max_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.update_max_current" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.update_params">
+<span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.update_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This changes the battery params depending on the number of cycles</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.update_voltage">
+<span class="sig-name descname"><span class="pre">update_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.update_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.update_voltage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.battery.Battery.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#Battery.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.Battery.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>method is used to plot and save battery states desired by user</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.battery.test">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.battery.</span></span><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/battery.html#test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.battery.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-charging_sim.batteryAgingSim">
 <span id="charging-sim-batteryagingsim-module"></span><h2>charging_sim.batteryAgingSim module<a class="headerlink" href="#module-charging_sim.batteryAgingSim" title="Permalink to this heading">¶</a></h2>
@@ -124,8 +395,328 @@ MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME</p>
 </dd></dl>
 
 </section>
-<section id="charging-sim-batterypack-module">
-<h2>charging_sim.batterypack module<a class="headerlink" href="#charging-sim-batterypack-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.batterypack">
+<span id="charging-sim-batterypack-module"></span><h2>charging_sim.batterypack module<a class="headerlink" href="#module-charging_sim.batterypack" title="Permalink to this heading">¶</a></h2>
+<p>This module contains the program for the battery pack class.
+This battery class model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most
+purposes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.batterypack.</span></span><span class="sig-name descname"><span class="pre">Battery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Each instantiation of this class must include at least a config file, which contains the physical
+constraints and properties of the battery.</p>
+<dl class="simple">
+<dt>Properties are mainly controlled in the battery config file ‘battery.json’</dt><dd><ul class="simple">
+<li><p>max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.</p></li>
+<li><p>max voltage(V) - maximum allowable battery voltage.</p></li>
+<li><p>min Voltage (V) - minimum allowable battery voltage.</p></li>
+<li><p>nominal energy (kWh) - energy deliverable to the battery.</p></li>
+<li><p>id (-).</p></li>
+<li><p>Ambient temperature (Celsius).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>battery_type</strong> – Type of battery (inconsequential to current dynamics).</p></li>
+<li><p><strong>node</strong> – The node/bus in the distribution network in which the battery resides.</p></li>
+<li><p><strong>self.config</strong> – Battery configuration file containing the main attributes of the battery.</p></li>
+<li><p><strong>controller</strong> – Controller for the battery.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Battery object.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.R_pack">
+<span class="sig-name descname"><span class="pre">R_pack</span></span><a class="headerlink" href="#charging_sim.batterypack.Battery.R_pack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overall pack resistance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.battery_setup">
+<span class="sig-name descname"><span class="pre">battery_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.battery_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.battery_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This sets up the series-parallel configuration of the cells,
+given the capacity and voltage of the battery. Scales up Ah capacity, not voltage. Voltage in this setup is
+fixed by the battery json file while the Ah capacity is floating and determined by the given pack voltage and
+Energy Capacity.</p>
+<ul class="simple">
+<li><p>Energy capacity (Wh).</p></li>
+<li><p>Voltage (V).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. Updates battery topology.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.battery_setup_2">
+<span class="sig-name descname"><span class="pre">battery_setup_2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.battery_setup_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.battery_setup_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales up voltage instead of current capacity (Ah), thereby using more cells in series
+for the same battery energy rating. pack_max_AH property is set in config and fixed. Voltage is determined
+by the pack energy capacity (Watt-hours) and the maximum amp-hour capacity.</p>
+<ul class="simple">
+<li><p>Capacity (Wh).</p></li>
+<li><p>cell_amp_hrs (Ah), cell_voltage (V)</p></li>
+</ul>
+<p>:param : None.
+:return : None. Updates battery topology.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.battery_type">
+<span class="sig-name descname"><span class="pre">battery_type</span></span><a class="headerlink" href="#charging_sim.batterypack.Battery.battery_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial value: None.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.config">
+<span class="sig-name descname"><span class="pre">config</span></span><a class="headerlink" href="#charging_sim.batterypack.Battery.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial value: None.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.controller">
+<span class="sig-name descname"><span class="pre">controller</span></span><a class="headerlink" href="#charging_sim.batterypack.Battery.controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial value: None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.dynamics">
+<span class="sig-name descname"><span class="pre">dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Propagates the state of the battery forward one step.
+It takes as input current load (amperes) from the Battery controller and update the battery power.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current</strong> (<em>float</em><em> or </em><em>np.float</em><em>(</em><em>)</em><em>.</em>) – Battery cycle current in amperes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Battery response voltage.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Float.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.est_calendar_aging">
+<span class="sig-name descname"><span class="pre">est_calendar_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.est_calendar_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.est_calendar_aging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the constant calendar aging of the battery. this is solely time-dependent.
+Deprecate this later for this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Return sum(aging_cal)<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linear aging result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.est_cyc_aging">
+<span class="sig-name descname"><span class="pre">est_cyc_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.est_cyc_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.est_cyc_aging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.
+Deprecate this later for this object.</p>
+<p>:param : None.
+:return cycle aging: CVXPY objective describing cycle aging function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_OCV">
+<span class="sig-name descname"><span class="pre">get_OCV</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_OCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_OCV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge
+SoC via interpolation.
+The OCV-SOC map is obtained a-priori (pre-simulation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Open Circuit Voltage (OCV) at battery’s current SoC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_aging_value">
+<span class="sig-name descname"><span class="pre">get_aging_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_aging_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_aging_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the actual aging value lost after a cvxpy run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cycle aging + Calendar aging.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_power_profile">
+<span class="sig-name descname"><span class="pre">get_power_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">months</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_power_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_power_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the power profile of the battery for a certain number of months.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>months</strong> – Months for which to obtain power profile.</p>
+</dd>
+</dl>
+<p>Returns: Dictionary of power profiles for each month in months.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_roundtrip_efficiency">
+<span class="sig-name descname"><span class="pre">get_roundtrip_efficiency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_roundtrip_efficiency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_roundtrip_efficiency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the estimated round-trip efficiency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns boolean<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self._eff</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_total_aging">
+<span class="sig-name descname"><span class="pre">get_total_aging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_total_aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_total_aging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total capacity life loss the battery has experienced so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated cycle + calendar aging of cell/battery.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.get_true_power">
+<span class="sig-name descname"><span class="pre">get_true_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.get_true_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.get_true_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the power in or out of the battery.</p>
+<p>:param : None.
+:return : Last power output of battery object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.load_pack_props">
+<span class="sig-name descname"><span class="pre">load_pack_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.load_pack_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.load_pack_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates all properties from cell to pack level using.
+Method used in ref Balogun Et. Al <a class="reference external" href="http://dx.doi.org/10.36227/techrxiv.23596725.v2">http://dx.doi.org/10.36227/techrxiv.23596725.v2</a> .
+Uses initial properties/states to update from cell into pack properties for simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.nominal_pack_cap">
+<span class="sig-name descname"><span class="pre">nominal_pack_cap</span></span><a class="headerlink" href="#charging_sim.batterypack.Battery.nominal_pack_cap" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will be set in :py:meth:battery_setup.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.save_sim_data">
+<span class="sig-name descname"><span class="pre">save_sim_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.save_sim_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.save_sim_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all relevant battery data over the given simulation. Usually called from the battery object
+upon conclusion of simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_prefix</strong> (<em>str.</em>) – desired folder in which all the files will be saved.</p>
+</dd>
+</dl>
+<p>:return : None, saves output files in the desired folder.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.state_eqn">
+<span class="sig-name descname"><span class="pre">state_eqn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.state_eqn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.state_eqn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains discretized state equations containing the battery dynamics at the pack-level;
+ref here: G. L. Plett, Battery management systems, Volume I: Battery modeling. Artech House, 2015, vol. 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>append</strong> (<em>boolean</em>) – Decides if to track powers within the ::B battery object.</p></li>
+<li><p><strong>current</strong> (<em>float</em>) – Current - current in amperes from controller to propagate state forward by one step.
+append - defaults to True. This decides tracking of currents and power over time. Desirable for post-
+optimization analyses.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None; appends current state into the state history vectors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.thermal_dynamics">
+<span class="sig-name descname"><span class="pre">thermal_dynamics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.thermal_dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.thermal_dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>This models the battery’s thermal state. Updates internal and surface temperature of the battery.
+Not available in this version.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.track_SOC">
+<span class="sig-name descname"><span class="pre">track_SOC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SOC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.track_SOC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.track_SOC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the states of charge state Vector of the battery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>SOC - state of charge. This is a self-called function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.update_capacity">
+<span class="sig-name descname"><span class="pre">update_capacity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.update_capacity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.update_capacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is not true capacity but anticipated capacity based on linear model.
+This will be deferred to controller. TO BE DEPRECATED.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.update_max_current">
+<span class="sig-name descname"><span class="pre">update_max_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.update_max_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.update_max_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the max allowable current of the battery - to be deprecated as it is not needed anymore.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.update_voltage">
+<span class="sig-name descname"><span class="pre">update_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.update_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.update_voltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>TO BE DEPRECATED.
+Updates the battery voltage, given the predicted voltage from controller.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.batterypack.Battery.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#Battery.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.Battery.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>TO BE DEPRECATED.
+Plots visualizations and save battery states desired by user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param<span class="colon">:</span></dt>
+<dd class="field-odd"><p>option - only uses one option right now.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.batterypack.test">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.batterypack.</span></span><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/batterypack.html#test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.batterypack.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to test the battery class module to ensure desired behavior is respected.
+Saves relevant plots for visual inspection at the end of the simulated test</p>
+</dd></dl>
+
 </section>
 <section id="charging-sim-batterytest-module">
 <h2>charging_sim.batterytest module<a class="headerlink" href="#charging-sim-batterytest-module" title="Permalink to this heading">¶</a></h2>
@@ -140,14 +731,266 @@ MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME</p>
 </dd></dl>
 
 </section>
-<section id="charging-sim-chargingstation-module">
-<h2>charging_sim.chargingStation module<a class="headerlink" href="#charging-sim-chargingstation-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.chargingStation">
+<span id="charging-sim-chargingstation-module"></span><h2>charging_sim.chargingStation module<a class="headerlink" href="#module-charging_sim.chargingStation" title="Permalink to this heading">¶</a></h2>
+<p>Hosts the Charging Station class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.chargingStation.</span></span><span class="sig-name descname"><span class="pre">ChargingStation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'idle'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The charging station class produces a load with a power factor parameter that determines its reactive
+load contribution, if any. It also retains all information of all power injection at its grid node/bus.
+It is initialized with its location, capacity, etc. This class ingests the battery, solar and controller modules
+to which it is assigned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storage</strong> (<em>object</em>) – Storage object assigned to the charging station.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>controller</strong> (<em>object</em>) – Charging station controller object.</p></li>
+<li><p><strong>solar</strong> (<em>object</em>) – Charging station solar object. Default is None.</p></li>
+<li><p><strong>status</strong> (<em>str</em>) – Charging station status. Default ‘idle’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.get_current_load">
+<span class="sig-name descname"><span class="pre">get_current_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.get_current_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.get_current_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current load of the charging station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current load (kW) of the charging station.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.is_EV_arrived">
+<span class="sig-name descname"><span class="pre">is_EV_arrived</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.is_EV_arrived"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.is_EV_arrived" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.is_charging">
+<span class="sig-name descname"><span class="pre">is_charging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.is_charging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.is_charging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.save_sim_data">
+<span class="sig-name descname"><span class="pre">save_sim_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.save_sim_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.save_sim_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_prefix</strong> – Path string to save the data from simulation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.set_current_load">
+<span class="sig-name descname"><span class="pre">set_current_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.set_current_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.set_current_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current load of the charging station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>load</strong> – Load in kW.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.update_load">
+<span class="sig-name descname"><span class="pre">update_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_grid_load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev_load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.update_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.update_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the charging station loads, including DER assets. MPC mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net_grid_load</strong> – Net load charging station pulls from the grid.</p></li>
+<li><p><strong>ev_load</strong> – Electric Vehicle charging demand.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.update_load_oneshot">
+<span class="sig-name descname"><span class="pre">update_load_oneshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_grid_load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev_load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.update_load_oneshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.update_load_oneshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the charging station loads, including DER assets. Offline mode (Non-MPC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net_grid_load</strong> – Net load charging station pulls from the grid.</p></li>
+<li><p><strong>ev_load</strong> – Electric Vehicle charging demand.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.update_status">
+<span class="sig-name descname"><span class="pre">update_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.update_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.update_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the current status of the EV charging station.
+:return: None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/chargingStation.html#ChargingStation.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.chargingStation.ChargingStation.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualizing charging station states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>option</strong> – plotting option.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="charging-sim-controller-module">
-<h2>charging_sim.controller module<a class="headerlink" href="#charging-sim-controller-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.controller">
+<span id="charging-sim-controller-module"></span><h2>charging_sim.controller module<a class="headerlink" href="#module-charging_sim.controller" title="Permalink to this heading">¶</a></h2>
+<p>This file contains the controller classes used for DER optimization and control within EV-Ecosim</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.controller.</span></span><span class="sig-name descname"><span class="pre">MPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class uses an MPC control scheme for producing control currents to the BESS.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC.compute_control">
+<span class="sig-name descname"><span class="pre">compute_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC.compute_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC.compute_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimization-based control actions are computed and passed to the battery.
+Inputs: load - This is the power demand from the charging station.</p>
+<blockquote>
+<div><p>price_vector - This is usually the time of use (TOU) rate of the charging station.</p>
+</div></blockquote>
+<p>Returns: control_action - Current signals to control the DER system for arbitrage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC.get_battery_constraints">
+<span class="sig-name descname"><span class="pre">get_battery_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev_load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC.get_battery_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC.get_battery_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and updates the battery constraints required to be satisfied by the controller.
+Inputs: ev_load - This is the power demand from the charging station.
+Returns: storage_constraints - List of battery constraints to be respected.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC.initialize_forecast_data">
+<span class="sig-name descname"><span class="pre">initialize_forecast_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC.initialize_forecast_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC.initialize_forecast_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>loads history to be used for forecasting EV charging</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC.load_battery_ocv">
+<span class="sig-name descname"><span class="pre">load_battery_ocv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC.load_battery_ocv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC.load_battery_ocv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learns the battery OCV Parameters from data and sets the relevant class attribute.
+Inputs - None.
+Returns - None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.MPC.reset_load">
+<span class="sig-name descname"><span class="pre">reset_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#MPC.reset_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.MPC.reset_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is done after one full day is done.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.controller.Oneshot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.controller.</span></span><span class="sig-name descname"><span class="pre">Oneshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#Oneshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.Oneshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class uses an offline control scheme for producing control currents to the BESS.
+This is non-MPC and cannot use state feedback in control simulation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.Oneshot.compute_control">
+<span class="sig-name descname"><span class="pre">compute_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#Oneshot.compute_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.Oneshot.compute_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimization-based control actions are computed and passed to the battery.
+Inputs: load - This is the power demand from the charging station.</p>
+<blockquote>
+<div><p>price_vector - This is usually the time of use (TOU) rate of the charging station.</p>
+</div></blockquote>
+<p>Returns: control_action - Current signals to control the DER system for arbitrage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.Oneshot.get_battery_constraints">
+<span class="sig-name descname"><span class="pre">get_battery_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev_load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#Oneshot.get_battery_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.Oneshot.get_battery_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and updates the battery constraints required to be satisfied by the controller.
+Inputs: ev_load - This is the power demand from the charging station.
+Returns: storage_constraints - List of battery constraints to be respected.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.Oneshot.load_battery_ocv">
+<span class="sig-name descname"><span class="pre">load_battery_ocv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#Oneshot.load_battery_ocv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.Oneshot.load_battery_ocv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learns the battery OCV Parameters from data and sets the relevant class attribute.
+Inputs - None.
+Returns - None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.controller.Oneshot.reset_load">
+<span class="sig-name descname"><span class="pre">reset_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/controller.html#Oneshot.reset_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.controller.Oneshot.reset_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is done after one full day is done.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="charging-sim-electricityprices-module">
-<h2>charging_sim.electricityPrices module<a class="headerlink" href="#charging-sim-electricityprices-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.electricityPrices">
+<span id="charging-sim-electricityprices-module"></span><h2>charging_sim.electricityPrices module<a class="headerlink" href="#module-charging_sim.electricityPrices" title="Permalink to this heading">¶</a></h2>
+<p>Contains pricing structure and electricity data. Should contain attribute that spits out vector of prices depending
+on whatever pricing scheme is being used.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.electricityPrices.PriceLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.electricityPrices.</span></span><span class="sig-name descname"><span class="pre">PriceLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/electricityPrices.html#PriceLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.electricityPrices.PriceLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class pre-loads prices and is mainly used pre-simulation.
+Undecided if this should. UPDATE HARD-CODED PATHS</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.electricityPrices.PriceLoader.downscale">
+<span class="sig-name descname"><span class="pre">downscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/electricityPrices.html#PriceLoader.downscale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.electricityPrices.PriceLoader.downscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downscales the price data into a finer resolution, similar to what Pandas does. Typically only used once
+Inputs: input_res - resolution of the input.</p>
+<blockquote>
+<div><p>output_res - resolution of the output.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.electricityPrices.PriceLoader.get_prices">
+<span class="sig-name descname"><span class="pre">get_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/electricityPrices.html#PriceLoader.get_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.electricityPrices.PriceLoader.get_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns time-of-use (TOU) rate prices from data. This assumes TOU rates do not change day-to-day.
+Inputs: start_idx - starting index to pull the price vector from.</p>
+<blockquote>
+<div><p>num_steps - cardinality of the price vector being returned.</p>
+</div></blockquote>
+<p>Returns: price_vector - the tou price vector desired from the inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.electricityPrices.PriceLoader.set_month_data">
+<span class="sig-name descname"><span class="pre">set_month_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">month</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/electricityPrices.html#PriceLoader.set_month_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.electricityPrices.PriceLoader.set_month_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the month for which the prices will be obtained.
+Inputs: month - month to set the data to.
+Returns: None.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.electricityPrices.main">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.electricityPrices.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/electricityPrices.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.electricityPrices.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run this mainly to generate new downscaled data or for testing.</p>
+</dd></dl>
+
 </section>
 <section id="module-charging_sim.optimization">
 <span id="charging-sim-optimization-module"></span><h2>charging_sim.optimization module<a class="headerlink" href="#module-charging_sim.optimization" title="Permalink to this heading">¶</a></h2>
@@ -156,8 +999,6 @@ MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME</p>
 <dt class="sig sig-object py" id="charging_sim.optimization.Optimization">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.optimization.</span></span><span class="sig-name descname"><span class="pre">Optimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objective_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objective</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transformer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">battery</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GUROBI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/optimization.html#Optimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.optimization.Optimization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a class for the optimization problem we will solve. It contains all necessary attributes
-that fully define the optimization problem.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="charging_sim.optimization.Optimization.add_demand_charge">
 <span class="sig-name descname"><span class="pre">add_demand_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/optimization.html#Optimization.add_demand_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.optimization.Optimization.add_demand_charge" title="Permalink to this definition">¶</a></dt>
@@ -237,11 +1078,193 @@ Returns: List of battery constraints.</p>
 </dd></dl>
 
 </section>
-<section id="charging-sim-orchestrator-module">
-<h2>charging_sim.orchestrator module<a class="headerlink" href="#charging-sim-orchestrator-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.orchestrator">
+<span id="charging-sim-orchestrator-module"></span><h2>charging_sim.orchestrator module<a class="headerlink" href="#module-charging_sim.orchestrator" title="Permalink to this heading">¶</a></h2>
+<p>This file hosts the charging simulation class, in charge of orchestrating the entire simulation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.orchestrator.</span></span><span class="sig-name descname"><span class="pre">ChargingSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_charging_sites</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.create_battery_object">
+<span class="sig-name descname"><span class="pre">create_battery_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.create_battery_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.create_battery_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and stores all battery modules/objects in the network.
+Inputs: idx - Battery identification index.</p>
+<blockquote>
+<div><p>none_prop - Dictionary of Node properties; includes location, node type (L2 or DCFC).
+controller - Controller assigned to the battery object.</p>
+</div></blockquote>
+<p>Returns: buffer_battery - The battery object that is created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.create_charging_stations">
+<span class="sig-name descname"><span class="pre">create_charging_stations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.create_charging_stations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.create_charging_stations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot">
+<span class="sig-name descname"><span class="pre">create_charging_stations_oneshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.create_charging_stations_oneshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.create_solar_object">
+<span class="sig-name descname"><span class="pre">create_solar_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.create_solar_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.create_solar_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.get_action">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.get_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.get_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns only the control current</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc">
+<span class="sig-name descname"><span class="pre">get_charger_obj_by_loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.get_charger_obj_by_loc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.get_charging_sites">
+<span class="sig-name descname"><span class="pre">get_charging_sites</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.get_charging_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.get_charging_sites" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.get_storage_sites">
+<span class="sig-name descname"><span class="pre">get_storage_sites</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.get_storage_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.get_storage_sites" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.initialize_aging_sim">
+<span class="sig-name descname"><span class="pre">initialize_aging_sim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.initialize_aging_sim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.initialize_aging_sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.initialize_controllers">
+<span class="sig-name descname"><span class="pre">initialize_controllers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.initialize_controllers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.initialize_controllers" title="Permalink to this definition">¶</a></dt>
+<dd><p>assign charging controller to each EVSE</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.initialize_price_loader">
+<span class="sig-name descname"><span class="pre">initialize_price_loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">month</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.initialize_price_loader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.initialize_price_loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the price loading module and sets the month to be simulated for memory-efficient sampling</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.initialize_solar_module">
+<span class="sig-name descname"><span class="pre">initialize_solar_module</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.initialize_solar_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.initialize_solar_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>This initializes the solar module if there is solar</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.load_battery_params">
+<span class="sig-name descname"><span class="pre">load_battery_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.load_battery_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.load_battery_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This loads the battery params directly into the sim, so parameters will be the same for all
+batteries unless otherwise specified. battery_config must be attributed to do this.
+Inputs: None.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.load_config">
+<span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all the relevant configurations and includes them in the simulation attributes.
+Inputs: None.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.load_results_summary">
+<span class="sig-name descname"><span class="pre">load_results_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.load_results_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.load_results_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.multistep">
+<span class="sig-name descname"><span class="pre">multistep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.multistep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.multistep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.reset_loads">
+<span class="sig-name descname"><span class="pre">reset_loads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.reset_loads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.reset_loads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_nodes_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to set up charging station locations and simulations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stepsize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perfect foresight daily stepping…should I do full-shot run (one optimization per day?)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.update_scenario">
+<span class="sig-name descname"><span class="pre">update_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.update_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.update_scenario" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.update_site_loads">
+<span class="sig-name descname"><span class="pre">update_site_loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.update_site_loads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.update_site_loads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim.update_steps">
+<span class="sig-name descname"><span class="pre">update_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/orchestrator.html#ChargingSim.update_steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.orchestrator.ChargingSim.update_steps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="charging-sim-simulate-module">
-<h2>charging_sim.simulate module<a class="headerlink" href="#charging-sim-simulate-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-charging_sim.simulate">
+<span id="charging-sim-simulate-module"></span><h2>charging_sim.simulate module<a class="headerlink" href="#module-charging_sim.simulate" title="Permalink to this heading">¶</a></h2>
+<p>This file runs optimization offline without the power system or battery feedback. This is done to save time. Power
+system states are then propagated post optimization to fully characterize what would have occurred if in-situ
+optimization was done</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.make_scenarios">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">make_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/simulate.html#make_scenarios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.simulate.make_scenarios" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to make the list of scenarios (dicts) that are used to run the simulations.
+Inputs: None. However, it uses preloaded global functions from a config.txt file.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.run">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/simulate.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.simulate.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
+Input: scenario - the scenario a user would like to run.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.run_scenario_single">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">run_scenario_single</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/simulate.html#run_scenario_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.simulate.run_scenario_single" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function just runs one scenario.
+Inputs: None.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.run_scenarios_parallel">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">run_scenarios_parallel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/simulate.html#run_scenarios_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.simulate.run_scenarios_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>This runs c-rate-energy scenarios in parallel, using the multi-core processor of the PC.
+User should have enough cores and RAM, as if not enough, can lead to entire process freezing.
+Inputs: None.
+Returns: None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.run_scenarios_sequential">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">run_scenarios_sequential</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/charging_sim/simulate.html#run_scenarios_sequential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#charging_sim.simulate.run_scenarios_sequential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
+which is a combination of all the capacities and c-rates.
+Inputs: None.
+Returns: None.</p>
+</dd></dl>
+
 </section>
 <section id="module-charging_sim.solar">
 <span id="charging-sim-solar-module"></span><h2>charging_sim.solar module<a class="headerlink" href="#module-charging_sim.solar" title="Permalink to this heading">¶</a></h2>
