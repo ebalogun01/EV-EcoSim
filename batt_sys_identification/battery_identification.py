@@ -12,7 +12,7 @@ class BatteryParams:
     Takes in dataframe or csv with some given fields during instantiation.
 
     {
-    Dataframe fields (columnsmust include:
+    Dataframe fields (columns must include:
     * current
     * voltage
     }
