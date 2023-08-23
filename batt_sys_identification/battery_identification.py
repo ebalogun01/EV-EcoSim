@@ -1,3 +1,6 @@
+"""
+This module hosts the Battery System Identification class used for fitting battery ECM model parameters from data.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
@@ -9,20 +12,24 @@ import time
 class BatteryParams:
     """
     Battery system identification class with open circuit voltage correction scheme.
-    Takes in dataframe or csv with some given fields during instantiation.
+    This class takes in dataframe or csv with some given fields during instantiation.\n
 
-    {
-    Dataframe fields (columns must include:
-    * current
-    * voltage
-    }
+    Dataframe fields (columns) must include the following literally and case-sensitive:
 
+    * current - battery/cell current time-series.
+    * voltage - corresponding battery/cell voltage time-series.
+    * soc - corresponding battery/cell state of charge time-series.
+    * ocv - corresponding battery/cell open circuit voltage time-series.
 
-     To use:
+    How to use:
+
     * data = pd.read_csv(data_path). This loads a pandas dataframe.
     * module = BatteryParams(data)
     * module.run_sys_identification()
     * module.plot_correction_scheme_comparison()
+
+    Writes new corrected open-circuit voltages and battery parameters to file within the folder. Can be downloaded via
+    the web-tool.
 
     :param data: Battery test data from which to fit the identification params.
     """
@@ -200,6 +207,8 @@ class BatteryParams:
         ocv_bias_correction_vector = np.array([beta.value, const_bias.value])
         np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn), ocv_bias_correction_vector)
         self.ocv = ocv_corr.value
+        self.data['ocv_corr'] = self.ocv
+        self.data.to_csv('input_data_with_ocv_corr_voltage')    # adds corrected ocv as field and writes the input data
 
     def validate_params(self):
         """
@@ -297,6 +306,8 @@ class BatteryParams:
         :return:
         """
         return NotImplementedError("Method has not been implemented yet!")
+
+
 
 
 
