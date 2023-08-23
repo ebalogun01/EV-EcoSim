@@ -9,7 +9,7 @@ import pandas as pd
 import time
 import gblvar
 import sim
-from charging_sim.orchestrator import ChargingSim
+from orchestrator import ChargingSim
 
 #   will later remove some import flags but leaving here for potential debugging
 

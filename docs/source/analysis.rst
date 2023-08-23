@@ -4,7 +4,7 @@ analysis package
 Submodules
 ----------
 
-analysis.cost\_analysis module
+cost\_analysis module
 ------------------------------
 
 .. automodule:: analysis.cost_analysis
@@ -12,7 +12,7 @@ analysis.cost\_analysis module
    :undoc-members:
    :show-inheritance:
 
-analysis.load\_post\_opt\_costs module
+load\_post\_opt\_costs module
 --------------------------------------
 
 .. automodule:: analysis.load_post_opt_costs
@@ -20,7 +20,7 @@ analysis.load\_post\_opt\_costs module
    :undoc-members:
    :show-inheritance:
 
-analysis.plot\_results module
+plot\_results module
 -----------------------------
 
 .. automodule:: analysis.plot_results

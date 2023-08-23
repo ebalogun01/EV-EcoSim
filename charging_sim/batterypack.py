@@ -1,7 +1,20 @@
 """
 This module contains the program for the battery pack class.
-This battery class model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most
-purposes.
+**Usage**\n
+Proper usage is done by the :module:orchestrator.py module.
+
+**Example usage**\n
+
+with open(battery_config_path, "r") as f:
+    battery_config = json.load(f)
+params_list = [key for key in battery_config.keys() if "params_" in key]::
+
+for params_key in params_list:
+    # This loads the actual battery parameters from the file in which those parameters are stored, prior to
+    # instantiating Battery().
+    battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])::
+
+
 """
 
 import json
@@ -10,8 +23,6 @@ from utils import num_steps
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
-# TODO: add battery simulation resolution control so can be different from control as well...
-#  ALso track the number of voltage control violations during control computations in the future
 
 
 class Battery:
@@ -19,7 +30,7 @@ class Battery:
     Each instantiation of this class must include at least a config file, which contains the physical
     constraints and properties of the battery.
 
-    Properties are mainly controlled in the battery config file 'battery.json'
+    Properties are mainly controlled in the battery config file `battery.json`
         * max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.
         * max voltage(V) - maximum allowable battery voltage.
         * min Voltage (V) - minimum allowable battery voltage.

@@ -31,8 +31,21 @@
   <h1>Source code for charging_sim.batterypack</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module contains the program for the battery pack class.</span>
-<span class="sd">This battery class model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most</span>
-<span class="sd">purposes.</span>
+<span class="sd">**Usage**\n</span>
+<span class="sd">Proper usage is done by the :module:orchestrator.py module.</span>
+
+<span class="sd">**Example usage**\n</span>
+
+<span class="sd">with open(battery_config_path, &quot;r&quot;) as f:</span>
+<span class="sd">    battery_config = json.load(f)</span>
+<span class="sd">params_list = [key for key in battery_config.keys() if &quot;params_&quot; in key]::</span>
+
+<span class="sd">for params_key in params_list:</span>
+<span class="sd">    # This loads the actual battery parameters from the file in which those parameters are stored, prior to</span>
+<span class="sd">    # instantiating Battery().</span>
+<span class="sd">    battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])::</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
@@ -41,8 +54,6 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="c1"># TODO: add battery simulation resolution control so can be different from control as well...</span>
-<span class="c1">#  ALso track the number of voltage control violations during control computations in the future</span>
 
 
 <div class="viewcode-block" id="Battery"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batterypack.Battery">[docs]</a><span class="k">class</span> <span class="nc">Battery</span><span class="p">:</span>
@@ -50,7 +61,7 @@
 <span class="sd">    Each instantiation of this class must include at least a config file, which contains the physical</span>
 <span class="sd">    constraints and properties of the battery.</span>
 
-<span class="sd">    Properties are mainly controlled in the battery config file &#39;battery.json&#39;</span>
+<span class="sd">    Properties are mainly controlled in the battery config file `battery.json`</span>
 <span class="sd">        * max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.</span>
 <span class="sd">        * max voltage(V) - maximum allowable battery voltage.</span>
 <span class="sd">        * min Voltage (V) - minimum allowable battery voltage.</span>
