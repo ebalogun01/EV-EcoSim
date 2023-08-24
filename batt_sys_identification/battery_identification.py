@@ -7,6 +7,7 @@ import copy
 import pygad
 import cvxpy as cp
 import time
+import ast
 
 
 class BatteryParams:
@@ -38,14 +39,28 @@ class BatteryParams:
         self.current = data.current.values
         self.voltage = data.voltage.values
         self.ocv = data.ocv.values
-        self.ocv_no_corr = data.ocv.values     # uncorrected open circuit voltage
+        self.ocv_no_corr = data.ocv.values     # Uncorrected open circuit voltage.
         self.soc = data.soc.values
         self.params = []
         self.params_uncorr = []
+        self.init_params = []   # Can be initialized later.
+        self._default_population = [
+            [1.058596e-02, 5.93096e-02, -4.17993e+00, 1.58777e-02, 9.75325e+03, 7.45710e-03, 4.01823e+03],
+            [3.43209856e-02, 1.74575496e-02, -4.29315177e+00, 2.01081488e-04, 9.56317565e+03, 2.12122173e-03, 9.57647155e+03],
+            [2.30552317e-02, 8.44786075e-02, -3.99474379e+00, 2.99153462e-03, 8.87442972e+03, 2.30526762e-03, 9.05492854e+03],
+            [-5.82959510e-03, 5.20569661e-02, -2.18763704e-01, 8.67466142e-04, 7.05178934e+03, 9.52035315e-03, 6.81286695e+03],
+            [5.72212881e-02, -1.43378662e-02, -6.12054235e-01, 4.80304568e-03, 5.45105883e+03, 4.74474171e-04, 7.31264565e+03],
+            [2.69767183e-03, 9.62504736e-02, -1.29365965e+00, 6.11142914e-03, 9.80086309e+03, 1.69531170e-03, 8.00324801e+03],
+            [1.16897734e-02, 4.54745088e-02, -3.28524770e+00, 1.35089385e-02, 5.69817778e+03, 3.98807635e-03, 8.31128396e+03],
+            [1.17640691e-02, 7.63076005e-02, -3.66411278e+00, 1.23863884e-02, 9.30697417e+03, 4.56975167e-04, 5.57718908e+03],
+            [1.93628327e-03, 5.21192971e-02, -1.96503048e+00, 1.77612540e-02, 5.47448933e+03, 6.42417508e-03, 8.05424318e+03],
+            [6.78756010e-03, 2.96217428e-02, -2.03289183e+00, 1.88927411e-02, 1.91748586e+03, 9.10005523e-03, 5.14585687e+03]
+        ]
 
     def _assert_data_len(self):
         """
         Checks the imported data to ensure all fields have the same length.
+
         :return: None.
         """
         assert self.voltage.shape[0] == self.soc.shape[0]
@@ -93,6 +108,21 @@ class BatteryParams:
             cost += 1
         return -10 * cost
 
+    def _init_population(self):
+        """
+        Initializes the PyGAD population. This is used to use a preset population as a warm-start. This helps the
+        parameter search to converge quickly.
+
+        :return:
+        """
+        print('Initializing population for warm-start...')
+        # f = open('init_pop.txt', 'r')
+        # initial_params = f.read()
+        # f.close()
+        # self.init_params = ast.literal_eval(initial_params)
+        self.init_params = self._default_population
+        print('Done initializing population.')
+
     @staticmethod
     def _get_pygad_bounds():
         """
@@ -111,14 +141,15 @@ class BatteryParams:
         gene_space_range = [{'low': low, 'high': high} for low, high in zip(lb2, ub2)]
         return gene_space_range
 
-    def ga(self, num_generations=10, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
+    def ga(self, num_generations=50, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
            mutation_type="adaptive", parent_selection_type="sss", mutation_percent_genes=60,
-           mutation_prob=(0.3, 0.1)):
+           mutation_prob=(0.3, 0.1), crossover_prob=None):
         """
         Runs the genetic algorithm instance. Please see PyGAD documentation for more explanation of fields/params.
         The default parameters have been selected to optimize accuracy and speed, however, any user may find a
         combination of params that work better for a given set of battery data.
 
+        :param crossover_prob:
         :param num_generations: Number of generations. Default is 100.
         :param num_parents_mating: Number of parents to combine to form the next offspring. Default is 2.
         :param sol_per_pop: Number of solutions per population (a set of genes is one solution), or offspring size.
@@ -131,39 +162,67 @@ class BatteryParams:
         Its value must be between 0.0 and 1.0 inclusive.
         :return: Solution vector of optimized parameters.
         """
-        gene_space_range = self._get_pygad_bounds()
-        # define instance of GA
-        ga_instance = pygad.GA(num_generations=num_generations,
-                               num_parents_mating=num_parents_mating,
-                               fitness_func=self._cost_fun_pygad,
-                               sol_per_pop=sol_per_pop,
-                               num_genes=num_genes,
-                               mutation_type=mutation_type,
-                               mutation_percent_genes=mutation_percent_genes,
-                               mutation_probability=mutation_prob,
-                               parent_selection_type=parent_selection_type,
-                               crossover_type=crossover_type,
-                               allow_duplicate_genes=False,
-                               stop_criteria=["reach_0.05", "saturate_20"],
-                               gene_space=gene_space_range)
+        gene_space_range = self._get_pygad_bounds()     # Get the gene space range.
+        if self.init_params:
+            ga_instance = pygad.GA(num_generations=num_generations,
+                                   initial_population=self.init_params,
+                                   num_parents_mating=num_parents_mating,
+                                   fitness_func=self._cost_fun_pygad,
+                                   sol_per_pop=sol_per_pop,
+                                   num_genes=num_genes,
+                                   mutation_type=mutation_type,
+                                   mutation_probability=mutation_prob,
+                                   mutation_percent_genes=mutation_percent_genes,
+                                   parent_selection_type=parent_selection_type,
+                                   crossover_type=crossover_type,
+                                   allow_duplicate_genes=False,
+                                   crossover_probability=crossover_prob,
+                                   stop_criteria=["reach_0.05", "saturate_20"],
+                                   gene_space=gene_space_range,
+                                   parallel_processing=8)
+        else:
+            ga_instance = pygad.GA(num_generations=num_generations,
+                                   num_parents_mating=num_parents_mating,
+                                   fitness_func=self._cost_fun_pygad,
+                                   sol_per_pop=sol_per_pop,
+                                   num_genes=num_genes,
+                                   mutation_type=mutation_type,
+                                   mutation_probability=mutation_prob,
+                                   mutation_percent_genes=mutation_percent_genes,
+                                   parent_selection_type=parent_selection_type,
+                                   crossover_type=crossover_type,
+                                   allow_duplicate_genes=False,
+                                   crossover_probability=crossover_prob,
+                                   stop_criteria=["reach_0.05", "saturate_20"],
+                                   gene_space=gene_space_range,
+                                   parallel_processing=8)
+
         ga_instance.run()
         solution, solution_fitness, solution_idx = ga_instance.best_solution()
         ga_instance.plot_fitness()
-        print("Parameters of the best solution : {solution}".format(solution=solution))
-        print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))
+        print(f'Parameters of the best solution : {solution}')
+        print(f"Fitness value of the best solution = {solution_fitness}")
         return solution
 
-    def run_sys_identification(self):
+    def run_sys_identification(self, cell_name=0, diagn=0, use_initial_pop=True, quadratic_bias=True):
         """
-        Runs the GA for system identification
+        Runs the GA for system identification.
+
         :return:
         """
+        if use_initial_pop:
+            self._init_population()
         self.params = self.ga()
-        self.run_ocv_correction()
-        # run again
-        self.params = self.ga()     # new params
 
-    def run_ocv_correction(self, use_quadratic=True, cell_name=0, diagn=0):
+        if quadratic_bias:
+            self.run_ocv_correction(use_quadratic=True)
+        else:
+            self.run_ocv_correction()
+        # run again
+        self.params = self.ga()     # New params.
+        np.savetxt(f'battery_params_{cell_name}_{diagn}.csv', self.params, delimiter=',')
+
+    def run_ocv_correction(self, use_quadratic=False, cell_name=0, diagn=0):
         """
         This fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute.
 
@@ -208,7 +267,7 @@ class BatteryParams:
         np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn), ocv_bias_correction_vector)
         self.ocv = ocv_corr.value
         self.data['ocv_corr'] = self.ocv
-        self.data.to_csv('input_data_with_ocv_corr_voltage')    # adds corrected ocv as field and writes the input data
+        self.data.to_csv('input_data_with_ocv_corr_voltage.csv')    # adds corrected ocv as field and writes the input data
 
     def validate_params(self):
         """
@@ -230,8 +289,8 @@ class BatteryParams:
         plt.plot(self.voltage, label='experimental data')
         plt.plot(v_uncorr, '--', label='ECM without OCV correction')
         plt.plot(v_corr, '--', label='ECM with OCV correction', color='k')
-        plt.xlim(xlim)
-        plt.ylim(ylim)
+        # plt.xlim(xlim)
+        # plt.ylim(ylim)
         plt.xticks(rotation=45)
         plt.xlabel("Time Step (s)")
         plt.ylabel("Voltage")
@@ -289,6 +348,25 @@ class BatteryParams:
             I_R2[j] = np.round(np.exp(-dt / (R2 * C2)) * I_R2[j - 1] + (1 - np.exp(-dt / (R2 * C2))) * I_t[j - 1], 10)
         V_t = self.ocv - np.multiply(I_t, Ro) - np.multiply(I_R1, R1) - np.multiply(I_R2, R2)
         return V_t
+
+    def get_Ro(self):
+        A_Ro = self.params[0]
+        B_Ro = self.params[1]
+        C_Ro = self.params[2]
+        return B_Ro * np.exp(C_Ro * self.soc) + A_Ro * np.exp(self.soc)
+
+    def plot_Ro(self):
+        Ro = self.get_Ro() + self.params[3] + self.params[5]
+        fig, ax = plt.subplots(1, 1)
+        ax.plot(self.soc, Ro)
+        plt.title("Ro vs. SoC plot")
+        plt.xlabel('State of charge')
+        plt.ylabel('Ro (Resistance)')
+        plt.show()
+
+    def simulate_response(self):
+        voltage = self.get_uncorrected_voltages()
+        # todo: complete later
 
     def run_pre_checks(self):
         """

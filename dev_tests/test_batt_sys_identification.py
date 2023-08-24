@@ -18,10 +18,14 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(module is not None)
 
     def test_ga(self):
+        num_seq_runs = 4
         module = BatteryParams(data)
-        module.run_sys_identification()
-        self.assertEqual(len(module.params), 7)
-        self.assertEqual(len(module.params_uncorr), 7)
+        for i in range(num_seq_runs):
+            module.run_sys_identification(use_initial_pop=True)
+            module.plot_correction_scheme_comparison()
+            self.assertEqual(len(module.params), 7)
+            self.assertEqual(len(module.params_uncorr), 7)
+            module.plot_Ro()
 
 
 if __name__ == '__main__':

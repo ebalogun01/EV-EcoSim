@@ -5,6 +5,7 @@ import cvxpy as cp
 class Optimization:
     """
     Constructor for the overall optimization problem solved by the optimization-based controller.
+
     * Designed to include future cost functions such as transformer degradation and battery aging.
     * Limited to convex and Mixed Integer programs, depending on the selected solver.
     * Note, each desired solver must be installed separately on user's PC for a successful run.

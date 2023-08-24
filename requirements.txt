@@ -6,3 +6,4 @@ scipy~=1.7.3
 cvxpy~=1.2.1
 seaborn~=0.12.2
 setuptools~=65.6.3
+pygad~=3.1.0
