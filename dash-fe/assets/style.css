@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    background-color: #f2f2f2;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    background-color: white;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 30px;
+    position: relative;
+    z-index: 1;
+}
