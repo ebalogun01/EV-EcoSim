@@ -7,7 +7,7 @@ import time
 import gblvar
 import sim
 sys.path.append('../../charging_sim')
-from EVCharging import ChargingSim
+from charging_sim.orchestrator import ChargingSim
 
 print("*****EV Charging Station Simulation Imported Successfully*****")
 
