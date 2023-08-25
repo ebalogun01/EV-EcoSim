@@ -37,3 +37,6 @@ mosek
 .idea
 **.idea/
 
+
+!dash-fe/data/*
+
