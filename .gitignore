@@ -13,6 +13,8 @@
 **.npy
 **.glm
 **.json
+
+# React fronted whitelist
 !frontend/package.json
 !frontend/package-lock.json
 !frontend/tsconfig.json
@@ -20,6 +22,10 @@
 !frontend/public/logo512.png
 !frontend/public/manifest.json
 !frontend/public/robots.txt
+
+# Dash frontend whitelist
+!dash-fe/data/*
+
 **results
 charging_sim/__pycache__
 **.Identifier
@@ -37,6 +43,4 @@ mosek
 .idea
 **.idea/
 
-
-!dash-fe/data/*
 
