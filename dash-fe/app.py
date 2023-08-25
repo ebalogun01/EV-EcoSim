@@ -19,7 +19,7 @@ app.layout = html.Div([
             pl=0,
             pr=0,
             pt=0,
-            style={'background-color': 'white', 'color': 'whitesmoke'},
+            style={'background-color': '#fdd', 'color': 'whitesmoke'},
             children=[
                 dmc.Group(
                     position="left",
@@ -29,8 +29,7 @@ app.layout = html.Div([
                             dmc.ThemeIcon(
                                 html.Img(src='assets/doerr.png', width="150"),
                                 style={"paddingLeft": 74, "paddingTop": 28},
-                                variant="filled",
-                                color="white",
+                                variant="transparent",
                             ),
                             href='https://sustainability.stanford.edu/',
                             target='_blank'
