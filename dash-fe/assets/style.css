@@ -1,6 +1,7 @@
 body {
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
 }
 
 .background {
@@ -16,8 +17,51 @@ body {
 .content {
     background-color: white;
     max-width: 1800px;
+    width: 80%;
+    box-shadow: 0px 0px 5px #CCC;
     margin: 0 auto;
     padding: 30px;
     position: relative;
     z-index: 1;
+}
+
+.content-tile {
+    display: grid;
+    grid-template-columns: 50%  50%;
+    margin: 40px auto;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+p {
+    text-align: justify;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.action {
+    background-color: #b01b1b;
+    color: white;
+    padding: 12px 24px; 
+    border-radius: 8px;
+    border: 0;
+    font-size: 20px;
+}
+
+.setup-button {
+    padding: 20px;
+    margin: 0 8px;
+    background-color: white;
+    border: 1px solid #e48d81;
+    color: #e48d81;
+    border-radius: 8px;
+    font-size: 20px;
+}
+
+.setup-button.selected {
+    background-color: #e48d81;
+    color: black;
 }

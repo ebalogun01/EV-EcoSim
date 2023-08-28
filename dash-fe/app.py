@@ -1,8 +1,10 @@
 import plotly.express as px
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, ctx, Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
+from create_home_page import create_home_page
+from create_tutorial_page import create_tutorial_page
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -77,6 +79,7 @@ app.layout = html.Div([
                     html.Div([
                         dcc.RadioItems(
                             id="category-radio",
+                            value="INP",
                             options=[
                                 {"label": "Input", "value": "INP"},
                                 {"label": "Tutorial", "value": "TUT"},
@@ -85,47 +88,65 @@ app.layout = html.Div([
                         ),
                         html.Br(),
                     ]),
-
-                    html.Div(
-                        id="tutorial-page",
-                        style={
-                            'display': 'block',
-                        },
-                        children=[
-                            html.H2(
-                                ["Tutorial"]
-                            ),
-                            html.P(
-                                ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ipsum dolor sit amet consectetur. Velit euismod in pellentesque massa placerat duis ultricies lacus. Tempor id eu nisl nunc mi. Urna duis convallis convallis tellus id interdum velit. Pharetra diam sit amet nisl. Laoreet suspendisse interdum consectetur libero. Aliquet bibendum enim facilisis gravida neque convallis a cras. Eget mi proin sed libero enim sed. Non pulvinar neque laoreet suspendisse interdum consectetur. Sit amet mattis vulputate enim."]
-                            ),
-                            html.Iframe(
-                                id="tutorial-video",
-                                width="627",
-                                height="352.5",
-                                style={
-                                    'display': 'block',
-                                    'margin': 'auto'
-                                },
-                                src="https://www.youtube.com/embed/MH_3H8uHxF0",
-                                title="Learn about Plotly &amp; Dash",
-                            ),
-                        ])
+                    
+                    create_home_page(),
+                    create_tutorial_page(),
                 ],
             ),
         ]),
     ]),
 ])
 
+# Radio buttons change value
 @app.callback(
+    Output(component_id="home-page", component_property="style"),
     Output(component_id="tutorial-page", component_property="style"), 
-    [Input(component_id="category-radio", component_property="value")])
+    Input(component_id="category-radio", component_property="value")
+)
 def page_update(radio_value):
     print(radio_value)
-    if radio_value == "TUT":
-        return {'display': 'block'}
+    if radio_value == "INP":
+        return {'display':'block'}, {'display':'none'}
+    elif radio_value == "TUT":
+        return {'display':'none'}, {'display': 'block'}
+    elif radio_value == "OUT":
+        return {'display':'none'}, {'display': 'none'}
     else:
-        return {'display': 'none'}
-
+        return {'display': 'none'}, {'display':'none'}
+    
+# Preset 1 selected
+@app.callback(
+    Output(component_id="preset1-button", component_property="className"),
+    Output(component_id="preset2-button", component_property="className"),
+    Output(component_id="custom-settings-button", component_property="className"),
+    Output(component_id="custom-settings-accordion", component_property="value"),
+    Input(component_id="preset1-button", component_property="n_clicks"),
+    Input(component_id="preset2-button", component_property="n_clicks"),
+    Input(component_id="custom-settings-button", component_property="n_clicks"),
+    Input(component_id="custom-settings-accordion", component_property="value"),
+    prevent_initial_call=True
+)
+def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value):
+    triggered_id = ctx.triggered_id
+    print(triggered_id)
+    if triggered_id == "preset1-button":
+        # Load preset 1
+        return "setup-button selected", "setup-button", "setup-button", None
+    elif triggered_id == "preset2-button":
+        # Load preset 2
+        return "setup-button", "setup-button selected", "setup-button", None
+    elif triggered_id == "custom-settings-button":
+        # Load custom settings
+        return "setup-button", "setup-button", "setup-button selected", "customSettings"
+    elif triggered_id == "custom-settings-accordion":
+        # Load custom settings
+        print(custom_settings_value)
+        if custom_settings_value == "customSettings":
+            return "setup-button", "setup-button", "setup-button selected", "customSettings"
+        else:
+            return
+    else:
+        return "setup-button", "setup-button", "setup-button"
 
 if __name__ == '__main__':
     app.run_server(debug=True)
