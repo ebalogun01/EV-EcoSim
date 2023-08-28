@@ -3,8 +3,7 @@ import dash
 from dash import dcc, html, ctx, Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
-from create_home_page import create_home_page
-from create_tutorial_page import create_tutorial_page
+from components import create_home_page, create_tutorial_page
 
 # Create Dash app
 app = dash.Dash(__name__)
