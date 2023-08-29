@@ -1,7 +1,90 @@
 import dash
 from dash import dcc, html, Input, Output
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 from constants import TEXT
+
+def create_settings_container():
+  settings_container = html.Div(
+    style={
+      'display': 'grid',
+      'grid-column-gap': '20px',
+      'grid-row-gap': '20px',
+      'grid-template': 'auto auto auto auto auto auto auto auto auto auto auto auto / auto auto'
+    },
+    children=[
+      html.Div(
+        className="setting-label",
+        style={
+          'grid-row-start': '1',
+          'grid-column-start': '1',
+        },
+        children=[
+          DashIconify(
+            icon="heroicons:magnifying-glass-plus-20-solid", 
+            width=30,
+            style={
+              'margin': '0 auto'
+            }
+          ),
+          html.H3(
+            style={
+              'margin': '0 auto'
+            },
+            children=["Simulation mode"]
+          )
+        ]
+      ),
+
+      html.Div(
+        className="setting-label",
+        style={
+          'grid-row-start': '1',
+          'grid-column-start': '2',
+        },
+        children=[
+          DashIconify(
+            icon="heroicons:magnifying-glass-plus-20-solid", 
+            width=30,
+            style={
+              'margin': '0 auto'
+            }
+          ),
+          html.H3(
+            style={
+              'margin': '0 auto'
+            },
+            children=["Timescale"]
+          )
+        ]
+      ),
+
+      html.Div(
+        style={
+          'grid-row-start': '2',
+          'grid-column-start': '1',
+          'display': 'flex',
+          'justify-content': 'space-between'
+        },
+        children=[
+          html.Button(
+            style={'width': '48%'},
+            id="offline-button",
+            className='setup-button selected',
+            children=["Offline"]
+          ),
+          html.Button(
+            style={'width': '48%'},
+            id="mpc-button",
+            className="setup-button",
+            children=["MPC"]
+          )
+        ]
+      )
+    ]
+  )
+
+  return settings_container
 
 def create_home_page():
   home_page = html.Div(
@@ -111,7 +194,7 @@ def create_home_page():
                       children=["Custom setup settings"]
                     )
                   ),
-                  dmc.AccordionPanel("ASDF"),
+                  dmc.AccordionPanel([create_settings_container()]),
                 ],
                 value="customSettings"
               )
