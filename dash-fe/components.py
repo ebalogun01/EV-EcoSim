@@ -4,6 +4,8 @@ import dash_mantine_components as dmc
 import plotly.express as px
 from constants import TEXT
 from dash_iconify import DashIconify
+from graphs import create_dummy_graph
+
 
 def create_home_page():
     home_page = html.Div(
@@ -261,64 +263,99 @@ def create_output_page():
                     'grid-template': 'auto / auto'
                 },
                 children=[
-                    dmc.Card(
-                        children=[
-                            dmc.Group(
-                                [
-                                    dmc.Text("Levelized Cost of Energy (LCOE)", weight=700),
-                                    dmc.Group(
-                                        position="right",
-                                        align="right",
-                                        children=[
-                                            html.A(
-                                                dmc.Badge(
-                                                    "Download data (CSV)",
-                                                    leftSection=dmc.ThemeIcon(
-                                                        DashIconify(icon='mdi:download'),
-                                                        color='dark',
-                                                    ),
-                                                    sx={"paddingLeft": 5},
-                                                    size="lg",
-                                                    radius="lg",
-                                                    variant="filled",
-                                                    color="dark"
-                                                ),
-                                                href='https://www.techrxiv.org/articles/preprint/EV-ecosim_A_grid-aware_co-simulation_platform_for_the_design_and_optimization_of_electric_vehicle_charging_stations/23596725',
-                                                target='_blank'
-                                            )
-                                        ],
-                                    )
-                                ],
-                                position="apart",
-                                mt="md",
-                                mb="xs",
-                            ),
-                            dmc.CardSection(
-                                dmc.Skeleton(
-                                    visible=True,
-                                    children=html.Div(id="skeleton-graph-container",
-                                                      children=create_dummy_graph()
-                                                      ),
-                                    mb=10,
-                                ),
-                            ),
-                            dmc.Text(
-                                "Description",
-                                size="sm",
-                                color="dimmed",
-                            ),
-                        ],
-                        withBorder=False,
-                        shadow="sm",
-                        radius="md",
+                    create_graph_card(
+                        title="Levelized Cost of Energy (LCOE)",
+                        download_link="#"
                     ),
+                    dmc.Group(
+                        position="center",
+                        grow=True,
+                        children=[
+                            create_graph_card(
+                                title="Battery aging costs",
+                                download_link="#"
+                            ),
+                            create_graph_card(
+                                title="Battery costs",
+                                download_link="#"
+                            )
+                        ]
+                    ),
+                    dmc.Group(
+                        position="center",
+                        grow=True,
+                        children=[
+                            create_graph_card(
+                                title="Transformer aging costs",
+                                download_link="#"
+                            ),
+                            create_graph_card(
+                                title="Electricity costs",
+                                download_link="#"
+                            )
+                        ]
+                    )
                 ]
             ),
         ]
     )
     return output_page
 
-def create_dummy_graph():
-    data_canada = px.data.gapminder().query("country == 'Canada'")
-    fig = px.bar(data_canada, x='year', y='pop')
-    return dcc.Graph(figure=fig)
+
+def create_graph_card(data=None, title="Undefined title", description="Undefined description", download_link=None):
+    card = dmc.Card(
+        style={"margin": "2px"},
+        children=[
+            dmc.Group(
+                style={"margin": "5px"},
+                children=[
+                    dmc.Text(title,
+                             weight=700,
+                             style={"margin-top": "-20px"},),
+                    dmc.Group(
+                        position="right",
+                        align="right",
+                        children=[
+                            html.A(
+                                dmc.Badge(
+                                    "Download data (CSV)",
+                                    leftSection=dmc.ThemeIcon(
+                                        DashIconify(icon='mdi:download'),
+                                        color='dark',
+                                    ),
+                                    sx={"paddingLeft": 5},
+                                    size="lg",
+                                    radius="lg",
+                                    variant="filled",
+                                    color="dark"
+                                ),
+                                href=download_link,
+                                target='_blank'
+                            )
+                        ],
+                    )
+                ],
+                position="apart",
+                mt="md",
+                mb="xs",
+            ),
+            dmc.CardSection(
+                dmc.Skeleton(
+                    visible=True,
+                    children=html.Div(id="skeleton-graph-container",
+                                      children=create_dummy_graph()
+                                      ),
+                    mb=10,
+                ),
+            ),
+            dmc.Text(
+                description,
+                size="sm",
+                color="dimmed",
+            ),
+        ],
+        withBorder=False,
+        shadow="sm",
+        radius="md",
+    )
+    return card

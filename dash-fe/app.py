@@ -170,7 +170,9 @@ app.layout = html.Div([
     Input(component_id="category-radio", component_property="value")
 )
 def page_update(radio_value):
-    print(radio_value)
+    # Debug option:
+    if app.server.debug==True:
+        print(radio_value)
     if radio_value == "INP":
         return {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
     elif radio_value == "TUT":
