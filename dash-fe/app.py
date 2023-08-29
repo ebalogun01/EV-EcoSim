@@ -3,7 +3,7 @@ import dash
 from dash import dcc, html, ctx, Input, Output
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
-from components import create_home_page, create_tutorial_page
+from components import create_home_page, create_tutorial_page, create_output_page
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -23,13 +23,13 @@ app.layout = html.Div([
             style={'background-color': '#fdd', 'color': 'whitesmoke'},
             children=[
                 dmc.Group(
-                    position="left",
+                    position="apart",
                     align="center",
                     children=[
                         dcc.Link(
                             dmc.ThemeIcon(
                                 html.Img(src='assets/doerr.png', width="150"),
-                                style={"paddingLeft": 74, "paddingTop": 28},
+                                style={"paddingLeft": 225, "paddingTop": 28},
                                 variant="transparent",
                             ),
                             href='https://sustainability.stanford.edu/',
@@ -37,27 +37,92 @@ app.layout = html.Div([
                         ),
                         dcc.Link(
                             href=app.get_relative_path("/"),
-                            style={"paddingTop": 2, "paddingLeft": 150, "paddingBottom": 5, "paddingRight": 10,
+                            style={"paddingTop": 15, "paddingLeft": 150, "paddingBottom": 5, "paddingRight": 10,
                                    "textDecoration": "none"},
                             children=[
-                                dmc.Group(align='center', spacing=0, position='center', children=[
-                                    dmc.Text("EV-Ecosim", size="lg", color="gray",
-                                             style={'font-family': 'Arial'}),
-                                ]
+                                dmc.Group(align='center',
+                                          spacing=0,
+                                          position='center',
+                                          children=[
+                                              dmc.Text("EV-Ecosim",
+                                                       color="dark",
+                                                       style={'font-family': 'Arial', 'fontSize': 24},
+                                                       weight=700),
+                                          ]
                                           )
                             ]
                         ),
                         dmc.Group(
                             position="right",
                             align="center",
+                            style={"paddingRight": 155, "paddingTop": 8},
                             children=[
-                                html.A(
-                                    dmc.ThemeIcon(
-                                        DashIconify(icon='mdi:github'),
-                                        color='dark'
-                                    ),
-                                    href='https://github.com/ebalogun01/EV50_cosimulation',
-                                    target='_blank'
+                                dmc.Group(
+                                    position="right",
+                                    align="center",
+                                    children=[
+                                        html.A(
+                                            dmc.Badge(
+                                                "Source code",
+                                                leftSection=dmc.ThemeIcon(
+                                                    DashIconify(icon='mdi:github'),
+                                                    color='dark',
+
+                                                ),
+                                                sx={"paddingLeft": 5},
+                                                size="lg",
+                                                radius="lg",
+                                                variant="filled",
+                                                color="dark"
+                                            ),
+                                            href='https://github.com/ebalogun01/EV50_cosimulation',
+                                            target='_blank'
+                                        )
+                                    ],
+                                ),
+                                dmc.Group(
+                                    position="right",
+                                    align="center",
+                                    children=[
+                                        html.A(
+                                            dmc.Badge(
+                                                "Documentation",
+                                                leftSection=dmc.ThemeIcon(
+                                                    DashIconify(icon='mdi:book-alphabet'),
+                                                    color='dark'
+                                                ),
+                                                sx={"paddingLeft": 5},
+                                                size="lg",
+                                                radius="lg",
+                                                variant="filled",
+                                                color="dark"
+                                            ),
+                                            href="#",
+                                            target='_blank'
+                                        )
+                                    ],
+                                ),
+                                dmc.Group(
+                                    position="right",
+                                    align="right",
+                                    children=[
+                                        html.A(
+                                            dmc.Badge(
+                                                "Preprint",
+                                                leftSection=dmc.ThemeIcon(
+                                                    DashIconify(icon='mdi:file-document'),
+                                                    color='dark',
+                                                ),
+                                                sx={"paddingLeft": 5},
+                                                size="lg",
+                                                radius="lg",
+                                                variant="filled",
+                                                color="dark"
+                                            ),
+                                            href='https://www.techrxiv.org/articles/preprint/EV-ecosim_A_grid-aware_co-simulation_platform_for_the_design_and_optimization_of_electric_vehicle_charging_stations/23596725',
+                                            target='_blank'
+                                        )
+                                    ],
                                 )
                             ],
                         )
@@ -86,32 +151,36 @@ app.layout = html.Div([
                         ),
                         html.Br(),
                     ]),
-                    
+
                     create_home_page(),
                     create_tutorial_page(),
+                    create_output_page(),
                 ],
             ),
         ]),
     ]),
 ])
 
+
 # Radio buttons change value
 @app.callback(
     Output(component_id="home-page", component_property="style"),
-    Output(component_id="tutorial-page", component_property="style"), 
+    Output(component_id="tutorial-page", component_property="style"),
+    Output(component_id="output-page", component_property="style"),
     Input(component_id="category-radio", component_property="value")
 )
 def page_update(radio_value):
     print(radio_value)
     if radio_value == "INP":
-        return {'display':'block'}, {'display':'none'}
+        return {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
     elif radio_value == "TUT":
-        return {'display':'none'}, {'display': 'block'}
+        return {'display': 'none'}, {'display': 'block'}, {'display': 'none'}
     elif radio_value == "OUT":
-        return {'display':'none'}, {'display': 'none'}
+        return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}
     else:
-        return {'display': 'none'}, {'display':'none'}
-    
+        return {'display': 'none'}, {'display': 'none'}, {'display': 'none'}
+
+
 # Preset 1 selected
 @app.callback(
     Output(component_id="preset1-button", component_property="className"),
@@ -145,6 +214,7 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
             return
     else:
         return "setup-button", "setup-button", "setup-button"
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
