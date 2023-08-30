@@ -1,19 +1,24 @@
 """
 This module contains the program for the battery pack class.
+
 **Usage**\n
 Proper usage is done by the :module:orchestrator.py module.
 
-**Example usage**\n
 
-with open(battery_config_path, "r") as f:
+**Example usage**::
+
+ with open(battery_config_path, "r") as f:
     battery_config = json.load(f)
-params_list = [key for key in battery_config.keys() if "params_" in key]::
+    params_list = [key for key in battery_config.keys() if "params_" in key]
 
-for params_key in params_list:
-    # This loads the actual battery parameters from the file in which those parameters are stored, prior to
+Then the battery can be instantiated as follows::
+
+ for params_key in params_list:
+     # This loads the actual battery parameters from the file in which those parameters are stored, prior to
     # instantiating Battery().
-    battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])::
-
+    battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])
+    # Instantiate the battery using its constructor.
+    buffer_battery = Battery(config=battery_config, controller=controller)
 
 """
 

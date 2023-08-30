@@ -5,6 +5,8 @@ This module hosts the Battery System Identification class used for fitting batte
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+
+import pandas as pd
 import pygad
 import cvxpy as cp
 
@@ -405,6 +407,13 @@ class BatteryParams:
         return NotImplementedError("Method has not been implemented yet!")
 
 
-
-
-
+if __name__ == '__main__':
+    import os
+    # List all the csv files in current directory and let user choose one.
+    # User uploaded data will be saved in the current directory as a temp_data.csv file.
+    data_path = os.path.join(os.getcwd(), 'temp_data.csv')
+    batt_data = pd.read_csv(data_path)
+    module = BatteryParams(batt_data)
+    # Create button option to toggle initial population on or off.
+    module.run_sys_identification(use_initial_pop=True)
+    module.plot_correction_scheme_comparison()

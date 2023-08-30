@@ -1,7 +1,7 @@
 import unittest
 from batt_sys_identification.battery_identification import BatteryParams
 import pandas as pd
-print('imports done')
+
 
 data = pd.read_csv('../batt_sys_identification/batt_iden_test_data_W10_2.csv')
 

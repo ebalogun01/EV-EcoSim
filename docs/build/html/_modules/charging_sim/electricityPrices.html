@@ -1,42 +1,89 @@
 <!DOCTYPE html>
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>charging_sim.electricityPrices &#8212; EV-Ecosim 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.electricityPrices &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.electricityPrices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for charging_sim.electricityPrices</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Contains pricing structure and electricity data. Should contain attribute that spits out vector of prices depending</span>
-<span class="sd">on whatever pricing scheme is being used.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the class that loads the electricity price data and structure used for sampling prices during</span>
+<span class="sd">simulation.</span>
+
+<span class="sd">Based on the prices.json config file, this module will load the desired price TOU rate file that will be used in</span>
+<span class="sd">optimization problem. The default is the PGE_BEV2_S rate file, which is valid for California, however users can load</span>
+<span class="sd">their own TOU rate file. The prices are loaded into a numpy array and can be sampled from during simulation.</span>
+<span class="sd">The prices are sampled based on the month of the year and the hour of the day.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">PGE_BEV2_S</span>
 
-
+<span class="c1"># Old (legacy) reference below:</span>
+<span class="c1"># https://www.pge.com/tariffs/assets/pdf/tariffbook/ELEC_SCHEDS_EV.pdf</span>
 <span class="c1"># load_profile is a 24x1 array with kWh consumed in each our of the day, starting at 0:00</span>
 <span class="c1"># Rates in $/kWh based on &quot;Residential TOU Service for Plug-In EV2&quot;</span>
 <span class="c1"># Rates in $/kWh based on &quot;Commercial TOU Service for Plug-In EV2&quot;</span>
@@ -44,18 +91,33 @@
 <span class="c1"># Partial-peak (weekday) = 3 to 4 PM, 9 to 12 AM</span>
 <span class="c1"># Off-peak: all other times</span>
 
+
 <div class="viewcode-block" id="PriceLoader"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader">[docs]</a><span class="k">class</span> <span class="nc">PriceLoader</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class pre-loads prices and is mainly used pre-simulation.</span>
-<span class="sd">     Undecided if this should. UPDATE HARD-CODED PATHS&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class pre-loads prices and is used to sample prices that are used for optimization of EVSE profits/costs</span>
+<span class="sd">    during charging simulation.</span>
+
+<span class="sd">    :type config: dict</span>
+<span class="sd">    :param config: Configuration dictionary for the price loader.</span>
+<span class="sd">    :param path_prefix: This string path prefix is obtained first based on your repository location to set the</span>
+<span class="sd">    correct path for obtaining the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the PriceLoader class.</span>
+
+<span class="sd">        :type config: dict</span>
+<span class="sd">        :param config: Configuration dictionary for the price loader.</span>
+<span class="sd">        :param path_prefix: This string path prefix is obtained first based on your repository location to set the</span>
+<span class="sd">        correct path for obtaining the data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">month_start_idx</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="mi">151</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mi">181</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">243</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="mi">273</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mi">304</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="mi">334</span><span class="p">,</span>
                                 <span class="mi">12</span><span class="p">:</span> <span class="mi">365</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>  <span class="c1"># July</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>  <span class="c1"># Default value.</span>
 
 <div class="viewcode-block" id="PriceLoader.get_prices"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.get_prices">[docs]</a>    <span class="k">def</span> <span class="nf">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -77,19 +139,17 @@
 <span class="sd">        :param month: Month to set the data to.</span>
 <span class="sd">        :return: None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        </span>
-<span class="sd">        Inputs: month - month to set the data to.</span>
-<span class="sd">        Returns: None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="n">month</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">month_start_idx</span><span class="p">[</span><span class="n">month</span><span class="p">]</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">month_start_idx</span><span class="p">[</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">96</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PriceLoader.downscale"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.downscale">[docs]</a>    <span class="k">def</span> <span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_res</span><span class="p">,</span> <span class="n">output_res</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Downscales the price data into a finer resolution, similar to what Pandas does. Typically only used once</span>
-<span class="sd">        Inputs: input_res - resolution of the input.</span>
-<span class="sd">                output_res - resolution of the output.</span>
+<span class="sd">        Downscales the price data into a finer resolution, similar to the downscaling method in Pandas.</span>
+<span class="sd">        Typically only used once.</span>
+
+<span class="sd">        :param input_res: Resolution of the input data.</span>
+<span class="sd">        :param output_res: Resolution of the output data.</span>
+<span class="sd">        :return: None. Saves output data to a csv file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">input_data_shape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_np</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="n">num_repetitions</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_res</span> <span class="o">/</span> <span class="n">output_res</span><span class="p">)</span>
@@ -102,12 +162,12 @@
             <span class="n">start_idx</span> <span class="o">+=</span> <span class="mi">4</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">temp_data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="n">temp_data</span>
-        <span class="c1"># change the paths below very soon</span>
+        <span class="c1"># IMPORTANT: Change the paths below to save new data.</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s2">&quot;/elec_rates/PGE_BEV2_S_annual_TOU_rate_</span><span class="si">{}</span><span class="s2">min.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_res</span><span class="p">),</span> <span class="n">temp_data</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run this mainly to generate new downscaled data or for testing.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is only run to generate new downscaled data or for testing.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">os</span>
     <span class="kn">import</span> <span class="nn">json</span>
     <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
@@ -119,99 +179,36 @@
     <span class="n">desired_res</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># units are in minutes</span>
     <span class="n">loader</span><span class="o">.</span><span class="n">downscale</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">],</span> <span class="n">desired_res</span><span class="p">)</span></div>
 
-<span class="c1">#</span>
-<span class="c1"># TOU_rate_summer = np.array(</span>
-<span class="c1">#         [0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611,</span>
-<span class="c1">#          0.16611, 0.16611, 0.16611, 0.16611, 0.36812, 0.47861, 0.47861, 0.47861, 0.47861, 0.47861,</span>
-<span class="c1">#          0.36812, 0.36812, 0.36812])</span>
-<span class="c1">#</span>
-<span class="c1"># TOU_rate_winter = np.array(</span>
-<span class="c1">#     [0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611, 0.16611,</span>
-<span class="c1">#      0.16611, 0.16611, 0.16611, 0.16611, 0.33480, 0.35150, 0.35150, 0.35150, 0.35150, 0.35150,</span>
-<span class="c1">#      0.33480, 0.33480, 0.33480])</span>
 
-<span class="c1"># TOU_rate = PGE_BEV2_S()</span>
-<span class="c1"># # # summmer - November - March, # Winter - April - October</span>
-<span class="c1"># Jan = np.tile(TOU_rate, 31)</span>
-<span class="c1"># Feb = np.tile(TOU_rate, 28)</span>
-<span class="c1"># March = np.tile(TOU_rate, 31)</span>
-<span class="c1"># Apr = np.tile(TOU_rate, 30)</span>
-<span class="c1"># May = np.tile(TOU_rate, 31)</span>
-<span class="c1"># June = np.tile(TOU_rate, 30)</span>
-<span class="c1"># July_Aug = np.tile(TOU_rate, 31*2)</span>
-<span class="c1"># Sep = np.tile(TOU_rate, 30)</span>
-<span class="c1"># Oct = np.tile(TOU_rate, 31)</span>
-<span class="c1"># Nov = np.tile(TOU_rate, 30)</span>
-<span class="c1"># Dec = np.tile(TOU_rate, 31)</span>
-<span class="c1"># # #</span>
-<span class="c1"># annual_price_vector = np.concatenate((Jan, Feb, March, Apr, May, June, July_Aug, Sep, Oct, Nov, Dec))</span>
-<span class="c1"># np.savetxt(&quot;PGE_BEV2_S_annual_TOU_rate_60min.csv&quot;, annual_price_vector)</span>
-<span class="c1"># # # print(annual_price_vector.shape, 24*365)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Emmanuel Balogun.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

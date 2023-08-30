@@ -1,11 +1,43 @@
+"""
+This module contains the Solar class. The solar class is used to simulate the solar power generation at a given site
+by sampling Global Horizontal Irradiance (GHI) data from the dataset of the desired location.
+"""
+
 import numpy as np
 import pandas as pd
 import cvxpy as cp
 
 
 class Solar:
-    """This simulates the ground-truth Solar conditions in location"""
+    """
+    This class is used to simulate the solar power generation at a given site by sampling Global Horizontal Irradiance
+    and estimating the solar generation, given the solar nameplate capacity that can be modified it its configuration
+    file `solar.json`. It also contains the optimization variables for the solar system.
+
+    The solar power generation is estimated using the following equation:
+
+    .. math::
+        P_{solar} = \min(P_{rated}, \eta *  A * GHI).
+
+    Where :math:`P_{solar}` is the solar power generation, :math:`\eta` is the efficiency of the solar system,
+    :math:`P_{rated}` is the solar nameplate capacity, :math:`A` is the area of the solar panels, and :math:`GHI` is
+    the Global Horizontal Irradiance.
+
+    :param config: Solar configuration dictionary.
+    :param path_prefix: This string path prefix is obtained first based on your repository location to set the right path.
+    :param controller: Controller object for making decisions on flow of power from energy devices.
+    :param num_steps: Number of steps in the simulation.
+
+    """
+
     def __init__(self, config, path_prefix=None, controller=None, num_steps=None):
+        """
+
+        :param config:
+        :param path_prefix:
+        :param controller:
+        :param num_steps:
+        """
         self.path_prefix = path_prefix + '/'
         self.config = config
         cols = ['Month', 'Day', 'Hour', 'GHI', 'Temperature']

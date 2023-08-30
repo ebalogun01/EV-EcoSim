@@ -79,7 +79,8 @@ This includes legacy load forecasts models developed (not needed).
 ### elec_rates
 
 Includes .csv files for electricity Time-of-use (TOU) rates. The input data prototype for electricity rates
-is shown below.
+is shown below. User must upload a normal full-year sized data (for 365 days) to avoid
+any errors.
 
 <img src="doc_images/elecrates_data_proto.png" width="100">
 
