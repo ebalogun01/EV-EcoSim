@@ -21,7 +21,7 @@ class MyTestCase(unittest.TestCase):
         num_seq_runs = 4
         module = BatteryParams(data)
         for i in range(num_seq_runs):
-            module.run_sys_identification(use_initial_pop=True)
+            module.run_sys_identification(use_initial_pop=False)
             module.plot_correction_scheme_comparison()
             self.assertEqual(len(module.params), 7)
             self.assertEqual(len(module.params_uncorr), 7)

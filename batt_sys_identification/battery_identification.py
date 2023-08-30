@@ -1,13 +1,12 @@
 """
 This module hosts the Battery System Identification class used for fitting battery ECM model parameters from data.
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import pygad
 import cvxpy as cp
-import time
-import ast
 
 
 class BatteryParams:
@@ -111,7 +110,7 @@ class BatteryParams:
     def _init_population(self):
         """
         Initializes the PyGAD population. This is used to use a preset population as a warm-start. This helps the
-        parameter search to converge quickly.
+        parameter search to converge much quickly than starting from random genes within desired bounds.
 
         :return:
         """
@@ -126,7 +125,7 @@ class BatteryParams:
     @staticmethod
     def _get_pygad_bounds():
         """
-        Returns gene space range, representing the min and max values for each gene in the parameter vector.
+        Returns gene space range, representing the minimum and maximum values for each gene in the parameter vector.
 
         :return list gene_space_range: List of dicts providing the range for each gene.
         """
@@ -141,11 +140,12 @@ class BatteryParams:
         gene_space_range = [{'low': low, 'high': high} for low, high in zip(lb2, ub2)]
         return gene_space_range
 
-    def ga(self, num_generations=50, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
+    def ga(self, num_generations=100, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
            mutation_type="adaptive", parent_selection_type="sss", mutation_percent_genes=60,
            mutation_prob=(0.3, 0.1), crossover_prob=None):
         """
-        Runs the genetic algorithm instance. Please see PyGAD documentation for more explanation of fields/params.
+        Runs the genetic algorithm instance. Please see PyGAD official documentation for more explanation of
+        fields/params.
         The default parameters have been selected to optimize accuracy and speed, however, any user may find a
         combination of params that work better for a given set of battery data.
 
@@ -217,18 +217,19 @@ class BatteryParams:
         if quadratic_bias:
             self.run_ocv_correction(use_quadratic=True)
         else:
-            self.run_ocv_correction()
-        # run again
+            self.run_ocv_correction()   # Uses simple linear bias correction.
+        # Run again.
         self.params = self.ga()     # New params.
         np.savetxt(f'battery_params_{cell_name}_{diagn}.csv', self.params, delimiter=',')
 
     def run_ocv_correction(self, use_quadratic=False, cell_name=0, diagn=0):
         """
-        This fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute.
+        Fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute. The open circuit
+        voltage correction scheme can be quadratic or linear. The quadratic scheme was used in the original paper.
 
         :return: None.
         """
-        self.validate_params()
+        self._validate_params()
         self.params_uncorr = copy.copy(self.params)
         x = self.params
         V_data = self.voltage
@@ -269,9 +270,11 @@ class BatteryParams:
         self.data['ocv_corr'] = self.ocv
         self.data.to_csv('input_data_with_ocv_corr_voltage.csv')    # adds corrected ocv as field and writes the input data
 
-    def validate_params(self):
+    def _validate_params(self):
         """
-        Validates that the parameter list has been updated.
+        Internal method.
+        Validates that the parameter list has been updated, will throw an exception if list is not updated.
+
         :raise : Assertion error if not validated.
         :return: None.
         """
@@ -302,7 +305,7 @@ class BatteryParams:
         """
         Returns the vector of uncorrected voltages from ECM model response.
 
-        :return:
+        :return: Vector of uncorrected voltages.
         """
         A_Ro = self.params_uncorr[0]
         B_Ro = self.params_uncorr[1]
@@ -327,7 +330,7 @@ class BatteryParams:
         """
         Returns the voltage response with corrected open circuit voltage.
 
-        :return:
+        :return: Vector of voltage response with corrected open circuit voltage.
         """
         A_Ro = self.params[0]
         B_Ro = self.params[1]
@@ -350,12 +353,22 @@ class BatteryParams:
         return V_t
 
     def get_Ro(self):
+        """
+        Returns the high frequency (Ro) resistance of the battery.
+
+        :return: Resistance (R_o).
+        """
         A_Ro = self.params[0]
         B_Ro = self.params[1]
         C_Ro = self.params[2]
         return B_Ro * np.exp(C_Ro * self.soc) + A_Ro * np.exp(self.soc)
 
     def plot_Ro(self):
+        """
+        Plots the high frequency resistance (Ro) of the battery.
+
+        :return: None.
+        """
         Ro = self.get_Ro() + self.params[3] + self.params[5]
         fig, ax = plt.subplots(1, 1)
         ax.plot(self.soc, Ro)
@@ -365,6 +378,11 @@ class BatteryParams:
         plt.show()
 
     def simulate_response(self):
+        """
+        Simulates the response of the ECM model. Not complete yet.
+
+        :return:
+        """
         voltage = self.get_uncorrected_voltages()
         # todo: complete later
 
@@ -379,9 +397,10 @@ class BatteryParams:
 
     def _estimate_soc_vector(self):
         """
-        This method helps estimate the SOC vector for users that do not have the vector but have the capacity and
-        current profiles.
-        :return:
+        Estimates the SOC vector for users that do not have the vector but have the capacity and
+        current profiles. Not fully implemented yet.
+
+        :return: Error message.
         """
         return NotImplementedError("Method has not been implemented yet!")
 

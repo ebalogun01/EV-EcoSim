@@ -28,6 +28,25 @@ transformers, charging stations.
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
 proprietary Pecan Street Data.
 
+#TODO: add base load data prototype
+
+
+### batt_sys_identification
+Battery system identification module. Hosts the class for generating battery system identification parameters
+from experimental data. This module leverages a genetic algorithm to optimize the battery model parameters. 
+The battery model is a 2nd order RC Equivalent circuit model (ECM). One can this module to generate custom NMC
+battery parameters by uploading experimental data to the `batt_sys_identification/data` folder and running the module.
+The module will generate a `.csv` file with the battery parameters in the `batt_sys_identification/params` folder.
+The data prototype is shown below. Note that column fields are case-sensitive.
+
+![batt_sys_data_proto.png](doc_images%2Fbatt_sys_data_proto.png)
+
+The module will save a new `.csv` file with an additional field for the corrected open circuit voltage (OCV) values;
+this field (column) will be labelled `ocv_corr` within the new battery data csv, including the existing columns as shown
+in the data prototype above.
+
+Once the battery parameters are generated, they can be used in the `battery_data` folder and `configs/battery.json` can 
+be modified so the model runs using the new custom parameters.
 
 ### charging_sim
 
@@ -70,6 +89,14 @@ Scripts for populating base feeder models with time-varying loads and resources 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
 `feeder_population/config.txt`. Requires residential load data not included in repo (limited access).
 
+
+### solar_data
+Includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
+data for solar irradiance is from the National Solar Radiation Database (NSRDB) for the San Francisco Bay Area.
+The data prototype is from the National Renewable Energy Laboratory (NREL) and is shown below. Note that column fields
+are case-sensitive.
+
+![solar_data_proto.png](doc_images%2Fsolar_data_proto.png)
 
 ### test_cases
 

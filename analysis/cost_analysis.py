@@ -20,6 +20,7 @@ class CostEstimator:
     :param num_days: The number of days for which the calculation is run.
     """
     def __init__(self, num_days):
+        self.solar_rating = None
         self.trans_price_dict = {}
         self.dcfc = False  # boolean for determining if transformer is 480 or 240V
         self.num_days = num_days
@@ -263,6 +264,7 @@ class CostEstimator:
         """
         Calculates the overall capital cost of the solar system.
         Not fully implemented.
+        
         :param str result_dir: Location to save the result.
         :return: Solar PV capital cost.
         """
