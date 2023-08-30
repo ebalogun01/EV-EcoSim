@@ -2,8 +2,9 @@
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations. 
 Paper: https://doi.org/10.36227/techrxiv.23596725.v2
+<img src="doc_images/sim_control_diagram.png">
 
-![sim_frame.png](doc_images%2Fsim_frame.png)
+[//]: # (![sim_frame.png]&#40;doc_images%2Fsim_frame.png&#41;)
 
 [//]: # (<img src="doc_images/sim_frame.png" alt="EV-Ecosim Framework Description" width="3000" height="400" title="EV-Ecosim Framework Description">)
 
@@ -26,9 +27,12 @@ transformers, charging stations.
 ### base_load_data
 
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
-proprietary Pecan Street Data.
+proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
+case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. ``
 
-#TODO: add base load data prototype
+<img src="doc_images/baseload_data_proto.png" width="800" alt="Base load data prototype.">
+
+[//]: # (![baseload_data_proto.png]&#40;doc_images%2Fbaseload_data_proto.png&#41;)
 
 
 ### batt_sys_identification
@@ -50,7 +54,7 @@ be modified so the model runs using the new custom parameters.
 
 ### charging_sim
 
-Hosts the implementation of the physical modules, including:
+This contains the `configs` folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:
 ##### `battery.py` - Battery cell module. 
 ##### `batterypack.py` - Battery pack module.
 ##### `batteryAgingSim.py` - Battery aging module.
@@ -63,8 +67,6 @@ Hosts the implementation of the physical modules, including:
 ##### `utils.py` - Hosts utility functions used by some modules.
 ##### `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
 
-It also hosts the `configs` folder which includes the configuration files for all the relevant modules.
-
 
 ### DLMODELS
 
@@ -73,21 +75,28 @@ This includes legacy load forecasts models developed (not needed).
 
 ### elec_rates
 
-Includes .csv files for electricity Time-of-use (TOU) rates.
+Includes .csv files for electricity Time-of-use (TOU) rates. The input data prototype for electricity rates
+is shown below.
 
+<img src="doc_images/elecrates_data_proto.png" width="100">
+
+The data required must be in the format shown above. The `electricityPrices.py` module will read the data and sample
+prices during optimization and simulation. The data should be one full year of TOU rate prices at 15 minute resolution.
+The `electricityPrices.py` module can also help with downscaling the data to 15 minute resolution if the data is at a
+much coarser resolution. The module will save the downscaled data in the `elec_rates` folder.
 
 ### feeders
-
 Library of IEEE test feeders and PNNL taxonomy feeders for distribution systems in the GridLAB-D `.glm` format.
 IEEE feeders have spot loads specified at primary distribution level. PNNL taxonomy feeders have spot loads specified at
 primary or secondary distribution level.
 
 
 ### feeder_population
-
 Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data. 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
-`feeder_population/config.txt`. Requires residential load data not included in repo (limited access).
+`feeder_population/config.txt`. This module uses the 
+Requires residential load data not included in repo (limited access).
+
 
 
 ### solar_data
@@ -98,10 +107,14 @@ are case-sensitive.
 
 ![solar_data_proto.png](doc_images%2Fsolar_data_proto.png)
 
+Month labels are indexed from 1 to 12, inclusive; 1 - January, 12 - December. The original data is in hourly resolution.
+The *EV-Ecosim* data prototype is in 15 minute intervals by default, with irradiance oversampled 4 times from hourly 
+dataset. The GHI represents the "Global Horizontal Irradiance" in W/m^2, which is the total amount of shortwave radiation
+received from above by a surface horizontal to the ground. 
+
 ### test_cases
 
-#### Co-simulation cases. 
-
+#### Co-simulation cases.
  `base_case`- Reads voltage from GridLAB-D and writes power injections at each timestep (no EV charging or DER).
 
 `rlsf` - base_case plus implements a recursive least squares filter to estimate network model online (not used)
