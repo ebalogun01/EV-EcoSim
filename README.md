@@ -2,9 +2,10 @@
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations. 
 Paper: https://doi.org/10.36227/techrxiv.23596725.v2
-<img src="doc_images/sim_control_diagram.png">
 
-[//]: # (![sim_frame.png]&#40;doc_images%2Fsim_frame.png&#41;)
+[//]: # (<img src="doc_images/sim_control_diagram.png">)
+
+![sim_frame.png](doc_images%2Fsim_frame.png)
 
 [//]: # (<img src="doc_images/sim_frame.png" alt="EV-Ecosim Framework Description" width="3000" height="400" title="EV-Ecosim Framework Description">)
 
@@ -14,7 +15,9 @@ Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
 ## Requirements
 
-GiSMo SLAC GridLAB-D installation (master branch): https://github.com/slacgismo/gridlabd. This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
+GiSMo SLAC GridLAB-D installation (master branch): https://github.com/arras-energy/gridlabd. 
+This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC 
+GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
 
 ## Folder descriptions
 
@@ -130,9 +133,16 @@ received from above by a surface horizontal to the ground.
 Scripts for plotting and analysis of co-simulation results. Includes post optimization and simulation cost 
 calculation modules and voltage impacts on the distribution grid.
 
-`plot_results.py` - plot voltage profiles from simulation, save plots, calculate % violations per ANSI standards.
+`plot_results.py` - This module is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
+voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
+SIMULATION_FOLDER variable which is the string of the path where the powerflow simulation output voltages at each node
+exist.
 
-`plot_rlsf_error.py` - plot online prediction error from recursive least squares filter model of power flow.  
+`load_post_opt_costs.py` - This module is calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
+respective files and folders. The module also generates plots for the cost analysis.  
+
+`cost_analysis.py` - This module contains the `CostEstimator` class, which estimates the cost of the different grid and DER components
+from the simulation.
 
 
 ## How to run
@@ -155,5 +165,5 @@ For base case:
 * Navigate to `test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
 
 ## Post-simulation analysis
- * TODO
+ * This is done with the modules in the `analysis` folder. Please see the `analysis` folder section  for more details.
 
