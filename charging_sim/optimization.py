@@ -1,24 +1,26 @@
 """Contains the Optimization class, which is used by controller to solve the optimization problem."""
+
 import cvxpy as cp
 
 
 class Optimization:
     """
     Constructor for the overall optimization problem solved by the optimization-based controller.
+
     * Designed to include future cost functions such as transformer degradation and battery aging.
     * Limited to convex and Mixed Integer programs, depending on the selected solver.
     * Note, each desired solver must be installed separately on user's PC for a successful run.
 
-    :param objective_type: Type of objective problem being optimizaed.
+    :param objective_type: Type of objective problem being optimized.
     :param objective: CVXPY objective function object.
     :param controller: Controller object.
     :param power_demand: Power demand at the Charging Station.
     :param time_res: Time resolution of problem data.
     :param transformer: Transformer object (optional, not implemented yet).
     :param battery: Battery object.
-    :param time: Time Counter
+    :param time: Time Counter.
     :param name: Optimization identifier.
-    :param solar: Solar Object
+    :param solar: Solar Object.
     :param str solver: Available backend solver to invoke (ECOS, MOSEK, GUROBI, etc.).
 
     """

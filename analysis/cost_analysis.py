@@ -20,6 +20,12 @@ class CostEstimator:
     :param num_days: The number of days for which the calculation is run.
     """
     def __init__(self, num_days):
+        """
+        Constructor method.
+
+        :param num_days: The number of days for which the calculation is run.
+        """
+        self.solar_rating = None
         self.trans_price_dict = {}
         self.dcfc = False  # boolean for determining if transformer is 480 or 240V
         self.num_days = num_days
@@ -263,6 +269,7 @@ class CostEstimator:
         """
         Calculates the overall capital cost of the solar system.
         Not fully implemented.
+        
         :param str result_dir: Location to save the result.
         :return: Solar PV capital cost.
         """
@@ -273,7 +280,8 @@ class CostEstimator:
         Estimates the expected transformer loss of life.
 
         Reference:
-        *5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.
+
+        * 5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.
 
         :param result_dir: Directory in which the loss results is saved.
         :return: Dictionary of transformer losses.

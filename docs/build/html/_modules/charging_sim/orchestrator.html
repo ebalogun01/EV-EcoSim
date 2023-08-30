@@ -1,41 +1,82 @@
 <!DOCTYPE html>
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>charging_sim.orchestrator &#8212; EV-Ecosim 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.orchestrator &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.orchestrator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for charging_sim.orchestrator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;This file hosts the charging simulation class, in charge of orchestrating the entire simulation.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;This module hosts the `ChargingSim` class, in charge of orchestrating the entire simulation.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">chargingStation</span> <span class="kn">import</span> <span class="n">ChargingStation</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">batterypack</span> <span class="kn">import</span> <span class="n">Battery</span>
-<span class="kn">from</span> <span class="nn">batteryAgingSim</span> <span class="kn">import</span> <span class="n">BatterySim</span>
+<span class="kn">from</span> <span class="nn">batteryAgingSim</span> <span class="kn">import</span> <span class="n">BatteryAging</span>
 <span class="kn">import</span> <span class="nn">controller</span> <span class="k">as</span> <span class="nn">control</span>  <span class="c1"># FILE WITH CONTROL MODULE</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">electricityPrices</span> <span class="kn">import</span> <span class="n">PriceLoader</span>
@@ -50,22 +91,37 @@
 <span class="sd">    sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.</span>
 
 <span class="sd">    :param num_charging_sites: Number of charging nodes within the secondary distribution network.</span>
-<span class="sd">    :param boolean solar: If the charging sites have solar PV or not.</span>
-<span class="sd">    :param resolution: Time resolution of the simulation.</span>
-<span class="sd">    :param path_prefix: Path string that helps ensure simulation can access proper folders within OS file org.</span>
-<span class="sd">    :param num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.</span>
-<span class="sd">    :param month: The month for which the simulation is run.</span>
+<span class="sd">    :param bool solar: If the charging sites have solar PV or not.</span>
+<span class="sd">    :param int resolution: Time resolution of the simulation.</span>
+<span class="sd">    :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.</span>
+<span class="sd">    :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.</span>
+<span class="sd">    :param int month: The month for which the simulation is run.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_charging_sites</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
-        <span class="n">num_evs</span> <span class="o">=</span> <span class="mi">1600</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_charging_sites</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                 <span class="n">num_evs</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">custom_ev_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">custom_ev_data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_solar_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">custom_solar_data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ChargingSim class. Class constructor.</span>
+
+<span class="sd">        :param int num_charging_sites: Number of charging nodes within the secondary distribution network.</span>
+<span class="sd">        :param bool solar: If the charging sites have solar PV or not.</span>
+<span class="sd">        :param int resolution: Time resolution of the simulation.</span>
+<span class="sd">        :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.</span>
+<span class="sd">        :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.</span>
+<span class="sd">        :param int month: The month for which the simulation is run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span> <span class="o">=</span> <span class="n">num_evs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="n">month</span>
         <span class="k">if</span> <span class="n">solar</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solar</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># to be initialized with module later</span>
-        <span class="n">data2018</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>  <span class="c1"># this is only 30 days data</span>
+        <span class="n">data2018</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>  <span class="c1"># this is only 30 days data</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SpeechData loaded...&#39;</span><span class="p">)</span>
-        <span class="n">charge_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">custom_ev_data</span><span class="p">:</span>
+            <span class="n">charge_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">custom_ev_data_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>    <span class="c1"># Check this to ensure correct path.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">charge_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charge_data</span> <span class="o">=</span> <span class="n">charge_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span> <span class="o">=</span> <span class="kc">None</span>
@@ -207,7 +263,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: make the number of steps a passed in variable</span>
         <span class="n">num_steps</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span> <span class="o">=</span> <span class="n">BatterySim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span> <span class="o">=</span> <span class="n">BatteryAging</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ChargingSim.initialize_price_loader"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_price_loader">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -318,9 +374,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span>
+
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">scenario</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;index&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># Save new solar config.</span>
+            <span class="c1"># Save new prices config.</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;New scenario updated...&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ChargingSim.update_steps"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_steps">[docs]</a>    <span class="k">def</span> <span class="nf">update_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
@@ -456,69 +515,31 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total current throughput is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">total_amp_thruput</span><span class="p">))</span></div></div>
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Emmanuel Balogun.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

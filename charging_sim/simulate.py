@@ -1,6 +1,8 @@
-"""This file runs optimization offline without the power system or battery feedback. This is done to save time. Power
-system states are then propagated post optimization to fully characterize what would have occurred if in-situ
-optimization was done """
+"""
+This module runs the optimization offline without the power system or battery state feedback for each time-step.
+This is done to save time. Once this is done, one can study the effects on the power system. Power system states are
+propagated post optimization to fully characterize what would have occurred if in-situ optimization was done.
+"""
 
 import os
 from orchestrator import ChargingSim
@@ -70,10 +72,13 @@ max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
 
 def make_scenarios():
-    """This is used to make the list of scenarios (dicts) that are used to run the simulations.
-     Inputs: None. However, it uses preloaded global functions from a config.txt file.
-     Returns: None.
-     """
+    """
+    This is used to make the list of scenarios (dicts) that are used to run the simulations.
+    No inputs. However, it uses preloaded global functions from a `config.txt` file.
+
+    :return: None.
+    """
+
     scenarios_list = []
     idx = 0
     for Er in energy_ratings:
@@ -86,9 +91,11 @@ def make_scenarios():
 
 
 def run(scenario):
-    """Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
-    Input: scenario - the scenario a user would like to run.
-    Returns: None.
+    """
+    Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
+
+    :param scenario: The scenario dictionary that would be run.
+    :return: None. Runs the `scenario`.
     """
     EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=num_steps, month=month)
     save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
@@ -101,10 +108,12 @@ def run(scenario):
 
 
 def run_scenarios_parallel():
-    """This runs c-rate-energy scenarios in parallel, using the multi-core processor of the PC.
-    User should have enough cores and RAM, as if not enough, can lead to entire process freezing.
-    Inputs: None.
-    Returns: None."""
+    """
+    Runs the scenarios in parallel using the `multiprocessing` library. User should have enough cores and RAM,
+    otherwise, this may lead to entire process freezing.
+
+    :return: None
+    """
     scenarios = make_scenarios()
     start_idx = 0
     end_idx = 10
@@ -117,10 +126,11 @@ def run_scenarios_parallel():
 
 
 def run_scenarios_sequential():
-    """Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
+    """
+    Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
     which is a combination of all the capacities and c-rates.
-    Inputs: None.
-    Returns: None.
+
+    :return: None.
     """
     start_idx = 0
     end_idx = len(energy_ratings) * len(max_c_rates)
@@ -140,9 +150,10 @@ def run_scenarios_sequential():
 
 
 def run_scenario_single():
-    """This function just runs one scenario.
-    Inputs: None.
-    Returns: None.
+    """
+    Runs a single scenario dict.
+
+    :return: None.
     """
     # Keep changing this for each run
     Er_idx = 0

@@ -6,8 +6,8 @@
 Welcome to EV-Ecosim 1.0.0
 =====================================
 EV-Ecosim is a grid-aware python-based co-simulation platform for modeling and simulation of EV charging
-stations integrated with Solar and Battery systems. This tool is mostly built in python, and interfaces with GridLAB-D,
-a 3-phase unbalanced power flow solver, to estimate the impacts of Fast Charging Stations on power distribution
+stations integrated with Solar and Battery systems. This is a python based platform that interfaces with GridLAB-D,
+a 3-phase unbalanced power flow solver, to estimate the impacts of EV (Fast) Charging Stations on power distribution
 networks.
 
 We have made a web-tool version available for public use. It runs most of the code shown in this API documentation.

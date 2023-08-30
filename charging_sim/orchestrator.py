@@ -1,10 +1,11 @@
-"""This file hosts the charging simulation class, in charge of orchestrating the entire simulation."""
+"""This module hosts the `ChargingSim` class, in charge of orchestrating the entire simulation."""
+
 from chargingStation import ChargingStation
 import json
 import os
 import numpy as np
 from batterypack import Battery
-from batteryAgingSim import BatterySim
+from batteryAgingSim import BatteryAging
 import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
 from electricityPrices import PriceLoader
@@ -19,22 +20,37 @@ class ChargingSim:
     sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.
 
     :param num_charging_sites: Number of charging nodes within the secondary distribution network.
-    :param boolean solar: If the charging sites have solar PV or not.
-    :param resolution: Time resolution of the simulation.
-    :param path_prefix: Path string that helps ensure simulation can access proper folders within OS file org.
-    :param num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
-    :param month: The month for which the simulation is run.
+    :param bool solar: If the charging sites have solar PV or not.
+    :param int resolution: Time resolution of the simulation.
+    :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
+    :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
+    :param int month: The month for which the simulation is run.
 
     """
 
-    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
-        num_evs = 1600
+    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6,
+                 num_evs=1600, custom_ev_data=False, custom_ev_data_path=None, custom_solar_data=False,
+                 custom_solar_data_path=None):
+        """
+        Initializes the ChargingSim class. Class constructor.
+
+        :param int num_charging_sites: Number of charging nodes within the secondary distribution network.
+        :param bool solar: If the charging sites have solar PV or not.
+        :param int resolution: Time resolution of the simulation.
+        :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
+        :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
+        :param int month: The month for which the simulation is run.
+        """
+        self.num_evs = num_evs
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{num_evs}.csv')  # this is only 30 days data
+        data2018 = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')  # this is only 30 days data
         print('SpeechData loaded...')
-        charge_data = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{num_evs}.csv')
+        if custom_ev_data:
+            charge_data = np.loadtxt(f'{path_prefix}/{custom_ev_data_path}')    # Check this to ensure correct path.
+        else:
+            charge_data = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')
         self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.solar_config = None
@@ -176,7 +192,7 @@ class ChargingSim:
         """
         # TODO: make the number of steps a passed in variable
         num_steps = 1
-        self.aging_sim = BatterySim(0, num_steps)
+        self.aging_sim = BatteryAging(0, num_steps)
 
     def initialize_price_loader(self, month):
         """
@@ -287,9 +303,12 @@ class ChargingSim:
             self.prices_config['month'] = scenario['start_month']
             if self.solar_config:
                 self.solar_config['start_month'] = scenario['start_month']
+
             for key in scenario.keys():
                 if key != 'index':
                     self.battery_config[key] = scenario[key]
+            # Save new solar config.
+            # Save new prices config.
             print('New scenario updated...')
 
     def update_steps(self, steps):

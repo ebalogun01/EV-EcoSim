@@ -238,8 +238,8 @@ class Battery:
         Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.
         Deprecate this later for this object.
 
-        :param : None.
-        :return cycle aging: CVXPY objective describing cycle aging function.
+        :param: None.
+        :return: CVXPY objective describing cycle aging function.
         """
         seconds_in_min = 60
         life_cyc = 4500     # change this to be input in the config file
@@ -251,7 +251,7 @@ class Battery:
         Returns the power profile of the battery for a certain number of months.
 
         :param months: Months for which to obtain power profile.
-        Returns: Dictionary of power profiles for each month in months.
+        :returns: Dictionary of power profiles for each month in months.
         """
         return {month: self.power_profile[month] for month in months}
 
