@@ -459,7 +459,7 @@ def create_graph_element(data = None, graph_type = 'bar'):
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_bar_chart(data, x='50.0', y='100.0')
+                              children=create_bar_graph(data, x='50.0', y='100.0')
                               ),
             mb=10,
         )
