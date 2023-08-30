@@ -263,43 +263,128 @@ def create_output_page():
                     'grid-template': 'auto / auto'
                 },
                 children=[
-                    create_graph_card(
-                        title="Levelized Cost of Energy (LCOE)",
-                        download_link="#"
-                    ),
-                    dmc.Group(
-                        position="center",
-                        grow=True,
-                        children=[
-                            create_graph_card(
-                                title="Battery aging costs",
-                                download_link="#"
-                            ),
-                            create_graph_card(
-                                title="Battery costs",
-                                download_link="#"
-                            )
-                        ]
-                    ),
-                    dmc.Group(
-                        position="center",
-                        grow=True,
-                        children=[
-                            create_graph_card(
-                                title="Transformer aging costs",
-                                download_link="#"
-                            ),
-                            create_graph_card(
-                                title="Electricity costs",
-                                download_link="#"
-                            )
-                        ]
-                    )
+                    create_price_section(),
+                    create_charging_section(),
+                    create_battery_section()
                 ]
             ),
         ]
     )
     return output_page
+
+
+def create_price_section():
+    price_section = dmc.Card(
+        style={"padding": "5px"},
+        children=[
+            create_badge_title("Price", 'mdi:question-mark'),
+            create_graph_card(
+                title="Levelized Cost of Energy (LCOE)",
+                download_link="#"
+            ),
+            dmc.Group(
+                position="center",
+                grow=True,
+                children=[
+                    create_graph_card(
+                        title="Battery aging costs",
+                        download_link="#"
+                    ),
+                    create_graph_card(
+                        title="Battery costs",
+                        download_link="#"
+                    )
+                ]
+            ),
+            dmc.Group(
+                position="center",
+                grow=True,
+                children=[
+                    create_graph_card(
+                        title="Transformer aging costs",
+                        download_link="#"
+                    ),
+                    create_graph_card(
+                        title="Electricity costs",
+                        download_link="#"
+                    )
+                ]
+            )
+        ],
+        withBorder=True,
+        shadow="md",
+    )
+    return price_section
+
+
+def create_charging_section():
+    charging_section = dmc.Card(
+        style={"padding": "5px"},
+        children=[
+            create_badge_title("Charging station", 'mdi:question-mark'),
+            dmc.Group(
+                position="center",
+                grow=True,
+                children=[
+                    create_graph_card(
+                        title="Total load",
+                        download_link="#"
+                    ),
+                    create_graph_card(
+                        title="Net grid load",
+                        download_link="#"
+                    )
+                ]
+            )
+        ],
+        withBorder=True,
+        shadow="md",
+    )
+    return charging_section
+
+
+def create_battery_section():
+    battery_section = dmc.Card(
+        style={"padding": "5px"},
+        children=[
+            create_badge_title("Battery", 'mdi:battery'),
+            create_graph_card(
+                title="State of charge",
+                download_link="#"
+            ),
+            dmc.Group(
+                position="center",
+                grow=True,
+                children=[
+                    create_graph_card(
+                        title="Current",
+                        download_link="#"
+                    ),
+                    create_graph_card(
+                        title="Voltage",
+                        download_link="#"
+                    )
+                ]
+            ),
+            dmc.Group(
+                position="center",
+                grow=True,
+                children=[
+                    create_graph_card(
+                        title="Power",
+                        download_link="#"
+                    ),
+                    create_graph_card(
+                        title="State of health",
+                        download_link="#"
+                    )
+                ]
+            )
+        ],
+        withBorder=True,
+        shadow="md",
+    )
+    return battery_section
 
 
 def create_graph_card(data=None, title="Undefined title", description="Undefined description", download_link=None):
@@ -311,7 +396,7 @@ def create_graph_card(data=None, title="Undefined title", description="Undefined
                 children=[
                     dmc.Text(title,
                              weight=700,
-                             style={"margin-top": "-20px"},),
+                             style={"margin-top": "-20px"}, ),
                     dmc.Group(
                         position="right",
                         align="right",
@@ -355,7 +440,26 @@ def create_graph_card(data=None, title="Undefined title", description="Undefined
             ),
         ],
         withBorder=False,
-        shadow="sm",
+        shadow="md",
         radius="md",
     )
     return card
+
+
+def create_badge_title(title, icon):
+    return dmc.Group(
+        style={"margin": "5px"},
+        children=[
+            dmc.Badge(children=[title],
+                      size="xl",
+                      variant="filled",
+                      color="gray",
+                      radius=4,
+                      leftSection=dmc.ThemeIcon(
+                          DashIconify(icon=icon),
+                          color='gray'),
+                      sx={"paddingLeft": 5},
+                      style={"margin-top": "5px"},
+                      ),
+        ]
+    )
