@@ -277,7 +277,7 @@ def create_price_section():
     price_section = dmc.Card(
         style={"padding": "5px"},
         children=[
-            create_badge_title("Price", 'mdi:question-mark'),
+            create_badge_title("Price", 'mdi:money'),
             create_graph_card(
                 title="Levelized Cost of Energy (LCOE)",
                 download_link="#"
@@ -321,7 +321,7 @@ def create_charging_section():
     charging_section = dmc.Card(
         style={"padding": "5px"},
         children=[
-            create_badge_title("Charging station", 'mdi:question-mark'),
+            create_badge_title("Charging station", 'fa6-solid:charging-station'),
             dmc.Group(
                 position="center",
                 grow=True,
@@ -347,7 +347,7 @@ def create_battery_section():
     battery_section = dmc.Card(
         style={"padding": "5px"},
         children=[
-            create_badge_title("Battery", 'mdi:battery'),
+            create_badge_title("Battery", 'clarity:battery-solid'),
             create_graph_card(
                 title="State of charge",
                 download_link="#"
@@ -387,7 +387,7 @@ def create_battery_section():
     return battery_section
 
 
-def create_graph_card(data=None, title="Undefined title", description="Undefined description", download_link=None):
+def create_graph_card(title="Undefined title", description="Undefined description", data=None, download_link=None):
     card = dmc.Card(
         style={"margin": "2px"},
         children=[
@@ -456,8 +456,9 @@ def create_badge_title(title, icon):
                       color="gray",
                       radius=4,
                       leftSection=dmc.ThemeIcon(
-                          DashIconify(icon=icon),
-                          color='gray'),
+                          children=DashIconify(icon=icon, width=25),
+                          color='gray',
+                          size='lg'),
                       sx={"paddingLeft": 5},
                       style={"margin-top": "5px"},
                       ),
