@@ -275,9 +275,31 @@ def create_output_page():
 
 
 def create_price_section():
+    ## TODO == PRICE SECTION ==
     # TODO custom data
-    lcoe_data = pd.DataFrame(pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv'))
-    lcoe_data = pd.DataFrame(lcoe_data)
+    lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
+    lcoe_data=lcoe_data.rename(columns={'Unnamed: 0': 'c'})
+    lcoe_data = lcoe_data.filter(['c','50.0'], axis="columns")
+
+    ## TODO Battery aging costs
+    bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
+    bat_age_data=bat_age_data.rename(columns={'Unnamed: 0': 'c'})
+    bat_age_data = bat_age_data.filter(['c','50.0'], axis="columns")
+
+    ## TODO Battery costs
+    bat_cost_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
+    bat_cost_data=bat_cost_data.rename(columns={'Unnamed: 0': 'c'})
+    bat_cost_data = bat_cost_data.filter(['c','50.0'], axis="columns")
+
+    ## TODO Transformer aging costs
+    tra_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
+    tra_age_data=tra_age_data.rename(columns={'Unnamed: 0': 'c'})
+    tra_age_data = tra_age_data.filter(['c','50.0'], axis="columns")
+
+    ## TODO Electricity costs
+    elec_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
+    elec_data=elec_data.rename(columns={'Unnamed: 0': 'c'})
+    elec_data = elec_data.filter(['c','50.0'], axis="columns")
 
     price_section = dmc.Card(
         style={"padding": "5px"},
@@ -294,10 +316,12 @@ def create_price_section():
                 children=[
                     create_graph_card(
                         title="Battery aging costs",
+                        data=bat_age_data,
                         download_link="#"
                     ),
                     create_graph_card(
                         title="Battery costs",
+                        data=bat_cost_data,
                         download_link="#"
                     )
                 ]
@@ -308,10 +332,12 @@ def create_price_section():
                 children=[
                     create_graph_card(
                         title="Transformer aging costs",
+                        data=tra_age_data,
                         download_link="#"
                     ),
                     create_graph_card(
                         title="Electricity costs",
+                        data=elec_data,
                         download_link="#"
                     )
                 ]
@@ -324,6 +350,11 @@ def create_price_section():
 
 
 def create_charging_section():
+    ## TODO == CHARGING STATION SECTION ==
+    ## TODO Net grid load
+
+    ## TODO Total load
+
     charging_section = dmc.Card(
         style={"padding": "5px"},
         children=[
@@ -350,6 +381,16 @@ def create_charging_section():
 
 
 def create_battery_section():
+    ## TODO == BATTERY SECTION ==
+    ## TODO State of charge (SOC)
+
+    ## TODO Current
+
+    ## TODO Voltage
+
+    ## TODO Power
+
+    ## TODO State of health (SOH)
     battery_section = dmc.Card(
         style={"padding": "5px"},
         children=[
@@ -459,7 +500,15 @@ def create_graph_element(data = None, graph_type = 'bar'):
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_bar_graph(data, x='50.0', y='100.0')
+                              children=create_bar_graph(data, x='c', y='50.0')
+                              ),
+            mb=10,
+        )
+    elif graph_type == 'line':
+        return dmc.Skeleton(
+            visible=False,
+            children=html.Div(className="graph-container",
+                              children=create_line_graph(data, x='c', y='50.0')
                               ),
             mb=10,
         )
