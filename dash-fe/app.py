@@ -97,7 +97,7 @@ app.layout = html.Div([
                                                 variant="filled",
                                                 color="dark"
                                             ),
-                                            href="#",
+                                            href="https://ebalogun01.github.io/EV50_cosimulation/",
                                             target='_blank'
                                         )
                                     ],
