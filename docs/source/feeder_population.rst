@@ -1,4 +1,4 @@
-feeder\_population package
+Feeder population
 ==========================
 
 Submodules

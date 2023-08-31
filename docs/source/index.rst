@@ -10,17 +10,23 @@ stations integrated with Solar and Battery systems. This is a python based platf
 a 3-phase unbalanced power flow solver, to estimate the impacts of EV (Fast) Charging Stations on power distribution
 networks.
 
-We have made a web-tool version available for public use. It runs most of the code shown in this API documentation.
+.. image:: ../../doc_images/sim_frame.png
+    :width: 100%
+    :align: center
+    :alt: EV-Ecosim Simulation Framework
+
+We have made a web-tool version available for public use. It runs most of the code shown in this documentation.
 
 The project is accessible via Github and still under active development and improvements.
 
-# A mini-tutorial for running a simple case is shown below.
-# Include information on the container
+TODO - Link to tutorial.
+TODO - Include information on the container.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   readme
    modules
 
 
@@ -28,10 +34,6 @@ The project is accessible via Github and still under active development and impr
 Indices and tables
 ==================
 
-* :ref:`Install`
-* :ref:`User Guide`
-* :ref:`Examples`
-* :ref:`Citing EV-Ecosim`
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

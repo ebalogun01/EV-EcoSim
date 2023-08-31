@@ -1,4 +1,4 @@
-test\_cases package
+Test cases
 ===================
 
 Subpackages

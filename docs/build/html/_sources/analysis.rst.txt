@@ -1,4 +1,4 @@
-analysis package
+Post-simulation analysis
 ================
 
 Submodules
