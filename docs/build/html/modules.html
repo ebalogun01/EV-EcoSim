@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Post-simulation analysis" href="analysis.html" />
+    <link rel="next" title="Feeder population" href="feeder_population.html" />
     <link rel="prev" title="Readme" href="readme.html" /> 
 </head>
 
@@ -46,10 +46,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Readme</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Packages</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -81,26 +82,42 @@
 <h1>Packages<a class="headerlink" href="#packages" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="analysis.html">Post-simulation analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.cost_analysis">cost_analysis module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator"><code class="docutils literal notranslate"><span class="pre">CostEstimator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_battery_cost()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_electricity_cost_PGEBEV2s()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_solar_cost()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_trans_loss_of_life()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_loads"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_loads()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_power"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_power()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_soc"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_soc()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.solar_cost()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.transformer_cost()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="feeder_population.html">Feeder population</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.load_base_glm"><code class="docutils literal notranslate"><span class="pre">load_base_glm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter_old"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter_old()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_base_glm"><code class="docutils literal notranslate"><span class="pre">write_base_glm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_class_dict"><code class="docutils literal notranslate"><span class="pre">write_class_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_clock_dict"><code class="docutils literal notranslate"><span class="pre">write_clock_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_filter_dict"><code class="docutils literal notranslate"><span class="pre">write_filter_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_mod_dict"><code class="docutils literal notranslate"><span class="pre">write_mod_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_obj_dict"><code class="docutils literal notranslate"><span class="pre">write_obj_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html#id1">Battery system identification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams"><code class="docutils literal notranslate"><span class="pre">BatteryParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.ga"><code class="docutils literal notranslate"><span class="pre">BatteryParams.ga()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_Ro"><code class="docutils literal notranslate"><span class="pre">BatteryParams.get_Ro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_corrected_voltages"><code class="docutils literal notranslate"><span class="pre">BatteryParams.get_corrected_voltages()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_uncorrected_voltages"><code class="docutils literal notranslate"><span class="pre">BatteryParams.get_uncorrected_voltages()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_Ro"><code class="docutils literal notranslate"><span class="pre">BatteryParams.plot_Ro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_correction_scheme_comparison"><code class="docutils literal notranslate"><span class="pre">BatteryParams.plot_correction_scheme_comparison()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction"><code class="docutils literal notranslate"><span class="pre">BatteryParams.run_ocv_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_pre_checks"><code class="docutils literal notranslate"><span class="pre">BatteryParams.run_pre_checks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification"><code class="docutils literal notranslate"><span class="pre">BatteryParams.run_sys_identification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.simulate_response"><code class="docutils literal notranslate"><span class="pre">BatteryParams.simulate_response()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#load-post-opt-costs-module">load_post_opt_costs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#plot-results-module">plot_results module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="charging_sim.html">Charging simulator</a><ul>
@@ -306,24 +323,6 @@
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="feeder_population.html">Feeder population</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.load_base_glm"><code class="docutils literal notranslate"><span class="pre">load_base_glm()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter_old"><code class="docutils literal notranslate"><span class="pre">replace_load_w_meter_old()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_base_glm"><code class="docutils literal notranslate"><span class="pre">write_base_glm()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_class_dict"><code class="docutils literal notranslate"><span class="pre">write_class_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_clock_dict"><code class="docutils literal notranslate"><span class="pre">write_clock_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_filter_dict"><code class="docutils literal notranslate"><span class="pre">write_filter_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_mod_dict"><code class="docutils literal notranslate"><span class="pre">write_mod_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="feeder_population.html#feeder_population.glm_mod_functions.write_obj_dict"><code class="docutils literal notranslate"><span class="pre">write_obj_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population">Module contents</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="test_cases.html">Test cases</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="test_cases.base_case.html">test_cases.base_case package</a><ul>
@@ -358,6 +357,28 @@
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html#module-test_cases">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Post-simulation analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.cost_analysis">cost_analysis module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator"><code class="docutils literal notranslate"><span class="pre">CostEstimator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_battery_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_electricity_cost_PGEBEV2s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_solar_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life"><code class="docutils literal notranslate"><span class="pre">CostEstimator.calculate_trans_loss_of_life()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_loads"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_loads()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_power"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_power()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.plot_soc"><code class="docutils literal notranslate"><span class="pre">CostEstimator.plot_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.solar_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.solar_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost"><code class="docutils literal notranslate"><span class="pre">CostEstimator.transformer_cost()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#load-post-opt-costs-module">load_post_opt_costs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#plot-results-module">plot_results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -367,7 +388,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="readme.html" class="btn btn-neutral float-left" title="Readme" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="analysis.html" class="btn btn-neutral float-right" title="Post-simulation analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="feeder_population.html" class="btn btn-neutral float-right" title="Feeder population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

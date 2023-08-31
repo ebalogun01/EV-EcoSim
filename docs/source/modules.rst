@@ -3,9 +3,11 @@ Packages
 .. toctree::
    :maxdepth: 4
 
-   analysis
-   charging_sim
    feeder_population
+   batt_sys_identification
+   charging_sim
    test_cases
+   analysis
+
 
 

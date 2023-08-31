@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>test_cases.battery.feeder_population.glm_mod_functions &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Packages</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">test_cases.battery.feeder_population.glm_mod_functions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for test_cases.battery.feeder_population.glm_mod_functions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module contains functions for modifying GridLAB-D power system simulation models</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="load_base_glm">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.load_base_glm">[docs]</a>
+<span class="k">def</span> <span class="nf">load_base_glm</span><span class="p">(</span><span class="n">base_file_dir</span><span class="p">,</span><span class="n">base_glm_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads base glm file into a dictionary structure.</span>
+
+<span class="sd">    :param base_file_dir:</span>
+<span class="sd">    :param base_glm_file:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">base_file_dir</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_glm_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">glm</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    
+    <span class="n">glm_dict</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">obj_type</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">glm_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="n">globals_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="n">include_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="n">sync_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    
+    <span class="c1">#edit out all comments</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">glm</span><span class="p">:</span>
+        <span class="n">line_temp</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;//&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>   
+        <span class="c1">#Comment somewhere in line</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_temp</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#There is some content in line, extract content</span>
+            <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;//&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">glm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line_temp</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+        <span class="c1">#No comment in line</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#Line is not a space</span>
+            <span class="k">if</span> <span class="n">line_temp</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">glm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line_temp</span><span class="p">)</span>
+                
+    <span class="n">obj_num</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">obj_flag</span><span class="o">=</span><span class="mi">0</span>
+    <span class="c1">#put info into dict structure</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">glm_list</span><span class="p">:</span>
+        <span class="c1">#Setting global variable</span>
+        <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;#set&#39;</span><span class="p">:</span>
+            <span class="n">globals_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;#include&#39;</span><span class="p">:</span>
+            <span class="n">include_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">obj_flag</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">line_temp</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+            <span class="n">prop_num</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="s1">&#39;class&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj_flag</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">obj_flag</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">line_temp</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+            <span class="n">prop_num</span><span class="o">=</span><span class="mi">0</span>            
+        <span class="k">elif</span> <span class="s1">&#39;module&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">obj_flag</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">line_temp</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="c1">#if no properties in object</span>
+            <span class="k">if</span> <span class="s1">&#39;;&#39;</span> <span class="ow">in</span> <span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">obj_type</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)}</span>
+                <span class="n">obj_flag</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">glm_dict</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+                <span class="n">obj_num</span><span class="o">=</span><span class="n">obj_num</span><span class="o">+</span><span class="mi">1</span>
+            <span class="c1">#if properties in object</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj_type</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+                <span class="n">obj_flag</span><span class="o">=</span><span class="mi">1</span>
+                <span class="n">prop_num</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">elif</span> <span class="s1">&#39;clock&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">obj_flag</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;clock&#39;</span><span class="p">:</span><span class="s1">&#39;clock&#39;</span><span class="p">}</span>
+            <span class="n">prop_num</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">elif</span> <span class="s1">&#39;script&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">sync_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        
+        
+        <span class="k">elif</span> <span class="n">l</span><span class="o">==</span><span class="s1">&#39;}&#39;</span> <span class="ow">or</span> <span class="n">l</span><span class="o">==</span><span class="s1">&#39;};&#39;</span><span class="p">:</span>
+            <span class="n">obj_num</span><span class="o">=</span><span class="n">obj_num</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">obj_flag</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_flag</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">line_temp</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">prop_num</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">glm_dict</span><span class="p">[</span><span class="n">obj_num</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)}</span>
+                    <span class="n">prop_num</span><span class="o">=</span><span class="n">prop_num</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">glm_dict</span><span class="p">[</span><span class="n">obj_num</span><span class="p">][</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">line_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>   
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">glm_dict</span><span class="p">,</span><span class="n">obj_type</span><span class="p">,</span><span class="n">globals_list</span><span class="p">,</span><span class="n">include_list</span><span class="p">,</span><span class="n">sync_list</span></div>
+
+
+
+<div class="viewcode-block" id="write_base_glm">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_base_glm">[docs]</a>
+<span class="k">def</span> <span class="nf">write_base_glm</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">obj_type</span><span class="p">,</span><span class="n">globals_list</span><span class="p">,</span><span class="n">include_list</span><span class="p">,</span><span class="n">out_dir</span><span class="p">,</span><span class="n">file_name</span><span class="p">,</span><span class="n">sync_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :param globals_list:</span>
+<span class="sd">    :param include_list:</span>
+<span class="sd">    :param out_dir:</span>
+<span class="sd">    :param file_name:</span>
+<span class="sd">    :param sync_list:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>    
+    <span class="n">glm_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span><span class="s2">&quot;w+&quot;</span><span class="p">)</span>
+    
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">globals_list</span><span class="p">)):</span>
+        <span class="n">glm_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">globals_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+    <span class="c1">#for i in range(len(glm_dict)):</span>
+        <span class="k">if</span> <span class="s1">&#39;clock&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">write_clock_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+    <span class="c1">#for i in range(len(glm_dict)):</span>
+        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">write_mod_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">])</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">include_list</span><span class="p">)):</span>
+        <span class="n">glm_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">include_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;filter&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">write_filter_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">])</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;class&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">write_class_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;class&#39;</span><span class="p">])</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+    <span class="c1">#for i in range(len(glm_dict)):</span>
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;player&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="n">write_obj_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+            
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+    <span class="c1">#for i in range(len(glm_dict)):</span>
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;player&#39;</span> <span class="ow">in</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">])</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+                <span class="n">write_obj_dict</span><span class="p">(</span><span class="n">glm_out</span><span class="p">,</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sync_list</span><span class="p">)):</span>
+        <span class="n">glm_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sync_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="n">glm_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="write_obj_dict">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_obj_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">write_obj_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">dict_key</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD objects to .glm file</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param dict_key:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dict_key</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;object &#39;</span><span class="o">+</span><span class="n">obj_type</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;object &#39;</span><span class="o">+</span><span class="n">obj_type</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+        
+        
+<div class="viewcode-block" id="write_mod_dict">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_mod_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">write_mod_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">mod_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD module to .glm file&#39;</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param mod_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;module &#39;</span><span class="o">+</span><span class="n">mod_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;module &#39;</span><span class="o">+</span><span class="n">mod_name</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_class_dict">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_class_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">write_class_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">class_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD class to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param class_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;class &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;class &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_filter_dict">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_filter_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">write_filter_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">class_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD filter to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param class_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;filter &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;filter &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_clock_dict">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.write_clock_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">write_clock_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD clock to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;clock {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="replace_load_w_meter_old">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.replace_load_w_meter_old">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_load_w_meter_old</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">match_str</span><span class="p">,</span><span class="n">rep_str</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace load with meter in GLM dictionary.</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param match_str:</span>
+<span class="sd">    :param rep_str:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">replace_prop_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">match_str</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">replace_prop_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">replace_prop_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">prop</span><span class="p">]</span><span class="o">==</span><span class="n">match_str</span><span class="p">:</span>
+                <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">prop</span><span class="p">]</span><span class="o">=</span><span class="n">rep_str</span>
+            <span class="k">if</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;load&#39;</span> <span class="ow">and</span> <span class="n">prop</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+                <span class="n">delete_index</span><span class="o">=</span><span class="n">i</span>
+                <span class="n">delete_prop</span><span class="o">=</span><span class="n">prop</span>
+                
+        <span class="k">if</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;load&#39;</span><span class="p">:</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;meter&#39;</span>
+    <span class="k">del</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">delete_index</span><span class="p">][</span><span class="n">delete_prop</span><span class="p">]</span>            
+    <span class="k">return</span> <span class="n">glm_dict</span></div>
+
+
+
+<div class="viewcode-block" id="replace_load_w_meter">
+<a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.replace_load_w_meter">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_load_w_meter</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">match_str</span><span class="p">,</span><span class="n">rep_str</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace load with meter in GLM dictionary.</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param match_str:</span>
+<span class="sd">    :param rep_str:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">replace_prop_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">match_str</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">replace_prop_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">delete_index_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">delete_prop_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">replace_prop_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">prop</span><span class="p">]</span><span class="o">==</span><span class="n">match_str</span><span class="p">:</span>
+                <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">prop</span><span class="p">]</span><span class="o">=</span><span class="n">rep_str</span>
+            <span class="k">if</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;load&#39;</span> <span class="ow">and</span> <span class="n">prop</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+                <span class="n">delete_index_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">delete_prop_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                
+        <span class="k">if</span> <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;load&#39;</span><span class="p">:</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;meter&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">delete_index_list</span><span class="p">)):</span>
+        <span class="k">del</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">delete_index_list</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">delete_prop_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>            
+    <span class="k">return</span> <span class="n">glm_dict</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

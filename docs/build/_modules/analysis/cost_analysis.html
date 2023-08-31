@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis.cost_analysis &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">analysis.cost_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for analysis.cost_analysis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components</span>
+<span class="sd">from the simulation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">PLOT_FONT_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="n">PLOT_FONT_SIZE</span><span class="p">})</span>
+
+
+<div class="viewcode-block" id="CostEstimator">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator">[docs]</a>
+<span class="k">class</span> <span class="nc">CostEstimator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to calculate levelized cost of DER assets in EV-Ecosim.</span>
+
+<span class="sd">    :param num_days: The number of days for which the calculation is run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_days</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor method.</span>
+
+<span class="sd">        :param num_days: The number of days for which the calculation is run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_rating</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_price_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dcfc</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># boolean for determining if transformer is 480 or 240V</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span> <span class="o">=</span> <span class="n">num_days</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_Th</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># hot-spot temp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_To</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># top-oil temp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOU_rates</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to be calculated later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_price_per_m2</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_price_per_kWh</span> <span class="o">=</span> <span class="mi">345</span>  <span class="c1"># ($) source: https://www.nrel.gov/docs/fy21osti/79236.pdf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_cost_per_kVA</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># create a non-linear cost curve for these prices (I sense batteries are the same)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_normal_life</span> <span class="o">=</span> <span class="mi">180000</span>  <span class="c1"># hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOU_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv&#39;</span><span class="p">)[:</span><span class="mi">96</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">]</span>  <span class="c1"># change this to referenced property</span>
+        <span class="c1"># todo: cannot find good source for 2400/240V transformer prices</span>
+
+<div class="viewcode-block" id="CostEstimator.calculate_battery_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_battery_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the battery costs and updates the different cost components, including LCOE.</span>
+
+<span class="sd">        :param result_dir: Directory in which to save the results dictionary.</span>
+<span class="sd">        :return dict result_dict: Dictionary of results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">capital_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_price_per_kWh</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;pack_energy_cap&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">path_lst</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;battery&#39;</span> <span class="ow">in</span> <span class="n">path_lst</span> <span class="ow">and</span> <span class="s1">&#39;plot.png&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path_lst</span><span class="p">:</span>
+                    <span class="n">battery_LOL</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;SOH&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">avg_daily_energy_thruput</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;power_kW&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> \
+                                                  <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span>
+                    <span class="n">expected_life_days</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">/</span> <span class="p">(</span><span class="n">battery_LOL</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">)</span>
+                    <span class="n">expected_energy_thruput_over_lifetime</span> <span class="o">=</span> <span class="n">avg_daily_energy_thruput</span> <span class="o">*</span> <span class="n">expected_life_days</span>
+                    <span class="n">capital_loss_to_aging</span> <span class="o">=</span> <span class="p">(</span><span class="n">battery_LOL</span> <span class="o">/</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">capital_cost</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span> <span class="o">=</span> <span class="n">capital_cost</span> <span class="o">+</span> <span class="n">capital_loss_to_aging</span>
+                    <span class="n">result_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;battery_sim_</span><span class="si">{</span><span class="n">path_lst</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;capital_loss_aging&quot;</span><span class="p">:</span> <span class="n">capital_loss_to_aging</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;capital_loss_aging_per_day&quot;</span><span class="p">:</span> <span class="n">capital_loss_to_aging</span> <span class="o">/</span> <span class="n">expected_life_days</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;capital_cost&quot;</span><span class="p">:</span> <span class="n">capital_cost</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;battery_LOL&quot;</span><span class="p">:</span> <span class="n">battery_LOL</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;LOL_per_day&quot;</span><span class="p">:</span> <span class="n">battery_LOL</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;battery_total_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;total_cost_per_day&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span> <span class="o">/</span> <span class="n">expected_life_days</span><span class="p">,</span>
+                                                                 <span class="s1">&#39;lcoe&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span> <span class="o">/</span> <span class="n">expected_energy_thruput_over_lifetime</span><span class="p">,</span>
+                                                                 <span class="s1">&#39;lcoe_aging&#39;</span><span class="p">:</span> <span class="n">capital_loss_to_aging</span> <span class="o">/</span><span class="n">expected_energy_thruput_over_lifetime</span>
+                                                                 <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;postopt_cost_batt.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file_path</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># save to JSON</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.calculate_solar_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Values are pulled from the NREL solar cost calculator.</span>
+<span class="sd">        Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</span>
+<span class="sd">        To be deprecated soon.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.calculate_electricity_cost_PGEBEV2s">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_electricity_cost_PGEBEV2s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">,</span> <span class="n">PGE_separate_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the overall electricity PGEBEV2S cost for a given scenario.</span>
+
+<span class="sd">        :param str result_dir: Directory in which the result is saved.</span>
+<span class="sd">        :param PGE_separate_file:</span>
+<span class="sd">        :return dict result_dict: A dictionary comprising all the cost components and their dollar amounts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">price_per_block</span> <span class="o">=</span> <span class="mf">95.56</span>  <span class="c1"># ($/Block) # need to make these agnostic for now just leave as is</span>
+        <span class="n">overage_fee</span> <span class="o">=</span> <span class="mf">3.82</span>  <span class="c1"># ($/kW)</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">path_lst</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;station&#39;</span> <span class="ow">in</span> <span class="n">path_lst</span> <span class="ow">and</span> <span class="s1">&#39;block&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path_lst</span> <span class="ow">and</span> <span class="s1">&#39;plot.png&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path_lst</span><span class="p">:</span>
+                    <span class="n">net_grid_load</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;station_net_grid_load_kW&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">total_grid_load</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;station_total_load_kW&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">net_ev_grid_load_plusbatt</span> <span class="o">=</span> <span class="n">total_grid_load</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;station_solar_load_ev&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span>
+                                                                  <span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;battery_power&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span>
+                                                                        <span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">total_energy</span> <span class="o">=</span> <span class="n">total_grid_load</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="o">/</span><span class="mi">60</span>
+                    <span class="n">max_load</span> <span class="o">=</span> <span class="n">total_grid_load</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                    <span class="n">average_load</span> <span class="o">=</span> <span class="n">total_grid_load</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_loads</span><span class="p">(</span><span class="n">total_grid_load</span><span class="p">,</span> <span class="n">net_ev_grid_load_plusbatt</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">,</span>
+                                    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Total demand&quot;</span><span class="p">,</span> <span class="s2">&quot;Net demand with DER&quot;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">PGE_separate_file</span><span class="p">:</span>
+                        <span class="n">block_subscription</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;PGE_block_</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">block_subscription</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;PGE_power_blocks&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">subscription_cost</span> <span class="o">=</span> <span class="n">block_subscription</span> <span class="o">*</span> <span class="n">price_per_block</span>  <span class="c1"># This is in blocks of 50kW which makes it very convenient ($/day)</span>
+                    <span class="n">penalty_cost</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">net_grid_load</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">block_subscription</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">overage_fee</span>  <span class="c1"># ($)</span>
+                    <span class="n">TOU_cost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOU_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">net_grid_load</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">net_grid_load</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">/</span> <span class="mi">60</span>  <span class="c1"># ($)</span>
+                    <span class="n">electricity_cost</span> <span class="o">=</span> <span class="n">TOU_cost</span> <span class="o">+</span> <span class="n">penalty_cost</span> <span class="o">+</span> <span class="n">subscription_cost</span>
+                    <span class="n">result_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;charging_station_sim_</span><span class="si">{</span><span class="n">path_lst</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;TOU_cost&quot;</span><span class="p">:</span> <span class="n">TOU_cost</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;subscription_cost&quot;</span><span class="p">:</span> <span class="n">subscription_cost</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;penalty_cost&quot;</span><span class="p">:</span> <span class="n">penalty_cost</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;total_elec_cost&quot;</span><span class="p">:</span> <span class="n">electricity_cost</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;cost_per_day&quot;</span><span class="p">:</span> <span class="n">electricity_cost</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;max_load&quot;</span><span class="p">:</span> <span class="n">max_load</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;avg_load&quot;</span><span class="p">:</span> <span class="n">average_load</span><span class="p">,</span>
+                                                                          <span class="s2">&quot;cost_per_kWh&quot;</span><span class="p">:</span> <span class="n">electricity_cost</span><span class="o">/</span><span class="n">total_energy</span><span class="p">}</span>
+                <span class="k">elif</span> <span class="s1">&#39;battery&#39;</span> <span class="ow">in</span> <span class="n">path_lst</span> <span class="ow">and</span> <span class="s1">&#39;plot.png&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path_lst</span><span class="p">:</span>
+                    <span class="n">power</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;power_kW&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">power_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;pred_power_kW&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">soc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;SOC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">soc_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="s1">&#39;SOC_pred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_soc</span><span class="p">(</span><span class="n">soc</span><span class="p">,</span> <span class="n">soc_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_SOC&#39;</span><span class="p">,</span>
+                                  <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;true soc&#39;</span><span class="p">,</span> <span class="s1">&#39;pred soc&#39;</span><span class="p">,</span> <span class="s1">&#39;SoC&#39;</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">power_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_power&#39;</span><span class="p">,</span>
+                                    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;true power&#39;</span><span class="p">,</span> <span class="s1">&#39;pred power&#39;</span><span class="p">,</span> <span class="s1">&#39;power (kW)&#39;</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;postopt_cost_charging.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file_path</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># save to JSON</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.transformer_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">transformer_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cannot find good resource data for this yet.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.plot_loads">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_loads">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">plot_loads</span><span class="p">(</span><span class="n">total_load</span><span class="p">,</span> <span class="n">net_load</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates plots overlaying load and net loads for post-simulation visualization.</span>
+
+<span class="sd">        :param total_load: Overall EV load demand at node, can include building load if controllable.</span>
+<span class="sd">        :param net_load: total_load minus DER buffer.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">num_days</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">start_day</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="mi">96</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">x_vals</span> <span class="o">=</span> <span class="mi">15</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span>
+        <span class="n">total_load_plot</span> <span class="o">=</span> <span class="n">total_load</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">net_load_plot</span> <span class="o">=</span> <span class="n">net_load</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_steps</span><span class="p">)</span>
+        <span class="n">alph</span> <span class="o">=</span> <span class="mf">0.3</span>
+        <span class="n">interp</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">total_load_color</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>
+        <span class="n">net_load_color</span> <span class="o">=</span> <span class="s1">&#39;orange&#39;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">total_load_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;tab:</span><span class="si">{</span><span class="n">total_load_color</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">net_load_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;tab:</span><span class="si">{</span><span class="n">net_load_color</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">total_load_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;tab:</span><span class="si">{</span><span class="n">total_load_color</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">interpolate</span><span class="o">=</span><span class="n">interp</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alph</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">net_load_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;tab:</span><span class="si">{</span><span class="n">net_load_color</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interpolate</span><span class="o">=</span><span class="n">interp</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="n">alph</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x_vals</span><span class="p">)))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Hour of day&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power (kW)&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">_load_plot.png&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;loads.png&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.plot_soc">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_soc">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">plot_soc</span><span class="p">(</span><span class="n">soc</span><span class="p">,</span> <span class="n">soc_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the controller predicted and true state of charge of the battery system.</span>
+
+<span class="sd">        :param soc: True state of charge.</span>
+<span class="sd">        :param soc_pred: Controller predicted state of charge.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error_abs_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">soc</span> <span class="o">-</span> <span class="n">soc_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">soc</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">MAPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">soc</span> <span class="o">-</span> <span class="n">soc_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">soc</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;abs_percent_err_soc.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">error_abs_mean</span><span class="p">])</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;MAPE_soc.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">MAPE</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">num_days</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">start_day</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="mi">96</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">x_vals</span> <span class="o">=</span> <span class="mi">15</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span>
+        <span class="n">soc_plot</span> <span class="o">=</span> <span class="n">soc</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">soc_pred_plot</span> <span class="o">=</span> <span class="n">soc_pred</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">soc_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">soc_pred_plot</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Hour of day&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">_soc_plot.png&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;soc_plot.png&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.plot_power">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_power">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">plot_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">power_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the controller predicted and true power of the battery system.</span>
+
+<span class="sd">        :param power: True power.</span>
+<span class="sd">        :param power_pred: Controller predicted power.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error_abs_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">power</span> <span class="o">-</span> <span class="n">power_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">MAPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">power</span> <span class="o">-</span> <span class="n">power_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;abs_percent_err_power.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">error_abs_mean</span><span class="p">])</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;MAPE_power.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">MAPE</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">num_days</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">start_day</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="mi">96</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">x_vals</span> <span class="o">=</span> <span class="mi">15</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span>
+        <span class="n">power_plot</span> <span class="o">=</span> <span class="n">power</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">power_pred_plot</span> <span class="o">=</span> <span class="n">power_pred</span><span class="p">[</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="n">start_day</span> <span class="o">*</span> <span class="mi">96</span> <span class="o">+</span> <span class="n">num_steps</span><span class="p">]</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">power_plot</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">power_pred_plot</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Hour of day&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">_power_plot.png&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;power_plot.png&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.solar_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.solar_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the overall capital cost of the solar system.</span>
+<span class="sd">        Not fully implemented.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str result_dir: Location to save the result.</span>
+<span class="sd">        :return: Solar PV capital cost.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_rating</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="mi">150</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_price_per_m2</span>  <span class="c1"># approximate area using 150W/m2</span></div>
+
+
+<div class="viewcode-block" id="CostEstimator.calculate_trans_loss_of_life">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_trans_loss_of_life</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimates the expected transformer loss of life.</span>
+
+<span class="sd">        Reference:</span>
+
+<span class="sd">        * 5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.</span>
+
+<span class="sd">        :param result_dir: Directory in which the loss results is saved.</span>
+<span class="sd">        :return: Dictionary of transformer losses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="c1"># save the charging buses</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;trans_Th&#39;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                    <span class="n">trans_Th_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">relevant_dcfc_trans</span> <span class="o">=</span> <span class="p">[</span><span class="n">trans</span> <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">trans_Th_data</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;dcfc&#39;</span> <span class="ow">in</span> <span class="n">trans</span><span class="p">]</span>
+        <span class="n">relevant_L2_trans</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;trip_trans_</span><span class="si">{</span><span class="n">trans</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;L2_nodes&#39;</span><span class="p">]]</span>
+        <span class="n">trans_str_list</span> <span class="o">=</span> <span class="n">relevant_L2_trans</span> <span class="o">+</span> <span class="n">relevant_dcfc_trans</span>
+        <span class="n">relevant_Th_data</span> <span class="o">=</span> <span class="n">trans_Th_data</span><span class="p">[</span><span class="n">trans_str_list</span><span class="p">]</span>
+        <span class="c1"># ref for A and B https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=4073181</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="o">-</span><span class="mf">27.558</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="mi">14573</span>
+        <span class="k">for</span> <span class="n">trans</span> <span class="ow">in</span> <span class="n">trans_str_list</span><span class="p">:</span>
+            <span class="n">trans_Th</span> <span class="o">=</span> <span class="n">relevant_Th_data</span><span class="p">[</span><span class="n">trans</span><span class="p">]</span>
+            <span class="n">F_EQA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">15000</span> <span class="o">/</span> <span class="mi">383</span> <span class="o">-</span> <span class="mi">15000</span> <span class="o">/</span> <span class="p">(</span><span class="n">trans_Th</span> <span class="o">+</span> <span class="mi">273</span><span class="p">)))</span>  <span class="c1"># equivalent aging factor</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F_EQA: &quot;</span><span class="p">,</span> <span class="n">F_EQA</span><span class="p">)</span>
+            <span class="n">percent_LOL</span> <span class="o">=</span> <span class="n">F_EQA</span> <span class="o">*</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">trans_normal_life</span>
+            <span class="n">result_dict</span><span class="p">[</span><span class="n">trans</span><span class="p">]</span> <span class="o">=</span> <span class="n">percent_LOL</span>
+            <span class="n">result_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">trans</span><span class="si">}</span><span class="s1">_LOL_per_day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">percent_LOL</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span>
+        <span class="n">result_dict</span><span class="p">[</span><span class="s2">&quot;average_LOL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">result_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trans_str_list</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;postopt_trans_lol.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file_path</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># save to JSON</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
