@@ -634,27 +634,29 @@ def create_output_page():
 
 def create_price_section():
     ## TODO == PRICE SECTION ==
-    # TODO custom data
+    ## TODO custom data
+
+    ## LCOE
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
     lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
     lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
 
-    ## TODO Battery aging costs
+    ## Battery aging costs
     bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
     bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
     bat_age_data = bat_age_data.filter(['c', '50.0'], axis="columns")
 
-    ## TODO Battery costs
+    ## Battery costs
     bat_cost_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
     bat_cost_data = bat_cost_data.rename(columns={'Unnamed: 0': 'c'})
     bat_cost_data = bat_cost_data.filter(['c', '50.0'], axis="columns")
 
-    ## TODO Transformer aging costs
+    ## Transformer aging costs
     tra_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
     tra_age_data = tra_age_data.rename(columns={'Unnamed: 0': 'c'})
     tra_age_data = tra_age_data.filter(['c', '50.0'], axis="columns")
 
-    ## TODO Electricity costs
+    ## Electricity costs
     elec_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
     elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
     elec_data = elec_data.filter(['c', '50.0'], axis="columns")
@@ -709,11 +711,13 @@ def create_price_section():
 
 def create_charging_section():
     ## TODO == CHARGING STATION SECTION ==
-    ## TODO Net grid load
-    load_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
-    ngl_data = load_data.filter(['station_net_grid_load_kW'], axis="columns")
-    tl_data = load_data.filter(['station_total_load_kW'], axis="columns")
-    ## TODO Total load
+
+    ## Charging station data setup
+    charging_station_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    ## Net grid load
+    ngl_data = charging_station_data.filter(['station_net_grid_load_kW'], axis="columns")
+    ## Total load
+    tl_data = charging_station_data.filter(['station_total_load_kW'], axis="columns")
 
     charging_section = dmc.Card(
         style={"padding": "5px"},
@@ -750,21 +754,35 @@ def create_charging_section():
 
 def create_battery_section():
     ## TODO == BATTERY SECTION ==
+
+    ## Battery data setup
+    battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
+
     ## TODO State of charge (SOC)
+    soc_data=battery_data.filter(['SOC'], axis="columns")
 
     ## TODO Current
+    current_data = battery_data.filter(['currents_pack'], axis="columns")
 
     ## TODO Voltage
+    voltage_data = battery_data.filter(['Voltage_pack'], axis="columns")
 
     ## TODO Power
+    power_data = battery_data.filter(['power_kW'], axis="columns")
 
     ## TODO State of health (SOH)
+    soh_data = battery_data.filter(['SOH'], axis="columns")
+
     battery_section = dmc.Card(
         style={"padding": "5px"},
         children=[
             create_badge_title("Battery", 'clarity:battery-solid'),
             create_graph_card(
                 title="State of charge",
+                data=soc_data,
+                x=None,
+                y='SOC',
+                graph_type='line',
                 download_link="#"
             ),
             dmc.Group(
@@ -773,10 +791,18 @@ def create_battery_section():
                 children=[
                     create_graph_card(
                         title="Current",
+                        data=current_data,
+                        x=None,
+                        y='currents_pack',
+                        graph_type='line',
                         download_link="#"
                     ),
                     create_graph_card(
                         title="Voltage",
+                        data=voltage_data,
+                        x=None,
+                        y='Voltage_pack',
+                        graph_type='line',
                         download_link="#"
                     )
                 ]
@@ -787,10 +813,18 @@ def create_battery_section():
                 children=[
                     create_graph_card(
                         title="Power",
+                        data=power_data,
+                        x=None,
+                        y='power_kW',
+                        graph_type='line',
                         download_link="#"
                     ),
                     create_graph_card(
                         title="State of health",
+                        data=soh_data,
+                        x=None,
+                        y='SOH',
+                        graph_type='line',
                         download_link="#"
                     )
                 ]
