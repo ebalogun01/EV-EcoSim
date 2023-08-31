@@ -1,6 +1,6 @@
 import plotly.express as px
 import dash
-from dash import dcc, html, ctx, Input, Output
+from dash import dcc, html, ctx, Input, Output, State
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
@@ -180,10 +180,9 @@ def page_update(radio_value):
     elif radio_value == "OUT":
         return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}
     else:
-        return {'display': 'none'}, {'display': 'none'}, {'display': 'none'}
-
-
-# Preset 1 selected
+        return {'display': 'none'}, {'display':'none'}
+    
+# Preset selected
 @app.callback(
     Output(component_id="preset1-button", component_property="className"),
     Output(component_id="preset2-button", component_property="className"),
@@ -193,9 +192,12 @@ def page_update(radio_value):
     Input(component_id="preset2-button", component_property="n_clicks"),
     Input(component_id="custom-settings-button", component_property="n_clicks"),
     Input(component_id="custom-settings-accordion", component_property="value"),
+    State(component_id="preset1-button", component_property="className"),
+    State(component_id="preset2-button", component_property="className"),
+    State(component_id="custom-settings-button", component_property="className"),
     prevent_initial_call=True
 )
-def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value):
+def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value, preset1_class, preset2_class, custom_settings_class):
     triggered_id = ctx.triggered_id
     print(triggered_id)
     if triggered_id == "preset1-button":
@@ -213,10 +215,10 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
         if custom_settings_value == "customSettings":
             return "setup-button", "setup-button", "setup-button selected", "customSettings"
         else:
-            return
+            return preset1_class, preset2_class, custom_settings_class, None
     else:
         return "setup-button", "setup-button", "setup-button"
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8050)

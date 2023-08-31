@@ -31,7 +31,7 @@ body {
     margin: 40px auto;
     box-shadow: 0px 0px 5px #ccc;
     border-radius: 10px;
-    padding: 16px;
+    padding: 24px;
 }
 
 p {
@@ -64,4 +64,85 @@ button:hover {
 .setup-button.selected {
     background-color: #e48d81;
     color: black;
+}
+
+.setting-label {
+    background-color: #e5e5e5;
+    padding: 8px 12px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px #ccc;
+    display: flex;
+    justify-content: center;
+}
+
+.setup-date-picker {
+    width: 100%;
+}
+
+.rc-slider-track{
+    background-color: #e48d81;
+}
+
+.rc-slider-handle, .rc-slider-handle:hover, .rc-slider-handle:active, .rc-slider-handle:focus {
+    border: 2px solid #e48d81;
+}
+
+.rc-slider-handle:active {
+    box-shadow: 0 0 5px #e48d81;
+}
+
+.slider-label {
+    color: #e48d81;
+    border-radius: 8px;
+    border: 1px solid #e48d81;
+    width: 30%;
+    font-size: 20px;
+    display: inline-grid;
+    align-items: center;
+    text-align: center;
+    margin-left: 20px;
+}
+
+.slider-container div {
+    padding: 0 !important;
+}
+
+.mantine-DatePicker-wrapper {
+    height: 100%;
+}
+
+.mantine-DatePicker-input {
+    height: 100%;
+    border: 1px solid #e48d81;
+    border-radius: 8px;
+    color: #e48d81;
+    text-align: center;
+    font-size: 16px;
+}
+
+.upload-container button {
+    padding: 8px;
+    background-color: #b01b1b;
+    border: 0;
+    color: white;
+    border-radius: 8px;
+}
+
+.upload-container span {
+    margin-left: 12px;
+}
+
+.Select-control {
+    color: #e48d81;
+    border: 1px solid #e48d81;
+    padding: 12px 0;
+}
+
+.Select-value {
+    display: inline-flex;
+    align-items: center;
+}
+
+.Select-value-label {
+    color: #e48d81 !important;
 }
