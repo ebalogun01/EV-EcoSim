@@ -96,11 +96,15 @@ calculation modules and voltage impacts on the distribution grid.
 
 
 ## How to run
+### Simulation software
 Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
 install packages listed in the environment manually (RECOMMENDED)
 Ensure gridlabd is installed by following recommended installation method.
-### To run:
+
+#### To run:
 For "battery" test case, navigate to `test_cases/battery` and run scenarios.py using `python3 scenarios.py`
 For base case, navigate to `test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
 
+### Frontend
+Navigate to the dash-fe folder, run main function in app.py
 
