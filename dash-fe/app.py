@@ -219,4 +219,4 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8050)
