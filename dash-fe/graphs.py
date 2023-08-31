@@ -11,19 +11,31 @@ def create_dummy_graph():
 
 
 ## Create bar graph
-def create_bar_graph(data, x=None, y=None):
+def create_bar_graph(data, x=None, y=None, color=None):
     fig = px.bar(data,
                  x=x,
                  y=y,
-                 color_discrete_sequence=px.colors.qualitative.Set1,)
+                 color=color,
+                 color_discrete_sequence=px.colors.qualitative.Plotly
+                 )
     fig.update_xaxes(type='category')
     return dcc.Graph(figure=fig)
 
+## Create bar graph
+def create_total_bar_graph(data, x=None, y=None):
+    fig = px.bar(data,
+                 x=x,
+                 y=y,
+                 color_discrete_sequence=px.colors.qualitative.Plotly
+                 )
+    fig.update_xaxes(type='category')
+    return dcc.Graph(figure=fig)
 
 ## Create line graph
 def create_line_graph(data, x=None, y=None):
     fig = px.line(data,
                  x=x,
                  y=y,
-                 color_discrete_sequence=px.colors.qualitative.Set1,)
+                 #color_discrete_sequence=px.colors.qualitative.Set1
+                 )
     return dcc.Graph(figure=fig)

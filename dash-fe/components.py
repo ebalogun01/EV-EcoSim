@@ -636,11 +636,6 @@ def create_price_section():
     ## TODO == PRICE SECTION ==
     ## TODO custom data
 
-    ## LCOE
-    lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
-    lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
-    lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
-
     ## Battery aging costs
     bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
     bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
@@ -661,6 +656,23 @@ def create_price_section():
     elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
     elec_data = elec_data.filter(['c', '50.0'], axis="columns")
 
+    ## LCOE
+    bat_age_data['type'] = 'Battery aging'
+    bat_cost_data['type'] = 'Battery costs'
+    tra_age_data['type'] = 'Transformer aging'
+    elec_data['type'] = 'Electricity costs'
+    lcoe_data = pd.concat(
+        [bat_age_data, bat_cost_data, tra_age_data, elec_data],
+        axis=0,
+        join="outer",
+        ignore_index=False,
+        keys=None,
+        levels=None,
+        names=None,
+        verify_integrity=False,
+        copy=True,
+    )
+
     price_section = dmc.Card(
         style={"padding": "5px"},
         children=[
@@ -668,6 +680,7 @@ def create_price_section():
             create_graph_card(
                 title="Levelized Cost of Energy (LCOE)",
                 data=lcoe_data,
+                bar_color="type",
                 download_link="#",
             ),
             dmc.Group(
@@ -713,7 +726,8 @@ def create_charging_section():
     ## TODO == CHARGING STATION SECTION ==
 
     ## Charging station data setup
-    charging_station_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    charging_station_data = pd.read_csv(
+        'data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
     ## Net grid load
     ngl_data = charging_station_data.filter(['station_net_grid_load_kW'], axis="columns")
     ## Total load
@@ -759,7 +773,7 @@ def create_battery_section():
     battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
 
     ## TODO State of charge (SOC)
-    soc_data=battery_data.filter(['SOC'], axis="columns")
+    soc_data = battery_data.filter(['SOC'], axis="columns")
 
     ## TODO Current
     current_data = battery_data.filter(['currents_pack'], axis="columns")
@@ -837,6 +851,7 @@ def create_battery_section():
 
 
 def create_graph_card(title="Undefined title", description="Undefined description", data=None, graph_type='bar',
+                      bar_color=None,
                       download_link=None, x='c', y='50.0'):
     card = dmc.Card(
         style={"margin": "2px"},
@@ -878,7 +893,8 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
                 create_graph_element(data=data,
                                      graph_type=graph_type,
                                      x=x,
-                                     y=y
+                                     y=y,
+                                     color=bar_color
                                      )
             ),
             dmc.Text(
@@ -894,7 +910,7 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
     return card
 
 
-def create_graph_element(data=None, graph_type='bar', x='c', y='50.0'):
+def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0'):
     if data is None:
         return dmc.Skeleton(
             visible=True,
@@ -907,7 +923,7 @@ def create_graph_element(data=None, graph_type='bar', x='c', y='50.0'):
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_bar_graph(data, x=x, y=y)
+                              children=create_bar_graph(data, x=x, y=y, color=color)
                               ),
             mb=10,
         )
