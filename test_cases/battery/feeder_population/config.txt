@@ -4,7 +4,7 @@
 'box_pts':60,
 'base_file_dir':'/feeders',
 'test_case_dir':'/test_cases/battery',
-'load_data_dir':'/baseloadData',
+'load_data_dir':'/base_load_data',
 'starttime':"'2018-01-01 00:00:00'",
 'endtime':"'2018-01-30 23:59:00'",
 'python_module':'event_handlers',
