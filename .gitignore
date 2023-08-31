@@ -14,6 +14,7 @@
 **.glm
 **.json
 **results
+source
 charging_sim/__pycache__
 **.Identifier
 battery_data
