@@ -21,7 +21,7 @@ def create_bar_graph(data, x=None, y=None):
 
 
 ## Create line graph
-def create_line_graph(data, x, y):
+def create_line_graph(data, x=None, y=None):
     fig = px.line(data,
                  x=x,
                  y=y,

@@ -7,6 +7,7 @@ from graphs import *
 import pandas as pd
 from constants import TEXT
 
+
 def make_input_section_label(grid_row, grid_column, icon, text):
     return html.Div(
         className='setting-label',
@@ -16,340 +17,353 @@ def make_input_section_label(grid_row, grid_column, icon, text):
         },
         children=[
             DashIconify(
-              icon=icon,
-              width=30,
-              style={'margin': '0', 'margin-right': '10px'},
+                icon=icon,
+                width=30,
+                style={'margin': '0', 'margin-right': '10px'},
             ),
             html.H3(
-              text,
-              style={'margin': '0'},
+                text,
+                style={'margin': '0'},
             )
         ]
     )
+
 
 def make_battery_dropdown(grid_row, grid_column, label, options, value):
     return html.Div(
-      className='setup-dropdown-container',
-      style={
-        'grid-row': grid_row,
-        'grid-column': grid_column
-      },
-      children=[
-        html.Span(label),
-        dcc.Dropdown(
-          className='setup-dropdown',
-          options=options, 
-          value=value, 
-        ),
-      ]
+        className='setup-dropdown-container',
+        style={
+            'grid-row': grid_row,
+            'grid-column': grid_column
+        },
+        children=[
+            html.Span(label),
+            dcc.Dropdown(
+                className='setup-dropdown',
+                options=options,
+                value=value,
+            ),
+        ]
     )
-    
+
 
 def create_settings_container():
-  settings_container = html.Div(
-    id="settings-container",
-    style={
-      'display': 'grid',
-      'grid-column-gap': '20px',
-      'grid-row-gap': '20px',
-      'grid-template-rows': 'repeat(14, auto)',
-      'grid-template-columns': 'repeat(6, auto)'
-    },
-    children=[
-      # Simulation mode
-      make_input_section_label(grid_row='1', grid_column='1 / span 2', icon='heroicons:magnifying-glass-plus-20-solid', text='Simulation mode'),
-      html.Button(
-        id="offline-button",
+    settings_container = html.Div(
+        id="settings-container",
         style={
-          'grid-row': '2',
-          'grid-column': '1'
-        },
-        className='setup-button selected',
-        children=["Offline"]
-      ),
-      html.Button(
-        style={
-          'grid-row': '2',
-          'grid-column': '2'
-        },
-        id="mpc-button",
-        className="setup-button",
-        children=["MPC"]
-      ),
-
-      # Timescale
-      make_input_section_label(grid_row='1', grid_column='3 / span 2', icon='heroicons:magnifying-glass-plus-20-solid', text='Timescale'),
-      html.Div(
-        style={
-          'grid-row': '2',
-          'grid-column': '3',
-          'display': 'flex',
-          'justify-content': 'space-between',
+            'display': 'grid',
+            'grid-column-gap': '20px',
+            'grid-row-gap': '20px',
+            'grid-template-rows': 'repeat(14, auto)',
+            'grid-template-columns': 'repeat(6, auto)'
         },
         children=[
-          dmc.DatePicker(
-            id="start-date-picker",
-            className="setup-date-picker",
-            inputFormat="MM/DD/YYYY",
-          ),
-          html.Span(
-            style={
-              'display': 'inline-grid',
-              'align-items': 'center',
-              'text-align': 'center',
-              'margin-left': '12px'
-            },
-            children=["-"]
-          ),
-        ]
-      ),
-      dmc.DatePicker(
-        id="end-date-picker",
-        className="setup-date-picker",
-        inputFormat="MM/DD/YYYY",
-        style={
-          'grid-row': '2',
-          'grid-column': '4'
-        },
-      ),
-
-      # Electricity price
-      make_input_section_label(grid_row='1', grid_column='5 / span 2', icon='fa6-solid:car-battery', text='Electricity price'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '2',
-          'grid-column': '5 / span 2'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ],
+            # Simulation mode
+            make_input_section_label(grid_row='1', grid_column='1 / span 2',
+                                     icon='heroicons:magnifying-glass-plus-20-solid', text='Simulation mode'),
+            html.Button(
+                id="offline-button",
+                style={
+                    'grid-row': '2',
+                    'grid-column': '1'
+                },
+                className='setup-button selected',
+                children=["Offline"]
             ),
-        ]
-      ),
-
-      # Feeder population
-      make_input_section_label(grid_row='3', grid_column='1 / span 2', icon='fa6-regular:window-restore', text='Feeder population'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '4',
-          'grid-column': '1'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ]
+            html.Button(
+                style={
+                    'grid-row': '2',
+                    'grid-column': '2'
+                },
+                id="mpc-button",
+                className="setup-button",
+                children=["MPC"]
             ),
-        ]
-      ),
 
-      # Ambient temperature
-      make_input_section_label(grid_row='3', grid_column='4 / span 2', icon='ph:thermometer-simple-bold', text='Ambient temperature'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '4',
-          'grid-column': '4 / span 2'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ],
-            ),
-        ]
-      ),
-
-      # Power factor
-      make_input_section_label(grid_row='5', grid_column='1 / span 2', icon='bi:cloud-lightning-fill', text='Power factor'),
-      html.Div(
-        style={
-          'grid-row': '6',
-          'grid-column': '1 / span 2',
-          'display': 'flex',
-          'justify-content': 'space-between',
-        },
-        children=[
+            # Timescale
+            make_input_section_label(grid_row='1', grid_column='3 / span 2',
+                                     icon='heroicons:magnifying-glass-plus-20-solid', text='Timescale'),
             html.Div(
-              dcc.Slider(
-                min=0, 
-                max=100, 
-                value=50,
-                marks=None,
-                included=True,
-              ),
-              className='slider-container',
-              style={
-                  'width': '100%', 
-                  'display': 'inline-grid',
-                  'align-items': 'center',
-              }
+                style={
+                    'grid-row': '2',
+                    'grid-column': '3',
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                },
+                children=[
+                    dmc.DatePicker(
+                        id="start-date-picker",
+                        className="setup-date-picker",
+                        inputFormat="MM/DD/YYYY",
+                    ),
+                    html.Span(
+                        style={
+                            'display': 'inline-grid',
+                            'align-items': 'center',
+                            'text-align': 'center',
+                            'margin-left': '12px'
+                        },
+                        children=["-"]
+                    ),
+                ]
             ),
-            html.Span(
-              id="power-factor-label",
-              className="slider-label",
-              children=["XX"]
-            )
-        ]
-      ),
+            dmc.DatePicker(
+                id="end-date-picker",
+                className="setup-date-picker",
+                inputFormat="MM/DD/YYYY",
+                style={
+                    'grid-row': '2',
+                    'grid-column': '4'
+                },
+            ),
 
-      # Battery
-      make_input_section_label(grid_row='5', grid_column='4 / span 2', icon='clarity:battery-solid', text='Battery'),
-      make_battery_dropdown(grid_row='6', grid_column='4 / span 2', label='Maximum C-rate', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='7', grid_column='4 / span 2', label='Energy capacity', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='8', grid_column='4 / span 2', label='Maximum amp hours', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='9', grid_column='4 / span 2', label='Maximum voltage', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='10', grid_column='4 / span 2', label='Voltage', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='11', grid_column='4 / span 2', label='State of health', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-      make_battery_dropdown(grid_row='12', grid_column='4 / span 2', label='State of charge', 
-                            options=[
-                                {'label': 'Value 1', 'value': '1'},
-                                {'label': 'Value 2', 'value': '2'},
-                                {'label': 'Value 3', 'value': '3'}
-                            ],
-                            value='1'
-      ),
-
-      # Capacity
-      make_input_section_label(grid_row='7', grid_column='1 / span 2', icon='material-symbols:screenshot-frame', text='Capacity'),
-      html.Div(
-        style={
-          'grid-row': '8',
-          'grid-column': '1 / span 2',
-          'display': 'flex',
-          'justify-content': 'space-between',
-        },
-        children=[
+            # Electricity price
+            make_input_section_label(grid_row='1', grid_column='5 / span 2', icon='fa6-solid:car-battery',
+                                     text='Electricity price'),
             html.Div(
-              dcc.Slider(
-                min=0, 
-                max=100, 
-                value=50,
-                marks=None,
-                included=True,
-              ),
-              className='slider-container',
-              style={
-                  'width': '100%', 
-                  'display': 'inline-grid',
-                  'align-items': 'center'
-              }
+                className='upload-container',
+                style={
+                    'grid-row': '2',
+                    'grid-column': '5 / span 2'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ],
+                    ),
+                ]
             ),
-            html.Span(
-              id="power-factor-label",
-              className="slider-label",
-              children=["XX"]
-            )
-        ]
-      ),
 
-      # Load
-      make_input_section_label(grid_row='9', grid_column='1 / span 2', icon='icon-park-solid:screenshot-one', text='Load'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '10',
-          'grid-column': '1 / span 2'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ],
+            # Feeder population
+            make_input_section_label(grid_row='3', grid_column='1 / span 2', icon='fa6-regular:window-restore',
+                                     text='Feeder population'),
+            html.Div(
+                className='upload-container',
+                style={
+                    'grid-row': '4',
+                    'grid-column': '1'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ]
+                    ),
+                ]
             ),
-        ]
-      ),
 
-      # Battery system identification
-      make_input_section_label(grid_row='11', grid_column='1 / span 2', icon='fa6-solid:car-battery', text='Battery system identification'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '12',
-          'grid-column': '1 / span 2'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ],
+            # Ambient temperature
+            make_input_section_label(grid_row='3', grid_column='4 / span 2', icon='ph:thermometer-simple-bold',
+                                     text='Ambient temperature'),
+            html.Div(
+                className='upload-container',
+                style={
+                    'grid-row': '4',
+                    'grid-column': '4 / span 2'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ],
+                    ),
+                ]
             ),
-        ]
-      ),
 
-      # Solar
-      make_input_section_label(grid_row='13', grid_column='1 / span 2', icon='fa6-solid:solar-panel', text='Solar'),
-      html.Div(
-        className='upload-container',
-        style={
-          'grid-row': '14',
-          'grid-column': '1 / span 2'
-        },
-        children=[
-            dcc.Upload(
-              children=[
-                html.Button('Choose file'),
-                html.Span('No file chosen')
-              ],
+            # Power factor
+            make_input_section_label(grid_row='5', grid_column='1 / span 2', icon='bi:cloud-lightning-fill',
+                                     text='Power factor'),
+            html.Div(
+                style={
+                    'grid-row': '6',
+                    'grid-column': '1 / span 2',
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                },
+                children=[
+                    html.Div(
+                        dcc.Slider(
+                            min=0,
+                            max=100,
+                            value=50,
+                            marks=None,
+                            included=True,
+                        ),
+                        className='slider-container',
+                        style={
+                            'width': '100%',
+                            'display': 'inline-grid',
+                            'align-items': 'center',
+                        }
+                    ),
+                    html.Span(
+                        id="power-factor-label",
+                        className="slider-label",
+                        children=["XX"]
+                    )
+                ]
             ),
-        ]
-      ),
-      
-    ]
-  )
 
-  return settings_container
+            # Battery
+            make_input_section_label(grid_row='5', grid_column='4 / span 2', icon='clarity:battery-solid',
+                                     text='Battery'),
+            make_battery_dropdown(grid_row='6', grid_column='4 / span 2', label='Maximum C-rate',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='7', grid_column='4 / span 2', label='Energy capacity',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='8', grid_column='4 / span 2', label='Maximum amp hours',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='9', grid_column='4 / span 2', label='Maximum voltage',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='10', grid_column='4 / span 2', label='Voltage',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='11', grid_column='4 / span 2', label='State of health',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+            make_battery_dropdown(grid_row='12', grid_column='4 / span 2', label='State of charge',
+                                  options=[
+                                      {'label': 'Value 1', 'value': '1'},
+                                      {'label': 'Value 2', 'value': '2'},
+                                      {'label': 'Value 3', 'value': '3'}
+                                  ],
+                                  value='1'
+                                  ),
+
+            # Capacity
+            make_input_section_label(grid_row='7', grid_column='1 / span 2', icon='material-symbols:screenshot-frame',
+                                     text='Capacity'),
+            html.Div(
+                style={
+                    'grid-row': '8',
+                    'grid-column': '1 / span 2',
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                },
+                children=[
+                    html.Div(
+                        dcc.Slider(
+                            min=0,
+                            max=100,
+                            value=50,
+                            marks=None,
+                            included=True,
+                        ),
+                        className='slider-container',
+                        style={
+                            'width': '100%',
+                            'display': 'inline-grid',
+                            'align-items': 'center'
+                        }
+                    ),
+                    html.Span(
+                        id="power-factor-label",
+                        className="slider-label",
+                        children=["XX"]
+                    )
+                ]
+            ),
+
+            # Load
+            make_input_section_label(grid_row='9', grid_column='1 / span 2', icon='icon-park-solid:screenshot-one',
+                                     text='Load'),
+            html.Div(
+                className='upload-container',
+                style={
+                    'grid-row': '10',
+                    'grid-column': '1 / span 2'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ],
+                    ),
+                ]
+            ),
+
+            # Battery system identification
+            make_input_section_label(grid_row='11', grid_column='1 / span 2', icon='fa6-solid:car-battery',
+                                     text='Battery system identification'),
+            html.Div(
+                className='upload-container',
+                style={
+                    'grid-row': '12',
+                    'grid-column': '1 / span 2'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ],
+                    ),
+                ]
+            ),
+
+            # Solar
+            make_input_section_label(grid_row='13', grid_column='1 / span 2', icon='fa6-solid:solar-panel',
+                                     text='Solar'),
+            html.Div(
+                className='upload-container',
+                style={
+                    'grid-row': '14',
+                    'grid-column': '1 / span 2'
+                },
+                children=[
+                    dcc.Upload(
+                        children=[
+                            html.Button('Choose file'),
+                            html.Span('No file chosen')
+                        ],
+                    ),
+                ]
+            ),
+
+        ]
+    )
+
+    return settings_container
+
 
 def create_home_page():
     home_page = html.Div(
@@ -404,7 +418,7 @@ def create_home_page():
             html.Div(
                 className="content-tile",
                 style={
-                    'grid-template-rows':  'repeat(2, auto)',
+                    'grid-template-rows': 'repeat(2, auto)',
                     'grid-template-columns': 'repeat(4, auto)'
                 },
                 children=[
@@ -440,32 +454,32 @@ def create_home_page():
 
             # Custom configuration tile
             html.Div(
-              className="content-tile",
-              style={
-                'grid-template-rows': 'auto',
-                'grid-template-columns': 'auto'
-              },
-              children=[
-                dmc.Accordion(
-                  id="custom-settings-accordion",
-                  chevronPosition="left",
-                  value=None,
-                  children=[
-                    dmc.AccordionItem(
-                      [
-                        dmc.AccordionControl(
-                          html.H3(
-                            className="section-title",
-                            children=["Custom setup settings"]
-                          )
-                        ),
-                        dmc.AccordionPanel([create_settings_container()]),
-                      ],
-                      value="customSettings"
-                    )
-                  ]
-                ),
-              ]
+                className="content-tile",
+                style={
+                    'grid-template-rows': 'auto',
+                    'grid-template-columns': 'auto'
+                },
+                children=[
+                    dmc.Accordion(
+                        id="custom-settings-accordion",
+                        chevronPosition="left",
+                        value=None,
+                        children=[
+                            dmc.AccordionItem(
+                                [
+                                    dmc.AccordionControl(
+                                        html.H3(
+                                            className="section-title",
+                                            children=["Custom setup settings"]
+                                        )
+                                    ),
+                                    dmc.AccordionPanel([create_settings_container()]),
+                                ],
+                                value="customSettings"
+                            )
+                        ]
+                    ),
+                ]
             ),
 
             # Credits tile
@@ -622,28 +636,28 @@ def create_price_section():
     ## TODO == PRICE SECTION ==
     # TODO custom data
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
-    lcoe_data=lcoe_data.rename(columns={'Unnamed: 0': 'c'})
-    lcoe_data = lcoe_data.filter(['c','50.0'], axis="columns")
+    lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
+    lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
 
     ## TODO Battery aging costs
     bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
-    bat_age_data=bat_age_data.rename(columns={'Unnamed: 0': 'c'})
-    bat_age_data = bat_age_data.filter(['c','50.0'], axis="columns")
+    bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
+    bat_age_data = bat_age_data.filter(['c', '50.0'], axis="columns")
 
     ## TODO Battery costs
     bat_cost_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
-    bat_cost_data=bat_cost_data.rename(columns={'Unnamed: 0': 'c'})
-    bat_cost_data = bat_cost_data.filter(['c','50.0'], axis="columns")
+    bat_cost_data = bat_cost_data.rename(columns={'Unnamed: 0': 'c'})
+    bat_cost_data = bat_cost_data.filter(['c', '50.0'], axis="columns")
 
     ## TODO Transformer aging costs
     tra_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
-    tra_age_data=tra_age_data.rename(columns={'Unnamed: 0': 'c'})
-    tra_age_data = tra_age_data.filter(['c','50.0'], axis="columns")
+    tra_age_data = tra_age_data.rename(columns={'Unnamed: 0': 'c'})
+    tra_age_data = tra_age_data.filter(['c', '50.0'], axis="columns")
 
     ## TODO Electricity costs
     elec_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
-    elec_data=elec_data.rename(columns={'Unnamed: 0': 'c'})
-    elec_data = elec_data.filter(['c','50.0'], axis="columns")
+    elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
+    elec_data = elec_data.filter(['c', '50.0'], axis="columns")
 
     price_section = dmc.Card(
         style={"padding": "5px"},
@@ -696,7 +710,9 @@ def create_price_section():
 def create_charging_section():
     ## TODO == CHARGING STATION SECTION ==
     ## TODO Net grid load
-
+    load_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    ngl_data = load_data.filter(['station_net_grid_load_kW'], axis="columns")
+    tl_data = load_data.filter(['station_total_load_kW'], axis="columns")
     ## TODO Total load
 
     charging_section = dmc.Card(
@@ -709,10 +725,18 @@ def create_charging_section():
                 children=[
                     create_graph_card(
                         title="Total load",
+                        data=tl_data,
+                        x=None,
+                        y='station_total_load_kW',
+                        graph_type='line',
                         download_link="#"
                     ),
                     create_graph_card(
                         title="Net grid load",
+                        data=ngl_data,
+                        x=None,
+                        y='station_net_grid_load_kW',
+                        graph_type='line',
                         download_link="#"
                     )
                 ]
@@ -778,7 +802,8 @@ def create_battery_section():
     return battery_section
 
 
-def create_graph_card(title="Undefined title", description="Undefined description", data=None, graph_type='bar',download_link=None):
+def create_graph_card(title="Undefined title", description="Undefined description", data=None, graph_type='bar',
+                      download_link=None, x='c', y='50.0'):
     card = dmc.Card(
         style={"margin": "2px"},
         children=[
@@ -817,7 +842,10 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
             ),
             dmc.CardSection(
                 create_graph_element(data=data,
-                                     graph_type=graph_type)
+                                     graph_type=graph_type,
+                                     x=x,
+                                     y=y
+                                     )
             ),
             dmc.Text(
                 description,
@@ -831,7 +859,8 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
     )
     return card
 
-def create_graph_element(data = None, graph_type = 'bar'):
+
+def create_graph_element(data=None, graph_type='bar', x='c', y='50.0'):
     if data is None:
         return dmc.Skeleton(
             visible=True,
@@ -844,7 +873,7 @@ def create_graph_element(data = None, graph_type = 'bar'):
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_bar_graph(data, x='c', y='50.0')
+                              children=create_bar_graph(data, x=x, y=y)
                               ),
             mb=10,
         )
@@ -852,12 +881,13 @@ def create_graph_element(data = None, graph_type = 'bar'):
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_line_graph(data, x='c', y='50.0')
+                              children=create_line_graph(data, x=x, y=y)
                               ),
             mb=10,
         )
     else:
         return None
+
 
 def create_badge_title(title, icon):
     return dmc.Group(
