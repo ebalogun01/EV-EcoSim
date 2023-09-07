@@ -1,6 +1,6 @@
 """
 This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components
-from the simulation.
+from the simulation. This is used for the post-simulation cost calculations
 """
 
 import os
@@ -9,6 +9,7 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 
+# Defaults.
 PLOT_FONT_SIZE = 16
 plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
 
@@ -16,6 +17,10 @@ plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
 class CostEstimator:
     """
     This class is used to calculate levelized cost of DER assets in EV-Ecosim.
+    The LCOE is the levelized cost of energy, which is defined as the estimated revenue or total net expenditure
+    required to build and operate an energy system over a specified cost recovery period. The LCOE normalizes the entire
+    system cost by the energy throughput to compare the economics energy devices that would otherwise be challenging to
+    compare.
 
     :param num_days: The number of days for which the calculation is run.
     """
@@ -242,7 +247,7 @@ class CostEstimator:
         :return: None.
         """
         error_abs_mean = np.mean(np.abs((power - power_pred) / (power + 1e-6)) * 100)
-        MAPE = np.max(np.abs((power - power_pred) / (power + 1e-6)) * 100)
+        MAPE = np.max(np.abs((power - power_pred) / (power + 1e-6)) * 100)  # Mean Absolute Percent Error.
         np.savetxt('abs_percent_err_power.csv', [error_abs_mean])
         np.savetxt('MAPE_power.csv', [MAPE])
         plt.close('all')
@@ -267,7 +272,9 @@ class CostEstimator:
 
     def solar_cost(self, result_dir):
         """
-        Calculates the overall capital cost of the solar system.
+        Calculates the overall capital cost of the solar system. This will give the dollar cost of the solar system
+        used for the charging station design problem.
+
         Not fully implemented.
         
         :param str result_dir: Location to save the result.
@@ -277,7 +284,8 @@ class CostEstimator:
 
     def calculate_trans_loss_of_life(self, result_dir):
         """
-        Estimates the expected transformer loss of life.
+        Estimates the expected transformer loss of life. The transformer loss of life (or LOL) is modelled as a function
+        of the hot-spot temperature.
 
         Reference:
 

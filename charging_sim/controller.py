@@ -20,10 +20,10 @@ class MPC:
     def __init__(self, config, storage=None, solar=None):
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
-        self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
-        self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
-        self.reshaped_data = np.reshape(self.current_testdata,
-                                        self.current_testdata.size)  # flatten data for efficient indexing
+        # self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
+        # self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
+        # self.reshaped_data = np.reshape(self.current_testdata,
+        #                                 self.current_testdata.size)  # flatten data for efficient indexing
         self.storage = storage
         self.storage_constraints = None
 
@@ -166,10 +166,10 @@ class Oneshot:
     def __init__(self, config, storage=None, solar=None, num_steps=96):
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
-        self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
-        self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
-        self.reshaped_data = np.reshape(self.current_testdata,
-                                        self.current_testdata.size)  # flatten data for efficient indexing
+        # self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
+        # self.current_testdata = np.genfromtxt(path_prefix + config["simulation_load"])[:-1, ] * 1  # this is used to predict the load, in the future, we will generate a bunch of loads to do this
+        # self.reshaped_data = np.reshape(self.current_testdata,
+        #                                 self.current_testdata.size)  # flatten data for efficient indexing
         self.storage = storage
         self.storage_constraints = None
         self.load = []

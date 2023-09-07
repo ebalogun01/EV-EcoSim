@@ -1,5 +1,7 @@
-"""This module is calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
-respective files and folders."""
+"""
+This module calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
+respective files and folders.
+"""
 
 import os
 import copy
@@ -153,8 +155,8 @@ def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = 
     """
     Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.
 
-    :param case_dir: Directory for a given case/scenario.
-    :param days_count: Number of days to calculate (usually 30 for now).
+    :param str case_dir: Directory for a given case/scenario.
+    :param int days_count: Number of days to calculate (usually 30 for now).
     :param bool batt_cost: Boolean to decide if battery cost is calculated.
     :param bool elec_cost: Boolean to decide if electricity cost is calculated.
     :param bool trans_cost: Boolean to decide if transformer cost is calculated.
@@ -188,7 +190,7 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
     data_table = pd.DataFrame(
         {energy_rating / 10.00: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
     data_table = data_table.set_index(pd.Index(MAX_C_RATES))
-    # now go through all files and update table results for both electricity cost and battery costs
+    # Now go through all files and update table results for both electricity cost and battery costs.
     battery_dtable = copy.deepcopy(data_table)
     batt_aging_dtable = copy.deepcopy(data_table)
     electricity_cost_dtable = copy.deepcopy(data_table)

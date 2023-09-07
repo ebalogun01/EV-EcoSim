@@ -11,7 +11,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.append('../../EV50_cosimulation/charging_sim')
-sys.path.append('../../EV50_cosimulation/charging_sim/doc_images')
 sys.path.append('../../EV50_cosimulation')
 
 project = 'EV-Ecosim'
