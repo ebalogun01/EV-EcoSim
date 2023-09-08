@@ -70,11 +70,11 @@ def make_month_str(month_int: int):
 
 
 USER_INPUTS = load_default_input()
+# Updating the user inputs based on frontend inputs.
 
 path_prefix = os.getcwd()
 # Change below to name of the repo.
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-
 
 
 # PRELOAD
@@ -164,17 +164,42 @@ def make_scenarios():
     This is used to make the list of scenarios (dicts) that are used to run the simulations.
     No inputs. However, it uses preloaded global functions from a `config.txt` file.
 
-    :return: None.
+    :return list scenarios_list: List of scenario dicts.
     """
-
     scenarios_list = []
-    idx = 0
+    voltage_idx, idx = 0, 0
     for Er in energy_ratings:
         for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'opt_solver': 'GUROBI',
-                        'oneshot': True, 'start_month': month}
+            scenario = {
+                'index': idx,
+                'oneshot': True,
+                'start_month': month,
+                'opt_solver': 'GUROBI',
+                'battery': {
+                    'pack_energy_cap': Er,
+                    'max_c_rate': c_rate,
+                    'pack_max_voltage': USER_INPUTS['battery']['pack_max_voltage'][voltage_idx]
+                },
+                'charging_station': {
+                    'dcfc_power_cap': dcfc_station_cap
+                },
+                'solar': {
+                    'start_month': month,
+                    'efficiency': solar_config["efficiency"],
+                    'rating': solar_config["rating"],
+                    'data_path': solar_config["data"]
+                },
+                'load': {
+                    'data_path': USER_INPUTS['load']['data']
+                },
+                'elec_prices': {
+                    'start_month': month,
+                    'data_path': USER_INPUTS['elec_prices']['data']
+                }
+            }
             scenarios_list.append(scenario)
             idx += 1
+        voltage_idx += 1
     return scenarios_list
 
 
@@ -187,8 +212,9 @@ def run(scenario):
     """
     EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
     save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
-    os.mkdir(save_folder_prefix)
-    EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
+    if not os.path.exists(save_folder_prefix):
+        os.mkdir(save_folder_prefix)
+    EV_charging_sim.setup(dcfc_dicts_list+l2_dicts_list, scenario=scenario)
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:

@@ -6,14 +6,16 @@
     "month": 7      ,
     "num_days": 30,
     "solar": {
+        "data": null,
         "efficiency": null,
         "rating": null
     },
     "battery": {
+        "data": null,
         "max_c_rate": [1, 2],
-        "pack_max_voltage": 400,
+        "pack_max_voltage": [250, 400],
         "pack_energy_cap": [5e4, 10e4],
-        "pack_max_Ah": 250,
+        "pack_max_Ah": [250, 400],
         "SOC_min": 0.2,
         "SOC_max": 0.9,
         "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
@@ -31,5 +33,13 @@
         "num_dcfc_stalls_per_node": 5,
         "num_l2_stalls_per_node": 0,
         "commercial_building_trans": 75
+    },
+    "load": {
+        "data": null
+    },
+    "elec_prices": {
+        "data": null,
+        "month": 7
     }
+
 }
