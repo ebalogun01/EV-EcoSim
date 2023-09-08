@@ -104,8 +104,11 @@ NUM_STEPS = NUM_DAYS * DAY_MINUTES // OPT_TIME_RES  # number of steps to initial
 param_dict['starttime'] = f'{start_time}'
 param_dict['endtime'] = f'{end_time}'
 
+# Control user inputs for charging stations.
 if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
     raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
+
+# Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
 
 if charging_station_config['num_dcfc_stalls_per_node']:
     param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
@@ -117,7 +120,7 @@ if charging_station_config['num_l2_stalls_per_node']:
     if charging_station_config["l2_power_cap"]:
         param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
-
+# Obtaining the charging station capacities.
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * \
                    param_dict['num_dcfc_stalls_per_node']
 L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
@@ -127,7 +130,7 @@ month_str = list(month_days.keys())[month - 1]
 
 # Save the new param_dict to the config file.
 station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'w')
-station_config.write(str(param_dict))
+station_config.writelines(', \n'.join(str(param_dict).split(',')))
 station_config.close()
 
 # Load DCFC locations txt file.
@@ -149,11 +152,12 @@ for node in L2_charging_nodes:
 num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
 # Needs to come in as input initially & should be initialized prior from the feeder population.
 
-#   RUN TYPE
+#   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.
+#   (Does not work currently)
 sequential_run = True
 parallel_run = False
 
-# BATTERY SCENARIOS
+# Battery scenarios.
 energy_ratings = USER_INPUTS["battery"]["pack_energy_cap"]  # kWh
 max_c_rates = USER_INPUTS["battery"]["max_c_rate"]  # kW
 
@@ -217,7 +221,7 @@ def run(scenario):
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
-        json.dump(scenario, outfile)
+        json.dump(scenario, outfile, indent=4)
 
 
 def run_scenarios_parallel():
