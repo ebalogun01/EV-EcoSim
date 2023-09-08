@@ -146,13 +146,12 @@ if type(L2_charging_nodes) is not list:
 l2_dicts_list = []
 for node in L2_charging_nodes:
     l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
-num_charging_nodes = len(dcfc_nodes) + len(
-    L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
+num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
+# Needs to come in as input initially & should be initialized prior from the feeder population.
 
 #   RUN TYPE
 sequential_run = True
 parallel_run = False
-single_run = False
 
 # BATTERY SCENARIOS
 energy_ratings = USER_INPUTS["battery"]["pack_energy_cap"]  # kWh
@@ -251,7 +250,6 @@ def run_scenarios_sequential():
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
-    # d = 1
     for scenario in scenarios:
         scenario["L2_nodes"] = L2_charging_nodes
         scenario["dcfc_nodes"] = dcfc_nodes
@@ -260,29 +258,10 @@ def run_scenarios_sequential():
         if l2_dicts_list:
             scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
         run(scenario)
-        # d += 1
-
-
-def run_scenario_single():
-    """
-    Runs a single scenario dict.
-
-    :return: None.
-    """
-    # Keep changing this for each run
-    Er_idx = 0
-    c_rate_idx = 2
-    idx = 2
-    scenario = {'pack_energy_cap': energy_ratings[Er_idx],
-                'max_c_rate': max_c_rates[c_rate_idx],
-                'index': idx, 'opt_solver': 'GUROBI', 'oneshot': True}
-    run(scenario)
 
 
 if __name__ == '__main__':
     if sequential_run:
         run_scenarios_sequential()
-    elif single_run:
-        run_scenario_single()
     else:
         run_scenarios_parallel()
