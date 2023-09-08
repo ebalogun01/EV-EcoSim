@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
         </div>
@@ -84,7 +85,9 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="n">PLOT_FONT_SIZE</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="CostEstimator"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator">[docs]</a><span class="k">class</span> <span class="nc">CostEstimator</span><span class="p">:</span>
+<div class="viewcode-block" id="CostEstimator">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator">[docs]</a>
+<span class="k">class</span> <span class="nc">CostEstimator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used to calculate levelized cost of DER assets in EV-Ecosim.</span>
 
@@ -112,7 +115,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">TOU_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv&#39;</span><span class="p">)[:</span><span class="mi">96</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span><span class="p">]</span>  <span class="c1"># change this to referenced property</span>
         <span class="c1"># todo: cannot find good source for 2400/240V transformer prices</span>
 
-<div class="viewcode-block" id="CostEstimator.calculate_battery_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_battery_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="CostEstimator.calculate_battery_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_battery_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the battery costs and updates the different cost components, including LCOE.</span>
 
@@ -151,7 +156,10 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
         <span class="k">return</span> <span class="n">result_dict</span></div>
 
-<div class="viewcode-block" id="CostEstimator.calculate_solar_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CostEstimator.calculate_solar_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Values are pulled from the NREL solar cost calculator.</span>
 <span class="sd">        Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</span>
@@ -161,7 +169,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="CostEstimator.calculate_electricity_cost_PGEBEV2s"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_electricity_cost_PGEBEV2s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">,</span> <span class="n">PGE_separate_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CostEstimator.calculate_electricity_cost_PGEBEV2s">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_electricity_cost_PGEBEV2s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">,</span> <span class="n">PGE_separate_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the overall electricity PGEBEV2S cost for a given scenario.</span>
 
@@ -219,11 +230,17 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
         <span class="k">return</span> <span class="n">result_dict</span></div>
 
-<div class="viewcode-block" id="CostEstimator.transformer_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost">[docs]</a>    <span class="k">def</span> <span class="nf">transformer_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CostEstimator.transformer_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">transformer_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cannot find good resource data for this yet.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="CostEstimator.plot_loads"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_loads">[docs]</a>    <span class="nd">@staticmethod</span>
+
+<div class="viewcode-block" id="CostEstimator.plot_loads">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_loads">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_loads</span><span class="p">(</span><span class="n">total_load</span><span class="p">,</span> <span class="n">net_load</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates plots overlaying load and net loads for post-simulation visualization.</span>
@@ -266,7 +283,10 @@
             <span class="k">return</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;loads.png&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CostEstimator.plot_soc"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_soc">[docs]</a>    <span class="nd">@staticmethod</span>
+
+<div class="viewcode-block" id="CostEstimator.plot_soc">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_soc">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_soc</span><span class="p">(</span><span class="n">soc</span><span class="p">,</span> <span class="n">soc_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the controller predicted and true state of charge of the battery system.</span>
@@ -301,7 +321,10 @@
             <span class="k">return</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;soc_plot.png&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CostEstimator.plot_power"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_power">[docs]</a>    <span class="nd">@staticmethod</span>
+
+<div class="viewcode-block" id="CostEstimator.plot_power">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_power">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">power_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the controller predicted and true power of the battery system.</span>
@@ -336,7 +359,10 @@
             <span class="k">return</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;power_plot.png&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CostEstimator.solar_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.solar_cost">[docs]</a>    <span class="k">def</span> <span class="nf">solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CostEstimator.solar_cost">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.solar_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the overall capital cost of the solar system.</span>
 <span class="sd">        Not fully implemented.</span>
@@ -346,7 +372,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_rating</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="mi">150</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_price_per_m2</span>  <span class="c1"># approximate area using 150W/m2</span></div>
 
-<div class="viewcode-block" id="CostEstimator.calculate_trans_loss_of_life"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_trans_loss_of_life</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CostEstimator.calculate_trans_loss_of_life">
+<a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_trans_loss_of_life</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimates the expected transformer loss of life.</span>
 
@@ -386,7 +415,9 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;postopt_trans_lol.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file_path</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># save to JSON</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
-        <span class="k">return</span> <span class="n">result_dict</span></div></div>
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+</div>
+
 </pre></div>
 
            </div>

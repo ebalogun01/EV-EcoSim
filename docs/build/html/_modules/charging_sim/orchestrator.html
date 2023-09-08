@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -41,7 +41,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
         </div>
@@ -85,7 +86,9 @@
 <span class="n">MINUTES_IN_DAY</span> <span class="o">=</span> <span class="mi">1440</span>
 
 
-<div class="viewcode-block" id="ChargingSim"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim">[docs]</a><span class="k">class</span> <span class="nc">ChargingSim</span><span class="p">:</span>
+<div class="viewcode-block" id="ChargingSim">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim">[docs]</a>
+<span class="k">class</span> <span class="nc">ChargingSim</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class organizes the simulation and controls the propagation of other objects&#39; states in a time</span>
 <span class="sd">    sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.</span>
@@ -153,7 +156,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># to be updated later</span>
 
-<div class="viewcode-block" id="ChargingSim.load_config"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChargingSim.load_config">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_config">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads all object configuration files and set the config attribute within the class. Walks through</span>
 <span class="sd">        the os files, finds the config JSON files, and loads them as the attributes.</span>
@@ -174,7 +179,10 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_working_dir</span><span class="p">)</span>  <span class="c1"># return back to current working directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_battery_params</span><span class="p">()</span>  <span class="c1"># update the battery params to have model dynamics for all cells loaded already</span></div>
 
-<div class="viewcode-block" id="ChargingSim.load_battery_params"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_battery_params">[docs]</a>    <span class="k">def</span> <span class="nf">load_battery_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.load_battery_params">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_battery_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_battery_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This loads the battery params directly into the sim, so parameters will be the same for all</span>
 <span class="sd">        batteries unless otherwise specified. battery_config must be attributed to do this.</span>
@@ -190,7 +198,10 @@
                                                  <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ChargingSim.create_battery_object"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_battery_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_battery_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_prop</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.create_battery_object">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_battery_object">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_battery_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_prop</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates and stores all battery modules/objects in the network.</span>
 
@@ -207,7 +218,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">battery_objects</span> <span class="o">+=</span> <span class="n">buffer_battery</span><span class="p">,</span>  <span class="c1"># Add to list of battery objects.</span>
         <span class="k">return</span> <span class="n">buffer_battery</span></div>
 
-<div class="viewcode-block" id="ChargingSim.create_charging_stations"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations">[docs]</a>    <span class="k">def</span> <span class="nf">create_charging_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.create_charging_stations">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_charging_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the charging station objects within the power network (MPC mode).</span>
 
@@ -230,7 +244,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ChargingSim.create_charging_stations_oneshot"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot">[docs]</a>    <span class="k">def</span> <span class="nf">create_charging_stations_oneshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.create_charging_stations_oneshot">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_charging_stations_oneshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the charging station objects within the power network (offline mode).</span>
 
@@ -255,7 +272,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ChargingSim.initialize_aging_sim"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_aging_sim">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_aging_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.initialize_aging_sim">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_aging_sim">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_aging_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the battery aging object.</span>
 
@@ -265,7 +285,10 @@
         <span class="n">num_steps</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span> <span class="o">=</span> <span class="n">BatteryAging</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.initialize_price_loader"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_price_loader">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.initialize_price_loader">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_price_loader">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the price loading module and sets the month to be simulated for memory-efficient sampling.</span>
 
@@ -289,7 +312,10 @@
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_working_dir</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.initialize_solar_module"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_solar_module">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_solar_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.initialize_solar_module">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_solar_module">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_solar_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the solar module if solar options is set to True.</span>
 
@@ -301,7 +327,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Cannot load solar module because flag is set to False!&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.create_solar_object"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_solar_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_solar_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.create_solar_object">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_solar_object">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_solar_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a solar object using the solar class charging_sim.solar.</span>
 
@@ -315,7 +344,10 @@
         <span class="n">solar</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">solar</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="p">,</span> <span class="n">loc</span>  <span class="c1"># using one index to represent both id and location</span>
         <span class="k">return</span> <span class="n">solar</span></div>
 
-<div class="viewcode-block" id="ChargingSim.reset_loads"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.reset_loads">[docs]</a>    <span class="k">def</span> <span class="nf">reset_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.reset_loads">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.reset_loads">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the loads at the different buses being tracked.</span>
 
@@ -323,7 +355,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">site_net_loads</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="ChargingSim.get_charging_sites"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charging_sites">[docs]</a>    <span class="k">def</span> <span class="nf">get_charging_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.get_charging_sites">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charging_sites">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_charging_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the charging station locations within the grid.</span>
 
@@ -331,7 +366,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span></div>
 
-<div class="viewcode-block" id="ChargingSim.get_charger_obj_by_loc"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc">[docs]</a>    <span class="k">def</span> <span class="nf">get_charger_obj_by_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.get_charger_obj_by_loc">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_charger_obj_by_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the charging station object at given location &#39;loc&#39;.</span>
 
@@ -340,7 +378,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ChargingSim.setup"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes_list</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.setup">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.setup">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes_list</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is done pre-simulation to ensure all scenarios are updated accordingly.</span>
 
@@ -361,9 +402,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">create_charging_stations</span><span class="p">(</span><span class="n">power_nodes_list</span><span class="p">)</span>  <span class="c1"># this should always be first since it loads the config</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize_aging_sim</span><span class="p">()</span>  <span class="c1"># Battery aging</span></div>
+
             <span class="c1"># self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)</span>
 
-<div class="viewcode-block" id="ChargingSim.update_scenario"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">update_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ChargingSim.update_scenario">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_scenario">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the scenarios dicts to match specifications of a given scenario.</span>
 
@@ -382,7 +426,10 @@
             <span class="c1"># Save new prices config.</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;New scenario updated...&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.update_steps"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_steps">[docs]</a>    <span class="k">def</span> <span class="nf">update_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.update_steps">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_steps">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates for moving simulation forward.</span>
 
@@ -393,16 +440,25 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">==</span> <span class="n">MINUTES_IN_DAY</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="ChargingSim.get_action"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_action">[docs]</a>    <span class="nd">@staticmethod</span>
+
+<div class="viewcode-block" id="ChargingSim.get_action">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_action">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns only the control current.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Function not implemented yet!&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.initialize_controllers"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_controllers">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.initialize_controllers">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_controllers">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign charging controller to each EVSE. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Function not implemented yet!&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.step"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.step">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.step">[docs]</a>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power</span>
 <span class="sd">        grid.</span>
@@ -441,7 +497,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_steps</span><span class="p">(</span><span class="n">stepsize</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.multistep"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.multistep">[docs]</a>    <span class="k">def</span> <span class="nf">multistep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.multistep">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.multistep">[docs]</a>
+    <span class="k">def</span> <span class="nf">multistep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is used oneshot offline simulation for any given month. It is much faster than the MPC mode and it used to</span>
 <span class="sd">        propagate the states of all objects through the simulation horizon.</span>
@@ -469,7 +528,10 @@
             <span class="n">net_load</span> <span class="o">=</span> <span class="n">todays_load</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">power</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span>
             <span class="n">charging_station</span><span class="o">.</span><span class="n">update_load_oneshot</span><span class="p">(</span><span class="n">net_load</span><span class="p">,</span> <span class="n">todays_load</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChargingSim.load_results_summary"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_results_summary">[docs]</a>    <span class="k">def</span> <span class="nf">load_results_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path_prefix</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChargingSim.load_results_summary">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_results_summary">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_results_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path_prefix</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param save_path_prefix: Includes prefix to desired path for saving results.</span>
@@ -512,7 +574,9 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total calendar aging is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">calendar_aging</span><span class="p">)))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total cycle aging is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">cycle_aging</span><span class="p">)))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final capacity (SOH) is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">SOH</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total current throughput is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">total_amp_thruput</span><span class="p">))</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total current throughput is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">total_amp_thruput</span><span class="p">))</span></div>
+</div>
+
 </pre></div>
 
            </div>

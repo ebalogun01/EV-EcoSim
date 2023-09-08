@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EV-Ecosim platform &mdash; EV-Ecosim 1.0.0 documentation</title>
+  <title>Readme &mdash; EV-Ecosim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,9 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Packages" href="modules.html" />
+    <link rel="prev" title="Welcome to EV-Ecosim 1.0.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,8 +43,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Readme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Packages</a></li>
 </ul>
 
@@ -60,7 +62,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">EV-Ecosim platform</li>
+      <li class="breadcrumb-item active">Readme</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -69,182 +71,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="ev-ecosim-platform">
-<h1>EV-Ecosim platform<a class="headerlink" href="#ev-ecosim-platform" title="Link to this heading"></a></h1>
-<p>A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations.
-Paper: https://doi.org/10.36227/techrxiv.23596725.v2</p>
-<p><img alt="sim_frame.png" src="doc_images%2Fsim_frame.png" /></p>
-<section id="authors">
-<h2>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h2>
-<p>Emmanuel Balogun: ebalogun&#64;stanford.edu, Lily Buechler: ebuech&#64;stanford.edu</p>
-</section>
-<section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
-<p>GiSMo SLAC GridLAB-D installation (master branch): https://github.com/arras-energy/gridlabd.
-This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC
-GiSMo HiPAS GridLAB-D AMI (beauharnois-X).</p>
-</section>
-<section id="folder-descriptions">
-<h2>Folder descriptions<a class="headerlink" href="#folder-descriptions" title="Link to this heading"></a></h2>
-<section id="ambient-data">
-<h3>ambient_data<a class="headerlink" href="#ambient-data" title="Link to this heading"></a></h3>
-<p>Hosts ambient temperature data for capturing the effects of environmental conditions on subsystems, such as battery,
-transformers, charging stations.</p>
-</section>
-<section id="base-load-data">
-<h3>base_load_data<a class="headerlink" href="#base-load-data" title="Link to this heading"></a></h3>
-<p>Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses
-proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
-case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. ``</p>
-<img src="doc_images/baseload_data_proto.png" width="800" alt="Base load data prototype."></section>
-<section id="batt-sys-identification">
-<h3>batt_sys_identification<a class="headerlink" href="#batt-sys-identification" title="Link to this heading"></a></h3>
-<p>Battery system identification module. Hosts the class for generating battery system identification parameters
-from experimental data. This module leverages a genetic algorithm to optimize the battery model parameters.
-The battery model is a 2nd order RC Equivalent circuit model (ECM). One can this module to generate custom NMC
-battery parameters by uploading experimental data to the <code class="docutils literal notranslate"><span class="pre">batt_sys_identification/data</span></code> folder and running the module.
-The module will generate a <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with the battery parameters in the <code class="docutils literal notranslate"><span class="pre">batt_sys_identification/params</span></code> folder.
-The data prototype is shown below. Note that column fields are case-sensitive.</p>
-<p><img alt="batt_sys_data_proto.png" src="doc_images%2Fbatt_sys_data_proto.png" /></p>
-<p>The module will save a new <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with an additional field for the corrected open circuit voltage (OCV) values;
-this field (column) will be labelled <code class="docutils literal notranslate"><span class="pre">ocv_corr</span></code> within the new battery data csv, including the existing columns as shown
-in the data prototype above.</p>
-<p>Once the battery parameters are generated, they can be used in the <code class="docutils literal notranslate"><span class="pre">battery_data</span></code> folder and <code class="docutils literal notranslate"><span class="pre">configs/battery.json</span></code> can
-be modified so the model runs using the new custom parameters.</p>
-</section>
-<section id="charging-sim">
-<h3>charging_sim<a class="headerlink" href="#charging-sim" title="Link to this heading"></a></h3>
-<p>This contains the <code class="docutils literal notranslate"><span class="pre">configs</span></code> folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:</p>
-<section id="battery-py-battery-cell-module">
-<h4><code class="docutils literal notranslate"><span class="pre">battery.py</span></code> - Battery cell module.<a class="headerlink" href="#battery-py-battery-cell-module" title="Link to this heading"></a></h4>
-</section>
-<section id="batterypack-py-battery-pack-module">
-<h4><code class="docutils literal notranslate"><span class="pre">batterypack.py</span></code> - Battery pack module.<a class="headerlink" href="#batterypack-py-battery-pack-module" title="Link to this heading"></a></h4>
-</section>
-<section id="batteryagingsim-py-battery-aging-module">
-<h4><code class="docutils literal notranslate"><span class="pre">batteryAgingSim.py</span></code> - Battery aging module.<a class="headerlink" href="#batteryagingsim-py-battery-aging-module" title="Link to this heading"></a></h4>
-</section>
-<section id="controller-py-controller-module">
-<h4><code class="docutils literal notranslate"><span class="pre">controller.py</span></code> - Controller module.<a class="headerlink" href="#controller-py-controller-module" title="Link to this heading"></a></h4>
-</section>
-<section id="chargingstation-py-charging-station-module">
-<h4><code class="docutils literal notranslate"><span class="pre">chargingStation.py</span></code> - Charging station module.<a class="headerlink" href="#chargingstation-py-charging-station-module" title="Link to this heading"></a></h4>
-</section>
-<section id="electricityprices-py-electricity-prices-module">
-<h4><code class="docutils literal notranslate"><span class="pre">electricityPrices.py</span></code> - Electricity prices module.<a class="headerlink" href="#electricityprices-py-electricity-prices-module" title="Link to this heading"></a></h4>
-</section>
-<section id="optimization-py-optimization-module">
-<h4><code class="docutils literal notranslate"><span class="pre">optimization.py</span></code> - Optimization module.<a class="headerlink" href="#optimization-py-optimization-module" title="Link to this heading"></a></h4>
-</section>
-<section id="orchestrator-py-simulation-orchestrator-module">
-<h4><code class="docutils literal notranslate"><span class="pre">orchestrator.py</span></code> - Simulation orchestrator module.<a class="headerlink" href="#orchestrator-py-simulation-orchestrator-module" title="Link to this heading"></a></h4>
-</section>
-<section id="solar-py-solar-pv-module">
-<h4><code class="docutils literal notranslate"><span class="pre">solar.py</span></code> - Solar PV module.<a class="headerlink" href="#solar-py-solar-pv-module" title="Link to this heading"></a></h4>
-</section>
-<section id="utils-py-hosts-utility-functions-used-by-some-modules">
-<h4><code class="docutils literal notranslate"><span class="pre">utils.py</span></code> - Hosts utility functions used by some modules.<a class="headerlink" href="#utils-py-hosts-utility-functions-used-by-some-modules" title="Link to this heading"></a></h4>
-</section>
-<section id="simulate-py-offline-der-control-optimization-for-cost-minimization-this-is-run-for-offline-mode-no-state-feedback">
-<h4><code class="docutils literal notranslate"><span class="pre">simulate.py</span></code> - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).<a class="headerlink" href="#simulate-py-offline-der-control-optimization-for-cost-minimization-this-is-run-for-offline-mode-no-state-feedback" title="Link to this heading"></a></h4>
-</section>
-</section>
-<section id="dlmodels">
-<h3>DLMODELS<a class="headerlink" href="#dlmodels" title="Link to this heading"></a></h3>
-<p>This includes legacy load forecasts models developed (not needed).</p>
-</section>
-<section id="elec-rates">
-<h3>elec_rates<a class="headerlink" href="#elec-rates" title="Link to this heading"></a></h3>
-<p>Includes .csv files for electricity Time-of-use (TOU) rates. The input data prototype for electricity rates
-is shown below. User must upload a normal full-year sized data (for 365 days) to avoid
-any errors.</p>
-<img src="doc_images/elecrates_data_proto.png" width="100"><p>The data required must be in the format shown above. The <code class="docutils literal notranslate"><span class="pre">electricityPrices.py</span></code> module will read the data and sample
-prices during optimization and simulation. The data should be one full year of TOU rate prices at 15 minute resolution.
-The <code class="docutils literal notranslate"><span class="pre">electricityPrices.py</span></code> module can also help with downscaling the data to 15 minute resolution if the data is at a
-much coarser resolution. The module will save the downscaled data in the <code class="docutils literal notranslate"><span class="pre">elec_rates</span></code> folder.</p>
-</section>
-<section id="feeders">
-<h3>feeders<a class="headerlink" href="#feeders" title="Link to this heading"></a></h3>
-<p>Library of IEEE test feeders and PNNL taxonomy feeders for distribution systems in the GridLAB-D <code class="docutils literal notranslate"><span class="pre">.glm</span></code> format.
-IEEE feeders have spot loads specified at primary distribution level. PNNL taxonomy feeders have spot loads specified at
-primary or secondary distribution level.</p>
-</section>
-<section id="feeder-population">
-<h3>feeder_population<a class="headerlink" href="#feeder-population" title="Link to this heading"></a></h3>
-<p>Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data.
-<code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code> generates the necessary files for a co-simulation run based on the parameters specified in
-<code class="docutils literal notranslate"><span class="pre">feeder_population/config.txt</span></code>. This module uses the
-Requires residential load data not included in repo (limited access).</p>
-</section>
-<section id="solar-data">
-<h3>solar_data<a class="headerlink" href="#solar-data" title="Link to this heading"></a></h3>
-<p>Includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
-data for solar irradiance is from the National Solar Radiation Database (NSRDB) for the San Francisco Bay Area.
-The data prototype is from the National Renewable Energy Laboratory (NREL) and is shown below. Note that column fields
-are case-sensitive.</p>
-<p><img alt="solar_data_proto.png" src="doc_images%2Fsolar_data_proto.png" /></p>
-<p>Month labels are indexed from 1 to 12, inclusive; 1 - January, 12 - December. The original data is in hourly resolution.
-The <em>EV-Ecosim</em> data prototype is in 15 minute intervals by default, with irradiance oversampled 4 times from hourly
-dataset. The GHI represents the “Global Horizontal Irradiance” in W/m^2, which is the total amount of shortwave radiation
-received from above by a surface horizontal to the ground.</p>
-</section>
-<section id="test-cases">
-<h3>test_cases<a class="headerlink" href="#test-cases" title="Link to this heading"></a></h3>
-<section id="co-simulation-cases">
-<h4>Co-simulation cases.<a class="headerlink" href="#co-simulation-cases" title="Link to this heading"></a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">base_case</span></code>- Reads voltage from GridLAB-D and writes power injections at each timestep (no EV charging or DER).</p>
-<p><code class="docutils literal notranslate"><span class="pre">rlsf</span></code> - base_case plus implements a recursive least squares filter to estimate network model online (not used)</p>
-<p><code class="docutils literal notranslate"><span class="pre">battery</span></code> - base_case plus transformer thermal model plus DER integration (included battery and solar).</p>
-<p><code class="docutils literal notranslate"><span class="pre">transformer</span></code> - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model (not used).</p>
-</section>
-</section>
-<section id="analysis">
-<h3>analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h3>
-<p>Scripts for plotting and analysis of co-simulation results. Includes post optimization and simulation cost
-calculation modules and voltage impacts on the distribution grid.</p>
-<p><code class="docutils literal notranslate"><span class="pre">plot_results.py</span></code> - This module is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
-voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
-SIMULATION_FOLDER variable which is the string of the path where the powerflow simulation output voltages at each node
-exist.</p>
-<p><code class="docutils literal notranslate"><span class="pre">load_post_opt_costs.py</span></code> - This module is calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
-respective files and folders. The module also generates plots for the cost analysis.</p>
-<p><code class="docutils literal notranslate"><span class="pre">cost_analysis.py</span></code> - This module contains the <code class="docutils literal notranslate"><span class="pre">CostEstimator</span></code> class, which estimates the cost of the different grid and DER components
-from the simulation.</p>
-</section>
-</section>
-<section id="how-to-run">
-<h2>How to run<a class="headerlink" href="#how-to-run" title="Link to this heading"></a></h2>
-<p>Create a new environment using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">&lt;your</span> <span class="pre">env</span> <span class="pre">name&gt;</span> <span class="pre">-f</span> <span class="pre">environment.yml</span></code>OR
-install packages listed in the environment manually (RECOMMENDED)
-Ensure gridlabd is installed by following recommended installation method.</p>
-<p>For battery test case:</p>
-<ul class="simple">
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code>. This uses the
-<code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary
-distribution network with time-varying base loads, EV charging stations, with the required transformers.</p></li>
-<li><p>Once confirmed that <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code> has run successfully and generates the required <code class="docutils literal notranslate"><span class="pre">IEEE123_secondary.glm</span></code> and
-<code class="docutils literal notranslate"><span class="pre">IEEE123_populated.glm</span></code> files, you are done with the initial pre-simulation run prep.</p></li>
-<li><p>Now navigate one level of out <code class="docutils literal notranslate"><span class="pre">/feeder_population</span></code> and run scenarios.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scenarios.py</span></code></p></li>
-</ul>
-<p>For base case:</p>
-<ul class="simple">
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">EV50_cosimulation/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code>. This uses the
-<code class="docutils literal notranslate"><span class="pre">./feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary distribution network <br />with time-varying base loads</p></li>
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">test_cases/base_case</span></code> and run master_sim.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">master_sim.py</span></code></p></li>
-</ul>
-</section>
-<section id="post-simulation-analysis">
-<h2>Post-simulation analysis<a class="headerlink" href="#post-simulation-analysis" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>This is done with the modules in the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder. Please see the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder section  for more details.</p></li>
-</ul>
-</section>
+  <section id="readme">
+<h1>Readme<a class="headerlink" href="#readme" title="Link to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to EV-Ecosim 1.0.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
