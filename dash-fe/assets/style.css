@@ -73,6 +73,42 @@ button:hover {
     box-shadow: 0px 0px 5px #ccc;
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 320px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -160px;
+    font-size: 14px;
+}
+
+.tooltip .tooltip-text::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+  }
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
 }
 
 .setup-date-picker {
@@ -144,4 +180,12 @@ button:hover {
 
 .Select-value-label {
     color: #e48d81 !important;
+}
+
+.rc-slider-dot-active {
+    border-color: #e48d81;
+}
+
+.rc-slider-mark-text, .rc-slider-mark-text-active {
+    white-space: nowrap;
 }

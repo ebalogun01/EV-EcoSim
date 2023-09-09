@@ -202,23 +202,195 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     print(triggered_id)
     if triggered_id == "preset1-button":
         # Load preset 1
-        return "setup-button selected", "setup-button", "setup-button", None
+        return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", None
     elif triggered_id == "preset2-button":
         # Load preset 2
-        return "setup-button", "setup-button selected", "setup-button", None
+        return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", None
     elif triggered_id == "custom-settings-button":
         # Load custom settings
-        return "setup-button", "setup-button", "setup-button selected", "customSettings"
+        return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
     elif triggered_id == "custom-settings-accordion":
         # Load custom settings
         print(custom_settings_value)
         if custom_settings_value == "customSettings":
-            return "setup-button", "setup-button", "setup-button selected", "customSettings"
+            return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
         else:
             return preset1_class, preset2_class, custom_settings_class, None
     else:
-        return "setup-button", "setup-button", "setup-button"
+        return "setup-button tooltip", "setup-button tooltip", "setup-button tooltip", None
+    
+# Simulation mode selected
+@app.callback(
+    Output(component_id="oneshot-button", component_property="className"),
+    Output(component_id="mpc-rhc-button", component_property="className"),
+    Output(component_id="battery-system-button", component_property="className"),
+    Output(component_id="simulation-container", component_property="style"),
+    Output(component_id="feeder-population-container", component_property="style"),
+    Output(component_id="battery-system-container", component_property="style"),
+    Input(component_id="oneshot-button", component_property="n_clicks"),
+    Input(component_id="mpc-rhc-button", component_property="n_clicks"),
+    Input(component_id="battery-system-button", component_property="n_clicks"),
+    prevent_initial_call=True
+)
+def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
+    triggered_id = ctx.triggered_id
+    print(triggered_id)
+    if triggered_id == "oneshot-button":
+        # Hide Feeder Population
+        return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", {
+            'display': 'grid',
+            'grid-row': '3',
+            'grid-column': '1 / span 6',
+            'grid-column-gap': '20px',
+            'grid-row-gap': '20px',
+            'grid-template-rows': 'repeat(20, auto)',
+            'grid-template-columns': 'repeat(6, minmax(0, 1fr))'
+        }, {
+            'display': 'none',
+        }, {
+            'display': 'none',
+        },
+    elif triggered_id == "mpc-rhc-button":
+        # Show everything
+        return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", {
+            'display': 'grid',
+            'grid-row': '3',
+            'grid-column': '1 / span 6',
+            'grid-column-gap': '20px',
+            'grid-row-gap': '20px',
+            'grid-template-rows': 'repeat(20, auto)',
+            'grid-template-columns': 'repeat(6, minmax(0, 1fr))'
+        }, {
+            'display': 'grid',
+            'grid-row-gap': '20px',
+            'grid-row': '17 / span 2',
+            'grid-column': '4 / span 3'
+        }, {
+            'display': 'none',
+        },
+    elif triggered_id == "battery-system-button":
+        # Load custom settings
+        return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", {
+            'display': 'none',
+        }, {
+            'display': 'none',
+        }, {
+            'display': 'block',
+            'grid-row': '3',
+            'grid-column': '2 / span 4',
+        },
+    else:
+        return "setup-button tooltip", "setup-button tooltip", "setup-button tooltip", {
+            'display': 'grid',
+            'grid-row': '3',
+            'grid-column': '1 / span 6',
+            'grid-column-gap': '20px',
+            'grid-row-gap': '20px',
+            'grid-template-rows': 'repeat(20, auto)',
+            'grid-template-columns': 'repeat(6, minmax(0, 1fr))'
+        }, {
+            'display': 'none',
+        }, {
+            'display': 'none',
+        },
 
+# Temperature data uploaded
+@app.callback(
+    Output(component_id="temperature-data-file", component_property="children"),
+    Input(component_id="temperature-data-upload", component_property="contents"),
+    State(component_id="temperature-data-upload", component_property="filename")
+)
+def temperature_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Solar data uploaded
+@app.callback(
+    Output(component_id="solar-data-file", component_property="children"),
+    Input(component_id="solar-data-upload", component_property="contents"),
+    State(component_id="solar-data-upload", component_property="filename")
+)
+def solar_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Load data uploaded
+@app.callback(
+    Output(component_id="load-data-file", component_property="children"),
+    Input(component_id="load-data-upload", component_property="contents"),
+    State(component_id="load-data-upload", component_property="filename")
+)
+def load_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Price data uploaded
+@app.callback(
+    Output(component_id="price-data-file", component_property="children"),
+    Input(component_id="price-data-upload", component_property="contents"),
+    State(component_id="price-data-upload", component_property="filename")
+)
+def price_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Battery data uploaded
+@app.callback(
+    Output(component_id="battery-data-file", component_property="children"),
+    Input(component_id="battery-data-upload", component_property="contents"),
+    State(component_id="battery-data-upload", component_property="filename")
+)
+def battery_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Feeder population data uploaded
+@app.callback(
+    Output(component_id="feeder-population-data-file", component_property="children"),
+    Input(component_id="feeder-population-data-upload", component_property="contents"),
+    State(component_id="feeder-population-data-upload", component_property="filename")
+)
+def feeder_population_upload(contents, name):
+    if contents is not None:
+        return name
+    else:
+        return "No file chosen"
+    
+# Power factor adjusted
+@app.callback(
+    Output(component_id="power-factor-label", component_property="children"),
+    Input(component_id="power-factor-slider", component_property="value")
+)
+def power_factor_update(value):
+    return value
+
+# Capacity adjusted
+@app.callback(
+    Output(component_id="capacity-label", component_property="children"),
+    Input(component_id="capacity-slider", component_property="value")
+)
+def capacity_update(value):
+    return value
+
+# Run simulation
+@app.callback(
+    Output(component_id="run-simulation-button", component_property="style"),
+    Input(component_id="run-simulation-button", component_property='n_clicks'),
+    # Include state properties needed to run simulation
+)
+def run_simulation(run_button_n_clicks):
+    # TODO: Connect to backend here
+    return {'grid-row': '2'}
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8050)
