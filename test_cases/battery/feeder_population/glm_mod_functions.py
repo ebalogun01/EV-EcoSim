@@ -1,10 +1,17 @@
+"""
+Module contains functions for modifying GridLAB-D power system simulation models
+"""
 import os
 
-"""
-Functions for modifying GridLAB-D power system simulation models
-"""
 
 def load_base_glm(base_file_dir,base_glm_file):
+    """
+    Loads base glm file into a dictionary structure.
+
+    :param base_file_dir:
+    :param base_glm_file:
+    :return:
+    """
     
     os.chdir(base_file_dir)
     f = open(base_glm_file, 'r')
@@ -88,7 +95,19 @@ def load_base_glm(base_file_dir,base_glm_file):
                 print(l)
     return glm_dict,obj_type,globals_list,include_list,sync_list
 
+
 def write_base_glm(glm_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list):
+    """
+
+    :param glm_dict:
+    :param obj_type:
+    :param globals_list:
+    :param include_list:
+    :param out_dir:
+    :param file_name:
+    :param sync_list:
+    :return:
+    """
     os.chdir(out_dir)    
     glm_out = open(file_name,"w+")
     
@@ -134,9 +153,17 @@ def write_base_glm(glm_dict,obj_type,globals_list,include_list,out_dir,file_name
     
     glm_out.close()
 
+
 def write_obj_dict(file,gld_dict,dict_key,obj_type):
-    '''Write dictionary corresponding to GLD objects to .glm file'''
-    
+    """
+    Write dictionary corresponding to GLD objects to .glm file
+
+    :param file:
+    :param gld_dict:
+    :param dict_key:
+    :param obj_type:
+    :return:
+    """
     if dict_key==-1:
         file.write('object '+obj_type+' {\n')
         for i,j in gld_dict.items():
@@ -150,7 +177,14 @@ def write_obj_dict(file,gld_dict,dict_key,obj_type):
         
         
 def write_mod_dict(file,gld_dict,mod_name):
-    '''Write dictionary corresponding to GLD module to .glm file'''
+    """
+    Write dictionary corresponding to GLD module to .glm file'
+
+    :param file:
+    :param gld_dict:
+    :param mod_name:
+    :return:
+    """
     if len(gld_dict)==0:
         file.write('module '+mod_name+';\n\n')
     else:
@@ -159,8 +193,16 @@ def write_mod_dict(file,gld_dict,mod_name):
             file.write('\t'+str(i)+' '+str(j)+';\n')
         file.write('}\n\n')
 
+
 def write_class_dict(file,gld_dict,class_name):
-    '''Write dictionary corresponding to GLD class to .glm file'''
+    """
+    Write dictionary corresponding to GLD class to .glm file.
+
+    :param file:
+    :param gld_dict:
+    :param class_name:
+    :return:
+    """
     if len(gld_dict)==0:
         file.write('class '+class_name+';\n\n')
     else:
@@ -169,8 +211,16 @@ def write_class_dict(file,gld_dict,class_name):
             file.write('\t'+str(i)+' '+str(j)+';\n')
         file.write('}\n\n')
 
+
 def write_filter_dict(file,gld_dict,class_name):
-    '''Write dictionary corresponding to GLD filter to .glm file'''
+    """
+    Write dictionary corresponding to GLD filter to .glm file.
+
+    :param file:
+    :param gld_dict:
+    :param class_name:
+    :return:
+    """
     if len(gld_dict)==0:
         file.write('filter '+class_name+';\n\n')
     else:
@@ -178,10 +228,16 @@ def write_filter_dict(file,gld_dict,class_name):
         for i,j in gld_dict.items():
             file.write('\t'+str(i)+' '+str(j)+';\n')
         file.write('}\n\n')
-            
+
+
 def write_clock_dict(file,gld_dict):
-    '''Write dictionary corresponding to GLD clock to .glm file'''
-    
+    """
+    Write dictionary corresponding to GLD clock to .glm file.
+
+    :param file:
+    :param gld_dict:
+    :return:
+    """
     file.write('clock {\n')
     for i,j in gld_dict.items():
         file.write('\t'+str(i)+' '+str(j)+';\n')
@@ -189,7 +245,15 @@ def write_clock_dict(file,gld_dict):
 
 
 def replace_load_w_meter_old(glm_dict,match_str,rep_str,obj_type):
-    '''Replace all instances of property in glm_dict'''
+    """
+    Replace load with meter in GLM dictionary.
+
+    :param glm_dict:
+    :param match_str:
+    :param rep_str:
+    :param obj_type:
+    :return:
+    """
     replace_prop_list=list()
     for i in glm_dict.keys():
         if match_str in glm_dict[i].values():
@@ -207,8 +271,17 @@ def replace_load_w_meter_old(glm_dict,match_str,rep_str,obj_type):
     del glm_dict[delete_index][delete_prop]            
     return glm_dict
 
+
 def replace_load_w_meter(glm_dict,match_str,rep_str,obj_type):
-    '''Replace all instances of property in glm_dict'''
+    """
+    Replace load with meter in GLM dictionary.
+
+    :param glm_dict:
+    :param match_str:
+    :param rep_str:
+    :param obj_type:
+    :return:
+    """
     replace_prop_list=list()
     for i in glm_dict.keys():
         if match_str in glm_dict[i].values():

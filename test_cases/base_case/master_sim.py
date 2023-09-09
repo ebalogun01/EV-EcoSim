@@ -1,11 +1,12 @@
-# import os
-# import numpy as np
-import gridlabd
-# from event_handlers import EV_Charging_sim
+"""
+Runs the base_case simulation without any EV charging station/DER within the power network.
+"""
 
-print('Ok')
+import gridlabd
+import sys
+sys.path.append('../../../EV50_cosimulation/charging_sim')
+
+print('Starting GridLAB-D')
 gridlabd.command("IEEE123_populated.glm")
 gridlabd.start("wait")
 print("started...")
-
-# EV_Charging_sim.load_result_summary()

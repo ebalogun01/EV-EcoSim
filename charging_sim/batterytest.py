@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from battery import Battery
 import scipy.io
-from batteryAgingSim import BatterySim
+from batteryAgingSim import BatteryAging
 import json
 
 # TODO: load the battery and simulate it using the load profiles from Simona data
@@ -30,7 +30,7 @@ c['SOC'] = 1e-8
 
 # INITIALIZE MODULES
 battery = Battery(config=c)
-aging = BatterySim(0, num_steps=1, res=1/60)
+aging = BatteryAging(0, num_steps=1, res=1 / 60)
 
 current = scipy.io.loadmat(file)['I_full_vec_M1_NMC25degC']
 for i in range(current.shape[0]):

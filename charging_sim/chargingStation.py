@@ -1,10 +1,23 @@
+"""
+Hosts the Charging Station class.
+"""
 from utils import num_steps
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 class ChargingStation:
-    """Include the auxiliary power the charging station consumes, add resolution to config as well..."""
+    """The charging station class produces a load with a power factor parameter that determines its reactive
+    load contribution, if any. It also retains all information of all power injection at its grid node/bus.
+    It is initialized with its location, capacity, etc. This class ingests the battery, solar and controller modules
+    to which it is assigned.
+
+    :param object storage: Storage object assigned to the charging station.
+    :param dict config:
+    :param object controller: Charging station controller object.
+    :param object solar: Charging station solar object. Default is None.
+    :param str status: Charging station status. Default 'idle'.
+    """
     def __init__(self, storage, config, controller, solar=None, status='idle'):
         self.config = config
         self.id = self.config["locator_index"]
@@ -12,6 +25,7 @@ class ChargingStation:
         self.storage = storage
         self.capacity = config["L2_power_cap"] or config["dcfc_power_cap"]
         self.solar = solar
+        self.power_factor = 1.0
         self.status = status
         self.loads = [0]
         self.total_load = [0]
@@ -30,6 +44,11 @@ class ChargingStation:
         return self.power > self.auxiliary_power
 
     def update_load(self, net_grid_load, ev_load):
+        """Updates the charging station loads, including DER assets. MPC mode.
+
+        :param net_grid_load: Net load charging station pulls from the grid.
+        :param ev_load: Electric Vehicle charging demand.
+        """
         self.current_load = net_grid_load + self.auxiliary_power
         self.loads += net_grid_load,  # net load station pulls from grid, not load from EV
         self.total_load += ev_load + self.auxiliary_power,
@@ -41,6 +60,11 @@ class ChargingStation:
         self.storage.pred_power += self.controller.battery_power.value[0, 0],
 
     def update_load_oneshot(self, net_grid_load, ev_load):
+        """Updates the charging station loads, including DER assets. Offline mode (Non-MPC).
+
+        :param net_grid_load: Net load charging station pulls from the grid.
+        :param ev_load: Electric Vehicle charging demand.
+        """
         self.current_load = net_grid_load + self.auxiliary_power
         self.loads.extend(net_grid_load.flatten().tolist())  # net load station pulls from grid, not load from EV
         self.total_load.extend((ev_load + self.auxiliary_power).flatten().tolist())
@@ -57,6 +81,10 @@ class ChargingStation:
             return True
 
     def update_status(self):
+        """
+        Updates the current status of the EV charging station.
+        :return: None.
+        """
         if round(self.power[0], 2) > 0:
             self.status = 'in-use'
             print("Charging station is currently occupied.")
@@ -65,16 +93,28 @@ class ChargingStation:
             print("Charging station is currently idle.")
 
     def set_current_load(self, load):
+        """
+        Sets the current load of the charging station.
+
+        :param load: Load in kW.
+        :return: None.
+        """
         self.current_load = min(load, self.capacity)
 
     def get_current_load(self):
+        """
+        Returns the current load of the charging station.
+
+        :return: Current load (kW) of the charging station.
+        """
         return self.current_load
 
-    def update_cooling_power(self):
-        """Need to define cooling system to vary environmental temps to see how much cooling is needed to maintain
-        temperature."""
+    def save_sim_data(self, save_prefix: str):
+        """
 
-    def save_sim_data(self, save_prefix):
+        :param save_prefix: Path string to save the data from simulation.
+        :return: None.
+        """
         import pandas as pd
         save_file_base = f'{str(self.id)}_{self.loc}'
         data = {'Control_current': self.controller.actions,
@@ -96,6 +136,12 @@ class ChargingStation:
         print('***** Successfully saved simulation outputs to: ', f'charging_station_sim_{save_file_base}.csv')
 
     def visualize(self, option=None):
+        """
+        Visualizing charging station states.
+
+        :param option: plotting option.
+        :return: None.
+        """
         plt.plot(self.controller.actions)
         plt.ylabel("Control current")
         plt.xlabel("Time Steps (count)")

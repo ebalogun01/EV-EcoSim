@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.utils &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for charging_sim.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Maybe stores general configurations and general functions&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">day_hours</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">day_minutes</span> <span class="o">=</span> <span class="n">day_hours</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># minutes</span>
+<span class="n">num_homes</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">num_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">day_minutes</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>  <span class="c1"># number of time intervals in a day = 96</span>
+<span class="n">month_days</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;January&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s2">&quot;February&quot;</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span> <span class="s2">&quot;March&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s2">&quot;April&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;May&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s2">&quot;June&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;July&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+              <span class="s2">&quot;August&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s2">&quot;September&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;October&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;November&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;December&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">}</span>
+
+<span class="n">objectives</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Transformer Aging&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="s2">&quot;Electricity Cost&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="s2">&quot;Battery Degradation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="s1">&#39;Air Pollution&#39;</span><span class="p">:</span> <span class="p">[],</span>
+              <span class="s2">&quot;Mixed&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="s2">&quot;All&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">]}</span>  <span class="c1"># modifies weight placed on multi-obj based on priority/case study</span>
+
+
+<div class="viewcode-block" id="PGE_BEV2_S">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.PGE_BEV2_S">[docs]</a>
+<span class="k">def</span> <span class="nf">PGE_BEV2_S</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Price schedule/TOU rate for PGE EVSE doc can be found here:&quot;&quot;&quot;</span>
+    <span class="n">peak</span> <span class="o">=</span> <span class="mf">0.39601</span>  <span class="c1"># $/kWh</span>
+    <span class="n">off_peak</span> <span class="o">=</span> <span class="mf">0.18278</span>  <span class="c1"># $/kWh</span>
+    <span class="n">super_off_peak</span> <span class="o">=</span> <span class="mf">0.15951</span>  <span class="c1"># $/kWh</span>
+    <span class="n">peak_times</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;4PM-9PM&quot;</span><span class="p">]</span>
+    <span class="n">off_peak_times</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;12AM-9AM&quot;</span><span class="p">,</span> <span class="s2">&quot;2PM-4PM&quot;</span><span class="p">,</span> <span class="s2">&quot;9PM-12AM&quot;</span><span class="p">]</span>
+    <span class="n">super_off_peak_times</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;9AM-2PM&quot;</span><span class="p">]</span>
+    <span class="n">hourly_prices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">24</span><span class="p">,))</span>
+    <span class="n">hourly_prices</span> <span class="o">=</span> <span class="n">load_prices</span><span class="p">(</span><span class="n">peak_times</span><span class="p">,</span> <span class="n">peak</span><span class="p">,</span> <span class="n">hourly_prices</span><span class="p">)</span>
+    <span class="n">hourly_prices</span> <span class="o">=</span> <span class="n">load_prices</span><span class="p">(</span><span class="n">off_peak_times</span><span class="p">,</span> <span class="n">off_peak</span><span class="p">,</span> <span class="n">hourly_prices</span><span class="p">)</span>
+    <span class="n">hourly_prices</span> <span class="o">=</span> <span class="n">load_prices</span><span class="p">(</span><span class="n">super_off_peak_times</span><span class="p">,</span> <span class="n">super_off_peak</span><span class="p">,</span> <span class="n">hourly_prices</span><span class="p">)</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s1">:00&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">24</span><span class="p">)]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">hourly_prices</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Hour of day&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;TOU rate ($/kWh)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># np.save</span>
+    <span class="k">return</span> <span class="n">hourly_prices</span></div>
+
+
+
+<div class="viewcode-block" id="load_prices">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.load_prices">[docs]</a>
+<span class="k">def</span> <span class="nf">load_prices</span><span class="p">(</span><span class="n">time_intervals</span><span class="p">,</span> <span class="n">price</span><span class="p">,</span> <span class="n">price_vector</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="n">time_intervals</span><span class="p">:</span>
+        <span class="n">interval_list</span> <span class="o">=</span> <span class="n">interval</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">interval_list</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;12AM&#39;</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;12AM&#39;</span><span class="p">:</span>
+                <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span>
+                    <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="mi">12</span>
+        <span class="n">price_vector</span><span class="p">[</span><span class="n">interval_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">interval_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">price</span>
+    <span class="k">return</span> <span class="n">price_vector</span></div>
+
+
+
+<div class="viewcode-block" id="build_electricity_cost">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.build_electricity_cost">[docs]</a>
+<span class="k">def</span> <span class="nf">build_electricity_cost</span><span class="p">(</span><span class="n">controller</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="n">demand_charge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Need to update from home load right now; maybe this can be useful in future opt.&quot;&quot;&quot;</span>
+    <span class="n">cost_electricity</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">cp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span>
+                                                               <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span>
+                                                               <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="p">))))</span>
+    <span class="k">if</span> <span class="n">demand_charge</span><span class="p">:</span>
+        <span class="n">demand_charge_cost</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">pos</span><span class="p">(</span><span class="n">load</span> <span class="o">+</span> <span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power_charge</span> <span class="o">+</span>
+                                                   <span class="n">controller</span><span class="o">.</span><span class="n">battery_power_discharge</span> <span class="o">-</span>
+                                                   <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span>
+                                                   <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span><span class="p">)))</span>
+        <span class="n">cost_electricity</span> <span class="o">+=</span> <span class="n">demand_charge_cost</span>
+    <span class="k">return</span> <span class="n">cost_electricity</span></div>
+
+
+
+<div class="viewcode-block" id="build_cost_PGE_BEV2S">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.build_cost_PGE_BEV2S">[docs]</a>
+<span class="k">def</span> <span class="nf">build_cost_PGE_BEV2S</span><span class="p">(</span><span class="n">controller</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="n">penalize_max_power</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_power_pen</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This will need to use a heuristic and take the average conservative estimate for gamma&quot;&quot;&quot;</span>
+    <span class="n">net_grid_load</span> <span class="o">=</span> <span class="n">load</span> <span class="o">+</span> <span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span> <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">-</span> <span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">ev_power</span>
+    <span class="n">TOU_cost</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">energy_prices_TOU</span><span class="p">,</span> <span class="n">net_grid_load</span><span class="p">))</span> <span class="o">*</span> <span class="n">controller</span><span class="o">.</span><span class="n">resolution</span><span class="o">/</span><span class="mi">60</span>     <span class="c1"># ($)</span>
+    <span class="n">smoothness_pen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">controller</span><span class="o">.</span><span class="n">battery_power</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="n">smoothness_alpha</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">price_per_block</span> <span class="o">=</span> <span class="mf">95.56</span>  <span class="c1"># ($/Block)</span>
+    <span class="n">overage_fee</span> <span class="o">=</span> <span class="mf">3.82</span>  <span class="c1"># ($/kW)</span>
+    <span class="n">charging_block</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">pge_gamma</span> <span class="o">*</span> <span class="mi">50</span>  <span class="c1"># gamma is an integer variable that&#39;s at least 1</span>
+    <span class="n">subscription_cost</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">pge_gamma</span> <span class="o">*</span> <span class="n">price_per_block</span>  <span class="c1"># This is in blocks of 50kW which makes it very convenient ($/day)</span>
+    <span class="n">penalty_cost</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">neg</span><span class="p">(</span><span class="n">charging_block</span> <span class="o">-</span> <span class="n">net_grid_load</span><span class="p">)</span> <span class="o">*</span> <span class="n">overage_fee</span><span class="p">)</span>     <span class="c1"># ($)</span>
+    <span class="k">if</span> <span class="n">penalize_max_power</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">subscription_cost</span> <span class="o">+</span> <span class="n">penalty_cost</span> <span class="o">+</span> <span class="n">TOU_cost</span> <span class="o">+</span> <span class="n">max_power_pen</span> <span class="o">*</span> <span class="n">cp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">net_grid_load</span><span class="p">))</span>
+        <span class="c1"># return subscription_cost + penalty_cost + TOU_cost + max_power_pen*cp.max(net_grid_load)</span>
+    <span class="k">return</span> <span class="n">subscription_cost</span> <span class="o">+</span> <span class="n">penalty_cost</span> <span class="o">+</span> <span class="n">TOU_cost</span> <span class="o">+</span> <span class="n">smoothness_pen</span> <span class="o">*</span> <span class="n">smoothness_alpha</span></div>
+
+
+
+<div class="viewcode-block" id="build_objective">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.build_objective">[docs]</a>
+<span class="k">def</span> <span class="nf">build_objective</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">electricity_cost</span><span class="p">,</span> <span class="n">battery_degradation_cost</span><span class="p">,</span> <span class="n">transformer_cost</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Builds the objective function that we will minimize.&quot;&quot;&quot;</span>
+    <span class="n">lambdas</span> <span class="o">=</span> <span class="n">objectives</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">electricity_cost</span> <span class="o">*</span> <span class="n">lambdas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">battery_degradation_cost</span> <span class="o">*</span> <span class="n">lambdas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">transformer_cost</span> <span class="o">*</span> <span class="n">lambdas</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="add_power_profile_to_object">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.utils.add_power_profile_to_object">[docs]</a>
+<span class="k">def</span> <span class="nf">add_power_profile_to_object</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">battery_power_profile</span><span class="p">):</span>
+    <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">31</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Jan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">59</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Feb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">60</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Mar&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">91</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">120</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Apr&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">121</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">151</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;May&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">152</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">181</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Jun&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">182</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">212</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Jul&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">213</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">233</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Aug&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">234</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">263</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Sep&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">264</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">294</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Oct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">295</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">334</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Nov&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">335</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">365</span><span class="p">:</span>
+        <span class="n">battery</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="s1">&#39;Dec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">battery_power_profile</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">PGE_BEV2_S</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

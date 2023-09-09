@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.orchestrator &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.orchestrator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for charging_sim.orchestrator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module hosts the `ChargingSim` class, in charge of orchestrating the entire simulation.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">chargingStation</span> <span class="kn">import</span> <span class="n">ChargingStation</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">batterypack</span> <span class="kn">import</span> <span class="n">Battery</span>
+<span class="kn">from</span> <span class="nn">batteryAgingSim</span> <span class="kn">import</span> <span class="n">BatteryAging</span>
+<span class="kn">import</span> <span class="nn">controller</span> <span class="k">as</span> <span class="nn">control</span>  <span class="c1"># FILE WITH CONTROL MODULE</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">electricityPrices</span> <span class="kn">import</span> <span class="n">PriceLoader</span>
+<span class="kn">from</span> <span class="nn">solar</span> <span class="kn">import</span> <span class="n">Solar</span>
+
+<span class="n">MINUTES_IN_DAY</span> <span class="o">=</span> <span class="mi">1440</span>
+
+
+<div class="viewcode-block" id="ChargingSim"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim">[docs]</a><span class="k">class</span> <span class="nc">ChargingSim</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class organizes the simulation and controls the propagation of other objects&#39; states in a time</span>
+<span class="sd">    sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.</span>
+
+<span class="sd">    :param num_charging_sites: Number of charging nodes within the secondary distribution network.</span>
+<span class="sd">    :param bool solar: If the charging sites have solar PV or not.</span>
+<span class="sd">    :param int resolution: Time resolution of the simulation.</span>
+<span class="sd">    :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.</span>
+<span class="sd">    :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.</span>
+<span class="sd">    :param int month: The month for which the simulation is run.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_charging_sites</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                 <span class="n">num_evs</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">custom_ev_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">custom_ev_data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_solar_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">custom_solar_data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ChargingSim class. Class constructor.</span>
+
+<span class="sd">        :param int num_charging_sites: Number of charging nodes within the secondary distribution network.</span>
+<span class="sd">        :param bool solar: If the charging sites have solar PV or not.</span>
+<span class="sd">        :param int resolution: Time resolution of the simulation.</span>
+<span class="sd">        :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.</span>
+<span class="sd">        :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.</span>
+<span class="sd">        :param int month: The month for which the simulation is run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span> <span class="o">=</span> <span class="n">num_evs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="n">month</span>
+        <span class="k">if</span> <span class="n">solar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solar</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># to be initialized with module later</span>
+        <span class="n">data2018</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>  <span class="c1"># this is only 30 days data</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SpeechData loaded...&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">custom_ev_data</span><span class="p">:</span>
+            <span class="n">charge_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">custom_ev_data_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>    <span class="c1"># Check this to ensure correct path.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">charge_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/SPEECh_load_data/speechWeekdayLoad</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_evs</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge_data</span> <span class="o">=</span> <span class="n">charge_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_specs_per_loc</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Could be used later to specify varying batteries for various nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_start_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_shift</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="n">charge_data</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_charging_sites</span> <span class="o">=</span> <span class="n">num_charging_sites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_objects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_locs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># usually empty if not centralized mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_net_loads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">num_steps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">MINUTES_IN_DAY</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This gets updated later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># to be updated later</span>
+
+<div class="viewcode-block" id="ChargingSim.load_config"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads all object configuration files and set the config attribute within the class. Walks through</span>
+<span class="sd">        the os files, finds the config JSON files, and loads them as the attributes.</span>
+
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># use master config for loading other configs also change all these paths from literal</span>
+        <span class="n">configs_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/charging_sim/configs&#39;</span>
+        <span class="n">current_working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">configs_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">configs_path</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">attribute</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_config&quot;</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_working_dir</span><span class="p">)</span>  <span class="c1"># return back to current working directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_battery_params</span><span class="p">()</span>  <span class="c1"># update the battery params to have model dynamics for all cells loaded already</span></div>
+
+<div class="viewcode-block" id="ChargingSim.load_battery_params"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_battery_params">[docs]</a>    <span class="k">def</span> <span class="nf">load_battery_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This loads the battery params directly into the sim, so parameters will be the same for all</span>
+<span class="sd">        batteries unless otherwise specified. battery_config must be attributed to do this.</span>
+
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;params_&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">params_key</span> <span class="ow">in</span> <span class="n">params_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">])</span>  <span class="c1"># Replace path with true value.</span>
+        <span class="c1"># Reverse directionality is important for numpy.interp function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">])[</span>
+                                                 <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ChargingSim.create_battery_object"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_battery_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_battery_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_prop</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and stores all battery modules/objects in the network.</span>
+
+<span class="sd">        :param idx: Battery identification index.</span>
+<span class="sd">        :param node_prop: Dictionary of Node properties; includes location, node type (L2 or DCFC).</span>
+<span class="sd">        :param controller: Controller assigned to the battery object.</span>
+<span class="sd">        :return: Battery object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">buffer_battery</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">)</span>
+        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_prop</span><span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">]</span>
+        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">num_cells</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">battery_setup</span><span class="p">()</span>  <span class="c1"># Toggle between setup and setuo_2 to scale kWh</span>
+        <span class="c1"># energy capacity using voltage changed this to try scaling voltage instead.</span>
+        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">load_pack_props</span><span class="p">()</span>    <span class="c1"># This is for simulating the entire pack at once.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_objects</span> <span class="o">+=</span> <span class="n">buffer_battery</span><span class="p">,</span>  <span class="c1"># Add to list of battery objects.</span>
+        <span class="k">return</span> <span class="n">buffer_battery</span></div>
+
+<div class="viewcode-block" id="ChargingSim.create_charging_stations"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations">[docs]</a>    <span class="k">def</span> <span class="nf">create_charging_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the charging station objects within the power network (MPC mode).</span>
+
+<span class="sd">        :param list power_nodes: List of buses/nodes which can host charging stations.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loc_list</span> <span class="o">=</span> <span class="n">power_nodes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">loc_list</span><span class="p">)):</span>
+            <span class="n">battery</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_battery_object</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># change this from float param to generic</span>
+            <span class="n">solar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_solar_object</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># create solar object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller_config</span><span class="p">[</span><span class="s1">&#39;opt_solver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;opt_solver&#39;</span><span class="p">]</span>  <span class="c1"># set the optimization solver</span>
+            <span class="n">controller</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">MPC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_config</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">battery</span><span class="p">,</span>
+                                     <span class="n">solar</span><span class="o">=</span><span class="n">solar</span><span class="p">)</span>  <span class="c1"># need to change this to load based on the users controller python file?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;locator_index&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;node&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;DCFC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;DCFC&#39;</span><span class="p">]</span>
+            <span class="n">charging_station</span> <span class="o">=</span> <span class="n">ChargingStation</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="n">solar</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">loc_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="p">[</span><span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;node&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">charging_station</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ChargingSim.create_charging_stations_oneshot"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot">[docs]</a>    <span class="k">def</span> <span class="nf">create_charging_stations_oneshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the charging station objects within the power network (offline mode).</span>
+
+<span class="sd">        :param list power_nodes: List of buses/nodes which can host charging stations.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loc_list</span> <span class="o">=</span> <span class="n">power_nodes</span>
+        <span class="c1"># make a list of dicts with varying capacities</span>
+        <span class="c1"># todo: change the starting point based on existing charging stations</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">loc_list</span><span class="p">)):</span>
+            <span class="n">battery</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_battery_object</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># change this from float param to generic</span>
+            <span class="n">solar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_solar_object</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># create solar object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller_config</span><span class="p">[</span><span class="s1">&#39;opt_solver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;opt_solver&#39;</span><span class="p">]</span>  <span class="c1"># set the optimization solver</span>
+            <span class="n">controller</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">Oneshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller_config</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">battery</span><span class="p">,</span>
+                                     <span class="n">solar</span><span class="o">=</span><span class="n">solar</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>  <span class="c1"># need to change this to load based on the users controller python file?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;locator_index&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;node&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">[</span><span class="s1">&#39;DCFC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;DCFC&#39;</span><span class="p">]</span>
+            <span class="n">charging_station</span> <span class="o">=</span> <span class="n">ChargingStation</span><span class="p">(</span><span class="n">battery</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_config</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">solar</span><span class="o">=</span><span class="n">solar</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">loc_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="p">[</span><span class="n">loc_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;node&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">charging_station</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ChargingSim.initialize_aging_sim"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_aging_sim">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_aging_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the battery aging object.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: make the number of steps a passed in variable</span>
+        <span class="n">num_steps</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span> <span class="o">=</span> <span class="n">BatteryAging</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.initialize_price_loader"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_price_loader">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the price loading module and sets the month to be simulated for memory-efficient sampling.</span>
+
+<span class="sd">        :param int month: Month to be simulated.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the price loading module and sets the month to be simulated for memory-efficient sampling&quot;&quot;&quot;</span>
+        <span class="n">configs_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/charging_sim/configs&#39;</span>
+        <span class="n">current_working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span> <span class="o">=</span> <span class="n">PriceLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span><span class="o">.</span><span class="n">set_month_data</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
+        <span class="n">input_data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">input_data_res</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span><span class="o">.</span><span class="n">downscale</span><span class="p">(</span><span class="n">input_data_res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="n">file_path_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">new_data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">file_path_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;min.csv&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data_path</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;config_path&quot;</span><span class="p">],</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file_path</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">configs_path</span><span class="p">)</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_working_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.initialize_solar_module"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_solar_module">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_solar_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the solar module if solar options is set to True.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solar</span> <span class="o">=</span> <span class="n">Solar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solar module loaded...&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Cannot load solar module because flag is set to False!&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.create_solar_object"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.create_solar_object">[docs]</a>    <span class="k">def</span> <span class="nf">create_solar_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a solar object using the solar class charging_sim.solar.</span>
+
+<span class="sd">        :param int idx: Solar object identifier.</span>
+<span class="sd">        :param loc: Location of solar object within the grid.</span>
+<span class="sd">        :param controller: Controller object of solar system.</span>
+<span class="sd">        :return object: Solar object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solar</span> <span class="o">=</span> <span class="n">Solar</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="p">,</span>
+                      <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>  <span class="c1"># remove Q_initial later</span>
+        <span class="n">solar</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">solar</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="p">,</span> <span class="n">loc</span>  <span class="c1"># using one index to represent both id and location</span>
+        <span class="k">return</span> <span class="n">solar</span></div>
+
+<div class="viewcode-block" id="ChargingSim.reset_loads"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.reset_loads">[docs]</a>    <span class="k">def</span> <span class="nf">reset_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the loads at the different buses being tracked.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_net_loads</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="ChargingSim.get_charging_sites"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charging_sites">[docs]</a>    <span class="k">def</span> <span class="nf">get_charging_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the charging station locations within the grid.</span>
+
+<span class="sd">        :return: Charging station locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_locs</span></div>
+
+<div class="viewcode-block" id="ChargingSim.get_charger_obj_by_loc"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc">[docs]</a>    <span class="k">def</span> <span class="nf">get_charger_obj_by_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the charging station object at given location &#39;loc&#39;.</span>
+
+<span class="sd">        :param str loc: Location of charging station.</span>
+<span class="sd">        :return object: Charging station object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_sites</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ChargingSim.setup"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_nodes_list</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is done pre-simulation to ensure all scenarios are updated accordingly.</span>
+
+<span class="sd">        :param list power_nodes_list: List of buses for which EVSE exists.</span>
+<span class="sd">        :param scenario: Contains specifications for the scenario, such as battery capacity, c-rate, solar, etc.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># changing power nodes list to dict to distinguish L2 for DCFC</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is used to set up charging station locations and simulations&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">()</span>  <span class="c1"># FIRST LOAD THE CONFIG ATTRIBUTES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_scenario</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>  <span class="c1"># scenarios for study</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;oneshot&#39;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One shot optimization loading...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_charging_stations_oneshot</span><span class="p">(</span><span class="n">power_nodes_list</span><span class="p">)</span>     <span class="c1"># this allows to load controller the right way</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_charging_stations</span><span class="p">(</span><span class="n">power_nodes_list</span><span class="p">)</span>  <span class="c1"># this should always be first since it loads the config</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_price_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_aging_sim</span><span class="p">()</span>  <span class="c1"># Battery aging</span></div>
+            <span class="c1"># self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)</span>
+
+<div class="viewcode-block" id="ChargingSim.update_scenario"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">update_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the scenarios dicts to match specifications of a given scenario.</span>
+
+<span class="sd">        :param scenario: The scenario dict to be modified, if given.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scenario</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prices_config</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">solar_config</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="s1">&#39;start_month&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">scenario</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;index&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">battery_config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># Save new solar config.</span>
+            <span class="c1"># Save new prices config.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;New scenario updated...&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.update_steps"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.update_steps">[docs]</a>    <span class="k">def</span> <span class="nf">update_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates for moving simulation forward.</span>
+
+<span class="sd">        :param int steps: Number of steps to move forward.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">+=</span> <span class="n">steps</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">==</span> <span class="n">MINUTES_IN_DAY</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ChargingSim.get_action"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.get_action">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns only the control current.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Function not implemented yet!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.initialize_controllers"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_controllers">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign charging controller to each EVSE. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Function not implemented yet!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.step"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power</span>
+<span class="sd">        grid.</span>
+
+<span class="sd">        :param int stepsize: Number of steps to take.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_loads</span><span class="p">()</span>  <span class="c1"># reset the loads from old time-step</span>
+        <span class="n">elec_price_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span><span class="o">.</span><span class="n">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>    <span class="c1"># time already accounted for</span>
+        <span class="k">for</span> <span class="n">charging_station</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span><span class="p">:</span>  <span class="c1"># TODO: how can this be efficiently parallelized ?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">%</span> <span class="mi">96</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">reset_load</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset time</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">get_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>  <span class="c1"># can set month for multi-month sim later</span>
+            <span class="n">buffer_battery</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">storage</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_start_index</span> <span class="o">=</span> <span class="n">stepsize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+                                         <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1</span> <span class="c1"># this is where time comes in</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">todays_load</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">todays_load</span><span class="p">,</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">capacity</span><span class="p">)</span>   <span class="c1"># only accept capacity of charging station</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="n">todays_load</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stepsize</span><span class="p">):</span>
+                <span class="n">control_action</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">compute_control</span><span class="p">(</span><span class="n">todays_load</span><span class="p">,</span> <span class="n">elec_price_vec</span><span class="p">)</span>
+                <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">load</span> <span class="o">+=</span> <span class="n">todays_load</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">control_action</span><span class="p">)</span>
+                <span class="n">net_load</span> <span class="o">=</span> <span class="n">todays_load</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">power</span> <span class="o">-</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># moving horizon so always only pick the first one</span>
+                <span class="n">charging_station</span><span class="o">.</span><span class="n">update_load</span><span class="p">(</span><span class="n">net_load</span><span class="p">,</span> <span class="n">todays_load</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>   <span class="c1"># in kW</span>
+            <span class="c1"># check whether one year has passed (not relevant since we don&#39;t run one full year yet)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">%</span> <span class="mi">365</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">buffer_battery</span><span class="o">.</span><span class="n">update_capacity</span><span class="p">()</span>  <span class="c1"># update the linear aging vector to include linear aging for previous run</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">buffer_battery</span><span class="p">)</span>  <span class="c1"># simulate battery aging</span>
+            <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_initial_SOC</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">battery_SOC</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_steps</span><span class="p">(</span><span class="n">stepsize</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.multistep"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.multistep">[docs]</a>    <span class="k">def</span> <span class="nf">multistep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used oneshot offline simulation for any given month. It is much faster than the MPC mode and it used to</span>
+<span class="sd">        propagate the states of all objects through the simulation horizon.</span>
+
+<span class="sd">        This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power</span>
+<span class="sd">        grid.</span>
+
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elec_price_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_loader</span><span class="o">.</span><span class="n">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">)</span>  <span class="c1"># time already accounted for</span>
+        <span class="k">for</span> <span class="n">charging_station</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span><span class="p">:</span>  <span class="c1"># TODO: how can this be efficiently parallelized ?</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">get_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">desired_shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># can set month for multi-month sim later</span>
+            <span class="n">buffer_battery</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">storage</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+                                         <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day_year_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1</span>  <span class="c1"># this is where time comes in</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">todays_load</span><span class="p">,</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">capacity</span><span class="p">)</span>
+            <span class="n">todays_load</span> <span class="o">=</span> <span class="n">todays_load</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">control_actions</span> <span class="o">=</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">compute_control</span><span class="p">(</span><span class="n">todays_load</span><span class="p">,</span> <span class="n">elec_price_vec</span><span class="p">)</span>
+            <span class="n">charging_station</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="n">todays_load</span>
+            <span class="n">battery_powers</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">):</span>
+                <span class="n">charging_station</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">control_actions</span><span class="p">[</span><span class="n">interval</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aging_sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">buffer_battery</span><span class="p">)</span>
+                <span class="n">battery_powers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">power</span><span class="p">)</span>
+            <span class="n">net_load</span> <span class="o">=</span> <span class="n">todays_load</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">power</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">charging_station</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span>
+            <span class="n">charging_station</span><span class="o">.</span><span class="n">update_load_oneshot</span><span class="p">(</span><span class="n">net_load</span><span class="p">,</span> <span class="n">todays_load</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChargingSim.load_results_summary"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.orchestrator.ChargingSim.load_results_summary">[docs]</a>    <span class="k">def</span> <span class="nf">load_results_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path_prefix</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param save_path_prefix: Includes prefix to desired path for saving results.</span>
+<span class="sd">        :param boolean plot: Decides if some results are plotted or not.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: selecting option for desired statistics</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Jan&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar&#39;</span><span class="p">,</span> <span class="s1">&#39;Apr&#39;</span><span class="p">,</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="s1">&#39;Jun&#39;</span><span class="p">,</span> <span class="s1">&#39;Jul&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug&#39;</span><span class="p">,</span> <span class="s1">&#39;Sep&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct&#39;</span><span class="p">,</span> <span class="s1">&#39;Nov&#39;</span><span class="p">,</span> <span class="s1">&#39;Dec&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">charging_station</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stations_list</span><span class="p">:</span>
+            <span class="n">charging_station</span><span class="o">.</span><span class="n">save_sim_data</span><span class="p">(</span><span class="n">save_path_prefix</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_objects</span><span class="p">:</span>
+            <span class="n">battery</span><span class="o">.</span><span class="n">save_sim_data</span><span class="p">(</span><span class="n">save_path_prefix</span><span class="p">)</span>
+
+        <span class="c1"># SOME ADDITIONAL PLOTS BELOW</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">SOC_track</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;battery SoC&#39;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">calendar_aging</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;calendar aging&#39;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;SOC&#39;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Calendar aging&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path_prefix</span> <span class="o">+</span> <span class="s2">&quot;/Calendar_SOC_plot.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">SOC_track</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;battery SOC&#39;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">cycle_aging</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;cycle aging&#39;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;SOC&#39;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Cycle aging&#39;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path_prefix</span> <span class="o">+</span> <span class="s2">&quot;/Cycle_SOC_plot.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total calendar aging is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">calendar_aging</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total cycle aging is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">cycle_aging</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final capacity (SOH) is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">SOH</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total current throughput is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">battery</span><span class="o">.</span><span class="n">total_amp_thruput</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

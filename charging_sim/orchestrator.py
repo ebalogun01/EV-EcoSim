@@ -1,10 +1,11 @@
-"""This file hosts the charging simulation class, in charge of orchestrating the entire simulation."""
+"""This module hosts the `ChargingSim` class, in charge of orchestrating the entire simulation."""
+
 from chargingStation import ChargingStation
 import json
 import os
 import numpy as np
 from batterypack import Battery
-from batteryAgingSim import BatterySim
+from batteryAgingSim import BatteryAging
 import controller as control  # FILE WITH CONTROL MODULE
 import matplotlib.pyplot as plt
 from electricityPrices import PriceLoader
@@ -12,23 +13,44 @@ from solar import Solar
 
 MINUTES_IN_DAY = 1440
 
-# TODO: COMPLETE SEPERATE CONFIGS FOR EACH CHARGING STATION GIVEN CONFIG (fast charging vs L2) and include relevant load data
-# clean code COMPLETELY
-# TODO: track the loads as well
-
 
 class ChargingSim:
-    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6):
-        """Design charging sim as orchestrator for battery setup"""
-        # TODO: add feature for each charging station to have it's own load. Users may upload each as each file then
-        #  we do index matching for charging stations and location.
-        num_evs = 1600
+    """
+    This class organizes the simulation and controls the propagation of other objects' states in a time
+    sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.
+
+    :param num_charging_sites: Number of charging nodes within the secondary distribution network.
+    :param bool solar: If the charging sites have solar PV or not.
+    :param int resolution: Time resolution of the simulation.
+    :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
+    :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
+    :param int month: The month for which the simulation is run.
+
+    """
+
+    def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6,
+                 num_evs=1600, custom_ev_data=False, custom_ev_data_path=None, custom_solar_data=False,
+                 custom_solar_data_path=None):
+        """
+        Initializes the ChargingSim class. Class constructor.
+
+        :param int num_charging_sites: Number of charging nodes within the secondary distribution network.
+        :param bool solar: If the charging sites have solar PV or not.
+        :param int resolution: Time resolution of the simulation.
+        :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
+        :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
+        :param int month: The month for which the simulation is run.
+        """
+        self.num_evs = num_evs
         self.month = month
         if solar:
             self.solar = True  # to be initialized with module later
-        data2018 = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{num_evs}.csv')  # this is only 30 days data
+        data2018 = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')  # this is only 30 days data
         print('SpeechData loaded...')
-        charge_data = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{num_evs}.csv')
+        if custom_ev_data:
+            charge_data = np.loadtxt(f'{path_prefix}/{custom_ev_data_path}')    # Check this to ensure correct path.
+        else:
+            charge_data = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')
         self.path_prefix = path_prefix
         self.charge_data = charge_data
         self.solar_config = None
@@ -61,9 +83,12 @@ class ChargingSim:
         self.scenario = None    # to be updated later
 
     def load_config(self):
-        """Loads all the relevant configurations and includes them in the simulation attributes.
-        Inputs: None.
-        Returns: None."""
+        """
+        Loads all object configuration files and set the config attribute within the class. Walks through
+        the os files, finds the config JSON files, and loads them as the attributes.
+
+        :return: None.
+        """
 
         # use master config for loading other configs also change all these paths from literal
         configs_path = f'{self.path_prefix}/charging_sim/configs'
@@ -79,43 +104,46 @@ class ChargingSim:
         self.load_battery_params()  # update the battery params to have model dynamics for all cells loaded already
 
     def load_battery_params(self):
-        """ This loads the battery params directly into the sim, so parameters will be the same for all
+        """
+        This loads the battery params directly into the sim, so parameters will be the same for all
         batteries unless otherwise specified. battery_config must be attributed to do this.
-        Inputs: None.
-        Returns: None."""
+
+        :return: None.
+        """
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
             self.battery_config[params_key] = np.loadtxt(
-                self.path_prefix + self.battery_config[params_key])  # replace path with true value
-        # do the OCV maps as well; reverse directionality is important for numpy.interp function
+                self.path_prefix + self.battery_config[params_key])  # Replace path with true value.
+        # Reverse directionality is important for numpy.interp function.
         self.battery_config["OCV_map_voltage"] = np.loadtxt(self.path_prefix + self.battery_config["OCV_map_voltage"])[
                                                  ::-1]
         self.battery_config["OCV_map_SOC"] = np.loadtxt(self.path_prefix + self.battery_config["OCV_map_SOC"])[::-1]
 
-        # this should make those inputs just be the params
-
     def create_battery_object(self, idx, node_prop, controller=None):
-        """Creates and stores all battery modules/objects in the network.
-        Inputs: idx - Battery identification index.
-                none_prop - Dictionary of Node properties; includes location, node type (L2 or DCFC).
-                controller - Controller assigned to the battery object.
-        Returns: buffer_battery - The battery object that is created.
         """
-        #  this creates and stores all battery objects in the network
+        Creates and stores all battery modules/objects in the network.
+
+        :param idx: Battery identification index.
+        :param node_prop: Dictionary of Node properties; includes location, node type (L2 or DCFC).
+        :param controller: Controller assigned to the battery object.
+        :return: Battery object.
+        """
         buffer_battery = Battery(config=self.battery_config, controller=controller)
         buffer_battery.id, buffer_battery.node = idx, node_prop['node']
-        buffer_battery.num_cells = buffer_battery.battery_setup()  # toggle between setup and setuo_2 to scale kWh energy capacity using voltage changed this to try scaling voltage instead
-        buffer_battery.load_pack_props()    # this is for simulating the entire pack at once
-        self.battery_objects += buffer_battery,  # add to list of battery objects
+        buffer_battery.num_cells = buffer_battery.battery_setup()  # Toggle between setup and setuo_2 to scale kWh
+        # energy capacity using voltage changed this to try scaling voltage instead.
+        buffer_battery.load_pack_props()    # This is for simulating the entire pack at once.
+        self.battery_objects += buffer_battery,  # Add to list of battery objects.
         return buffer_battery
 
     def create_charging_stations(self, power_nodes):
-        # todo: upgrade this in the future to account for variable steps
-        # add flexibility for multiple units at one charging node?
-        # No need, can aggregate them and have a different arrival sampling method
+        """
+        Creates the charging station objects within the power network (MPC mode).
+
+        :param list power_nodes: List of buses/nodes which can host charging stations.
+        :return: None
+        """
         loc_list = power_nodes
-        # make a list of dicts with varying capacities
-        # todo: change the starting point based on existing charging stations
         for i in range(len(loc_list)):
             battery = self.create_battery_object(i, loc_list[i])  # change this from float param to generic
             solar = self.create_solar_object(i, loc_list[i])  # create solar object
@@ -132,7 +160,12 @@ class ChargingSim:
         self.charging_locs = list(self.charging_sites.keys())
 
     def create_charging_stations_oneshot(self, power_nodes):
-        # todo: update this for oneshot simulation
+        """
+        Creates the charging station objects within the power network (offline mode).
+
+        :param list power_nodes: List of buses/nodes which can host charging stations.
+        :return: None.
+        """
         loc_list = power_nodes
         # make a list of dicts with varying capacities
         # todo: change the starting point based on existing charging stations
@@ -152,11 +185,22 @@ class ChargingSim:
         self.charging_locs = list(self.charging_sites.keys())
 
     def initialize_aging_sim(self):
+        """
+        Initialize the battery aging object.
+
+        :return:
+        """
         # TODO: make the number of steps a passed in variable
         num_steps = 1
-        self.aging_sim = BatterySim(0, num_steps)
+        self.aging_sim = BatteryAging(0, num_steps)
 
     def initialize_price_loader(self, month):
+        """
+        Loads the price loading module and sets the month to be simulated for memory-efficient sampling.
+
+        :param int month: Month to be simulated.
+        :return: None.
+        """
         """Loads the price loading module and sets the month to be simulated for memory-efficient sampling"""
         configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
@@ -175,7 +219,11 @@ class ChargingSim:
             os.chdir(current_working_dir)
 
     def initialize_solar_module(self):
-        """This initializes the solar module if there is solar"""
+        """
+        Initializes the solar module if solar options is set to True.
+
+        :return:
+        """
         if self.solar:
             self.solar = Solar(self.solar_config, path_prefix=self.path_prefix, num_steps=self.num_steps)
             print("Solar module loaded...")
@@ -183,24 +231,52 @@ class ChargingSim:
             raise IOError('Cannot load solar module because flag is set to False!')
 
     def create_solar_object(self, idx, loc, controller=None):
+        """
+        Creates a solar object using the solar class charging_sim.solar.
+
+        :param int idx: Solar object identifier.
+        :param loc: Location of solar object within the grid.
+        :param controller: Controller object of solar system.
+        :return object: Solar object.
+        """
         solar = Solar(config=self.solar_config, path_prefix=self.path_prefix,
                       controller=controller, num_steps=self.num_steps)  # remove Q_initial later
         solar.id, solar.node = idx, loc  # using one index to represent both id and location
         return solar
 
     def reset_loads(self):
+        """
+        Resets the loads at the different buses being tracked.
+
+        :return:
+        """
         self.site_net_loads = []
 
     def get_charging_sites(self):
+        """
+        Returns the charging station locations within the grid.
+
+        :return: Charging station locations.
+        """
         return self.charging_locs
 
     def get_charger_obj_by_loc(self, loc):
+        """
+        Returns the charging station object at given location 'loc'.
+
+        :param str loc: Location of charging station.
+        :return object: Charging station object.
+        """
         return self.charging_sites[loc]
 
-    def get_storage_sites(self):
-        return self.storage_sites
-
     def setup(self, power_nodes_list, scenario=None):
+        """
+        This is done pre-simulation to ensure all scenarios are updated accordingly.
+
+        :param list power_nodes_list: List of buses for which EVSE exists.
+        :param scenario: Contains specifications for the scenario, such as battery capacity, c-rate, solar, etc.
+        :return: None.
+        """
         # changing power nodes list to dict to distinguish L2 for DCFC
         """This is used to set up charging station locations and simulations"""
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
@@ -214,37 +290,55 @@ class ChargingSim:
                 self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
             self.initialize_price_loader(self.prices_config["month"])
             self.initialize_aging_sim()  # Battery aging
-            self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
+            # self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
 
     def update_scenario(self, scenario=None):
+        """
+        Updates the scenarios dicts to match specifications of a given scenario.
+
+        :param scenario: The scenario dict to be modified, if given.
+        :return: None.
+        """
         if scenario:
             self.prices_config['month'] = scenario['start_month']
             if self.solar_config:
                 self.solar_config['start_month'] = scenario['start_month']
+
             for key in scenario.keys():
                 if key != 'index':
                     self.battery_config[key] = scenario[key]
+            # Save new solar config.
+            # Save new prices config.
             print('New scenario updated...')
 
-    def update_site_loads(self, load):
-        self.site_net_loads += load,
-
     def update_steps(self, steps):
+        """
+        Updates for moving simulation forward.
+
+        :param int steps: Number of steps to move forward.
+        :return: None.
+        """
         self.steps += steps
         if self.steps == MINUTES_IN_DAY / self.resolution:
             self.day_year_count += 1
 
     @staticmethod
     def get_action(self):
-        """returns only the control current"""
+        """Returns only the control current."""
         raise NotImplementedError("Function not implemented yet!")
 
     def initialize_controllers(self):
-        """assign charging controller to each EVSE"""
+        """Assign charging controller to each EVSE. """
         raise NotImplementedError("Function not implemented yet!")
 
     def step(self, stepsize):
-        """Perfect foresight daily stepping...should I do full-shot run (one optimization per day?)"""
+        """
+        This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power
+        grid.
+
+        :param int stepsize: Number of steps to take.
+        :return: None.
+        """
         self.reset_loads()  # reset the loads from old time-step
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)    # time already accounted for
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
@@ -275,9 +369,17 @@ class ChargingSim:
             charging_station.controller.battery_initial_SOC = charging_station.controller.battery_SOC.value[1, 0]
         self.time += 1
         self.update_steps(stepsize)
-        return self.site_net_loads
 
     def multistep(self):
+        """
+        This is used oneshot offline simulation for any given month. It is much faster than the MPC mode and it used to
+        propagate the states of all objects through the simulation horizon.
+
+        This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power
+        grid.
+
+        :return: None.
+        """
         elec_price_vec = self.price_loader.get_prices(self.time, self.num_steps)  # time already accounted for
         for charging_station in self.stations_list:  # TODO: how can this be efficiently parallelized ?
             p = charging_station.controller.solar.get_power(self.time, self.num_steps, desired_shape=(self.num_steps, 1))  # can set month for multi-month sim later
@@ -297,6 +399,12 @@ class ChargingSim:
             charging_station.update_load_oneshot(net_load, todays_load)
 
     def load_results_summary(self, save_path_prefix, plot=False):
+        """
+
+        :param save_path_prefix: Includes prefix to desired path for saving results.
+        :param boolean plot: Decides if some results are plotted or not.
+        :return: None.
+        """
         # TODO: selecting option for desired statistics
         months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         for charging_station in self.stations_list:

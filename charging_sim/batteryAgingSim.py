@@ -1,38 +1,39 @@
-""" This file hosts the battery degradation module as described in Balogun Et. Al:
-https://doi.org/10.36227/techrxiv.23596725.v2 """
+"""
+This module contains the BatteryAging class. The battery aging objects enact on the battery object and update the
+battery capacity and resistance at each simulation time-step.
+"""
+
 import numpy as np
 import math
 
 
-# TODO: How to model power delivery as a function of time, temperature, SOC and SOH at every time step. Cap as a...
-#  Is there a relationship between controls cost (temp control etc) with increasing power delivery by battery?
-#  How can we incorporate this response delay due to chemistry or reaction responsiveness into simulation?
-#  Think about creating a few degradation models from literature.
-#  Need to obtain battery discharge curves for real simulation; can we get sample discharge curves or is it necessary?
-#  Need to consider Peukert's law: https://en.wikipedia.org/wiki/Peukert%27s_law
-#  How does solution improve with horizon length (how far is looking ahead important (for MPC no point but computation
-#  can become expensive. Horizon length 'N' vs. optimal savings analysis.
-#  I see how RL can be used here to learn a policy with time. Opt. Algo with improve itself based on feedback from aging
-#  sim module.
+class BatteryAging:
+    """
+    Current aging model is for LiNiMnCoO2 (NMC) battery cells. More aging models will be added in the future.
 
-
-class BatterySim:
-    """Current aging model is for LiNiMnCoO2 battery cells. Need to populate more aging models for analyses.
     Link to Paper: https://www.sciencedirect.com/science/article/pii/S0378775314001876
 
-    Params:
-        beta_cap: capacity fade aging factor for cycle aging
-        alpha_cap capacity fade aging factor for calendar aging
-        beta_res: resistance growth aging factor for cycle aging
-        alpha_res: resistance growth aging factor for calendar aging
-    Assumptions:
-        Homogenous battery with dynamics modelled as one big cell.
-        Constant temperature profile in vicinity of battery.
-        """
+    Default Params from paper:
+        * beta_cap: capacity fade aging factor for cycle aging
+        * alpha_cap capacity fade aging factor for calendar aging
+        * beta_res: resistance growth aging factor for cycle aging
+        * alpha_res: resistance growth aging factor for calendar aging
 
+    Assumptions:
+        * Homogenous battery with dynamics modelled.
+        * Uniform aging across all cells.
+        * Constant temperature profile in vicinity of battery.
+
+    """
     def __init__(self, datetime, num_steps, res=15):
+        """
+        Constructor for the BatteryAging class.
+
+        :param datetime: Unused for now.
+        :param num_steps: Number of steps in the simulation.
+        :param res: Resolution of the simulation in minutes.
+        """
         self.num_steps = num_steps
-        # self.battery_objects = battery_objects  # storing all battery objects in a list maintained by sim
         self.time = 1  # because calendar aging is in days, so for each num time_steps for resolution
         self.ambient_temp = 23 + 273  # absolute temp in K
         self.aging_params = {}  # to be updated later
@@ -40,12 +41,14 @@ class BatterySim:
         self.res = res  # minutes
         self.cap = 4.85  # Ah
         self.beta_caps = []
-        # BM = BatteryMaps()
-        # self.response_surface = BM.get_response_surface()[0]  # this is used to infer voltage from other states
-        # Include battery chemistry later.
 
     def get_cyc_aging(self, battery):
-        """Detailed aging for simulation environment. Per Johannes Et. Al"""
+        """
+        Calculates the resistance growth and capacity fade from cycle aging.
+
+        :param battery: THe batt
+        :return:
+        """
         SOC_vector = np.array(
             battery.SOC_list[-(self.num_steps + 1):])  # change this to the list? Done after one complete day
         # print("SOC is: ", SOC_vector)
@@ -82,7 +85,12 @@ class BatterySim:
         return capacity_fade, np.sum(resistance_growth)
 
     def update_capacity(self, battery):
-        """This uses the electrochemical and impedance-based model per Johannes et. Al"""
+        """
+        Updates the capacity of the battery based on the aging model adopted from Schmalsteig Et. Al.
+
+        :param battery: Battery object.
+        :return: None. Updates the battery object capacity.
+        """
         cap_fade = self.get_aging_value(battery)[0]
         battery.SOH -= cap_fade  # change this to nom rating
         battery.SOH_track += battery.SOH,
@@ -92,16 +100,26 @@ class BatterySim:
         battery.true_aging.append(cap_fade)
 
     def update_resistance(self, battery):
-        """This uses the electrochemical and impedance-based model per Johannes et. Al"""
+        """
+        Updates the resistance of the battery based on the aging model adopted from Schmalsteig Et. Al.
+
+        :param battery: Battery object.
+        :return: None. Updates the battery object resistance.
+        """
         res_growth = self.get_aging_value(battery)[1]
         battery.R_cell += res_growth
         battery.resistance_growth += res_growth
 
     def get_calendar_aging(self, battery):
-        """Estimates the calendar aging of the battery using Schmalsteig Model (Same as above)"""
+        """
+        Returns the calendar aging of the battery object.
+
+        :param battery: The battery object.
+        :return: A tuple of capacity fade and resistance growth due to calendar aging.
+        """
         voltages = np.array(battery.voltages[-2:]) / battery.topology[0]   # this should include the prior voltage no?
         avg_voltage = np.average(voltages)  # mean voltage for aging
-        # I THINK THIS MUST BE ESTIMATED IN DAYS? AND I THINK IT HAS TO BE CUMULATIVE? NOT PER TIMESTEP?
+        # THIS MUST BE ESTIMATED IN DAYS
         alpha_cap = (7.543 * avg_voltage - 23.75) * 10**6 * math.exp(-6976 / self.ambient_temp)  # aging factors
         alpha_res = (5.270 * avg_voltage - 16.32) * 10**5 * math.exp(-5986 / self.ambient_temp)  # temp in K
         alpha_cap /= 4880.285045  # scaling factor to match our data
@@ -115,11 +133,22 @@ class BatterySim:
             return capacity_fade, resistance_growth  # due to interval which degradation is implemented
         return sum(capacity_fade), sum(resistance_growth)
 
-    def get_total_aging(self, battery):
+    def get_total_aging(self, battery: object):
+        """
+        Returns the total capacity fade of the battery object. This includes both cycle and calendar aging.
+
+        :param object battery: The battery (pack) object.
+        :return: Total calendar + cycle aging of the battery.
+        """
         return self.get_cyc_aging(battery) + self.get_calendar_aging(battery)
 
     def get_aging_value(self, battery):
-        """returns the actual aging value lost after a cvxpy run..."""
+        """
+        Returns the total capacity fade and resistance growth of the battery object.
+
+        :param battery: The battery (pack) object.
+        :return: List of total capacity fade and resistance growth of the battery.
+        """
         cap_fade_cycle, res_growth_cycle = self.get_cyc_aging(battery)  # this infers first
         cap_fade_calendar, res_growth_cal = self.get_calendar_aging(battery)
         # print("Cycle aging: {}, Calendar aging: {}".format(cap_fade_cycle, cap_fade_calendar))
@@ -128,8 +157,12 @@ class BatterySim:
         return [capacity_fade, res_growth]
 
     def run(self, battery):
-        """need to slightly change this for now
-        MAKE SURE EACH AGING SIM HAS A RUN FUNCTION EACH TIME"""
+        """
+        Runs the aging model for the battery object.
+
+        :param battery: The battery (pack) object.
+        :return: None. Updates the battery object.
+        """
         self.update_capacity(battery)
         # print("Battery Aging and Response Estimated")
 

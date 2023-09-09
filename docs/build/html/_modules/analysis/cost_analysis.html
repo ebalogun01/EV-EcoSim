@@ -1,47 +1,102 @@
 <!DOCTYPE html>
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>analysis.cost_analysis &#8212; EV-Ecosim 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis.cost_analysis &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">analysis.cost_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for analysis.cost_analysis</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;This file hosts the CostEstimator Class, which estimates the cost of the different grid and DER components</span>
-<span class="sd">from the simulation.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components</span>
+<span class="sd">from the simulation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">})</span>
+
+<span class="n">PLOT_FONT_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="n">PLOT_FONT_SIZE</span><span class="p">})</span>
 
 
 <div class="viewcode-block" id="CostEstimator"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator">[docs]</a><span class="k">class</span> <span class="nc">CostEstimator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is used to calculate levelized cost of DER assets in EV-Ecosim.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to calculate levelized cost of DER assets in EV-Ecosim.</span>
+
+<span class="sd">    :param num_days: The number of days for which the calculation is run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_days</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor method.</span>
+
+<span class="sd">        :param num_days: The number of days for which the calculation is run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_rating</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trans_price_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dcfc</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># boolean for determining if transformer is 480 or 240V</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_days</span> <span class="o">=</span> <span class="n">num_days</span>
@@ -58,8 +113,12 @@
         <span class="c1"># todo: cannot find good source for 2400/240V transformer prices</span>
 
 <div class="viewcode-block" id="CostEstimator.calculate_battery_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_battery_cost">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_battery_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input: result_dir - directory in which to save the results dictionary</span>
-<span class="sd">        Returns: result_dict - dictionary of results &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the battery costs and updates the different cost components, including LCOE.</span>
+
+<span class="sd">        :param result_dir: Directory in which to save the results dictionary.</span>
+<span class="sd">        :return dict result_dict: Dictionary of results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -93,19 +152,23 @@
         <span class="k">return</span> <span class="n">result_dict</span></div>
 
 <div class="viewcode-block" id="CostEstimator.calculate_solar_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_solar_cost">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</span>
-<span class="sd">        Values are pulled from the NREL solar cost calculator.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Values are pulled from the NREL solar cost calculator.</span>
+<span class="sd">        Ref: https://www.nrel.gov/solar/market-research-analysis/solar-levelized-cost.html</span>
+<span class="sd">        To be deprecated soon.</span>
 
-<div class="viewcode-block" id="CostEstimator.calculate_LCOE"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_LCOE">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_LCOE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate levelized cost of electricity for storage&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
 
 <div class="viewcode-block" id="CostEstimator.calculate_electricity_cost_PGEBEV2s"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_electricity_cost_PGEBEV2s">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_electricity_cost_PGEBEV2s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">,</span> <span class="n">PGE_separate_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the overall electricity PGEBEV2S cost for a given scenario.</span>
-<span class="sd">        Inputs: result_dir - Directory in which the result is saved.</span>
-<span class="sd">                PGE_separate_file - Boolean to note if PGE cost block is in a separate file.</span>
-<span class="sd">        Returns: result_dict - A dictionary comprising all the cost components and their dollar amounts.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the overall electricity PGEBEV2S cost for a given scenario.</span>
+
+<span class="sd">        :param str result_dir: Directory in which the result is saved.</span>
+<span class="sd">        :param PGE_separate_file:</span>
+<span class="sd">        :return dict result_dict: A dictionary comprising all the cost components and their dollar amounts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
         <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -162,12 +225,14 @@
 
 <div class="viewcode-block" id="CostEstimator.plot_loads"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_loads">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_loads</span><span class="p">(</span><span class="n">total_load</span><span class="p">,</span> <span class="n">net_load</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates plots overlaying load and net loads for post-simulation visualization.</span>
-<span class="sd">        Inputs: total_load - Overall EV load demand at node, can include building load if controllable.</span>
-<span class="sd">                net_load - total_load minus DER buffer.</span>
-<span class="sd">                prefix - Plot file label prefix.</span>
-<span class="sd">                labels - Legend labels for each plotted curve.</span>
-<span class="sd">        Returns: None - Creates and saves plots.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates plots overlaying load and net loads for post-simulation visualization.</span>
+
+<span class="sd">        :param total_load: Overall EV load demand at node, can include building load if controllable.</span>
+<span class="sd">        :param net_load: total_load minus DER buffer.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
         <span class="n">num_days</span> <span class="o">=</span> <span class="mi">1</span>
@@ -203,12 +268,15 @@
 
 <div class="viewcode-block" id="CostEstimator.plot_soc"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_soc">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_soc</span><span class="p">(</span><span class="n">soc</span><span class="p">,</span> <span class="n">soc_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the controller predicted and true state of charge of the battery system.</span>
-<span class="sd">        Inputs: soc - True state of charge.</span>
-<span class="sd">                soc_pred - Controller predicted state of charge.</span>
-<span class="sd">                prefix - Plot file label prefix.</span>
-<span class="sd">                labels - Legend labels for each plotted curve.</span>
-<span class="sd">        Returns: None - Creates and saves plots&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the controller predicted and true state of charge of the battery system.</span>
+
+<span class="sd">        :param soc: True state of charge.</span>
+<span class="sd">        :param soc_pred: Controller predicted state of charge.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">error_abs_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">soc</span> <span class="o">-</span> <span class="n">soc_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">soc</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">MAPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">soc</span> <span class="o">-</span> <span class="n">soc_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">soc</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;abs_percent_err_soc.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">error_abs_mean</span><span class="p">])</span>
@@ -235,12 +303,15 @@
 
 <div class="viewcode-block" id="CostEstimator.plot_power"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.plot_power">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">plot_power</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">power_pred</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the controller predicted and true power of the battery system.</span>
-<span class="sd">        Inputs: power - True power.</span>
-<span class="sd">                soc_pred - Controller predicted power.</span>
-<span class="sd">                prefix - Plot file label prefix.</span>
-<span class="sd">                labels - Legend labels for each plotted curve.</span>
-<span class="sd">        Returns: None - Creates and saves plots&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the controller predicted and true power of the battery system.</span>
+
+<span class="sd">        :param power: True power.</span>
+<span class="sd">        :param power_pred: Controller predicted power.</span>
+<span class="sd">        :param prefix: Plot file label prefix.</span>
+<span class="sd">        :param labels: Legend labels for each plotted curve.</span>
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">error_abs_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">power</span> <span class="o">-</span> <span class="n">power_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">MAPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">power</span> <span class="o">-</span> <span class="n">power_pred</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;abs_percent_err_power.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">error_abs_mean</span><span class="p">])</span>
@@ -265,19 +336,27 @@
             <span class="k">return</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;power_plot.png&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CostEstimator.transformer_degradation_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.transformer_degradation_cost">[docs]</a>    <span class="k">def</span> <span class="nf">transformer_degradation_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trans_cost_per_kVA</span>
-        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
-
 <div class="viewcode-block" id="CostEstimator.solar_cost"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.solar_cost">[docs]</a>    <span class="k">def</span> <span class="nf">solar_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the overall capital cost of the solar system.</span>
+<span class="sd">        Not fully implemented.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str result_dir: Location to save the result.</span>
+<span class="sd">        :return: Solar PV capital cost.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_rating</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">/</span> <span class="mi">150</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_price_per_m2</span>  <span class="c1"># approximate area using 150W/m2</span></div>
 
 <div class="viewcode-block" id="CostEstimator.calculate_trans_loss_of_life"><a class="viewcode-back" href="../../analysis.html#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_trans_loss_of_life</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimates the expected transformer loss of life.</span>
-<span class="sd">        Inputs: result_dir - Directory in which the loss results is saved.</span>
-<span class="sd">        Returns: result_dict - Dictionary of transformer losses.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimates the expected transformer loss of life.</span>
+
+<span class="sd">        Reference:</span>
+
+<span class="sd">        * 5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.</span>
+
+<span class="sd">        :param result_dir: Directory in which the loss results is saved.</span>
+<span class="sd">        :return: Dictionary of transformer losses.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Per 5.11.3 of IEEE Std C57.12.00-2010, a minimum normal insulation life expectancy of 180 000 hours is expected</span>
         <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -308,113 +387,33 @@
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result_dict</span><span class="p">,</span> <span class="n">config_file_path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># save to JSON</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span>  <span class="c1"># go back to initial dir</span>
         <span class="k">return</span> <span class="n">result_dict</span></div></div>
-
-    <span class="c1"># def calculate_elec_cost(self, result_dir, PGE_separate_file=True):</span>
-    <span class="c1">#     &quot;&quot;&quot;TO BE DEPRECATED.&quot;&quot;&quot;</span>
-    <span class="c1">#     current_dir = os.getcwd()</span>
-    <span class="c1">#     os.chdir(result_dir)</span>
-    <span class="c1">#     result_dict = {}</span>
-    <span class="c1">#     price_per_block = 95.56  # ($/Block)</span>
-    <span class="c1">#     overage_fee = 3.82  # ($/kW)</span>
-    <span class="c1">#     for root, dirs, files, in os.walk(&quot;.&quot;, topdown=True):</span>
-    <span class="c1">#         for file in files:</span>
-    <span class="c1">#             path_lst = file.split(&quot;_&quot;)</span>
-    <span class="c1">#             if &#39;station&#39; in path_lst and &#39;block&#39; not in path_lst and &#39;plot.png&#39; not in path_lst:</span>
-    <span class="c1">#                 total_grid_load = pd.read_csv(file)[&#39;station_total_load_kW&#39;].to_numpy()[1:]</span>
-    <span class="c1">#                 net_grid_load = total_grid_load</span>
-    <span class="c1">#                 net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)[&#39;station_solar_load_ev&#39;].to_numpy()[</span>
-    <span class="c1">#                                                               1:] + pd.read_csv(file)[&#39;battery_power&#39;].to_numpy()[</span>
-    <span class="c1">#                                                                     1:]</span>
-    <span class="c1">#                 total_energy = total_grid_load.sum() * self.resolution / 60</span>
-    <span class="c1">#                 max_load = total_grid_load.max()</span>
-    <span class="c1">#                 average_load = total_grid_load.mean()</span>
-    <span class="c1">#                 self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f&#39;{file.split(&quot;.&quot;)[0]}_&#39;,</span>
-    <span class="c1">#                                 labels=[&quot;total demand&quot;, &quot;net demand with DER&quot;])</span>
-    <span class="c1">#                 if PGE_separate_file:</span>
-    <span class="c1">#                     block_subscription = int(np.loadtxt(f&#39;PGE_block_{file}&#39;)[1])</span>
-    <span class="c1">#                 else:</span>
-    <span class="c1">#                     block_subscription = int(pd.read_csv(file)[&#39;PGE_power_blocks&#39;].to_numpy().max())</span>
-    <span class="c1">#                 subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)</span>
-    <span class="c1">#                 penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)</span>
-    <span class="c1">#                 TOU_cost = np.sum(self.TOU_rates * net_grid_load) * self.resolution / 60  # ($)</span>
-    <span class="c1">#                 electricity_cost = TOU_cost + penalty_cost + subscription_cost</span>
-    <span class="c1">#                 result_dict[f&#39;charging_station_sim_{path_lst[3]}&#39;] = {&quot;TOU_cost&quot;: TOU_cost,</span>
-    <span class="c1">#                                                                       &quot;subscription_cost&quot;: subscription_cost,</span>
-    <span class="c1">#                                                                       &quot;penalty_cost&quot;: penalty_cost,</span>
-    <span class="c1">#                                                                       &quot;total_elec_cost&quot;: electricity_cost,</span>
-    <span class="c1">#                                                                       &quot;cost_per_day&quot;: electricity_cost / self.num_days,</span>
-    <span class="c1">#                                                                       &quot;max_load&quot;: max_load,</span>
-    <span class="c1">#                                                                       &quot;avg_load&quot;: average_load,</span>
-    <span class="c1">#                                                                       &quot;cost_per_kWh&quot;: electricity_cost / total_energy}</span>
-    <span class="c1">#     with open(&quot;postopt_cost_charging.json&quot;, &#39;w&#39;) as config_file_path:</span>
-    <span class="c1">#         json.dump(result_dict, config_file_path, indent=1)  # save to JSON</span>
-    <span class="c1">#     os.chdir(current_dir)  # go back to initial dir</span>
-    <span class="c1">#     return result_dict</span>
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Emmanuel Balogun.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

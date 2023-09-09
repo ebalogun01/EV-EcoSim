@@ -1,10 +1,13 @@
 """
-Non-MPC mode. Very similar program with event_handlers.py. This file is the main power-horse for the EV-Ecosim. It includes the
-modules that allow GridLabD to interact with all the custom-built modules developed in EV-Ecosim. This file imports
-all simulated objects and their children, which is then run in the co-simulation environment.
+Module for offline (non-MPC) mode. Very similar program with event_handlers.py. This file is the main power-horse for
+the EV-Ecosim. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
+EV-Ecosim.
+
+This module imports all simulated objects and their children, which is then run in the co-simulation environment.
 This file is only used when offline battery optimization is done, after which a user wants to simulate the effects on
 the grid (without any state feedback).
 """
+
 import os
 import sys
 import numpy as np
@@ -70,8 +73,9 @@ tic = time.time()
 def on_init(t):
     """
     This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.
-    Inputs: t - arbitrary placeholder.
-    Returns: True - arbitray value.
+
+    :param t: arbitrary placeholder.
+    :return: True - arbitrary value.
     """
     # get object lists from GridLAB-D
     print("Gridlabd Init Begin...")
@@ -91,12 +95,11 @@ def on_init(t):
 
 def on_precommit(t):
     """
-    Handles the states updates and obtaining information from GridLab-D at each time step.
-    This handle actions during simulation.
-    Inputs: t - arbitrary placeholder.
-    Returns: True - arbitrary value.
-    """
+    This runs the simulation, propagating all the states of the necessary physical objects and the grid.
 
+    :param t: Arbitrary placeholder.
+    :return: True
+    """
     control_res = 15  # minutes todo: make a param in the future
 
     # get clock from GridLAB-D
@@ -169,7 +172,7 @@ def on_precommit(t):
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
-        # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
+        # If ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             node_index = L2_charging_nodes.index(name)
             total_node_load = l2_net_loads[node_index][gblvar.it // control_res] * 1000  # for L2
@@ -191,9 +194,11 @@ def on_precommit(t):
 
 def on_term(t):
     """
-    Actions taken at the very end of the whole simulation, like saving data. Can comment out undesired actions.
-    Inputs: t - arbitrary (user does not interface with this).
-    Returns: True - arbitrary.
+    Actions taken at the very end of the whole simulation, like saving data.
+    Data not required can be commented out on the relevant line.
+
+    :param t: Default placeholder (do not change).
+    :return: True.
     """
     # import voltdump2
     pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
@@ -218,9 +223,10 @@ def on_term(t):
 
 def find(criteria):
     """
-    Finding objects in gridlabd that satisfy certain criteria
-    Input: criteria (str) - the criteria for returning gridlabd objects
-    Returns: list of objects that satisfy criteria.
+    Finds and returns objects in gridlabd that satisfy certain criteria.
+
+    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")
     if len(finder) < 2:
@@ -238,11 +244,15 @@ def find(criteria):
 
 
 def get_voltage():
-    """Get voltage string from GridLAB-D and process it into float.
-    Returns: vm"""
+    """
+    Obtains voltage string from GridLAB-D and processes it into float. GridLABD returns voltages in various
+    formats, thus this processes the string voltages from the different formats into float. For more
+    information on the formats, see the GridLabD powerflow user guide.
 
+    :return: Processed voltage magnitude and voltage phase arrays.
+    :rtype: ndarray(float).
+    """
     #   TODO: find a way to ignore the nodes that have no voltage (zero-load) and improve this code
-
     vm_array = np.zeros((len(gblvar.voltage_obj),))
     vp_array = np.zeros((len(gblvar.voltage_prop),))
     for i in range(len(gblvar.voltage_obj)):
@@ -289,9 +299,10 @@ def get_voltage():
 def get_trans_power(trans_power_str):
     """
     Obtains power at transformer as a string and processes it into a float.
-    Inputs: trans_power_string - transformer power as a string.
-    Returns: pmag - Power magnitude.
-            deg - Angle between pmag (apparent power) and the real axis on the complex power plane.
+
+    :param trans_power_str: Transformer power as a string.
+    :return pmag: Power magnitude.
+    :return deg: Angle between pmag (apparent power) and the real axis on the complex power plane.
     """
     trans_power_str = trans_power_str.rstrip(' VA')
     if 'e-' in trans_power_str:

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.battery &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.battery</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for charging_sim.battery</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">num_steps</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Model assumes symmetry from charging to discharging dynamics. Asymmetry is negligible for most purposes.</span>
+
+
+<span class="c1"># TODO: add battery simulation resolution control so can be different from control as well...</span>
+<span class="c1">#  ALso track the number of voltage control violations during control computations in the future</span>
+<span class="c1"># todo: make Battery inherit the class cell- seems like a more natural progression...</span>
+<span class="c1">#  battery will have topology layers to build up the equivalent pack</span>
+
+<div class="viewcode-block" id="Battery"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery">[docs]</a><span class="k">class</span> <span class="nc">Battery</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each instantiation of this class must include at least a config file, which contains the physical</span>
+<span class="sd">    constraints and properties of the battery.</span>
+
+<span class="sd">    Properties are mainly controlled in the battery config file &#39;battery.json&#39;</span>
+<span class="sd">        * max-c-rate - determines the power capacity of the cell as a multiple of the value of the energy capacity.</span>
+<span class="sd">        * max voltage(V) - maximum allowable battery voltage.</span>
+<span class="sd">        * min Voltage (V) - minimum allowable battery voltage.</span>
+<span class="sd">        * nominal energy (kWh) - energy deliverable to the battery.</span>
+<span class="sd">        * id (-).</span>
+<span class="sd">        * Ambient temperature (Celsius).</span>
+
+<span class="sd">    :param battery_type: Type of battery (inconsequential to current dynamics).</span>
+<span class="sd">    :param node: The node/bus in the distribution network in which the battery resides.</span>
+<span class="sd">    :param self.config: Battery configuration file containing the main attributes of the battery.</span>
+<span class="sd">    :param controller: Controller for the battery.</span>
+<span class="sd">    :returns: Battery object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;should I make in terms of rc pairs or how should I call dynamics..data-driven vs ECM&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">node</span>  <span class="c1"># This is used for battery location.</span>
+        <span class="c1">#   TODO: need to include resolution and others</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span>     <span class="c1"># in hours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;cell_nominal_cap&quot;</span><span class="p">]</span>  <span class="c1"># Ah</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_cap</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;cell_nominal_cap&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;resistance&quot;</span><span class="p">]</span>  <span class="c1"># single cell resistance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pack</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># overall pack resistance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eff</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;round-trip_efficiency&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_c_rate</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_c_rate&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_cost</span> <span class="o">=</span> <span class="mi">200</span>     <span class="c1"># this is in $/kWh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">To</span> <span class="o">=</span> <span class="mf">273.15</span> <span class="o">+</span> <span class="mi">23</span>   <span class="c1"># ambient temperature   (USE THE SAME INPUT AS TRANSFORMER AGING MODEL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">To</span>    <span class="c1"># initialize at atmposheric temperature</span>
+        <span class="c1"># self.nominal_energy = config[&quot;cell_nominal_energy&quot;]     # Watts-hours</span>
+
+        <span class="c1"># LOAD THE PARAMETERS FOR CERTAIN CYCLE INTERVAL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;params_0_cycles&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_25_cycles</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;params_25_cycles&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_75_cycles</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;params_75_cycles&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_125_cycles</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;params_125_cycles&quot;</span><span class="p">]</span>
+        <span class="c1"># TODO: think about how to load these parameter changes over time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_SOC</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">]</span>   <span class="c1"># update these two as well</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">]</span>   <span class="c1"># update these two as well</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_c_rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>   <span class="c1"># figure out a way to have these update automatically</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A_Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">B_Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_0_cycles</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">battery_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iR1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iR2</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_cell_voltage&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_max_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pack_max_voltage&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;min_cell_voltage&quot;</span><span class="p">]</span>  <span class="c1"># for each cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_max_Ah</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pack_max_Ah&quot;</span><span class="p">]</span>    <span class="c1"># this is used in battery_setup_2 to scale voltage instead of curr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_nom_Ah</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pack_nom_Ah&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;nominal_cell_voltage&quot;</span><span class="p">]</span>  <span class="c1"># for each cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_voltage</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qmax</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOC_max&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qmin</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOC_min&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOC&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_SOC</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOC_min&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_SOC</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOC_max&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OCV</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_cell_voltage&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOH</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;SOH&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daily_self_discharge</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;daily_self_discharge&quot;</span><span class="p">]</span>
+
+        <span class="c1"># battery_setup updates with tuple (no_cells_series, no_modules_parallel, total_cells)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC_track</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOH_track</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SOH</span><span class="p">]</span>     <span class="c1"># to be finished later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calendar_aging</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>    <span class="c1"># tracking calendar aging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_aging</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>   <span class="c1"># tracking cycle aging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_voltage</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_voltage</span><span class="p">)</span>  <span class="c1"># this is wrong</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">]</span>  <span class="c1"># to be updated at each time-step (seems expensive)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_voltage</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">true_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>  <span class="c1"># discharge/charge voltage per time-step</span>
+        <span class="c1"># self.Q = cp.Variable((stepsize + 1, 1))  # Amount of energy Kwh available in battery</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_SOC</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_Ro</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span>   <span class="c1"># optional</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Q_initial</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># include the units here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_current</span> <span class="o">=</span> <span class="p">[]</span>   <span class="c1"># changed to a list - will be more efficient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currents</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">true_power</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MPC_Control</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="p">[]}</span>  <span class="c1"># tracks the control actions for the MPC control</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># what does this mean?...I should use this for accounting how much power I CAN DEMAND</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_aging</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">true_capacity_loss</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resistance_growth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">true_aging</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># want to keep track to observe trends based on degradation models</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_aging</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># linear model per Hesse Et. Al</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ambient_temp</span> <span class="o">=</span> <span class="mi">25</span>  <span class="c1"># Celsius (NOT USED YET - FUTURE VERSION COULD USE THIS)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charging_costs</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_profile</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Jan&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Feb&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Mar&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Apr&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;May&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Jun&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Jul&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Aug&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                              <span class="s1">&#39;Sep&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Oct&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Nov&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Dec&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="c1"># self.Ro = self.get_Ro()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># DEFAULT VALUE: singular cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">savings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_of_charge</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pack_voltage&quot;</span><span class="p">]</span>    <span class="c1"># to be initialized later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_energy_capacity</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pack_energy_cap&quot;</span><span class="p">]</span>   <span class="c1"># battery rating this is in Watt-hours (Wh)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_cap</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># will be set in battery setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicted_voltages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operating_voltages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Battery.get_true_power"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_true_power">[docs]</a>    <span class="k">def</span> <span class="nf">get_true_power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">true_power</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.battery_setup"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.battery_setup">[docs]</a>    <span class="k">def</span> <span class="nf">battery_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This sets up the series-parallel configuration of the cells,</span>
+<span class="sd">        given the capacity and voltage of the battery. Scales up Ah capacity, not voltage. Voltage in this setup is</span>
+<span class="sd">        fixed by the battery json file while the Ah capacity is floating and determined by the given pack voltage and</span>
+<span class="sd">        Energy Capacity.</span>
+
+<span class="sd">        * Energy capacity (Wh).</span>
+<span class="sd">        * Voltage (V).</span>
+
+<span class="sd">        :return: None. Updates battery topology.&quot;&quot;&quot;</span>
+        <span class="c1"># number of modules in parallel should be determined by the power rating and Voltage</span>
+        <span class="c1"># should use nominal voltage and max allowable current</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;**** Pre-initialized nominal pack voltage is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span><span class="p">))</span>
+        <span class="n">pack_capacity_Ah</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pack_energy_capacity</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pack_max_voltage</span>
+        <span class="n">cell_amp_hrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_cap</span>     <span class="c1"># for a cell (Ah) Maximum</span>
+        <span class="n">no_cells_series</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pack_max_voltage</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span><span class="p">)</span>     <span class="c1"># cell nominal</span>
+        <span class="n">no_modules_parallel</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">pack_capacity_Ah</span> <span class="o">/</span> <span class="p">(</span><span class="n">cell_amp_hrs</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="n">no_modules_parallel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_cells_series</span><span class="p">,</span> <span class="n">no_modules_parallel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_voltage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_cap</span> <span class="o">=</span> <span class="n">no_modules_parallel</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R2</span>
+        <span class="c1"># self.cell_capacitance</span>
+        <span class="n">series_resistance</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span>
+        <span class="c1"># series_capacitance = 1/(no_cells_series * self.C1 )</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pack</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">no_modules_parallel</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">series_resistance</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**** Post-initialized nominal pack voltage is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;***** Battery initialized. *****</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Battery pack capacity is </span><span class="si">{</span><span class="n">pack_capacity_Ah</span><span class="si">}</span><span class="s2"> Ah&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Battery pack resistance is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">R_pack</span><span class="si">}</span><span class="s2"> Ohm&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Total number of cells is: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span><span class="si">}</span><span class="s2"> .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;no. cells in series is: </span><span class="si">{</span><span class="n">no_cells_series</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">. No modules in parallel is: </span><span class="si">{</span><span class="n">no_modules_parallel</span><span class="si">}</span><span class="s2">&quot;</span>
+              <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.battery_setup_2"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.battery_setup_2">[docs]</a>    <span class="k">def</span> <span class="nf">battery_setup_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scales up voltage instead of current capacity (Ah), thereby using more cells in series</span>
+<span class="sd">        for the same battery energy rating. pack_max_AH property is set in config and fixed. Voltage is determined</span>
+<span class="sd">        by the pack energy capacity (Watt-hours) and the maximum amp-hour capacity.</span>
+
+<span class="sd">        * Capacity (Wh).</span>
+<span class="sd">        * cell_amp_hrs (Ah), cell_voltage (V)</span>
+
+<span class="sd">        :param : None.</span>
+<span class="sd">        :return : None. Updates battery topology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># number of modules in parallel should be determined by the power rating and Voltage</span>
+        <span class="c1"># should use nominal voltage and max allowable current</span>
+        <span class="c1"># print(&quot;**** Pre-initialized nominal pack voltage is {}&quot;.format(self.nominal_pack_voltage))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_max_voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pack_energy_capacity</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pack_nom_Ah</span>
+        <span class="n">no_cells_series</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pack_max_voltage</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span><span class="p">)</span>  <span class="c1"># cell nominal</span>
+        <span class="n">no_modules_parallel</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pack_max_Ah</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_cap</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="n">no_modules_parallel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_cells_series</span><span class="p">,</span> <span class="n">no_modules_parallel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_voltage</span>
+        <span class="c1"># self.nominal_pack_cap = no_modules_parallel * self.cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R2</span>
+        <span class="c1"># self.cell_capacitance</span>
+        <span class="n">series_resistance</span> <span class="o">=</span> <span class="n">no_cells_series</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span>
+        <span class="c1"># series_capacitance = 1/(no_cells_series * self.C1 )</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pack</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">no_modules_parallel</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">series_resistance</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**** Post-initialized nominal pack voltage is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_voltage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;***** Battery initialized. *****</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Battery pack capacity is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pack_max_Ah</span><span class="si">}</span><span class="s2"> Ah&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Battery pack resistance is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">R_pack</span><span class="si">}</span><span class="s2"> Ohm&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;Total number of cells is: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_count</span><span class="si">}</span><span class="s2"> .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s2">&quot;no. cells in series is: </span><span class="si">{</span><span class="n">no_cells_series</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">. No modules in parallel is: </span><span class="si">{</span><span class="n">no_modules_parallel</span><span class="si">}</span><span class="s2">&quot;</span>
+              <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.est_calendar_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.est_calendar_aging">[docs]</a>    <span class="k">def</span> <span class="nf">est_calendar_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimates the constant calendar aging of the battery. this is solely time-dependent.</span>
+<span class="sd">        Deprecate this later for this object.</span>
+
+<span class="sd">        :param: None.</span>
+<span class="sd">        :return: Linear calendar aging result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">life_cal_years</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">seconds_in_min</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">seconds_in_year</span> <span class="o">=</span> <span class="mi">31556952</span>
+        <span class="n">aging_cal</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">seconds_in_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">life_cal_years</span> <span class="o">*</span> <span class="n">seconds_in_year</span><span class="p">)</span>
+        <span class="n">aging_cal</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">aging_cal</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.est_cyc_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.est_cyc_aging">[docs]</a>    <span class="k">def</span> <span class="nf">est_cyc_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates linear battery ageing model per hesse. et. Al, and returns its cvx object.</span>
+<span class="sd">        Deprecate this later for this object.</span>
+
+<span class="sd">        :param: None.</span>
+<span class="sd">        :return: CVXPY objective describing cycle aging function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">seconds_in_min</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">life_cyc</span> <span class="o">=</span> <span class="mi">4500</span>     <span class="c1"># change this to be input in the config file</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">/</span> <span class="n">seconds_in_min</span><span class="p">))</span> <span class="o">/</span>\
+            <span class="p">(</span><span class="n">life_cyc</span> <span class="o">/</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nominal_energy</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.get_power_profile"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_power_profile">[docs]</a>    <span class="k">def</span> <span class="nf">get_power_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">months</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the power profile of the battery for a certain number of months.</span>
+
+<span class="sd">        :param months: Months for which to obtain power profile.</span>
+<span class="sd">        :returns: Dictionary of power profiles for each month in months.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">month</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_profile</span><span class="p">[</span><span class="n">month</span><span class="p">]</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">months</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Battery.get_total_aging"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_total_aging">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_aging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_cyc_aging</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_calendar_aging</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Battery.get_aging_value"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_aging_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_aging_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the total capacity life loss the battery has experienced so far.</span>
+
+<span class="sd">        :param: None.</span>
+<span class="sd">        :return: Estimated cycle + calendar aging of cell/battery.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_cyc_aging</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_calendar_aging</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Battery.update_capacity"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.update_capacity">[docs]</a>    <span class="k">def</span> <span class="nf">update_capacity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is not true capacity but anticipated capacity based on linear model.&quot;&quot;&quot;</span>
+        <span class="n">aging_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aging_value</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.2</span>  <span class="c1"># do not multiply by 0.2 to keep comparable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_aging</span> <span class="o">+=</span> <span class="n">aging_value</span>
+        <span class="c1"># self.linear_aging.append(aging_value)  # this is to ADD aging for each time step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_aging</span> <span class="o">+=</span> <span class="n">aging_value</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="Battery.get_Ro"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_Ro">[docs]</a>    <span class="k">def</span> <span class="nf">get_Ro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This can be updated later to include current...</span>
+<span class="sd">        Deprecate this possibly&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Battery.get_roundtrip_efficiency"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_roundtrip_efficiency">[docs]</a>    <span class="k">def</span> <span class="nf">get_roundtrip_efficiency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eff</span></div>
+
+<div class="viewcode-block" id="Battery.update_SOC"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.update_SOC">[docs]</a>    <span class="k">def</span> <span class="nf">update_SOC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">action_length</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># maybe change this later for variable action length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Q_initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">action_length</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Battery.track_SOC"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.track_SOC">[docs]</a>    <span class="k">def</span> <span class="nf">track_SOC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SOC</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the states of charge state Vector of the battery.</span>
+
+<span class="sd">        :param: SOC - state of charge. This is a self-called function.</span>
+<span class="sd">        :return: None. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC_track</span> <span class="o">+=</span> <span class="n">SOC</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC_list</span> <span class="o">+=</span> <span class="n">SOC</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="Battery.update_max_current"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.update_max_current">[docs]</a>    <span class="k">def</span> <span class="nf">update_max_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_c_rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum allowable current updated.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.update_voltage"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.update_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">update_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voltage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_voltage</span> <span class="o">=</span> <span class="n">voltage</span>  <span class="c1"># I should be updating initial voltage with new voltage measurement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicted_voltages</span> <span class="o">+=</span> <span class="n">voltage</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="Battery.get_properties"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_properties">[docs]</a>    <span class="k">def</span> <span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span></div>
+
+<div class="viewcode-block" id="Battery.visualize"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;method is used to plot and save battery states desired by user&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-darkgrid&#39;</span><span class="p">)</span>
+            <span class="n">plotting_values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;SOC_track&quot;</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plotting_values</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time Step&quot;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;SOC&quot;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving values for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plotting_values</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time Step&quot;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Est. tot. no. of cycles is: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span><span class="o">/</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nominal_pack_cap</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;cycles&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.save_states"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.save_states">[docs]</a>    <span class="k">def</span> <span class="nf">save_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SOC_sim_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC_track</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SOH_sim_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOH_track</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;voltage_sim_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.save_sim_data"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.save_sim_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_prefix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves all relevant battery data over the given simulation. Usually called from the battery object</span>
+<span class="sd">        upon conclusion of simulation.</span>
+
+<span class="sd">        :param save_prefix: desired folder in which all the files will be saved.</span>
+<span class="sd">        :type save_prefix: str.</span>
+<span class="sd">        :return : None, saves output files in the desired folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">save_file_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;SOC&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC_track</span><span class="p">,</span>
+                <span class="s1">&#39;SOH&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOH_track</span><span class="p">,</span>
+                <span class="s1">&#39;Voltage_pack&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s1">&#39;currents_pack&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currents</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;cycle_aging&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_aging</span><span class="p">),</span>
+                <span class="s1">&#39;calendar_aging&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calendar_aging</span><span class="p">),</span>
+                <span class="s1">&#39;power_kW&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">true_power</span><span class="p">)}</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_prefix</span><span class="si">}</span><span class="s1">/battery_sim_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="n">total_cycles</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span> <span class="o">/</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_nominal_cap</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_prefix</span><span class="si">}</span><span class="s1">/total_batt_cycles_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">total_cycles</span><span class="p">])</span>
+        <span class="c1"># np.savetxt(f&#39;{save_prefix}/pack_resistance_{save_file_base}.csv&#39;, [self.R_pack])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;***** Successfully saved simulation outputs to: &#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;battery_sim_</span><span class="si">{</span><span class="n">save_file_base</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Est. tot. no. of cycles is: &quot;</span><span class="p">,</span> <span class="n">total_cycles</span><span class="p">,</span> <span class="s1">&#39;cycles&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Battery.update_params"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.update_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This changes the battery params depending on the number of cycles&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+    
+<div class="viewcode-block" id="Battery.dynamics"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.dynamics">[docs]</a>    <span class="k">def</span> <span class="nf">dynamics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagates the state of the battery forward one step.</span>
+<span class="sd">        It takes as input current load (amperes) from the Battery controller and update the battery power.</span>
+
+<span class="sd">        :param current: Battery cycle current in amperes.</span>
+<span class="sd">        :type current: float or np.float().</span>
+<span class="sd">        :return: Battery response voltage.</span>
+<span class="sd">        :rtype: float.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_eqn</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>     <span class="c1"># this updates the battery states</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;charge current too high! Max voltage exceeded&quot;</span><span class="p">)</span>
+            <span class="c1"># we de-rate the current if voltage is too high (exceeds max prescribed v)</span>
+            <span class="c1"># voltage can exceed desirable range if c-rate is too high, even when SoC isn&#39;t at max</span>
+            <span class="n">current</span> <span class="o">-=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span>   <span class="c1"># changed from just Ro</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span> <span class="c1">#   WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max testing voltage is: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_eqn</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max testing voltage is: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span> <span class="c1"># when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1000</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">true_power</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">+</span> <span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage</span><span class="p">,</span>  <span class="c1"># numpy array</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_SOC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>  <span class="c1"># cycle counting</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_voltage</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;discharge current too high ! Min voltage exceeded&quot;</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_voltage</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_eqn</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1000</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">true_power</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_voltage</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_voltage</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">+</span> <span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_SOC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>  <span class="c1"># cycle counting</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">current</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span> <span class="o">+</span> <span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span>  <span class="c1"># numpy array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_SOC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_amp_thruput</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>  <span class="c1"># cycle counting</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span></div>
+
+<div class="viewcode-block" id="Battery.thermal_dynamics"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.thermal_dynamics">[docs]</a>    <span class="k">def</span> <span class="nf">thermal_dynamics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Not Implemented yet. Future work. &quot;&quot;&quot;</span></div>
+        <span class="c1">#   using the lumped-sum capacitance model</span>
+
+<div class="viewcode-block" id="Battery.state_eqn"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.state_eqn">[docs]</a>    <span class="k">def</span> <span class="nf">state_eqn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Contains discretized state equations containing the battery dynamics at the pack-level;</span>
+<span class="sd">        ref here: G. L. Plett, Battery management systems, Volume I: Battery modeling. Artech House, 2015, vol. 1.</span>
+
+<span class="sd">        :param boolean append: Decides if to track powers within the ::B battery object.</span>
+<span class="sd">        :param float current: Current - current in amperes from controller to propagate state forward by one step.</span>
+<span class="sd">                append - defaults to True. This decides tracking of currents and power over time. Desirable for post-</span>
+<span class="sd">                optimization analyses.</span>
+<span class="sd">        :return: None; appends current state into the state history vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">current</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="mi">3600</span>  <span class="c1"># convert from hour to seconds for dynamics equations but not SOC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OCV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_voltage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_Ro</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">R2</span>
+        <span class="c1">#   state equations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iR1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">C1</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">iR1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">C1</span><span class="p">)))</span> <span class="o">*</span> <span class="n">current</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iR2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">C2</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">iR2</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">C2</span><span class="p">)))</span> <span class="o">*</span> <span class="n">current</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV</span> <span class="o">+</span> <span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ro</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iR1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iR2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1000</span>  <span class="c1"># kw</span>
+        <span class="k">if</span> <span class="n">append</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currents</span> <span class="o">+=</span> <span class="n">current</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">true_power</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="Battery.get_OCV"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.Battery.get_OCV">[docs]</a>    <span class="k">def</span> <span class="nf">get_OCV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge</span>
+<span class="sd">        SoC via interpolation.</span>
+<span class="sd">        The OCV-SOC map is obtained a-priori (pre-simulation).</span>
+
+<span class="sd">        :param: None.</span>
+<span class="sd">        :return: Open Circuit Voltage (OCV) at battery&#39;s current SoC.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_SOC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OCV_map_voltage</span><span class="p">)</span></div></div>
+
+
+<span class="c1">#   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)</span>
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.battery.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="c1"># TODO: include error checking assertion points later</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span>
+    <span class="n">path_prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">battery_config_path</span> <span class="o">=</span> <span class="n">path_prefix</span> <span class="o">+</span> <span class="s1">&#39;/charging_sim/configs/battery.json&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">battery_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">battery_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">params_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">battery_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;params_&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">params_key</span> <span class="ow">in</span> <span class="n">params_list</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;testing load battery params: &quot;</span><span class="p">,</span> <span class="n">params_key</span><span class="p">)</span>
+        <span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">+</span><span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">])</span>
+    <span class="c1"># do the OCV maps as well</span>
+    <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">+</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>     <span class="c1"># ascending order</span>
+    <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">+</span><span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>     <span class="c1"># ascending order</span>
+
+    <span class="n">Q_initial</span> <span class="o">=</span> <span class="mf">3.5</span>
+    <span class="n">buffer_battery</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">battery_config</span><span class="p">)</span>
+    <span class="n">buffer_battery</span><span class="o">.</span><span class="n">battery_setup</span><span class="p">()</span>
+    <span class="n">buffer_battery</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="c1"># test dynamics here</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># discharging first</span>
+    <span class="n">voltages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">currents</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">voltages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.2</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># charging (Amperes)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot_tables</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot_tables</span><span class="p">(</span><span class="n">currents</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;current&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot_tables</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;adjusted current&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage (V)&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Current (A)&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;battery_test_plot&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">SOC_list</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;SOC_battery_test&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Current (Amperes)&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;currents_battery_test&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

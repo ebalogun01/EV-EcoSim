@@ -1,43 +1,89 @@
 <!DOCTYPE html>
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>feeder_population.glm_mod_functions &#8212; EV-Ecosim 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>feeder_population.glm_mod_functions &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#how-to-use">How to use</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">feeder_population.glm_mod_functions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for feeder_population.glm_mod_functions</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Functions for modifying GridLAB-D power system simulation models</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
-<div class="viewcode-block" id="load_base_glm"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.load_base_glm">[docs]</a><span class="k">def</span> <span class="nf">load_base_glm</span><span class="p">(</span><span class="n">base_file_dir</span><span class="p">,</span><span class="n">base_glm_file</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This loads the glm as list and populates it into dict and returns the output&quot;&quot;&quot;</span>
-    
+
+<div class="viewcode-block" id="load_base_glm"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.load_base_glm">[docs]</a><span class="k">def</span> <span class="nf">load_base_glm</span><span class="p">(</span><span class="n">base_file_dir</span><span class="p">,</span> <span class="n">base_glm_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads the glm as list and populates it into dict and returns the output</span>
+
+<span class="sd">    :param base_file_dir:</span>
+<span class="sd">    :param base_glm_file:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">base_file_dir</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_glm_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">glm</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
@@ -120,7 +166,20 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">glm_dict</span><span class="p">,</span><span class="n">obj_type</span><span class="p">,</span><span class="n">globals_list</span><span class="p">,</span><span class="n">include_list</span><span class="p">,</span><span class="n">sync_list</span></div>
 
+
 <div class="viewcode-block" id="write_base_glm"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_base_glm">[docs]</a><span class="k">def</span> <span class="nf">write_base_glm</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">obj_type</span><span class="p">,</span><span class="n">globals_list</span><span class="p">,</span><span class="n">include_list</span><span class="p">,</span><span class="n">out_dir</span><span class="p">,</span><span class="n">file_name</span><span class="p">,</span><span class="n">sync_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes the glm file from the dict structure.</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :param globals_list:</span>
+<span class="sd">    :param include_list:</span>
+<span class="sd">    :param out_dir:</span>
+<span class="sd">    :param file_name:</span>
+<span class="sd">    :param sync_list:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>    
     <span class="n">glm_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span><span class="s2">&quot;w+&quot;</span><span class="p">)</span>
     
@@ -166,9 +225,17 @@
     
     <span class="n">glm_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
+
 <div class="viewcode-block" id="write_obj_dict"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_obj_dict">[docs]</a><span class="k">def</span> <span class="nf">write_obj_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">dict_key</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Write dictionary corresponding to GLD objects to .glm file&#39;&#39;&#39;</span>
-    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD objects to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param dict_key:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dict_key</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;object &#39;</span><span class="o">+</span><span class="n">obj_type</span><span class="o">+</span><span class="s1">&#39; {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -182,7 +249,14 @@
         
         
 <div class="viewcode-block" id="write_mod_dict"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_mod_dict">[docs]</a><span class="k">def</span> <span class="nf">write_mod_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">mod_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Write dictionary corresponding to GLD module to .glm file&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD module to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param mod_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;module &#39;</span><span class="o">+</span><span class="n">mod_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -191,8 +265,16 @@
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="write_class_dict"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_class_dict">[docs]</a><span class="k">def</span> <span class="nf">write_class_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">class_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Write dictionary corresponding to GLD class to .glm file&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD class to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param class_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;class &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -201,8 +283,16 @@
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="write_filter_dict"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_filter_dict">[docs]</a><span class="k">def</span> <span class="nf">write_filter_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">,</span><span class="n">class_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Write dictionary corresponding to GLD filter to .glm file&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD filter to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :param class_name:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gld_dict</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;filter &#39;</span><span class="o">+</span><span class="n">class_name</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -210,10 +300,16 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;}</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
-            
+
+
 <div class="viewcode-block" id="write_clock_dict"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.write_clock_dict">[docs]</a><span class="k">def</span> <span class="nf">write_clock_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">gld_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Write dictionary corresponding to GLD clock to .glm file&#39;&#39;&#39;</span>
-    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write dictionary corresponding to GLD clock to .glm file.</span>
+
+<span class="sd">    :param file:</span>
+<span class="sd">    :param gld_dict:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;clock {</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">gld_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -221,7 +317,15 @@
 
 
 <div class="viewcode-block" id="replace_load_w_meter_old"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter_old">[docs]</a><span class="k">def</span> <span class="nf">replace_load_w_meter_old</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">match_str</span><span class="p">,</span><span class="n">rep_str</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Replace all instances of property in glm_dict&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace all instances of load in glm_dict with meter.</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param match_str:</span>
+<span class="sd">    :param rep_str:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">replace_prop_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">match_str</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -239,8 +343,17 @@
     <span class="k">del</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">delete_index</span><span class="p">][</span><span class="n">delete_prop</span><span class="p">]</span>            
     <span class="k">return</span> <span class="n">glm_dict</span></div>
 
+
 <div class="viewcode-block" id="replace_load_w_meter"><a class="viewcode-back" href="../../feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter">[docs]</a><span class="k">def</span> <span class="nf">replace_load_w_meter</span><span class="p">(</span><span class="n">glm_dict</span><span class="p">,</span><span class="n">match_str</span><span class="p">,</span><span class="n">rep_str</span><span class="p">,</span><span class="n">obj_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Replace all instances of property in glm_dict&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace all instances of load in glm_dict with meter.</span>
+
+<span class="sd">    :param glm_dict:</span>
+<span class="sd">    :param match_str:</span>
+<span class="sd">    :param rep_str:</span>
+<span class="sd">    :param obj_type:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">replace_prop_list</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">match_str</span> <span class="ow">in</span> <span class="n">glm_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -262,69 +375,31 @@
     <span class="k">return</span> <span class="n">glm_dict</span></div>
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">EV-Ecosim</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Emmanuel Balogun.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

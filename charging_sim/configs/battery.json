@@ -33,7 +33,6 @@
   "resistance": 1,
   "ambient_temp": 25,
   "data_path": "Insert battery data path here",
-  "comments": "Need to model SOC vs. charge curve",
   "capacity": 4.876810410207508,
   "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
   "params_25_cycles": "/battery_data/params_OCV_corr_W8_2",
@@ -41,5 +40,5 @@
   "params_125_cycles": "/battery_data/params_OCV_corr_W8_4",
   "OCV_map_SOC": "/battery_data/SOC_corr_W8_1.csv",
   "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv",
-  "notes": "I am trying to decide if I should include variable capacity for cells..for now can just assume a nominal. Errors cannot be crazy"
+  "notes": "I am trying to decide if I should include variable capacity for cells..for now can just assume a nominal."
 }

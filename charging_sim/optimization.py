@@ -1,27 +1,34 @@
 """Contains the Optimization class, which is used by controller to solve the optimization problem."""
+
 import cvxpy as cp
 
 
 class Optimization:
-    """This is a class for the optimization problem we will solve. It contains all necessary attributes
-    that fully define the optimization problem."""
+    """
+    Constructor for the overall optimization problem solved by the optimization-based controller.
+
+    * Designed to include future cost functions such as transformer degradation and battery aging.
+    * Limited to convex and Mixed Integer programs, depending on the selected solver.
+    * Note, each desired solver must be installed separately on user's PC for a successful run.
+
+    :param objective_type: Type of objective problem being optimized.
+    :param objective: CVXPY objective function object.
+    :param controller: Controller object.
+    :param power_demand: Power demand at the Charging Station.
+    :param time_res: Time resolution of problem data.
+    :param transformer: Transformer object (optional, not implemented yet).
+    :param battery: Battery object.
+    :param time: Time Counter.
+    :param name: Optimization identifier.
+    :param solar: Solar Object.
+    :param str solver: Available backend solver to invoke (ECOS, MOSEK, GUROBI, etc.).
+
+    """
 
     # TODO: change all refs to battery_constraints to call controller
     def __init__(self, objective_type, objective, controller, power_demand, time_res, transformer, battery, time=0,
                  name=None, solar=None, solver='GUROBI'):
-        """
-        Inputs: objective_type - the type of objective.
-                objective - the cvxpy objective function.
-                controller - the controller object that uses the solution to the optimization problem.
-                power_demand - the power demand input to the controller.
-                time_res - time resolution (default 15 minutes).
-                battery - battery object.
-                transformer - transformer object, set to None for now, always.
-                time - time index.
-                name - optimization name.
-                solar - Solar object.
-                solver - cvxpy solver to use.
-        """
+
         self._objective_type = objective_type
         self._objective = objective
         self._name = name
@@ -43,61 +50,55 @@ class Optimization:
         if solar:
             setattr(self, 'solar', solar)
 
-    def objective(self):
-        pass
-
     def build_emissions_cost(self):
+        """
+        Builds emission cost to be included in the objective function (future work).
+
+        :return:
+        """
         pass
 
     def build_battery_cost(self):
+        """
+        Build battery cost (to be implemented in future version).
+
+        :return:
+        """
         pass
 
     def build_transformer_cost(self):
+        """
+        Build Transformer cost (to be implemented in future version).
+
+        :return:
+        """
         pass
 
     def add_demand_charge(self, charge):
-        """Optimizing for demand charge by simply minimizing each daily max
-        MIGHT NOT USE THIS FOR NOW"""
+        """
+        Including demand charge in the objective function (Deprecated).
+
+        :param charge: Demand charge ($/kW).
+        :return:
+        """
+        load = 0    # placeholder
         cost = charge * load + (self.controller.battery_power_charge +
                                 self.controller.battery_power_discharge -
                                 self.solar.battery_power - self.solar.ev_power)
 
-    def build_electricity_cost(self, load, energy_prices_TOU, demand_charge=False):
-        # to be used later. For now, keep as-is.
-        """Need to update from home load right now; maybe this can be useful in future opt."""
-        # TODO: include time-shifting for energy TOU price rates? Add emissions cost pricing based on TOD?
-        lam = 10  # this needs to be guided
-        sparsity_cost_factor = 0.0  # dynamically determine this in future based on load * cost
-        sparsity_cost = cp.norm(self.controller.battery_power_charge, 1) + \
-                        cp.norm(self.controller.battery_power_discharge, 1)
-        cost_electricity = cp.sum((cp.multiply(energy_prices_TOU, (load + (self.controller.battery_power_charge +
-                                                                           self.controller.battery_power_discharge -
-                                                                           self.solar.battery_power -
-                                                                           self.solar.ev_power))))) + \
-                           sparsity_cost_factor * sparsity_cost
-        if demand_charge:
-            demand_charge_cost = cp.max(cp.pos(load + (self.controller.battery_power_charge +
-                                                       self.controller.battery_power_discharge -
-                                                       self.solar.battery_power - self.solar.ev_power)))
-            cost_electricity += demand_charge_cost
-        return cost_electricity
-
     def get_battery_constraint(self):
         """
-        Returns battery constraint lists.
-        Inputs: None.
-        Returns: List of battery constraints.
+        Returns the list of battery constraints within the controller.
+
+        :return: Battery constraints.
         """
         return self.battery_constraints
 
-    def get_market_constraints(self):
-        return self.market_constraints
-
     def aggregate_constraints(self):
         """
-        Aggregates all module constraints into one constraints list.
-        Input: None.
-        Returns: None.
+        Aggregates all the constraints into one constraint list within the object.
+
+        :return: None.
         """
         if self.battery_constraints:  # fix this later to call battery directly
             self._constraints.extend(self.battery_constraints)
@@ -107,11 +108,18 @@ class Optimization:
             self._constraints.extend(self.solar.get_constraints())
 
     def get_constraints(self):
+        """
+        Returns the constraints list.
+
+        :return: List of all constraints within the problem.
+        """
         return self._constraints
 
     def run(self):
         """
-        Runs this instance of the optimization problem.
+        Runs an instance of the optimization problem.
+
+        :return float: Optimal objective value.
         """
         self.aggregate_constraints()  # aggregate constraints
         problem = cp.Problem(cp.Minimize(self._objective), self._constraints)
@@ -120,17 +128,3 @@ class Optimization:
         self.cost_per_opt.append(result)
         # print(problem.status) ACTIVATE LATER
         return result
-
-    @staticmethod
-    def get_final_states(battery):
-        print("SOC battery: ", battery.getSOC())
-        return battery.getSOC()
-
-
-def test():
-    """This is solely used for testing"""
-    pass
-
-
-if __name__ == "__main__":
-    test()

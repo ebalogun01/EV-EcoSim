@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>charging_sim.solar &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">charging_sim.solar</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for charging_sim.solar</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the Solar class. The solar class is used to simulate the solar power generation at a given site</span>
+<span class="sd">by sampling Global Horizontal Irradiance (GHI) data from the dataset of the desired location.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cp</span>
+
+
+<div class="viewcode-block" id="Solar">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar">[docs]</a>
+<span class="k">class</span> <span class="nc">Solar</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to simulate the solar power generation at a given site by sampling Global Horizontal Irradiance</span>
+<span class="sd">    and estimating the solar generation, given the solar nameplate capacity that can be modified it its configuration</span>
+<span class="sd">    file `solar.json`. It also contains the optimization variables for the solar system.</span>
+
+<span class="sd">    The solar power generation is estimated using the following equation:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        P_{solar} = \min(P_{rated}, \eta *  A * GHI).</span>
+
+<span class="sd">    Where :math:`P_{solar}` is the solar power generation, :math:`\eta` is the efficiency of the solar system,</span>
+<span class="sd">    :math:`P_{rated}` is the solar nameplate capacity, :math:`A` is the area of the solar panels, and :math:`GHI` is</span>
+<span class="sd">    the Global Horizontal Irradiance.</span>
+
+<span class="sd">    :param config: Solar configuration dictionary.</span>
+<span class="sd">    :param path_prefix: This string path prefix is obtained first based on your repository location to set the right path.</span>
+<span class="sd">    :param controller: Controller object for making decisions on flow of power from energy devices.</span>
+<span class="sd">    :param num_steps: Number of steps in the simulation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param config:</span>
+<span class="sd">        :param path_prefix:</span>
+<span class="sd">        :param controller:</span>
+<span class="sd">        :param num_steps:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Month&#39;</span><span class="p">,</span> <span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">,</span> <span class="s1">&#39;GHI&#39;</span><span class="p">,</span> <span class="s1">&#39;Temperature&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="k">if</span> <span class="n">num_steps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_steps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;num steps&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">])[</span><span class="n">cols</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solar_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;start_year&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_month</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;start_month&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;start_day&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;efficiency&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;input_res&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_start_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_start_idx&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_end_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;sample_end_idx&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rating</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># convert from MW to kW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rating</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">150</span>    <span class="c1"># approximate area using 150W/m2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self.data_np = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span><span class="p">[</span><span class="s2">&quot;Month&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_month</span><span class="p">][</span><span class="s1">&#39;GHI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nonneg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># solar power to battery</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ev_power</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nonneg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># solar power to ev</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_power</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">Variable</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nonneg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># TODO: consider including this in future work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_month</span>   <span class="c1"># initializing for the start of the simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Solar.get_power">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.get_power">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">desired_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">96</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">month</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="n">month</span><span class="p">:</span>
+            <span class="c1"># GHI = Global Horizontal Irradiance</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;setting month for solar power...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_df</span><span class="p">[</span><span class="s2">&quot;Month&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">month</span><span class="p">][</span><span class="s1">&#39;GHI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>     <span class="c1"># for one month</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="n">month</span>  <span class="c1"># set month to current desired month</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">start_idx</span><span class="o">+</span><span class="n">num_steps</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>     <span class="c1"># convert to kW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">power</span><span class="p">,</span> <span class="n">desired_shape</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">)</span>
+        <span class="c1"># this ignores area for now. Can look at potential land-use/space use in future work</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span></div>
+
+
+<div class="viewcode-block" id="Solar.modify_res">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.modify_res">[docs]</a>
+    <span class="k">def</span> <span class="nf">modify_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_res</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Solar.downscale">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.downscale">[docs]</a>
+    <span class="k">def</span> <span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_res</span><span class="p">,</span> <span class="n">output_res</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is used only to initially downscale data to desired resolution&quot;&quot;&quot;</span>
+        <span class="n">num_repetitions</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_res</span> <span class="o">/</span> <span class="n">output_res</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">num_repetitions</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># JUST AN INITIAL CHECK, REMOVE LATER</span>
+        <span class="n">temp_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">solar_vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">num_repetitions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solar_vec</span><span class="p">:</span>
+            <span class="c1"># print(datapoint)</span>
+            <span class="n">temp_data</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">num_repetitions</span><span class="p">]</span> <span class="o">=</span> <span class="n">datapoint</span>
+            <span class="n">start_idx</span> <span class="o">+=</span> <span class="n">num_repetitions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">temp_data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="n">temp_data</span>
+        <span class="n">path_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;data_path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span><span class="o">+</span><span class="n">path_suffix</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">output_res</span><span class="si">}</span><span class="s2">min.csv&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Solar.get_solar_output">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.get_solar_output">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_solar_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span> <span class="mi">1000</span>    <span class="c1"># this is in kW</span></div>
+
+
+<div class="viewcode-block" id="Solar.get_constraints">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.get_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">battery_power</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev_power</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_power</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">power</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span></div>
+
+
+<div class="viewcode-block" id="Solar.update_history">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.Solar.update_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># CODE IS NOT UPDATING ALL THE ACTIONS SO THERE IS A BUG THERE</span>
+        <span class="c1">#TODO: add solar history update</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../charging_sim.html#charging_sim.solar.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;THis is mainly to testing or generating new data purposes&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">json</span>
+    <span class="c1"># load input data</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[:</span><span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">+</span><span class="s1">&#39;/charging_sim/configs/solar.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">solar</span> <span class="o">=</span> <span class="n">Solar</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="n">path_prefix</span><span class="p">)</span>
+    <span class="n">desired_res</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="c1">#   input res, desired res</span>
+    <span class="n">solar</span><span class="o">.</span><span class="n">downscale</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">desired_res</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

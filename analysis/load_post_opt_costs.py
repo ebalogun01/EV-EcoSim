@@ -1,5 +1,7 @@
-"""This file is calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
-respective files and folders."""
+"""
+This module calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
+respective files and folders.
+"""
 
 import os
 import copy
@@ -19,15 +21,18 @@ matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 
 def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None, batt_aging_table=None,
                 solar_cost_table=None, save_plots_folder: str = None):
-    """This function plots the tables into a visualized results matrix and plots a stacked bar chart.
-    Inputs: batt_dtable - Data table for battery costs.
-            elec_cost_dtable - Dataframe for electricity costs.
-            trans_cost_dtable - Dataframe for transformer costs.
-            batt_aging_table - Dataframe for battery aging costs.
-            solar_cost_table - Dataframe for solar cost (LCOE).
-            save_plots_folder - Directory in which plots are saved.
     """
+    Plots the tables into a visualized results matrix and plots a stacked bar chart.
 
+    :param batt_dtable: Data table for battery costs.
+    :param elec_cost_dtable: Dataframe for electricity costs.
+    :param trans_cost_dtable: Dataframe for transformer costs.
+    :param batt_aging_table: Dataframe for battery aging costs.
+    :param solar_cost_table: Dataframe for solar cost (LCOE).
+    :param save_plots_folder: Directory in which plots are saved.
+    :return: None.
+
+    """
     sns.heatmap(batt_dtable, cbar_kws={'label': 'cost USD ($)/kWh'})
     plt.xlabel('Battery Energy Capacity (kWh)')
     plt.ylabel('C-rate')
@@ -88,13 +93,15 @@ def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None,
     plot_stacked_bar(elec_cost_dtable, batt_dtable, save_plots_folder, solar_costs=solar_cost_table)
 
 
-def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=None):
-    """Plots a stacked bar to visualize the portion of overall LCOE each cost component contributes to the system,
-    Inputs: elec_costs - Dataframe of electricity costs.
-            batt_costs - Dataframe of battery levelized costs.
-            save_plot_path - default None.
-            solar_costs -  Dataframe of levelized solar costs.
-    Returns: None.
+def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""):
+    """
+    Plots a stacked bar to visualize the portion of overall LCOE each cost component contributes to the system.
+
+    :param elec_costs: Dataframe of electricity costs.
+    :param batt_costs: Dataframe of battery levelized costs.
+    :param solar_costs: Dataframe of levelized solar costs.
+    :param str save_plot_path: String to path for which results are saved.
+    :return: None.
     """
     plot_font_size = 16
     font = {'size': plot_font_size}
@@ -145,13 +152,16 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=No
 
 
 def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = True, trans_cost: bool = False):
-    """Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.
-    Inputs: case_dir - Directory for a given case/scenario.
-            days_count - Number of days to calculate (usually 30 for now).
-            batt_cost - Boolean to decide if battery cost is calculated.
-            elec_cost - Boolean to decide if electricity cost is calculated.
-            trans_cost - Boolean to decide if transformer cost is calculated.
-    Returns: None."""
+    """
+    Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.
+
+    :param str case_dir: Directory for a given case/scenario.
+    :param int days_count: Number of days to calculate (usually 30 for now).
+    :param bool batt_cost: Boolean to decide if battery cost is calculated.
+    :param bool elec_cost: Boolean to decide if electricity cost is calculated.
+    :param bool trans_cost: Boolean to decide if transformer cost is calculated.
+    :return: None.
+    """
     estimator = CostEstimator(days_count)
     #   calculated values are populated in their respective scenario directories
     if batt_cost:
@@ -164,11 +174,15 @@ def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = 
 
 
 def collate_results(month, solar=True, trans=True, oneshot=False):
-    """Collates the results for each scenario and saves them in a result matrix.
-    Inputs: solar - Boolean to decide if to include LCOE of solar.
-            trans - Boolean to decide if transformer aging matrix will be included.
-            oneshot - Boolean to tell the function if the results were obtained from oneshot or mpc simulation.
-    Returns: None - Saves multiple dataframes to cost files (csv)."""
+    """
+    Collates the results for each scenario and saves them in a result matrix.
+
+    :param month: Month for which the results are being collated
+    :param bool solar: Boolean to decide if to include LCOE of solar.
+    :param bool trans: Boolean to decide if transformer aging matrix will be included.
+    :param bool oneshot: Boolean to tell the function if the results were obtained from oneshot or mpc simulation.
+    :return: None
+    """
     solar_lcoe = 0
     if solar:
         solar_lcoe = 0.067
@@ -176,7 +190,7 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
     data_table = pd.DataFrame(
         {energy_rating / 10.00: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
     data_table = data_table.set_index(pd.Index(MAX_C_RATES))
-    # now go through all files and update table results for both electricity cost and battery costs
+    # Now go through all files and update table results for both electricity cost and battery costs.
     battery_dtable = copy.deepcopy(data_table)
     batt_aging_dtable = copy.deepcopy(data_table)
     electricity_cost_dtable = copy.deepcopy(data_table)

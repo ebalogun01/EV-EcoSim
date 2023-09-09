@@ -1,4 +1,5 @@
-"""This file is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
+"""
+This module is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
 voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
 SIMULATION_FOLDER variable which is the string of the path where the powerflow simulation output voltages at each node
 exist.
@@ -10,7 +11,7 @@ import pandas as pd
 import os
 
 
-SIMULATION_FOLDER = '../charging_sim/3200evs/ah_scaling/voltparse'
+SIMULATION_FOLDER = '../charging_sim/3200evs/ah_scaling/voltparse'  # CHANGE THIS.
 os.chdir(SIMULATION_FOLDER)
 FIG_WIDTH, FIG_HEIGHT = 10, 6
 FONT_SIZE = 14
@@ -19,7 +20,7 @@ NUM_DAYS = 30   # can change this depending on the desired number of days
 end_idx = DAY_MINUTES * NUM_DAYS
 plt.rcParams.update({'font.size': FONT_SIZE})
 
-for root, dirs, files, in os.walk("", topdown=True):
+for root, dirs, files, in os.walk(".", topdown=True):
     for name in dirs:
         curr_dir = os.getcwd()
         os.chdir(os.path.join(root, name))
@@ -135,4 +136,4 @@ for root, dirs, files, in os.walk("", topdown=True):
         plt.close()
         print("Finished creating voltage plots.")
 
-        os.chdir("../..")
+        os.chdir("..")

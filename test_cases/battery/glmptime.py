@@ -1,3 +1,5 @@
+"""TODO: Include module description here."""
+
 import os
 import re
 from datetime import datetime
@@ -8,6 +10,11 @@ dt_prev = None
 
 
 def init_glmptype():
+    """
+    Initialize the TZ_dict
+
+    :return:
+    """
     t_tz_list = []
     t_tz_list_ds = []
     tz_offset = []
@@ -15,8 +22,6 @@ def init_glmptype():
     # FIND LOCATION OF tzinfo.txt file
     # for root,dirs, files in os.walk(r'/usr/local/src/gridlabd/gldcore/'):
     for root, dirs, files in os.walk(r'/usr/local/share/gridlabd/'):
-        # for root, dirs, files in os.walk('C:\\Users\\Lily Buechler\Documents\Lily\Stanford\\Research\\gridlabd\\gridlabd\\gldcore'):
-
         for name in files:
             if name == tz_file_name:
                 tz_file = os.path.abspath(os.path.join(root, name))
