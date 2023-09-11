@@ -844,32 +844,27 @@ def create_price_section():
     ## TODO custom data
 
     ## LCOE
-    #lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
-    lcoe_data = pd.read_csv('dash-fe/data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
+    lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
     lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
     lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
 
     ## Battery aging costs
-    #bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
-    bat_age_data = pd.read_csv('dash-fe/data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
+    bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
     bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
     bat_age_data = bat_age_data.filter(['c', '50.0'], axis="columns")
 
     ## Battery costs
-    #bat_cost_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
-    bat_cost_data = pd.read_csv('dash-fe/data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
+    bat_cost_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_costs_per_day.csv')
     bat_cost_data = bat_cost_data.rename(columns={'Unnamed: 0': 'c'})
     bat_cost_data = bat_cost_data.filter(['c', '50.0'], axis="columns")
 
     ## Transformer aging costs
-    #tra_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
-    tra_age_data = pd.read_csv('dash-fe/data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
+    tra_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_trans_aging_per_day.csv')
     tra_age_data = tra_age_data.rename(columns={'Unnamed: 0': 'c'})
     tra_age_data = tra_age_data.filter(['c', '50.0'], axis="columns")
 
     ## Electricity costs
-    #elec_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
-    elec_data = pd.read_csv('dash-fe/data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
+    elec_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_elec_costs_per_day.csv')
     elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
     elec_data = elec_data.filter(['c', '50.0'], axis="columns")
 
@@ -943,8 +938,7 @@ def create_charging_section():
     ## TODO == CHARGING STATION SECTION ==
 
     ## Charging station data setup
-    #charging_station_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
-    charging_station_data = pd.read_csv('dash-fe/data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    charging_station_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
     ## Net grid load
     ngl_data = charging_station_data.filter(['station_net_grid_load_kW'], axis="columns")
     ## Total load
@@ -987,8 +981,7 @@ def create_battery_section():
     ## TODO == BATTERY SECTION ==
 
     ## Battery data setup
-    #battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
-    battery_data = pd.read_csv('dash-fe/data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
+    battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
 
     ## TODO State of charge (SOC)
     soc_data = battery_data.filter(['SOC'], axis="columns")
