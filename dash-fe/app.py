@@ -227,6 +227,7 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     Output(component_id="simulation-container", component_property="style"),
     Output(component_id="feeder-population-container", component_property="style"),
     Output(component_id="battery-system-container", component_property="style"),
+    Output(component_id="mode-helper-text", component_property="children"),
     Input(component_id="oneshot-button", component_property="n_clicks"),
     Input(component_id="mpc-rhc-button", component_property="n_clicks"),
     Input(component_id="battery-system-button", component_property="n_clicks"),
@@ -237,9 +238,9 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
     print(triggered_id)
     if triggered_id == "oneshot-button":
         # Hide Feeder Population
-        return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", {
+        return "setup-button selected", "setup-button", "setup-button", {
             'display': 'grid',
-            'grid-row': '3',
+            'grid-row': '4',
             'grid-column': '1 / span 6',
             'grid-column-gap': '20px',
             'grid-row-gap': '20px',
@@ -249,12 +250,12 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
             'display': 'none',
         }, {
             'display': 'none',
-        },
+        }, 'Helper text 1'
     elif triggered_id == "mpc-rhc-button":
         # Show everything
-        return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", {
+        return "setup-button", "setup-button selected", "setup-button", {
             'display': 'grid',
-            'grid-row': '3',
+            'grid-row': '4',
             'grid-column': '1 / span 6',
             'grid-column-gap': '20px',
             'grid-row-gap': '20px',
@@ -263,24 +264,24 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
         }, {
             'display': 'grid',
             'grid-row-gap': '20px',
-            'grid-row': '17 / span 2',
-            'grid-column': '4 / span 3'
+            'grid-row': '7 / span 2',
+            'grid-column': '2 / span 4'
         }, {
             'display': 'none',
-        },
+        }, 'Helper text 2'
     elif triggered_id == "battery-system-button":
         # Load custom settings
-        return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", {
+        return "setup-button", "setup-button", "setup-button selected", {
             'display': 'none',
         }, {
             'display': 'none',
         }, {
             'display': 'block',
-            'grid-row': '3',
+            'grid-row': '4',
             'grid-column': '2 / span 4',
-        },
+        }, 'Helper text 3'
     else:
-        return "setup-button tooltip", "setup-button tooltip", "setup-button tooltip", {
+        return "setup-button", "setup-button", "setup-button", {
             'display': 'grid',
             'grid-row': '3',
             'grid-column': '1 / span 6',
@@ -372,14 +373,6 @@ def feeder_population_upload(contents, name):
     Input(component_id="power-factor-slider", component_property="value")
 )
 def power_factor_update(value):
-    return value
-
-# Capacity adjusted
-@app.callback(
-    Output(component_id="capacity-label", component_property="children"),
-    Input(component_id="capacity-slider", component_property="value")
-)
-def capacity_update(value):
     return value
 
 # Run simulation

@@ -189,3 +189,16 @@ button:hover {
 .rc-slider-mark-text, .rc-slider-mark-text-active {
     white-space: nowrap;
 }
+
+.setup-input {
+    border-radius: 6px;
+    border: 1px solid #e48d81;
+    padding: 8px;
+    color: #e48d81;
+}
+
+.helper-text {
+    display: block;
+    color: #999;
+    width: 100%;
+}
