@@ -10,10 +10,6 @@ from constants import PRESET1, PRESET2
 # Create Dash app
 app = dash.Dash(__name__)
 
-# Create default config file
-cfg = Config()
-print(cfg)
-
 # Create app layout
 app.layout = html.Div([
     html.Link(rel="stylesheet", href="assets/style.css"),
@@ -452,7 +448,7 @@ def run_simulation(
     ):
     # TODO: Connect to backend here
     # either use preset_1, preset_2, or user_input depending on which is selected
-    user_input = PRESET1 # TODO: create some config object from Preset 1
+    user_input = Config() # Default setup
     if preset2_class == "setup-button selected tooltip":
         user_input = PRESET2 # TODO: Create config object from preset 2
     elif custom_settings_class == "setup-button selected tooltip":

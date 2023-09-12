@@ -50,10 +50,11 @@ Sample structure:
 }
 
 """
+import json
 
 
 class Config:
-    # Class initialiyation with default values
+    # Class initialization with default values
     def __init__(self):
         self.sim_mode = "offline"
         self.feeder_pop = False
@@ -100,9 +101,19 @@ class Config:
 
     # Prints JSON for debug purposes
     def __str__(self):
-        print("JSON TBD")
         return (self.get_config_json())
 
-    # TODO Generates JSON
+    # Generates JSON
     def get_config_json(self):
-        return ""
+        # init dictionary
+        data = {}
+
+        # Assign proper values for each attribute in class
+        # I made this a loop over all attributes and am very proud of myself
+        for attribute in [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]:
+            data[attribute] = eval('self.' + attribute)
+
+        # Convert into json
+        json_data = json.dumps(data)
+
+        return json_data
