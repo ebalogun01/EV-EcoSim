@@ -201,7 +201,6 @@ class ChargingSim:
         :param int month: Month to be simulated.
         :return: None.
         """
-        """Loads the price loading module and sets the month to be simulated for memory-efficient sampling"""
         configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)
@@ -211,7 +210,8 @@ class ChargingSim:
             self.price_loader.downscale(input_data_res, self.resolution)
             self.prices_config["resolution"] = self.resolution
             file_path_list = self.prices_config["data_path"].split("_")
-            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],str(self.resolution) + "min.csv")
+            new_data_path = self.prices_config["data_path"].replace(file_path_list[-1],
+                                                                    str(self.resolution) + "min.csv")
             self.prices_config["data_path"] = new_data_path
             with open(self.prices_config["config_path"], 'w') as config_file_path:
                 os.chdir(configs_path)
@@ -248,7 +248,7 @@ class ChargingSim:
         """
         Resets the loads at the different buses being tracked.
 
-        :return:
+        :return: None.
         """
         self.site_net_loads = []
 
@@ -256,7 +256,7 @@ class ChargingSim:
         """
         Returns the charging station locations within the grid.
 
-        :return: Charging station locations.
+        :return list locs: Charging station locations.
         """
         return self.charging_locs
 
@@ -273,7 +273,7 @@ class ChargingSim:
         """
         This is done pre-simulation to ensure all scenarios are updated accordingly.
 
-        :param list power_nodes_list: List of buses for which EVSE exists.
+        :param list power_nodes_list: List of buses for which EVSE/Charging Station exists.
         :param scenario: Contains specifications for the scenario, such as battery capacity, c-rate, solar, etc.
         :return: None.
         """
@@ -283,14 +283,13 @@ class ChargingSim:
         self.update_scenario(scenario)  # scenarios for study
         self.scenario = scenario
         if self.scenario:
-            if 'oneshot' in list(scenario.keys()):
+            if self.scenario['oneshot']:
                 print("One shot optimization loading...")
                 self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
             else:
                 self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
             self.initialize_price_loader(self.prices_config["month"])
             self.initialize_aging_sim()  # Battery aging
-            # self.initialize_solar_module()  # this loads solar module (LAST is important for oneshot opt)
 
     def update_scenario(self, scenario=None):
         """
@@ -299,16 +298,28 @@ class ChargingSim:
         :param scenario: The scenario dict to be modified, if given.
         :return: None.
         """
+        # Todo: make this cleaner by adding a method to update each of the config codes that look repetitive.
         if scenario:
             self.prices_config['month'] = scenario['start_month']
-            if self.solar_config:
-                self.solar_config['start_month'] = scenario['start_month']
+            self.charging_config['month'] = scenario['start_month']
+            if self.solar:
+                for key in scenario['solar'].keys():
+                    if scenario['solar'][key]:
+                        self.solar_config[key] = scenario['solar'][key]
+            for key in scenario['battery'].keys():
+                if scenario['battery'][key]:
+                    self.battery_config[key] = scenario['battery'][key]
+            for key in scenario['charging_station'].keys():
+                if scenario['charging_station'][key]:
+                    self.charging_config[key] = scenario['charging_station'][key]
+            for key in scenario['elec_prices'].keys():
+                if scenario['elec_prices'][key]:
+                    print('Updating electricity price data path...')
+                    self.prices_config[key] = scenario['elec_prices'][key]
+            if scenario['load']['data_path']:
+                print('Updating load data path...')
+                self.charge_data = scenario['load']['data_path']
 
-            for key in scenario.keys():
-                if key != 'index':
-                    self.battery_config[key] = scenario[key]
-            # Save new solar config.
-            # Save new prices config.
             print('New scenario updated...')
 
     def update_steps(self, steps):
