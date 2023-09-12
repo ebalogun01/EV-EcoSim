@@ -14,15 +14,6 @@
 **.glm
 **.json
 
-# React fronted whitelist
-!frontend/package.json
-!frontend/package-lock.json
-!frontend/tsconfig.json
-!frontend/public/logo192.png
-!frontend/public/logo512.png
-!frontend/public/manifest.json
-!frontend/public/robots.txt
-
 # Dash frontend whitelist
 !dash-fe/data/*
 
