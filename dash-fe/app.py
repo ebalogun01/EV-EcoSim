@@ -5,7 +5,7 @@ import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
-from constants import PRESET1, PRESET2, CUSTOM_DEFAULT
+from constants import PRESET1, PRESET2
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -167,8 +167,6 @@ app.layout = html.Div([
     ]),
 ])
 
-# Create input dictionary
-
 # Callbacks
 # Radio buttons change value
 @app.callback(
@@ -210,20 +208,16 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     print(triggered_id)
     if triggered_id == "preset1-button":
         # Load preset 1
-        user_input = PRESET1
         return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", None
     elif triggered_id == "preset2-button":
         # Load preset 2
-        user_input = PRESET2
         return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", None
     elif triggered_id == "custom-settings-button":
-        user_input = CUSTOM_DEFAULT
         return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
     elif triggered_id == "custom-settings-accordion":
         # Load custom settings
         print(custom_settings_value)
         if custom_settings_value == "customSettings":
-            user_input = CUSTOM_DEFAULT
             return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
         else:
             return preset1_class, preset2_class, custom_settings_class, None
@@ -390,10 +384,117 @@ def power_factor_update(value):
 @app.callback(
     Output(component_id="run-simulation-button", component_property="style"),
     Input(component_id="run-simulation-button", component_property='n_clicks'),
-    # Include state properties needed to run simulation
+    State(component_id="preset1-button", component_property="className"),
+    State(component_id="preset2-button", component_property="className"),
+    State(component_id="custom-settings-button", component_property="className"),
+    State(component_id="oneshot-button", component_property="className"),
+    State(component_id="mpc-rhc-button", component_property="className"),
+    State(component_id="battery-system-button", component_property="className"),
+    State(component_id="battery-data-upload", component_property="filename"),
+    State(component_id="temperature-data-upload", component_property="filename"),
+    State(component_id="load-data-upload", component_property="filename"),
+    State(component_id="solar-data-upload", component_property="filename"),
+    State(component_id="solar-efficiency-input", component_property="value"),
+    State(component_id="solar-capacity-input", component_property="value"),
+    State(component_id="month-dropdown", component_property="value"),
+    State(component_id="year-input", component_property="value"),
+    State(component_id="days-input", component_property="value"),
+    State(component_id="price-data-upload", component_property="filename"),
+    State(component_id="dcfc-rating-dropdown", component_property="value"),
+    State(component_id="l2-rating-dropdown", component_property="value"),
+    State(component_id="num-dcfc-stalls-dropdown", component_property="value"),
+    State(component_id="num-l2-stalls-dropdown", component_property="value"),
+    State(component_id="transformer-capacity-dropdown", component_property="value"),
+    State(component_id="max-c-rate-dropdown", component_property="value"),
+    State(component_id="energy-cap-dropdown", component_property="value"),
+    State(component_id="max-amp-hours-dropdown", component_property="value"),
+    State(component_id="max-voltage-dropdown", component_property="value"),
+    State(component_id="voltage-dropdown", component_property="value"),
+    State(component_id="soh-input", component_property="value"),
+    State(component_id="soc-input", component_property="value"),
+    State(component_id="power-factor-slider", component_property="value"),
+    State(component_id="battery-capacity-input", component_property="value"),
+    State(component_id="feeder-population-data-upload", component_property="filename")
 )
-def run_simulation(run_button_n_clicks):
+def run_simulation(
+        run_button_n_clicks, 
+        preset1_class, 
+        preset2_class, 
+        custom_settings_class,
+        oneshot_class,
+        mpc_rhc_class,
+        battery_system_class,
+        battery_filename,
+        temperature_filename,
+        load_filename,
+        solar_filename,
+        solar_efficiency,
+        solar_capacity,
+        month,
+        year,
+        num_days,
+        price_filename,
+        dcfc_rating,
+        l2_rating,
+        num_dcfc_stalls,
+        num_l2_stalls,
+        transformer_capactiy,
+        max_c_rate,
+        energy_cap,
+        max_amp_hours,
+        max_voltage,
+        voltage,
+        soh,
+        soc,
+        power_factor,
+        battery_capacity,
+        feeder_population_filename
+    ):
     # TODO: Connect to backend here
+    # either use preset_1, preset_2, or user_input depending on which is selected
+    user_input = PRESET1 # TODO: create some config object from Preset 1
+    if preset2_class == "setup-button selected tooltip":
+        user_input = PRESET2 # TODO: Create config object from preset 2
+    elif custom_settings_class == "setup-button selected tooltip":
+        user_input = Config()
+        if oneshot_class == "setup-button selected":
+            user_input.sim_mode = "offline"
+        elif mpc_rhc_class == "setup-button selected":
+            user_input.sim_mode = "mpc_rhc"
+        elif battery_system_class == "setup-button selected":
+            user_input.sim_mode = "battery"
+            user_input.only_batt_sys = True # I think?
+        if battery_system_class == "setup-button selected":
+            user_input.battery["data"] = battery_filename
+        else:
+            user_input.ambient_data = temperature_filename
+            user_input.load["data"] = load_filename
+            user_input.solar["data"] = solar_filename
+            user_input.solar["efficiency"] = solar_efficiency
+            user_input.solar["rating"] = solar_capacity
+            user_input.month = month
+            # No provision for year
+            user_input.num_days = num_days
+            user_input.elec_prices["data"] = price_filename
+            user_input.charging_station["dcfc_charging_stall_base_rating"] = dcfc_rating + "_kW"
+            user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
+            user_input.charging_station["num_dcfc_stalls_per_node"] = num_dcfc_stalls
+            user_input.charging_station["num_l2_stalls_per_node"] = num_l2_stalls
+            user_input.charging_station["commercial_building_trans"] = transformer_capactiy # is this the correct property?
+            # TODO: fill in bettery dropdown values and format the values accordingly
+            user_input.battery["max_c_rate"] = max_c_rate 
+            user_input.battery["pack_energy_cap"] = energy_cap
+            user_input.battery["pack_max_Ah"] = max_amp_hours
+            user_input.battery["pack_max_voltage"] = max_voltage
+            # Nothing for voltage
+            # Nothing for SOC, SOH
+            user_input.battery["power_factor"] = power_factor
+            # Nothing for capacity
+            if mpc_rhc_class == "setup-button selected":
+                user_input.feeder_pop = True
+                # Nothing for feeder pop data
+
+    print(user_input)
     return {'grid-row': '2'}
 
 if __name__ == '__main__':
