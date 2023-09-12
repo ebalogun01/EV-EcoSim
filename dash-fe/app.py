@@ -4,10 +4,15 @@ from dash import dcc, html, ctx, Input, Output, State
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
+from config import Config
 from constants import PRESET1, PRESET2, CUSTOM_DEFAULT
 
 # Create Dash app
 app = dash.Dash(__name__)
+
+# Create default config file
+cfg = Config()
+print(cfg)
 
 # Create app layout
 app.layout = html.Div([
