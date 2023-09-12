@@ -4,6 +4,7 @@ from dash import dcc, html, ctx, Input, Output, State
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
+from constants import PRESET1, PRESET2, CUSTOM_DEFAULT
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -161,7 +162,9 @@ app.layout = html.Div([
     ]),
 ])
 
+# Create input dictionary
 
+# Callbacks
 # Radio buttons change value
 @app.callback(
     Output(component_id="home-page", component_property="style"),
@@ -202,17 +205,20 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     print(triggered_id)
     if triggered_id == "preset1-button":
         # Load preset 1
+        user_input = PRESET1
         return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", None
     elif triggered_id == "preset2-button":
         # Load preset 2
+        user_input = PRESET2
         return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", None
     elif triggered_id == "custom-settings-button":
-        # Load custom settings
+        user_input = CUSTOM_DEFAULT
         return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
     elif triggered_id == "custom-settings-accordion":
         # Load custom settings
         print(custom_settings_value)
         if custom_settings_value == "customSettings":
+            user_input = CUSTOM_DEFAULT
             return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
         else:
             return preset1_class, preset2_class, custom_settings_class, None
