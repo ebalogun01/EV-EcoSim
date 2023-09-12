@@ -70,11 +70,11 @@ def make_month_str(month_int: int):
 
 
 USER_INPUTS = load_default_input()
+# Updating the user inputs based on frontend inputs.
 
 path_prefix = os.getcwd()
 # Change below to name of the repo.
 path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-
 
 
 # PRELOAD
@@ -104,8 +104,11 @@ NUM_STEPS = NUM_DAYS * DAY_MINUTES // OPT_TIME_RES  # number of steps to initial
 param_dict['starttime'] = f'{start_time}'
 param_dict['endtime'] = f'{end_time}'
 
+# Control user inputs for charging stations.
 if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
     raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
+
+# Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
 
 if charging_station_config['num_dcfc_stalls_per_node']:
     param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
@@ -117,7 +120,7 @@ if charging_station_config['num_l2_stalls_per_node']:
     if charging_station_config["l2_power_cap"]:
         param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
-
+# Obtaining the charging station capacities.
 dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * \
                    param_dict['num_dcfc_stalls_per_node']
 L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
@@ -127,7 +130,7 @@ month_str = list(month_days.keys())[month - 1]
 
 # Save the new param_dict to the config file.
 station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'w')
-station_config.write(str(param_dict))
+station_config.writelines(', \n'.join(str(param_dict).split(',')))
 station_config.close()
 
 # Load DCFC locations txt file.
@@ -146,15 +149,15 @@ if type(L2_charging_nodes) is not list:
 l2_dicts_list = []
 for node in L2_charging_nodes:
     l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
-num_charging_nodes = len(dcfc_nodes) + len(
-    L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
+num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
+# Needs to come in as input initially & should be initialized prior from the feeder population.
 
-#   RUN TYPE
+#   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.
+#   (Does not work currently)
 sequential_run = True
 parallel_run = False
-single_run = False
 
-# BATTERY SCENARIOS
+# Battery scenarios.
 energy_ratings = USER_INPUTS["battery"]["pack_energy_cap"]  # kWh
 max_c_rates = USER_INPUTS["battery"]["max_c_rate"]  # kW
 
@@ -164,17 +167,42 @@ def make_scenarios():
     This is used to make the list of scenarios (dicts) that are used to run the simulations.
     No inputs. However, it uses preloaded global functions from a `config.txt` file.
 
-    :return: None.
+    :return list scenarios_list: List of scenario dicts.
     """
-
     scenarios_list = []
-    idx = 0
+    voltage_idx, idx = 0, 0
     for Er in energy_ratings:
         for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'opt_solver': 'GUROBI',
-                        'oneshot': True, 'start_month': month}
+            scenario = {
+                'index': idx,
+                'oneshot': True,
+                'start_month': month,
+                'opt_solver': 'GUROBI',
+                'battery': {
+                    'pack_energy_cap': Er,
+                    'max_c_rate': c_rate,
+                    'pack_max_voltage': USER_INPUTS['battery']['pack_max_voltage'][voltage_idx]
+                },
+                'charging_station': {
+                    'dcfc_power_cap': dcfc_station_cap
+                },
+                'solar': {
+                    'start_month': month,
+                    'efficiency': solar_config["efficiency"],
+                    'rating': solar_config["rating"],
+                    'data_path': solar_config["data"]
+                },
+                'load': {
+                    'data_path': USER_INPUTS['load']['data']
+                },
+                'elec_prices': {
+                    'start_month': month,
+                    'data_path': USER_INPUTS['elec_prices']['data']
+                }
+            }
             scenarios_list.append(scenario)
             idx += 1
+        voltage_idx += 1
     return scenarios_list
 
 
@@ -187,12 +215,13 @@ def run(scenario):
     """
     EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
     save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
-    os.mkdir(save_folder_prefix)
-    EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
+    if not os.path.exists(save_folder_prefix):
+        os.mkdir(save_folder_prefix)
+    EV_charging_sim.setup(dcfc_dicts_list+l2_dicts_list, scenario=scenario)
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
-        json.dump(scenario, outfile)
+        json.dump(scenario, outfile, indent=4)
 
 
 def run_scenarios_parallel():
@@ -225,7 +254,6 @@ def run_scenarios_sequential():
     idx_list = list(range(start_idx, end_idx))
     scenarios_list = make_scenarios()
     scenarios = [scenarios_list[idx] for idx in idx_list]
-    # d = 1
     for scenario in scenarios:
         scenario["L2_nodes"] = L2_charging_nodes
         scenario["dcfc_nodes"] = dcfc_nodes
@@ -234,29 +262,10 @@ def run_scenarios_sequential():
         if l2_dicts_list:
             scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
         run(scenario)
-        # d += 1
-
-
-def run_scenario_single():
-    """
-    Runs a single scenario dict.
-
-    :return: None.
-    """
-    # Keep changing this for each run
-    Er_idx = 0
-    c_rate_idx = 2
-    idx = 2
-    scenario = {'pack_energy_cap': energy_ratings[Er_idx],
-                'max_c_rate': max_c_rates[c_rate_idx],
-                'index': idx, 'opt_solver': 'GUROBI', 'oneshot': True}
-    run(scenario)
 
 
 if __name__ == '__main__':
     if sequential_run:
         run_scenarios_sequential()
-    elif single_run:
-        run_scenario_single()
     else:
         run_scenarios_parallel()
