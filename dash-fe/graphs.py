@@ -5,6 +5,11 @@ import pandas as pd
 
 ## Dummy graph
 def create_dummy_graph():
+    """
+    Dummy placeholder graph creation
+
+    :return: Dummy graph
+    """
     data_canada = px.data.gapminder().query("country == 'Canada'")
     chart = create_bar_graph(data_canada, x='year', y='pop')
     return chart
@@ -12,6 +17,15 @@ def create_dummy_graph():
 
 ## Create bar graph
 def create_bar_graph(data, x=None, y=None, color=None):
+    """
+    Total bar graph creation
+
+    :param data: source data
+    :param x: x-axis
+    :param y: y-axis
+    :param color: color scheme of variables
+    :return: Total bar graph
+    """
     fig = px.bar(data,
                  x=x,
                  y=y,
@@ -23,6 +37,14 @@ def create_bar_graph(data, x=None, y=None, color=None):
 
 ## Create bar graph
 def create_total_bar_graph(data, x=None, y=None):
+    """
+    Bar graph creation
+
+    :param data: source data
+    :param x: x-axis
+    :param y: y-axis
+    :return: Bar graph
+    """
     fig = px.bar(data,
                  x=x,
                  y=y,
@@ -33,6 +55,14 @@ def create_total_bar_graph(data, x=None, y=None):
 
 ## Create line graph
 def create_line_graph(data, x=None, y=None):
+    """
+    Line graph creation
+
+    :param data: source data
+    :param x: x-axis
+    :param y: y-axis
+    :return: Line graph
+    """
     fig = px.line(data,
                  x=x,
                  y=y,
