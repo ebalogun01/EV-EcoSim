@@ -42,6 +42,7 @@ def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text):
         ]
     )
 
+
 def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_text):
     """
     Battery input component creation
@@ -87,7 +88,7 @@ def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_t
                         children=[units]
                     )
                 ]
-            ), 
+            ),
             html.Span(
                 className='tooltip-text',
                 children=tooltip_text
@@ -95,7 +96,8 @@ def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_t
         ]
     )
 
-def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, tooltip_text ):
+
+def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, tooltip_text):
     """
     Battery dropdown component creation
 
@@ -134,10 +136,10 @@ def make_battery_dropdown(id, grid_row, grid_column, label, units, options, valu
                     ),
                     html.Span(
                         style={
-                            'display': 'inline-block', 
+                            'display': 'inline-block',
                             'white-space': 'nowrap',
                             'padding-left': '12px'
-                        }, 
+                        },
                         children=[units]
                     )
                 ]
@@ -167,7 +169,8 @@ def create_settings_container():
         children=[
             # Simulation mode
             make_input_section_label(grid_row='1', grid_column='2 / span 4',
-                                     icon='heroicons:magnifying-glass-plus-20-solid', text='Simulation mode', tooltip_text='Tooltip'),
+                                     icon='heroicons:magnifying-glass-plus-20-solid', text='Simulation mode',
+                                     tooltip_text='Tooltip'),
             html.Div(
                 style={
                     'grid-row': '2',
@@ -209,7 +212,7 @@ def create_settings_container():
                 },
                 children=['Helper text 1']
             ),
-            
+
             html.Div(
                 id='simulation-container',
                 style={
@@ -235,7 +238,7 @@ def create_settings_container():
 
                     # Ambient temperature data
                     make_input_section_label(grid_row='2', grid_column='1 / span 3', icon='ph:thermometer-simple-bold',
-                                            text='Ambient temperature data', tooltip_text='Tooltip'),
+                                             text='Ambient temperature data', tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -254,7 +257,7 @@ def create_settings_container():
                                         children='No file chosen'
                                     )
                                 ],
-                            ), 
+                            ),
                             html.Span(
                                 className='tooltip-text',
                                 children='Tooltip'
@@ -264,7 +267,7 @@ def create_settings_container():
 
                     # Solar
                     make_input_section_label(grid_row='2', grid_column='4 / span 3', icon='fa6-solid:solar-panel',
-                                            text='Solar', tooltip_text='Tooltip'),
+                                             text='Solar', tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -281,19 +284,22 @@ def create_settings_container():
                                         children='No file chosen'
                                     )
                                 ],
-                            ), 
+                            ),
                             html.Span(
                                 className='tooltip-text',
                                 children='Tooltip'
                             )
                         ]
                     ),
-                    make_battery_input(id="solar-efficiency-input", grid_row='4', grid_column='4 / span 3', label='Efficiency', units='units', value='1', tooltip_text='Tooltip'),
-                    make_battery_input(id="solar-capacity-input", grid_row='5', grid_column='4 / span 3', label='Capacity', units='units', value='1', tooltip_text='Tooltip'),
+                    make_battery_input(id="solar-efficiency-input", grid_row='4', grid_column='4 / span 3',
+                                       label='Efficiency', units='units', value='1', tooltip_text='Tooltip'),
+                    make_battery_input(id="solar-capacity-input", grid_row='5', grid_column='4 / span 3',
+                                       label='Capacity', units='units', value='1', tooltip_text='Tooltip'),
 
                     # Load
-                    make_input_section_label(grid_row='4', grid_column='1 / span 3', icon='icon-park-solid:screenshot-one',
-                                            text='Load', tooltip_text='Tooltip'),
+                    make_input_section_label(grid_row='4', grid_column='1 / span 3',
+                                             icon='icon-park-solid:screenshot-one',
+                                             text='Load', tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -306,11 +312,11 @@ def create_settings_container():
                                 children=[
                                     html.Button('Choose file'),
                                     html.Span(
-                                        id='load-data-file', 
+                                        id='load-data-file',
                                         children='No file chosen'
                                     )
                                 ],
-                            ), 
+                            ),
                             html.Span(
                                 className='tooltip-text',
                                 children='Tooltip'
@@ -338,7 +344,7 @@ def create_settings_container():
                         },
                         children=[
                             make_input_section_label(grid_row='1', grid_column='1', icon='fa6-regular:window-restore',
-                                                    text='Feeder population', tooltip_text='Tooltip'),
+                                                     text='Feeder population', tooltip_text='Tooltip'),
                             html.P(
                                 className='helper-text',
                                 style={
@@ -369,31 +375,35 @@ def create_settings_container():
                         ]
 
                     ),
-                    
+
                     # Timescale
                     make_input_section_label(grid_row='9', grid_column='1 / span 3',
-                                            icon='heroicons:magnifying-glass-plus-20-solid', text='Timescale', tooltip_text='Tooltip'),
-                    make_battery_dropdown(id='month-dropdown', grid_row='10', grid_column='1 / span 3', label='Month', units='', 
+                                             icon='heroicons:magnifying-glass-plus-20-solid', text='Timescale',
+                                             tooltip_text='Tooltip'),
+                    make_battery_dropdown(id='month-dropdown', grid_row='10', grid_column='1 / span 3', label='Month',
+                                          units='',
                                           options=[
-                                                {'label': 'January', 'value': '1'},
-                                                {'label': 'February', 'value': '2'},
-                                                {'label': 'March', 'value': '3'},
-                                                {'label': 'April', 'value': '4'},
-                                                {'label': 'May', 'value': '5'},
-                                                {'label': 'June', 'value': '6'},
-                                                {'label': 'July', 'value': '7'},
-                                                {'label': 'August', 'value': '8'},
-                                                {'label': 'September', 'value': '9'},
-                                                {'label': 'October', 'value': '10'},
-                                                {'label': 'November', 'value': '11'},
-                                                {'label': 'December', 'value': '12'},
-                                            ], value=1, tooltip_text='Tooltip'),
-                    make_battery_input(id='year-input', grid_row='11', grid_column='1 / span 3', label='Year', units='', value='2022', tooltip_text='Tooltip'),
-                    make_battery_input(id='days-input', grid_row='12', grid_column='1 / span 3', label='Number of days', units='days', value='30', tooltip_text='Tooltip'),
+                                              {'label': 'January', 'value': '1'},
+                                              {'label': 'February', 'value': '2'},
+                                              {'label': 'March', 'value': '3'},
+                                              {'label': 'April', 'value': '4'},
+                                              {'label': 'May', 'value': '5'},
+                                              {'label': 'June', 'value': '6'},
+                                              {'label': 'July', 'value': '7'},
+                                              {'label': 'August', 'value': '8'},
+                                              {'label': 'September', 'value': '9'},
+                                              {'label': 'October', 'value': '10'},
+                                              {'label': 'November', 'value': '11'},
+                                              {'label': 'December', 'value': '12'},
+                                          ], value=1, tooltip_text='Tooltip'),
+                    make_battery_input(id='year-input', grid_row='11', grid_column='1 / span 3', label='Year', units='',
+                                       value='2022', tooltip_text='Tooltip'),
+                    make_battery_input(id='days-input', grid_row='12', grid_column='1 / span 3', label='Number of days',
+                                       units='days', value='30', tooltip_text='Tooltip'),
 
                     # Electricity price
                     make_input_section_label(grid_row='9', grid_column='4 / span 3', icon='clarity:dollar-solid',
-                                            text='Electricity price', tooltip_text='Tooltip'),
+                                             text='Electricity price', tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -419,119 +429,86 @@ def create_settings_container():
                     ),
 
                     # Charging station
-                    make_input_section_label(grid_row='13', grid_column='1 / span 3', icon='carbon:charging-station-filled',
-                                            text='Charging station', tooltip_text='Tooltip'),
-                    make_battery_dropdown(id='dcfc-rating-dropdown', grid_row='14', grid_column='1 / span 3', label='DCFC stall rating', units='kW',
-                                        options=[
-                                            {'label': '75', 'value': '75'},
-                                        ],
-                                        value='75', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='l2-rating-dropdown', grid_row='15', grid_column='1 / span 3', label='L2 charging stall rating', units='kW',
-                                        options=[
-                                            {'label': '11.5', 'value': '11.5'},
-                                        ],
-                                        value='11.5', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='num-dcfc-stalls-dropdown', grid_row='16', grid_column='1 / span 3', label='Number of DCFC stalls per node', units='',
-                                        options=[
-                                            {'label': '5', 'value': '5'},
-                                        ],
-                                        value='5', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='num-l2-stalls-dropdown', grid_row='17', grid_column='1 / span 3', label='Number of L2 stalls per node', units='',
-                                        options=[
-                                            {'label': '0', 'value': '0'},
-                                        ],
-                                        value='0', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='transformer-capacity-dropdown', grid_row='18', grid_column='1 / span 3', label='Transformer capacity', units='kVA',
-                                        options=[
-                                            {'label': '75', 'value': '75'},
-                                        ],
-                                        value='75', tooltip_text='Tooltip'
-                                        ),
+                    make_input_section_label(grid_row='13', grid_column='1 / span 3',
+                                             icon='carbon:charging-station-filled',
+                                             text='Charging station', tooltip_text='Tooltip'),
+                    make_battery_dropdown(id='dcfc-rating-dropdown', grid_row='14', grid_column='1 / span 3',
+                                          label='DCFC stall rating', units='kW',
+                                          options=[
+                                              {'label': '75', 'value': '75'},
+                                          ],
+                                          value='75', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='l2-rating-dropdown', grid_row='15', grid_column='1 / span 3',
+                                          label='L2 charging stall rating', units='kW',
+                                          options=[
+                                              {'label': '11.5', 'value': '11.5'},
+                                          ],
+                                          value='11.5', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='num-dcfc-stalls-dropdown', grid_row='16', grid_column='1 / span 3',
+                                          label='Number of DCFC stalls per node', units='',
+                                          options=[
+                                              {'label': '5', 'value': '5'},
+                                          ],
+                                          value='5', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='num-l2-stalls-dropdown', grid_row='17', grid_column='1 / span 3',
+                                          label='Number of L2 stalls per node', units='',
+                                          options=[
+                                              {'label': '0', 'value': '0'},
+                                          ],
+                                          value='0',
+                                          tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='transformer-capacity-dropdown',
+                                          grid_row='18',
+                                          grid_column='1 / span 3',
+                                          label='Transformer capacity',
+                                          units='kVA',
+                                          options=[
+                                              {'label': '75', 'value': '75'},
+                                          ],
+                                          value='75', tooltip_text='Tooltip'
+                                          ),
 
-                    # Battery
-                    make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
-                                            text='Battery', tooltip_text='Tooltip'),
-                    make_battery_dropdown(id='max-c-rate-dropdown', grid_row='12', grid_column='4 / span 3', label='Maximum C-rate', units='',
-                                        options=[
-                                            {'label': 'Value 1', 'value': '1'},
-                                            {'label': 'Value 2', 'value': '2'},
-                                            {'label': 'Value 3', 'value': '3'}
-                                        ],
-                                        value='1', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='energy-cap-dropdown', grid_row='13', grid_column='4 / span 3', label='Energy capacity', units='units',
-                                        options=[
-                                            {'label': 'Value 1', 'value': '1'},
-                                            {'label': 'Value 2', 'value': '2'},
-                                            {'label': 'Value 3', 'value': '3'}
-                                        ],
-                                        value='1', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3', label='Maximum amp hours', units='Ah',
-                                        options=[
-                                            {'label': 'Value 1', 'value': '1'},
-                                            {'label': 'Value 2', 'value': '2'},
-                                            {'label': 'Value 3', 'value': '3'}
-                                        ],
-                                        value='1', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='max-voltage-dropdown', grid_row='15', grid_column='4 / span 3', label='Maximum voltage', units='V',
-                                        options=[
-                                            {'label': 'Value 1', 'value': '1'},
-                                            {'label': 'Value 2', 'value': '2'},
-                                            {'label': 'Value 3', 'value': '3'}
-                                        ],
-                                        value='1', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_dropdown(id='voltage-dropdown', grid_row='16', grid_column='4 / span 3', label='Cell voltage', units='V',
-                                        options=[
-                                            {'label': 'Value 1', 'value': '1'},
-                                            {'label': 'Value 2', 'value': '2'},
-                                            {'label': 'Value 3', 'value': '3'}
-                                        ],
-                                        value='1', tooltip_text='Tooltip'
-                                        ),
-                    make_battery_input(id='soh-input', grid_row='17', grid_column='4 / span 3', label='State of health', units='', value='1.0', tooltip_text='Tooltip'),
-                    make_battery_input(id='soc-input', grid_row='18', grid_column='4 / span 3', label='State of charge', units='', value='1.0', tooltip_text='Tooltip'),
-
-                    # Power factor
-                    make_input_section_label(grid_row='19', grid_column='1 / span 3', icon='bi:cloud-lightning-fill',
-                                            text='Power factor (optional)', tooltip_text='Tooltip'),
+                    # Power factor under Charging station TODO change to component
                     html.Div(
                         className='tooltip',
                         style={
-                            'grid-row': '20',
+                            'grid-row': '19',
                             'grid-column': '1 / span 3',
                             'display': 'flex',
                             'justify-content': 'space-between',
                         },
                         children=[
+
                             html.Div(
-                                dcc.Slider(
-                                    id="power-factor-slider",
-                                    min=0.8,
-                                    max=1.0,
-                                    step=0.01,
-                                    marks={
-                                        0.8: '0.8',
-                                        0.85: '0.85',
-                                        0.9: '0.9',
-                                        0.95: '0.95',
-                                        1: '1.0'
-                                    },
-                                    value=None,
-                                    included=True,
-                                ),
                                 className='slider-container',
                                 style={
                                     'width': '100%',
                                     'display': 'inline-grid',
                                     'align-items': 'center',
-                                }
+                                },
+                                children=[
+                                    html.Span("Power factor"),
+                                    dcc.Slider(
+                                        id="power-factor-slider",
+                                        min=0.8,
+                                        max=1.0,
+                                        step=0.01,
+                                        marks={
+                                            0.8: '0.8',
+                                            0.85: '0.85',
+                                            0.9: '0.9',
+                                            0.95: '0.95',
+                                            1: '1.0'
+                                        },
+                                        value=0.8, # Default value
+                                        included=True,
+                                    ),
+
+                                ]
                             ),
                             html.Span(
                                 id="power-factor-label",
@@ -539,7 +516,7 @@ def create_settings_container():
                                 style={
                                     'padding': '14px 0'
                                 },
-                                children=["XX"]
+                                children=["Power factor"]
                             ),
                             html.Span(
                                 className='tooltip-text',
@@ -547,11 +524,122 @@ def create_settings_container():
                             )
                         ]
                     ),
+                    # Capacity under Charging station
+                    make_battery_input(id='battery-capacity-input',
+                                       grid_row='20',
+                                       grid_column='1 / span 3',
+                                       label='Capacity',
+                                       units='units',
+                                       value='1.0',
+                                       tooltip_text='Tooltip'),
 
-                    # Capacity
-                    make_input_section_label(grid_row='21', grid_column='1 / span 3', icon='material-symbols:screenshot-frame',
-                                            text='Capacity', tooltip_text='Tooltip'),
-                    make_battery_input(id='battery-capacity-input', grid_row='22', grid_column='1 / span 3', label='', units='units', value='1.0', tooltip_text='Tooltip'),
+                    # Battery
+                    make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
+                                             text='Battery', tooltip_text='Tooltip'),
+                    make_battery_dropdown(id='max-c-rate-dropdown', grid_row='12', grid_column='4 / span 3',
+                                          label='Maximum C-rate', units='',
+                                          options=[
+                                              {'label': 'Value 1', 'value': '1'},
+                                              {'label': 'Value 2', 'value': '2'},
+                                              {'label': 'Value 3', 'value': '3'}
+                                          ],
+                                          value='1', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='energy-cap-dropdown', grid_row='13', grid_column='4 / span 3',
+                                          label='Energy capacity', units='units',
+                                          options=[
+                                              {'label': 'Value 1', 'value': '1'},
+                                              {'label': 'Value 2', 'value': '2'},
+                                              {'label': 'Value 3', 'value': '3'}
+                                          ],
+                                          value='1', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
+                                          label='Maximum amp hours', units='Ah',
+                                          options=[
+                                              {'label': 'Value 1', 'value': '1'},
+                                              {'label': 'Value 2', 'value': '2'},
+                                              {'label': 'Value 3', 'value': '3'}
+                                          ],
+                                          value='1', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='max-voltage-dropdown', grid_row='15', grid_column='4 / span 3',
+                                          label='Maximum voltage', units='V',
+                                          options=[
+                                              {'label': 'Value 1', 'value': '1'},
+                                              {'label': 'Value 2', 'value': '2'},
+                                              {'label': 'Value 3', 'value': '3'}
+                                          ],
+                                          value='1', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_dropdown(id='voltage-dropdown', grid_row='16', grid_column='4 / span 3',
+                                          label='Cell voltage', units='V',
+                                          options=[
+                                              {'label': 'Value 1', 'value': '1'},
+                                              {'label': 'Value 2', 'value': '2'},
+                                              {'label': 'Value 3', 'value': '3'}
+                                          ],
+                                          value='1', tooltip_text='Tooltip'
+                                          ),
+                    make_battery_input(id='soh-input', grid_row='17', grid_column='4 / span 3', label='State of health',
+                                       units='', value='1.0', tooltip_text='Tooltip'),
+                    make_battery_input(id='soc-input', grid_row='18', grid_column='4 / span 3', label='State of charge',
+                                       units='', value='1.0', tooltip_text='Tooltip'),
+
+                    # Power factor TODO REMOVE
+                    # make_input_section_label(grid_row='19', grid_column='1 / span 3', icon='bi:cloud-lightning-fill',
+                    #                          text='Power factor (optional)', tooltip_text='Tooltip'),
+                    # html.Div(
+                    #     className='tooltip',
+                    #     style={
+                    #         'grid-row': '20',
+                    #         'grid-column': '1 / span 3',
+                    #         'display': 'flex',
+                    #         'justify-content': 'space-between',
+                    #     },
+                    #     children=[
+                    #         html.Div(
+                    #             dcc.Slider(
+                    #                 id="power-factor-slider",
+                    #                 min=0.8,
+                    #                 max=1.0,
+                    #                 step=0.01,
+                    #                 marks={
+                    #                     0.8: '0.8',
+                    #                     0.85: '0.85',
+                    #                     0.9: '0.9',
+                    #                     0.95: '0.95',
+                    #                     1: '1.0'
+                    #                 },
+                    #                 value=None,
+                    #                 included=True,
+                    #             ),
+                    #             className='slider-container',
+                    #             style={
+                    #                 'width': '100%',
+                    #                 'display': 'inline-grid',
+                    #                 'align-items': 'center',
+                    #             }
+                    #         ),
+                    #         html.Span(
+                    #             id="power-factor-label",
+                    #             className="slider-label",
+                    #             style={
+                    #                 'padding': '14px 0'
+                    #             },
+                    #             children=["XX"]
+                    #         ),
+                    #         html.Span(
+                    #             className='tooltip-text',
+                    #             children='Tooltip'
+                    #         )
+                    #     ]
+                    # ),
+
+                    # Capacity TODO REMOVE
+                    # make_input_section_label(grid_row='21', grid_column='1 / span 3', icon='material-symbols:screenshot-frame',
+                    #                         text='Capacity', tooltip_text='Tooltip'),
+                    # make_battery_input(id='battery-capacity-input', grid_row='22', grid_column='1 / span 3', label='', units='units', value='1.0', tooltip_text='Tooltip'),
 
                 ]
             ),
@@ -1006,7 +1094,8 @@ def create_charging_section():
     ## TODO == CHARGING STATION SECTION ==
 
     ## Charging station data setup
-    charging_station_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    charging_station_data = pd.read_csv(
+        'data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
     ## Net grid load
     ngl_data = charging_station_data.filter(['station_net_grid_load_kW'], axis="columns")
     ## Total load

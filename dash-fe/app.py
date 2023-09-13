@@ -546,7 +546,7 @@ def run_simulation(
                 user_input.feeder_pop = True
                 # Nothing for feeder pop data
 
-    # TODO: Connect to backend here - pass user_input
+    # TODO: Connect to backend here - pass user_input.get_config_json()
     print(user_input)
 
     return {'grid-row': '2'}
