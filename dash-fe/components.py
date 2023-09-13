@@ -168,8 +168,10 @@ def create_settings_container():
         },
         children=[
             # Simulation mode
-            make_input_section_label(grid_row='1', grid_column='2 / span 4',
-                                     icon='heroicons:magnifying-glass-plus-20-solid', text='Simulation mode',
+            make_input_section_label(grid_row='1',
+                                     grid_column='2 / span 4',
+                                     icon='heroicons:magnifying-glass-plus-20-solid',
+                                     text='Simulation mode',
                                      tooltip_text='Tooltip'),
             html.Div(
                 style={
@@ -237,8 +239,11 @@ def create_settings_container():
                     ),
 
                     # Ambient temperature data
-                    make_input_section_label(grid_row='2', grid_column='1 / span 3', icon='ph:thermometer-simple-bold',
-                                             text='Ambient temperature data', tooltip_text='Tooltip'),
+                    make_input_section_label(grid_row='2',
+                                             grid_column='1 / span 3',
+                                             icon='ph:thermometer-simple-bold',
+                                             text='Ambient temperature data',
+                                             tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -266,8 +271,11 @@ def create_settings_container():
                     ),
 
                     # Solar
-                    make_input_section_label(grid_row='2', grid_column='4 / span 3', icon='fa6-solid:solar-panel',
-                                             text='Solar', tooltip_text='Tooltip'),
+                    make_input_section_label(grid_row='2',
+                                             grid_column='4 / span 3',
+                                             icon='fa6-solid:solar-panel',
+                                             text='Solar',
+                                             tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -291,15 +299,27 @@ def create_settings_container():
                             )
                         ]
                     ),
-                    make_battery_input(id="solar-efficiency-input", grid_row='4', grid_column='4 / span 3',
-                                       label='Efficiency', units='units', value='1', tooltip_text='Tooltip'),
-                    make_battery_input(id="solar-capacity-input", grid_row='5', grid_column='4 / span 3',
-                                       label='Capacity', units='units', value='1', tooltip_text='Tooltip'),
+                    make_battery_input(id="solar-efficiency-input",
+                                       grid_row='4',
+                                       grid_column='4 / span 3',
+                                       label='Efficiency',
+                                       units='units',
+                                       value='1',
+                                       tooltip_text='Tooltip'),
+                    make_battery_input(id="solar-capacity-input",
+                                       grid_row='5',
+                                       grid_column='4 / span 3',
+                                       label='Capacity',
+                                       units='units',
+                                       value='1',
+                                       tooltip_text='Tooltip'),
 
                     # Load
-                    make_input_section_label(grid_row='4', grid_column='1 / span 3',
+                    make_input_section_label(grid_row='4',
+                                             grid_column='1 / span 3',
                                              icon='icon-park-solid:screenshot-one',
-                                             text='Load', tooltip_text='Tooltip'),
+                                             text='Load',
+                                             tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -377,10 +397,15 @@ def create_settings_container():
                     ),
 
                     # Timescale
-                    make_input_section_label(grid_row='9', grid_column='1 / span 3',
-                                             icon='heroicons:magnifying-glass-plus-20-solid', text='Timescale',
+                    make_input_section_label(grid_row='9',
+                                             grid_column='1 / span 3',
+                                             icon='heroicons:magnifying-glass-plus-20-solid',
+                                             text='Timescale',
                                              tooltip_text='Tooltip'),
-                    make_battery_dropdown(id='month-dropdown', grid_row='10', grid_column='1 / span 3', label='Month',
+                    make_battery_dropdown(id='month-dropdown',
+                                          grid_row='10',
+                                          grid_column='1 / span 3',
+                                          label='Month',
                                           units='',
                                           options=[
                                               {'label': 'January', 'value': '1'},
@@ -395,15 +420,30 @@ def create_settings_container():
                                               {'label': 'October', 'value': '10'},
                                               {'label': 'November', 'value': '11'},
                                               {'label': 'December', 'value': '12'},
-                                          ], value=1, tooltip_text='Tooltip'),
-                    make_battery_input(id='year-input', grid_row='11', grid_column='1 / span 3', label='Year', units='',
-                                       value='2022', tooltip_text='Tooltip'),
-                    make_battery_input(id='days-input', grid_row='12', grid_column='1 / span 3', label='Number of days',
-                                       units='days', value='30', tooltip_text='Tooltip'),
+                                          ],
+                                          value=1,
+                                          tooltip_text='Tooltip'),
+                    make_battery_input(id='year-input',
+                                       grid_row='11',
+                                       grid_column='1 / span 3',
+                                       label='Year',
+                                       units='',
+                                       value='2022',
+                                       tooltip_text='Tooltip'),
+                    make_battery_input(id='days-input',
+                                       grid_row='12',
+                                       grid_column='1 / span 3',
+                                       label='Number of days',
+                                       units='days',
+                                       value='30',
+                                       tooltip_text='Tooltip'),
 
                     # Electricity price
-                    make_input_section_label(grid_row='9', grid_column='4 / span 3', icon='clarity:dollar-solid',
-                                             text='Electricity price', tooltip_text='Tooltip'),
+                    make_input_section_label(grid_row='9',
+                                             grid_column='4 / span 3',
+                                             icon='clarity:dollar-solid',
+                                             text='Electricity price',
+                                             tooltip_text='Tooltip'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -431,30 +471,44 @@ def create_settings_container():
                     # Charging station
                     make_input_section_label(grid_row='13', grid_column='1 / span 3',
                                              icon='carbon:charging-station-filled',
-                                             text='Charging station', tooltip_text='Tooltip'),
-                    make_battery_dropdown(id='dcfc-rating-dropdown', grid_row='14', grid_column='1 / span 3',
-                                          label='DCFC stall rating', units='kW',
+                                             text='Charging station',
+                                             tooltip_text='Tooltip'),
+                    make_battery_dropdown(id='dcfc-rating-dropdown',
+                                          grid_row='14',
+                                          grid_column='1 / span 3',
+                                          label='DCFC stall rating',
+                                          units='kW',
                                           options=[
                                               {'label': '75', 'value': '75'},
                                           ],
-                                          value='75', tooltip_text='Tooltip'
+                                          value='75',
+                                          tooltip_text='Tooltip'
                                           ),
-                    make_battery_dropdown(id='l2-rating-dropdown', grid_row='15', grid_column='1 / span 3',
-                                          label='L2 charging stall rating', units='kW',
+                    make_battery_dropdown(id='l2-rating-dropdown',
+                                          grid_row='15',
+                                          grid_column='1 / span 3',
+                                          label='L2 charging stall rating',
+                                          units='kW',
                                           options=[
                                               {'label': '11.5', 'value': '11.5'},
                                           ],
                                           value='11.5', tooltip_text='Tooltip'
                                           ),
-                    make_battery_dropdown(id='num-dcfc-stalls-dropdown', grid_row='16', grid_column='1 / span 3',
-                                          label='Number of DCFC stalls per node', units='',
+                    make_battery_dropdown(id='num-dcfc-stalls-dropdown',
+                                          grid_row='16',
+                                          grid_column='1 / span 3',
+                                          label='Number of DCFC stalls per node',
+                                          units='',
                                           options=[
                                               {'label': '5', 'value': '5'},
                                           ],
                                           value='5', tooltip_text='Tooltip'
                                           ),
-                    make_battery_dropdown(id='num-l2-stalls-dropdown', grid_row='17', grid_column='1 / span 3',
-                                          label='Number of L2 stalls per node', units='',
+                    make_battery_dropdown(id='num-l2-stalls-dropdown',
+                                          grid_row='17',
+                                          grid_column='1 / span 3',
+                                          label='Number of L2 stalls per node',
+                                          units='',
                                           options=[
                                               {'label': '0', 'value': '0'},
                                           ],
