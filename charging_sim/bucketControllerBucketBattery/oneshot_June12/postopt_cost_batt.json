@@ -1,0 +1,13 @@
+{
+ "battery_sim_0": {
+  "capital_loss_aging": 438.35904688645235,
+  "capital_loss_aging_per_day": 0.09283026762666614,
+  "capital_cost": 69000.0,
+  "battery_LOL": 0.0012706059330042097,
+  "LOL_per_day": 4.235353110014032e-05,
+  "battery_total_cost": 69438.35904688646,
+  "total_cost_per_day": 14.704798497175076,
+  "lcoe": 0.03531576655291986,
+  "lcoe_aging": 0.00022294573170643717
+ }
+}

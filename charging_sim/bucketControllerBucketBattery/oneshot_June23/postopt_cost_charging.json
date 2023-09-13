@@ -1,0 +1,12 @@
+{
+ "charging_station_sim_0": {
+  "TOU_cost": 4124.888020833331,
+  "subscription_cost": 382.24,
+  "penalty_cost": 425.0895999999997,
+  "total_elec_cost": 4932.21762083333,
+  "cost_per_day": 164.40725402777767,
+  "max_load": 424.2899999999999,
+  "avg_load": 91.2898611111111,
+  "cost_per_kWh": 0.07503902588722022
+ }
+}
