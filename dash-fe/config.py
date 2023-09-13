@@ -101,10 +101,20 @@ class Config:
 
     # Prints JSON for debug purposes
     def __str__(self):
+        """
+        magic function to convert class to string for example when printing
+
+        :return: Config JSON dictionary for printing
+        """
         return (self.get_config_json())
 
     # Generates JSON
     def get_config_json(self):
+        """
+        Preparing json out of stored parameters in class
+
+        :return: Config JSON dictionary
+        """
         # init dictionary
         data = {}
 
