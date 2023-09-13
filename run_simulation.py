@@ -86,8 +86,10 @@ def simulate(user_inputs):
     param_dict = ast.literal_eval(param_dict)
     print('Testing param dict: \n', param_dict)
     print('\n', user_inputs)
+    print(type(user_inputs))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
+    print('ok')
 
     charging_station_config = user_inputs["charging_station"]
     battery_config = user_inputs["battery"]
@@ -137,14 +139,14 @@ def simulate(user_inputs):
 
     # Load DCFC locations txt file.
     print('...loading charging bus nodes')
-    dcfc_nodes = np.loadtxt('test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
+    dcfc_nodes = np.loadtxt('../test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
     if type(dcfc_nodes) is not list:
         dcfc_nodes = [dcfc_nodes]
     dcfc_dicts_list = []
     for node in dcfc_nodes:
         dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
 
-    L2_charging_nodes = np.loadtxt('test_cases/battery/L2charging_bus.txt',
+    L2_charging_nodes = np.loadtxt('../test_cases/battery/L2charging_bus.txt',
                                    dtype=str).tolist()  # this is for L2 charging
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
@@ -264,5 +266,6 @@ def simulate(user_inputs):
     if sequential_run:
         print("Running scenarios sequentially...")
         run_scenarios_sequential()
+        print("Run complete!")
     else:
         run_scenarios_parallel()
