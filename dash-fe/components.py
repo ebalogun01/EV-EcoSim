@@ -9,6 +9,16 @@ from constants import TEXT
 
 
 def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text):
+    """
+    Section label component creation
+
+    :param grid_row: Row in grid
+    :param grid_column: Column
+    :param icon: icon
+    :param text: Text
+    :param tooltip_text: Explanation texts
+    :return: Section label component
+    """
     return html.Div(
         className='setting-label tooltip',
         style={
@@ -33,6 +43,19 @@ def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text):
     )
 
 def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_text):
+    """
+    Battery input component creation
+
+    :param id: ID
+    :param grid_row: Row in grid
+    :param grid_column: Column
+    :param label: Label
+    :param units: Units
+    :param options: Options
+    :param value: Value
+    :param tooltip_text: Explanation texts
+    :return: Battery input component
+    """
     return html.Div(
         className='setup-input-container tooltip',
         style={
@@ -73,6 +96,19 @@ def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_t
     )
 
 def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, tooltip_text ):
+    """
+    Battery dropdown component creation
+
+    :param id: ID
+    :param grid_row: Row in grid
+    :param grid_column: Column
+    :param label: Label
+    :param units: Units
+    :param options: Options
+    :param value: Value
+    :param tooltip_text: Explanation texts
+    :return: Battery dropdown component
+    """
     return html.Div(
         className='setup-dropdown-container tooltip',
         style={
@@ -115,6 +151,11 @@ def make_battery_dropdown(id, grid_row, grid_column, label, units, options, valu
 
 
 def create_settings_container():
+    """
+    Settings container component creation
+
+    :return: Settings container component
+    """
     settings_container = html.Div(
         id="settings-container",
         style={
@@ -550,6 +591,11 @@ def create_settings_container():
 
 
 def create_home_page():
+    """
+    Home page component creation
+
+    :return: Home page component
+    """
     home_page = html.Div(
         id='home-page',
         style={'display': 'block'},
@@ -720,6 +766,11 @@ def create_home_page():
 
 
 def create_tutorial_page():
+    """
+    Tutorial page component creation
+
+    :return: Tutorial page component
+    """
     tutorial_page = html.Div(
         id="tutorial-page",
         style={
@@ -793,6 +844,11 @@ def create_tutorial_page():
 
 
 def create_output_page():
+    """
+    Output page component creation
+
+    :return: Output page component
+    """
     output_page = html.Div(
         id="output-page",
         style={
@@ -842,6 +898,11 @@ def create_output_page():
 
 
 def create_price_section():
+    """
+    Price sectioncomponent creation
+
+    :return: Price section component
+    """
     ## TODO == PRICE SECTION ==
     ## TODO custom data
 
@@ -937,6 +998,11 @@ def create_price_section():
 
 
 def create_charging_section():
+    """
+    Charging section component creation
+
+    :return: Charging section component
+    """
     ## TODO == CHARGING STATION SECTION ==
 
     ## Charging station data setup
@@ -980,6 +1046,11 @@ def create_charging_section():
 
 
 def create_battery_section():
+    """
+    Battery section component creation
+
+    :return: Battery section component
+    """
     ## TODO == BATTERY SECTION ==
 
     ## Battery data setup
@@ -1066,6 +1137,19 @@ def create_battery_section():
 def create_graph_card(title="Undefined title", description="Undefined description", data=None, graph_type='bar',
                       bar_color=None,
                       download_link=None, x='c', y='50.0'):
+    """
+    Graph card component creation
+
+    :param title: Title text in card
+    :param description: Description text in badge
+    :param data: Source data
+    :param graph_type: Type of graph
+    :param bar_color: Source data
+    :param download_link: Download link
+    :param x: x-axis
+    :param y: y-axis
+    :return: Graph card
+    """
     card = dmc.Card(
         style={"margin": "2px"},
         children=[
@@ -1124,6 +1208,16 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
 
 
 def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0'):
+    """
+    Graph element component creation
+
+    :param data: Source data
+    :param graph_type: Type of graph
+    :param color: Source data
+    :param x: x-axis
+    :param y: y-axis
+    :return: Graph element
+    """
     if data is None:
         return dmc.Skeleton(
             visible=True,
@@ -1153,6 +1247,13 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
 
 
 def create_badge_title(title, icon):
+    """
+    Badge title component creation
+
+    :param title: Title text in badge
+    :param icon: Icon in badge
+    :return: Badge title component
+    """
     return dmc.Group(
         style={"margin": "5px"},
         children=[
