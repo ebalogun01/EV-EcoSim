@@ -183,7 +183,8 @@ def page_update(radio_value):
     """
     # Debug option:
     if app.server.debug==True:
-        print(radio_value)
+        pass
+        # print(radio_value)
     if radio_value == "INP":
         return {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
     elif radio_value == "TUT":
@@ -553,7 +554,7 @@ def run_simulation(
     # print(user_input.get_config_json())
     simulate(user_input.get_config_json())
     # TODO: Connect to backend here - pass user_input.get_config_json()
-    print(user_input)
+    # print(user_input)
     return {'grid-row': '2'}
 
 
