@@ -172,6 +172,11 @@ app.layout = html.Div([
     Input(component_id="category-radio", component_property="value")
 )
 def page_update(radio_value):
+    """
+    Updating page based on selected radio button (To be deprecated by pagination)
+
+    :return: Page to be rendered
+    """
     # Debug option:
     if app.server.debug==True:
         print(radio_value)
@@ -200,6 +205,11 @@ def page_update(radio_value):
     prevent_initial_call=True
 )
 def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value, preset1_class, preset2_class, custom_settings_class):
+    """
+    Preset selection trigger
+
+    :return: Preset
+    """
     triggered_id = ctx.triggered_id
     print(triggered_id)
     if triggered_id == "preset1-button":
@@ -235,6 +245,11 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     prevent_initial_call=True
 )
 def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
+    """
+    Sim mode selection trigger
+
+    :return: Sim mode
+    """
     triggered_id = ctx.triggered_id
     print(triggered_id)
     if triggered_id == "oneshot-button":
@@ -303,6 +318,11 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
     State(component_id="temperature-data-upload", component_property="filename")
 )
 def temperature_upload(contents, name):
+    """
+    Temperature upload trigger
+
+    :return: File for temperature
+    """
     if contents is not None:
         return name
     else:
@@ -315,6 +335,11 @@ def temperature_upload(contents, name):
     State(component_id="solar-data-upload", component_property="filename")
 )
 def solar_upload(contents, name):
+    """
+    Solar upload trigger
+
+    :return: File for solar
+    """
     if contents is not None:
         return name
     else:
@@ -327,6 +352,11 @@ def solar_upload(contents, name):
     State(component_id="load-data-upload", component_property="filename")
 )
 def load_upload(contents, name):
+    """
+    Load upload trigger
+
+    :return: File for load
+    """
     if contents is not None:
         return name
     else:
@@ -339,6 +369,11 @@ def load_upload(contents, name):
     State(component_id="price-data-upload", component_property="filename")
 )
 def price_upload(contents, name):
+    """
+    Price upload trigger
+
+    :return: File for price
+    """
     if contents is not None:
         return name
     else:
@@ -351,6 +386,11 @@ def price_upload(contents, name):
     State(component_id="battery-data-upload", component_property="filename")
 )
 def battery_upload(contents, name):
+    """
+    Battery upload trigger
+
+    :return: File for battery
+    """
     if contents is not None:
         return name
     else:
@@ -363,6 +403,11 @@ def battery_upload(contents, name):
     State(component_id="feeder-population-data-upload", component_property="filename")
 )
 def feeder_population_upload(contents, name):
+    """
+    Feeder popúulation upload trigger
+
+    :return: File for feeder popúulation
+    """
     if contents is not None:
         return name
     else:
@@ -374,6 +419,11 @@ def feeder_population_upload(contents, name):
     Input(component_id="power-factor-slider", component_property="value")
 )
 def power_factor_update(value):
+    """
+    Power factor trigger
+
+    :return: Power factor
+    """
     return value
 
 # Run simulation
@@ -413,7 +463,7 @@ def power_factor_update(value):
     State(component_id="feeder-population-data-upload", component_property="filename")
 )
 def run_simulation(
-        run_button_n_clicks, 
+        run_button_n_clicks,
         preset1_class, 
         preset2_class, 
         custom_settings_class,
@@ -446,6 +496,11 @@ def run_simulation(
         battery_capacity,
         feeder_population_filename
     ):
+    """
+    Simulation settings collection trigger
+
+    :return: Simulation settings JSON
+    """
     # TODO: Connect to backend here
     # either use preset_1, preset_2, or user_input depending on which is selected
     user_input = Config() # Default setup
