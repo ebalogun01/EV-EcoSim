@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../charging_sim')
 import plotly.express as px
 import dash
 from dash import dcc, html, ctx, Input, Output, State
@@ -6,6 +8,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from constants import PRESET1, PRESET2
+from run_simulation import *
 # TODO import backend
 
 # Create Dash app
@@ -546,10 +549,13 @@ def run_simulation(
                 user_input.feeder_pop = True
                 # Nothing for feeder pop data
 
+    # print(user_input)
+    # print(user_input.get_config_json())
+    simulate(user_input.get_config_json())
     # TODO: Connect to backend here - pass user_input.get_config_json()
     print(user_input)
-
     return {'grid-row': '2'}
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8050)
