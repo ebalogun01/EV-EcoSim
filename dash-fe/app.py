@@ -465,7 +465,8 @@ def power_factor_update(value):
     State(component_id="soc-input", component_property="value"),
     State(component_id="power-factor-slider", component_property="value"),
     State(component_id="battery-capacity-input", component_property="value"),
-    State(component_id="feeder-population-data-upload", component_property="filename")
+    State(component_id="feeder-population-data-upload", component_property="filename"),
+    prevent_initial_call=True
 )
 def run_simulation(
         run_button_n_clicks,
