@@ -504,7 +504,7 @@ def create_settings_container():
                                             0.95: '0.95',
                                             1: '1.0'
                                         },
-                                        value=0.8, # Default value
+                                        value=0.8,  # Default value
                                         included=True,
                                     ),
 
@@ -585,62 +585,6 @@ def create_settings_container():
                                        units='', value='1.0', tooltip_text='Tooltip'),
                     make_battery_input(id='soc-input', grid_row='18', grid_column='4 / span 3', label='State of charge',
                                        units='', value='1.0', tooltip_text='Tooltip'),
-
-                    # Power factor TODO REMOVE
-                    # make_input_section_label(grid_row='19', grid_column='1 / span 3', icon='bi:cloud-lightning-fill',
-                    #                          text='Power factor (optional)', tooltip_text='Tooltip'),
-                    # html.Div(
-                    #     className='tooltip',
-                    #     style={
-                    #         'grid-row': '20',
-                    #         'grid-column': '1 / span 3',
-                    #         'display': 'flex',
-                    #         'justify-content': 'space-between',
-                    #     },
-                    #     children=[
-                    #         html.Div(
-                    #             dcc.Slider(
-                    #                 id="power-factor-slider",
-                    #                 min=0.8,
-                    #                 max=1.0,
-                    #                 step=0.01,
-                    #                 marks={
-                    #                     0.8: '0.8',
-                    #                     0.85: '0.85',
-                    #                     0.9: '0.9',
-                    #                     0.95: '0.95',
-                    #                     1: '1.0'
-                    #                 },
-                    #                 value=None,
-                    #                 included=True,
-                    #             ),
-                    #             className='slider-container',
-                    #             style={
-                    #                 'width': '100%',
-                    #                 'display': 'inline-grid',
-                    #                 'align-items': 'center',
-                    #             }
-                    #         ),
-                    #         html.Span(
-                    #             id="power-factor-label",
-                    #             className="slider-label",
-                    #             style={
-                    #                 'padding': '14px 0'
-                    #             },
-                    #             children=["XX"]
-                    #         ),
-                    #         html.Span(
-                    #             className='tooltip-text',
-                    #             children='Tooltip'
-                    #         )
-                    #     ]
-                    # ),
-
-                    # Capacity TODO REMOVE
-                    # make_input_section_label(grid_row='21', grid_column='1 / span 3', icon='material-symbols:screenshot-frame',
-                    #                         text='Capacity', tooltip_text='Tooltip'),
-                    # make_battery_input(id='battery-capacity-input', grid_row='22', grid_column='1 / span 3', label='', units='units', value='1.0', tooltip_text='Tooltip'),
-
                 ]
             ),
 
