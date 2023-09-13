@@ -266,5 +266,6 @@ def simulate(user_inputs):
     if sequential_run:
         print("Running scenarios sequentially...")
         run_scenarios_sequential()
+        print("Run complete!")
     else:
         run_scenarios_parallel()
