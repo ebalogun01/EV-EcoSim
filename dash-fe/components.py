@@ -487,7 +487,7 @@ def create_settings_container():
                                         ],
                                         value='1', tooltip_text='Tooltip'
                                         ),
-                    make_battery_dropdown(id='voltage-dropdown', grid_row='16', grid_column='4 / span 3', label='Voltage', units='V',
+                    make_battery_dropdown(id='voltage-dropdown', grid_row='16', grid_column='4 / span 3', label='Cell voltage', units='V',
                                         options=[
                                             {'label': 'Value 1', 'value': '1'},
                                             {'label': 'Value 2', 'value': '2'},
