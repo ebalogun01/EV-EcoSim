@@ -6,6 +6,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from constants import PRESET1, PRESET2
+# TODO import backend
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -501,7 +502,7 @@ def run_simulation(
 
     :return: Simulation settings JSON
     """
-    # TODO: Connect to backend here
+
     # either use preset_1, preset_2, or user_input depending on which is selected
     user_input = Config() # Default setup
     if preset2_class == "setup-button selected tooltip":
@@ -545,7 +546,9 @@ def run_simulation(
                 user_input.feeder_pop = True
                 # Nothing for feeder pop data
 
+    # TODO: Connect to backend here - pass user_input
     print(user_input)
+
     return {'grid-row': '2'}
 
 if __name__ == '__main__':
