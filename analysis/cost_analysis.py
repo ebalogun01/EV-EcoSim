@@ -64,9 +64,13 @@ class CostEstimator:
                 path_lst = file.split("_")
                 if 'battery' in path_lst and 'plot.png' not in path_lst:
                     battery_LOL = 1 - pd.read_csv(file)['SOH'].to_numpy()[-1]
-                    avg_daily_energy_thruput = np.abs(pd.read_csv(file)['power_kW'].to_numpy()[1:]).sum() \
-                                                  * self.resolution / 60 * 1 / self.num_days
+                    # avg_daily_energy_thruput = np.abs(pd.read_csv(file)['power_kW'].to_numpy()[1:]).sum() \
+                    #                               * self.resolution / 60 * 1 / self.num_days
+                    avg_daily_energy_thruput = np.abs(np.minimum(0, pd.read_csv(file)['power_kW'].to_numpy()[1:])).sum()\
+                                               * self.resolution / 60 * 1 / self.num_days   # Only discharge.
                     expected_life_days = 0.2 / (battery_LOL / self.num_days)
+                    # expected_energy_thruput_over_lifetime = avg_daily_energy_thruput * expected_life_days
+                    # Below is for energy delivery throughput over useful life. This is a more accurate measure of LCOE.
                     expected_energy_thruput_over_lifetime = avg_daily_energy_thruput * expected_life_days
                     capital_loss_to_aging = (battery_LOL / 0.2 * capital_cost)
                     self.battery_cost = capital_cost + capital_loss_to_aging
@@ -100,7 +104,7 @@ class CostEstimator:
         Calculates the overall electricity PGEBEV2S cost for a given scenario.
 
         :param str result_dir: Directory in which the result is saved.
-        :param PGE_separate_file:
+        :param PGE_separate_file: Todo.
         :return dict result_dict: A dictionary comprising all the cost components and their dollar amounts.
         """
         current_dir = os.getcwd()
@@ -117,7 +121,13 @@ class CostEstimator:
                     net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)['station_solar_load_ev'].to_numpy()[
                                                                   1:] + pd.read_csv(file)['battery_power'].to_numpy()[
                                                                         1:]
-                    total_energy = total_grid_load.sum() * self.resolution/60
+                    # The `total_energy` is calculated as the sum of the absolute values of the net grid load. This is
+                    # because the net grid load can be negative, which would result in a negative total energy, and it
+                    # is desirable to know how much is the expected cost per energy throughput in the grid
+                    # (into and out).
+                    # total_energy = np.abs(net_grid_load).sum() * self.resolution / 60  # (kWh)
+                    total_energy = total_grid_load.sum() * self.resolution / 60
+                    # This makes more sense.
                     max_load = total_grid_load.max()
                     average_load = total_grid_load.mean()
                     self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f'{file.split(".")[0]}_',

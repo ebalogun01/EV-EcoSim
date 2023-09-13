@@ -497,9 +497,9 @@ def test():
 
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    ax1.plot_tables(buffer_battery.voltages, label='voltage')
-    ax2.plot_tables(currents, color='k', label='current')
-    ax2.plot_tables(buffer_battery.currents, color='r', ls='--', label='adjusted current')
+    ax1.plots(buffer_battery.voltages, label='voltage')
+    ax2.plot(currents, color='k', label='current')
+    ax2.plot(buffer_battery.currents, color='r', ls='--', label='adjusted current')
     ax1.set_xlabel('Time step')
     ax1.set_ylabel('Voltage (V)')
     ax2.set_ylabel('Current (A)')

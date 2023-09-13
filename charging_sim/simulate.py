@@ -5,7 +5,7 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import os
-from orchestrator import ChargingSim
+from linear_orchestrator import ChargingSimLinear as ChargingSim
 import multiprocessing as mp
 import numpy as np
 import json
@@ -104,6 +104,7 @@ def run(scenario):
     EV_charging_sim.multistep()
     EV_charging_sim.load_results_summary(save_folder_prefix)
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
+        scenario['solar_rating'] = EV_charging_sim.solar_config['rating']
         json.dump(scenario, outfile)
 
 

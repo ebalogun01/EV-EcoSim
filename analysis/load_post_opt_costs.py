@@ -18,12 +18,14 @@ MAX_C_RATES = [0.1, 0.2, 0.5, 1, 2]
 PLOT_FONT_SIZE = 16
 matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 
+#Todo: Make another plot_tables for total and lcoe separately.
 
 def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None, batt_aging_table=None,
-                solar_cost_table=None, save_plots_folder: str = None):
+                solar_cost_table=None, save_plots_folder: str = None, lcoe=True):
     """
     Plots the tables into a visualized results matrix and plots a stacked bar chart.
 
+    :param lcoe:
     :param batt_dtable: Data table for battery costs.
     :param elec_cost_dtable: Dataframe for electricity costs.
     :param trans_cost_dtable: Dataframe for transformer costs.
@@ -90,10 +92,11 @@ def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None,
             plt.savefig(f'{save_plots_folder}/batt_aging_{row[0]}kWh.png')
             plt.close()
 
-    plot_stacked_bar(elec_cost_dtable, batt_dtable, save_plots_folder, solar_costs=solar_cost_table)
+    plot_stacked_bar(elec_cost_dtable, batt_dtable, solar_costs=solar_cost_table, save_plot_path=save_plots_folder,
+                     lcoe=lcoe)
 
 
-def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""):
+def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path="", lcoe=True):
     """
     Plots a stacked bar to visualize the portion of overall LCOE each cost component contributes to the system.
 
@@ -105,6 +108,7 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
     """
     plot_font_size = 16
     font = {'size': plot_font_size}
+    COLORS = []
     matplotlib.rc('font', **font)
     capacities = [f'{str(size)}' for size in elec_costs.columns]
     c_rate_idx = 0  # ONLY CHANGE THIS IF LOOKING AT OTHER C-RATES
@@ -115,22 +119,28 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
     cost_component['Battery'] = batt_costs.to_numpy()[c_rate_idx]
     cost_component['Electricity'] = elec_costs.to_numpy()[c_rate_idx]
 
-    width = 0.6  # the width of the bars: can also be len(x) sequence
-    neg_cost = False  # need to build a more robust solution to this in the future
-    if np.any(cost_component['Electricity'] < 0):
-        neg_cost = True  # this is mainly for plotting aesthetics
     fig, ax = plt.subplots()
     bottom = np.zeros(len(capacities))
 
     for name, cost in cost_component.items():
-        if neg_cost and name == 'Electricity':
-            bottom = np.zeros(len(capacities))
+        if np.any(cost < 0) and name == 'Electricity':
+            # Find the negative values
+            neg_cost_idx = np.argwhere(cost < 0)
+            print('neg_cost_idx ', neg_cost_idx)
+            bottom[neg_cost_idx] = 0
+        print('bottom ', bottom)
         p = ax.bar(capacities, cost, label=name, bottom=bottom)
         bottom += cost
-    plt.ylabel("LCOE ($/kWh)")
-    plt.xlabel("Battery Energy Capacity (kWh)")
-    ax.set_title('LCOE breakdown')
-    ax.legend(loc='upper right')
+    if lcoe:
+        plt.ylabel("LCOE ($/kWh)")
+        plt.xlabel("Battery Energy Capacity (kWh)")
+        ax.set_title('LCOE breakdown')
+        ax.legend(loc='upper right')
+    else:
+        plt.ylabel("Total expenditure ($)")
+        plt.xlabel("Battery Energy Capacity (kWh)")
+        ax.set_title('Cost breakdown')
+        ax.legend(loc='upper right')
     fig.tight_layout()
 
     if save_plot_path:
@@ -142,12 +152,18 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
     for name, cost in cost_component.items():
         net_cost += cost
     p = ax.bar(capacities, net_cost)
-    ax.set_title('LCOE (system + elec)')
-    plt.ylabel("LCOE ($/kWh)")
-    plt.xlabel("Battery Energy Capacity (kWh)")
+    if lcoe:
+        ax.set_title('LCOE (system + elec)')
+        plt.ylabel("LCOE ($/kWh)")
+        plt.xlabel("Battery Energy Capacity (kWh)")
+    else:
+        ax.set_title('Cost (system + elec)')
+        plt.ylabel("Total expenditure ($)")
+        plt.xlabel("Battery Energy Capacity (kWh)")
     fig.tight_layout()
+
     if save_plot_path:
-        plt.savefig(f'{save_plot_path}/net_expediture.png')
+        plt.savefig(f'{save_plot_path}/net_expenditure.png')
         plt.close('all')
 
 
@@ -167,13 +183,13 @@ def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = 
     if batt_cost:
         estimator.calculate_battery_cost(case_dir)
     if elec_cost:
-        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_seperate_file=oneshot)
+        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_separate_file=oneshot)
         # not to add option into this for easy toggling
     if trans_cost:
         estimator.calculate_trans_loss_of_life(case_dir)
 
 
-def collate_results(month, solar=True, trans=True, oneshot=False):
+def collate_results_lcoe(month, solar=True, trans=True, oneshot=False):
     """
     Collates the results for each scenario and saves them in a result matrix.
 
@@ -188,7 +204,7 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         solar_lcoe = 0.067
     main_dir = os.getcwd()
     data_table = pd.DataFrame(
-        {energy_rating / 10.00: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
+        {energy_rating / 1000: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
     data_table = data_table.set_index(pd.Index(MAX_C_RATES))
     # Now go through all files and update table results for both electricity cost and battery costs.
     battery_dtable = copy.deepcopy(data_table)
@@ -247,6 +263,160 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
                 trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir)
 
 
+def collate_results_total(month, solar=True, trans=True, oneshot=False):
+    """
+    Collates the results for each scenario and saves them in a result matrix.
+
+    :param month: Month for which the results are being collated
+    :param bool solar: Boolean to decide if to include LCOE of solar.
+    :param bool trans: Boolean to decide if transformer aging matrix will be included.
+    :param bool oneshot: Boolean to tell the function if the results were obtained from oneshot or mpc simulation.
+    :return: None
+    """
+    solar_cost_per_watt = 0.72  # This is the dollar per watt cost of solar panels per NREL.
+    solar_total_cost = 0
+    # How do I know the capacity fo solar used for that scenario?
+    if solar:
+        solar_total_cost = solar_cost_per_watt * 80e3   # This is done manually for the paper.
+    main_dir = os.getcwd()
+    data_table = pd.DataFrame(
+        {energy_rating / 1000: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
+    data_table = data_table.set_index(pd.Index(MAX_C_RATES))
+    # Now go through all files and update table results for both electricity cost and battery costs.
+    battery_dtable = copy.deepcopy(data_table)
+    batt_aging_dtable = copy.deepcopy(data_table)
+    electricity_cost_dtable = copy.deepcopy(data_table)
+    trans_dtable = copy.deepcopy(data_table)
+    solar_dtable = copy.deepcopy(data_table)
+    for i in range(len(ENERGY_RATINGS) * len(MAX_C_RATES)):
+        if oneshot:
+            resul_dir = f'results/oneshot_{month}{i}'
+        else:
+            resul_dir = f'results/{month}{i}'
+        os.chdir(resul_dir)
+        with open('scenario.json', "r") as f:
+            scenario = json.load(f)
+            c_rate = scenario['max_c_rate']
+            energy = scenario['pack_energy_cap'] / 1000     # Converted from W to kWh.
+        with open('postopt_cost_batt.json', "r") as f:
+            batt_costs = json.load(f)
+            batt_total_cost = batt_costs['battery_sim_0']['battery_total_cost']
+            batt_aging_cost = batt_costs['battery_sim_0']['capital_loss_aging']
+        with open('postopt_cost_charging.json', "r") as f:
+            elec_costs = json.load(f)
+            elec_total_cost = elec_costs['charging_station_sim_0']['total_elec_cost']
+            print(elec_costs)
+        avg_trans_lol = 0
+        if trans:
+            with open('postopt_trans_lol.json', "r") as f:
+                trans_lol = json.load(f)
+                avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
+
+        battery_dtable[energy].loc[c_rate] = batt_total_cost
+        electricity_cost_dtable[energy].loc[c_rate] = elec_total_cost
+        batt_aging_dtable[energy].loc[c_rate] = batt_aging_cost
+
+        solar_dtable[energy].loc[c_rate] = solar_total_cost  # $/kWh.
+        trans_dtable[energy].loc[c_rate] = avg_trans_lol
+        os.chdir(main_dir)
+    print("Electricity cost table\n", electricity_cost_dtable)
+    if oneshot:
+        collated_dir = f'{month}_oneshot_collated_results'
+    else:
+        collated_dir = f'{month}_mpc_collated_results'
+    if not os.path.isdir(collated_dir):
+        os.mkdir(collated_dir)
+    battery_dtable.to_csv(f'{collated_dir}/{month}_battery_costs_total.csv')
+    electricity_cost_dtable.to_csv(f'{collated_dir}/{month}_elec_costs_total.csv')
+    (electricity_cost_dtable + battery_dtable + solar_dtable).to_csv(f'{collated_dir}/Total_{month}_costs.csv')
+    batt_aging_dtable.to_csv(f'{collated_dir}/{month}_battery_aging_costs_total.csv')
+    if trans:
+        trans_dtable.to_csv(f'{collated_dir}/{month}_trans_aging_per_day.csv')
+    else:
+        trans_dtable = None
+    plot_tables(batt_dtable=battery_dtable, elec_cost_dtable=electricity_cost_dtable,
+                batt_aging_table=batt_aging_dtable,
+                trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir,
+                lcoe=False)
+
+
+def collate_results_daily(month, solar=True, trans=True, oneshot=False):
+    """
+    Collates the results for each scenario and saves them in a result matrix.
+
+    :param month: Month for which the results are being collated
+    :param bool solar: Boolean to decide if to include LCOE of solar.
+    :param bool trans: Boolean to decide if transformer aging matrix will be included.
+    :param bool oneshot: Boolean to tell the function if the results were obtained from oneshot or mpc simulation.
+    :return: None
+    """
+    solar_cost_per_watt = 0.72  # This is the dollar per watt cost of solar panels per NREL.
+    solar_total_cost = 0
+    # How do I know the capacity fo solar used for that scenario?
+    if solar:
+        solar_total_cost = solar_cost_per_watt * 80e3   # This is done manually for the paper.
+    main_dir = os.getcwd()
+    data_table = pd.DataFrame(
+        {energy_rating / 1000: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
+    data_table = data_table.set_index(pd.Index(MAX_C_RATES))
+    # Now go through all files and update table results for both electricity cost and battery costs.
+    battery_dtable = copy.deepcopy(data_table)
+    batt_aging_dtable = copy.deepcopy(data_table)
+    electricity_cost_dtable = copy.deepcopy(data_table)
+    trans_dtable = copy.deepcopy(data_table)
+    solar_dtable = copy.deepcopy(data_table)
+    for i in range(len(ENERGY_RATINGS) * len(MAX_C_RATES)):
+        if oneshot:
+            resul_dir = f'results/oneshot_{month}{i}'
+        else:
+            resul_dir = f'results/{month}{i}'
+        os.chdir(resul_dir)
+        with open('scenario.json', "r") as f:
+            scenario = json.load(f)
+            c_rate = scenario['max_c_rate']
+            energy = scenario['pack_energy_cap'] / 1000     # Converted from W to kWh.
+        with open('postopt_cost_batt.json', "r") as f:
+            batt_costs = json.load(f)
+            batt_total_cost = batt_costs['battery_sim_0']['battery_total_cost']
+            batt_aging_cost = batt_costs['battery_sim_0']['capital_loss_aging']
+        with open('postopt_cost_charging.json', "r") as f:
+            elec_costs = json.load(f)
+            elec_total_cost = elec_costs['charging_station_sim_0']['total_elec_cost']
+            print(elec_costs)
+        avg_trans_lol = 0
+        if trans:
+            with open('postopt_trans_lol.json', "r") as f:
+                trans_lol = json.load(f)
+                avg_trans_lol = trans_lol['dcfc_trans_0_LOL_per_day']
+
+        battery_dtable[energy].loc[c_rate] = batt_total_cost
+        electricity_cost_dtable[energy].loc[c_rate] = elec_total_cost
+        batt_aging_dtable[energy].loc[c_rate] = batt_aging_cost
+
+        solar_dtable[energy].loc[c_rate] = solar_total_cost  # $/kWh.
+        trans_dtable[energy].loc[c_rate] = avg_trans_lol
+        os.chdir(main_dir)
+    print("Electricity cost table\n", electricity_cost_dtable)
+    if oneshot:
+        collated_dir = f'{month}_oneshot_collated_results'
+    else:
+        collated_dir = f'{month}_mpc_collated_results'
+    if not os.path.isdir(collated_dir):
+        os.mkdir(collated_dir)
+    battery_dtable.to_csv(f'{collated_dir}/{month}_battery_costs_total.csv')
+    electricity_cost_dtable.to_csv(f'{collated_dir}/{month}_elec_costs_total.csv')
+    (electricity_cost_dtable + battery_dtable + solar_dtable).to_csv(f'{collated_dir}/Total_{month}_costs.csv')
+    batt_aging_dtable.to_csv(f'{collated_dir}/{month}_battery_aging_costs_total.csv')
+    if trans:
+        trans_dtable.to_csv(f'{collated_dir}/{month}_trans_aging_per_day.csv')
+    else:
+        trans_dtable = None
+    plot_tables(batt_dtable=battery_dtable, elec_cost_dtable=electricity_cost_dtable,
+                batt_aging_table=batt_aging_dtable,
+                trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir,
+                lcoe=False)
+
+
 # RUN THIS FILE
 if __name__ == '__main__':
     # desired_month = 'January'  # might change this to input
@@ -260,4 +430,5 @@ if __name__ == '__main__':
         else:
             result_dir = f'results/{desired_month}{i}'
         run_results(result_dir, days, trans_cost=include_trans)
-    collate_results(desired_month, trans=include_trans, oneshot=oneshot)
+    collate_results_lcoe(desired_month, trans=include_trans, oneshot=oneshot)
+    # collate_results_total(desired_month, trans=include_trans, oneshot=oneshot)

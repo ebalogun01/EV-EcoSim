@@ -84,17 +84,21 @@ class BatteryAging:
         # change return function to np.sum later after debugging
         return capacity_fade, np.sum(resistance_growth)
 
-    def update_capacity(self, battery):
+    def update_capacity(self, battery, bucketmodel: bool):
         """
         Updates the capacity of the battery based on the aging model adopted from Schmalsteig Et. Al.
 
+        :param bucketmodel: Todo.
         :param battery: Battery object.
         :return: None. Updates the battery object capacity.
         """
         cap_fade = self.get_aging_value(battery)[0]
         battery.SOH -= cap_fade  # change this to nom rating
+        # Todo: Include cycle aging for linear battery here.
         battery.SOH_track += battery.SOH,
         battery.cap = battery.SOH * battery.cell_nominal_cap
+        if bucketmodel:
+            battery.pack_energy_capacity *= battery.SOH
         battery.Qmax = battery.max_SOC * battery.cap
         battery.true_capacity_loss += cap_fade
         battery.true_aging.append(cap_fade)
@@ -156,14 +160,15 @@ class BatteryAging:
         res_growth = res_growth_cal + res_growth_cycle
         return [capacity_fade, res_growth]
 
-    def run(self, battery):
+    def run(self, battery, bucketmodel=False):
         """
         Runs the aging model for the battery object.
 
+        :param bucketmodel:
         :param battery: The battery (pack) object.
         :return: None. Updates the battery object.
         """
-        self.update_capacity(battery)
+        self.update_capacity(battery, bucketmodel)
         # print("Battery Aging and Response Estimated")
 
     @staticmethod
@@ -190,11 +195,19 @@ class LinearAging:
     purposes to compare with the model implemented in the original EV-Ecosim paper.
     :params:
     """
-    def __init__(self, daily_aging, cycle_aging, num_steps, res=15):
+    def __init__(self, num_steps, cal_life=13, FEC=4500, res=15):
+        """
+        Model per Hesse Et. Al.
+
+        :param daily_aging:
+        :param cycle_aging:
+        :param num_steps:
+        :param res:
+        """
         self.res = res
         self.time = 1
-        self.daily_cal_aging = daily_aging
-        self.per_cycle_aging = cycle_aging
+        self.daily_cal_aging = 0.2 / (365 * cal_life)
+        self.per_cycle_aging = 0.2/FEC
 
     def get_cyc_aging(self, battery):
         """
@@ -204,7 +217,8 @@ class LinearAging:
         :return: A tuple of capacity fade and resistance growth due to cycle aging.
         """
         # print("Cycle aging: {}, Calendar aging: {}".format(cap_fade_cycle, cap_fade_calendar))
-        capacity_fade = self.per_cycle_aging * battery.cycle_count
+        capacity_fade = self.per_cycle_aging * (np.abs(battery.power) * self.res/60) / (battery.pack_energy_capacity*2)
+        battery.cycle_aging.append(capacity_fade)
         return capacity_fade
 
     def get_calendar_aging(self, battery):
@@ -214,8 +228,40 @@ class LinearAging:
         :param battery: The battery object.
         :return: A tuple of capacity fade and resistance growth due to calendar aging.
         """
-        capacity_fade = self.daily_cal_aging * battery.time
+        capacity_fade = self.daily_cal_aging * self.res/(60*24)
+        battery.calendar_aging.append(capacity_fade)
         return capacity_fade
+
+    def get_aging_value(self, battery):
+        """
+        Returns the total capacity fade and resistance growth of the battery object.
+
+        :param battery: The battery (pack) object.
+        :return: List of total capacity fade and resistance growth of the battery.
+        """
+        cap_fade_cycle = self.get_cyc_aging(battery)  # this infers first
+        cap_fade_calendar = self.get_calendar_aging(battery)
+        capacity_fade = cap_fade_cycle + cap_fade_calendar
+        return capacity_fade
+
+    def update_capacity(self, battery, bucketmodel: bool):
+        """
+        Updates the capacity of the battery based on the aging model adopted from Schmalsteig Et. Al.
+
+        :param bucketmodel: Todo.
+        :param battery: Battery object.
+        :return: None. Updates the battery object capacity.
+        """
+        cap_fade = self.get_aging_value(battery)
+        battery.SOH -= cap_fade  # change this to nom rating
+        # Todo: Include cycle aging for linear battery here.
+        battery.SOH_track += battery.SOH,
+        battery.cap = battery.SOH * battery.cell_nominal_cap
+        if bucketmodel:
+            battery.pack_energy_capacity *= battery.SOH
+        battery.Qmax = battery.max_SOC * battery.cap
+        battery.true_capacity_loss += cap_fade
+        battery.true_aging.append(cap_fade)
 
     def run(self, battery):
         """
@@ -224,6 +270,4 @@ class LinearAging:
         :param battery: The battery (pack) object.
         :return: None. Updates the battery object.
         """
-        self.update_capacity(battery)
-
-        # print("Battery Aging and Response Estimated")
+        self.update_capacity(battery, bucketmodel=True)

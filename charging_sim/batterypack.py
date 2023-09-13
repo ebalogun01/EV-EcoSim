@@ -93,11 +93,12 @@ class Battery:
         self.iR1 = 0
         self.iR2 = 0
 
-        self.max_voltage = self.config["max_cell_voltage"]
+        self.max_voltage = self.config["max_cell_voltage"]    # To be updated later.
         self.pack_max_voltage = self.config["pack_max_voltage"]
         self.min_voltage = self.config["min_cell_voltage"]  # for each cell
         self.pack_max_Ah = self.config["pack_max_Ah"]  # this is used in battery_setup_2 to scale voltage instead of curr
         self.pack_nom_Ah = self.config["pack_nom_Ah"]
+        self.max_power = None  # To be updated later.
         self.cell_nominal_voltage = self.config["nominal_cell_voltage"]  # for each cell
         self.nominal_energy = self.cell_nominal_voltage * self.cell_nominal_cap
         self.Qmax = self.config["SOC_max"] * self.cap
@@ -384,10 +385,10 @@ class Battery:
 
         if self.voltage > self.max_voltage:
             print("charge current too high! Max voltage exceeded")
-            # we de-rate the current if voltage is too high (exceeds max prescribed v)
-            # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
+            # We de-rate the current if voltage is too high (exceeds max prescribed v).
+            # Voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max.
             current -= (self.voltage - self.max_voltage) / self.R_pack  # changed from just Ro
-            self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
+            self.voltage = self.max_voltage
             print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
             print("max testing voltage is: ",
@@ -441,7 +442,9 @@ class Battery:
         self.C2 *= self.topology[1]
         self.R_pack = self.Ro + self.R1 + self.R2
         self.max_voltage = self.max_voltage * self.topology[0]
+        self.min_voltage = self.min_voltage * self.topology[0]
         self.max_current *= self.topology[1]
+        self.max_power = self.max_voltage * self.max_current  # In Watts.
         self.voltages = [self.voltage * self.topology[0]]
 
     def state_eqn(self, current, append=True):
@@ -468,6 +471,20 @@ class Battery:
         if append:
             self.currents += current,
             self.true_power += self.power,
+
+    def power_to_current(self, power):
+        """
+        Converts the power from the bucket model into current that can be used to update the battery state via
+        the state equations.
+
+        :param power: Power in kW.
+        :return:
+        """
+        voltage = self.get_OCV() * self.topology[0]
+        current = power * 1000 / voltage  # This is in amperes.
+        voltage -= current * self.R_pack
+        current = power * 1000 / voltage  # readjust current.
+        return current
 
     def get_OCV(self):
         """Uses the Open Circuit Voltage (OCV) Map stored within the battery object to any OCV for any state-of-charge
@@ -542,9 +559,9 @@ def test():
 
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    ax1.plot_tables(buffer_battery.voltages, label='voltage')
+    ax1.plot(buffer_battery.voltages, label='voltage')
     # ax2.plot(currents, color='k', label='current')
-    ax2.plot_tables(buffer_battery.currents, color='r', ls='--', label='adjusted current')
+    ax2.plot(buffer_battery.currents, color='r', ls='--', label='adjusted current')
     ax1.set_xlabel('Time step')
     ax1.set_ylabel('Voltage (V)')
     ax2.set_ylabel('Current (A)')

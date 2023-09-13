@@ -28,7 +28,7 @@ class ChargingStation:
         self.power_factor = 1.0
         self.status = status
         self.loads = [0]
-        self.total_load = [0]
+        self.total_load = [0]   # This is the total load demand at the charging station, which is mainly the EV load.
         self.solar_power_ev = [0]
         self.solar_power_grid = [0]
         self.solar_power_battery = [0]
