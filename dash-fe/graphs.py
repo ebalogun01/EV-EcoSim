@@ -1,5 +1,6 @@
 from dash import dcc, html, Input, Output
 import plotly.express as px
+import plotly.graph_objs as go
 import pandas as pd
 
 
@@ -68,4 +69,36 @@ def create_line_graph(data, x=None, y=None):
                  y=y,
                  #color_discrete_sequence=px.colors.qualitative.Set1
                  )
+    return dcc.Graph(figure=fig)
+
+## Create 4D graph
+def create_4D_graph(data, x=None, y=None, z=None, q=None):
+    """
+    4D graph creation
+
+    :param data: source data
+    :param x: x-axis
+    :param y: y-axis
+    :param y: z-axis
+    :param q: q-axis, shown as color
+    :return: 4D graph
+    """
+    fig = px.line(data,
+                 x=x,
+                 y=y,
+                 #color_discrete_sequence=px.colors.qualitative.Set1
+                 )
+
+    # Src: https://github.com/ostwalprasad/PythonMultiDimensionalPlots/blob/master/src/4D.py
+    fig = go.Scatter3d(x=x,
+                        y=y,
+                        z=z,
+                        marker=dict(color=q,
+                                    opacity=1,
+                                    reversescale=True,
+                                    colorscale='Blues',
+                                    size=5),
+                        line=dict(width=0.02),
+                        mode='markers')
+
     return dcc.Graph(figure=fig)
