@@ -386,13 +386,13 @@ def create_settings_container():
                                        grid_column='4 / span 3',
                                        label='Efficiency',
                                        units='',
-                                       value='1',),
+                                       value='1', ),
                     make_battery_input(id="solar-capacity-input",
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
                                        units='MW',
-                                       value='1',),
+                                       value='1', ),
 
                     # Load
                     make_input_section_label(grid_row='4',
@@ -652,8 +652,7 @@ def create_settings_container():
                                        grid_column='1 / span 3',
                                        label='Capacity',
                                        units='kW',
-                                       value='700.0',),
-
+                                       value='700.0', ),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
@@ -714,7 +713,7 @@ def create_settings_container():
                                     ),
                                 ]
                             )
-                            
+
                         ]
                     ),
                     html.Div(
@@ -773,7 +772,7 @@ def create_settings_container():
                                     ),
                                 ]
                             )
-                            
+
                         ]
                     ),
                     make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
@@ -1167,13 +1166,27 @@ def create_price_section():
     elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
     elec_data = elec_data.filter(['c', '50.0'], axis="columns")
 
+    ## Solar cost
+    # TODO connect to chargingsim/config/solar.json
+    solar_data = [0.08 for i in range(len(elec_data))]
+    solar_data = pd.DataFrame(solar_data)
+    solar_data['c'] = 0.08
+    solar_data['50.0'] = 0.08
+
     ## LCOE
     bat_age_data['type'] = 'Battery aging'
     bat_cost_data['type'] = 'Battery costs'
     tra_age_data['type'] = 'Transformer aging'
     elec_data['type'] = 'Electricity costs'
+    solar_data['type'] = 'Solar costs'
     lcoe_data = pd.concat(
-        [bat_age_data, bat_cost_data, tra_age_data, elec_data],
+        [
+            # bat_age_data,
+            bat_cost_data,
+            # tra_age_data,
+            elec_data,
+            solar_data
+        ],
         axis=0,
         join="outer",
         ignore_index=False,
