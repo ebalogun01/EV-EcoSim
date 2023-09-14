@@ -646,13 +646,13 @@ def create_settings_container():
                             ),
                         ]
                     ),
-                    # Capacity under Charging station
+                    # Capacity under Charging station todo: This is station capacity input, ID seems off.
                     make_battery_input(id='battery-capacity-input',
                                        grid_row='20',
                                        grid_column='1 / span 3',
                                        label='Capacity',
-                                       units='kWh',
-                                       value='1.0',),
+                                       units='kW',
+                                       value='700.0',),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',

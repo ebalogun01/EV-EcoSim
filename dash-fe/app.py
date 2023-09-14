@@ -547,7 +547,7 @@ def run_simulation(
             user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
             user_input.charging_station["num_dcfc_stalls_per_node"] = int(num_dcfc_stalls)
             user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
-            user_input.charging_station["commercial_building_trans"] = float(transformer_capactiy) # is this the correct property?
+            user_input.charging_station["commercial_building_trans"] = float(transformer_capactiy) # is this the correct property? Yes -Emmanuel
             # TODO: fill in bettery dropdown values and format the values accordingly
             max_c_rate = []
             energy_cap = []
@@ -574,17 +574,17 @@ def run_simulation(
             print(max_c_rate, energy_cap)
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
-            user_input.battery["pack_max_Ah"] = float(max_amp_hours)
-            user_input.battery["pack_max_voltage"] = float(max_voltage)
+            user_input.battery["pack_max_Ah"] = [float(max_amp_hours)]  # Would make an exhaustive list later
+            user_input.battery["pack_max_voltage"] = [float(max_voltage)]
             user_input.battery["power_factor"] = float(power_factor)
             # Nothing for capacity
             if mpc_rhc_class == "setup-button selected":
                 user_input.feeder_pop = True
                 # Nothing for feeder pop data
-
+        user_input = user_input.get_config_json()
 
     # Connect to backend here - pass user_input.get_config_json()
-    simulate(user_input.get_config_json())
+    simulate(user_input)
 
     return {'grid-row': '2'}
 
