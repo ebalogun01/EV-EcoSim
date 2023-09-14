@@ -445,5 +445,5 @@ class ChargingSim:
         print("total calendar aging is {}".format(sum(battery.calendar_aging)))
         print("total cycle aging is {}".format(sum(battery.cycle_aging)))
         print("Final capacity (SOH) is {}".format(battery.SOH))
-        print("Total current throughput is {}".format(battery.total_kWh_thruput))
+        print("Total current throughput is {}".format(battery.total_amp_thruput))
 

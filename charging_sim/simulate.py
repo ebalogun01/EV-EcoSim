@@ -5,7 +5,8 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import os
-from linear_orchestrator import ChargingSimLinear as ChargingSim
+# from linear_orchestrator import ChargingSimLinear as ChargingSim
+from orchestrator import ChargingSim
 import multiprocessing as mp
 import numpy as np
 import json
