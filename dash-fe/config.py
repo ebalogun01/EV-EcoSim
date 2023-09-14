@@ -71,7 +71,7 @@ class Config:
             "data": None,
             "max_c_rate": [1, 2],
             "pack_max_voltage": [250, 400],
-            "pack_energy_cap": [5e4, 10e4],
+            "pack_energy_cap": [int(5e4), int(10e4)],
             "pack_max_Ah": [250, 400],
             "SOC_min": 0.2,
             "SOC_max": 0.9,
