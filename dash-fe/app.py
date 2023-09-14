@@ -385,6 +385,7 @@ def price_upload(contents, name):
 # Battery data uploaded
 @app.callback(
     Output(component_id="battery-data-file", component_property="children"),
+    Output(component_id="run-battery-system-identification-button", component_property="className"),
     Input(component_id="battery-data-upload", component_property="contents"),
     State(component_id="battery-data-upload", component_property="filename")
 )
@@ -395,9 +396,9 @@ def battery_upload(contents, name):
     :return: File for battery
     """
     if contents is not None:
-        return name
+        return name, 'action tooltip'
     else:
-        return "No file chosen"
+        return "No file chosen", 'action disabled tooltip'
     
 # Feeder population data uploaded
 @app.callback(
@@ -530,51 +531,52 @@ def run_simulation(
             user_input.sim_mode = "battery"
             user_input.only_batt_sys = True # I think?
         if battery_system_class == "setup-button selected":
-            user_input.battery["data"] = battery_filename
+            #user_input.battery["data"] = battery_filename
+            return {'grid-row': '2'}
         else:
             user_input.ambient_data = temperature_filename
             user_input.load["data"] = load_filename
             user_input.solar["data"] = solar_filename
-            user_input.solar["efficiency"] = solar_efficiency
-            user_input.solar["rating"] = solar_capacity
-            user_input.month = month
+            user_input.solar["efficiency"] = float(solar_efficiency)
+            user_input.solar["rating"] = float(solar_capacity)
+            user_input.month = int(month)
             # No provision for year
-            user_input.num_days = num_days
+            user_input.num_days = int(num_days)
             user_input.elec_prices["data"] = price_filename
             user_input.charging_station["dcfc_charging_stall_base_rating"] = dcfc_rating + "_kW"
             user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
-            user_input.charging_station["num_dcfc_stalls_per_node"] = num_dcfc_stalls
-            user_input.charging_station["num_l2_stalls_per_node"] = num_l2_stalls
-            user_input.charging_station["commercial_building_trans"] = transformer_capactiy # is this the correct property?
+            user_input.charging_station["num_dcfc_stalls_per_node"] = int(num_dcfc_stalls)
+            user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
+            user_input.charging_station["commercial_building_trans"] = float(transformer_capactiy) # is this the correct property?
             # TODO: fill in bettery dropdown values and format the values accordingly
             max_c_rate = []
             energy_cap = []
             if max_c_rate_1 != None and max_c_rate_1 != '':
-                max_c_rate.append(max_c_rate_1)
+                max_c_rate.append(float(max_c_rate_1))
             if max_c_rate_2 != None and max_c_rate_2 != '':
-                max_c_rate.append(max_c_rate_2)
+                max_c_rate.append(float(max_c_rate_2))
             if max_c_rate_3 != None and max_c_rate_3 != '':
-                max_c_rate.append(max_c_rate_3)
+                max_c_rate.append(float(max_c_rate_3))
             if max_c_rate_4 != None and max_c_rate_4 != '':
-                max_c_rate.append(max_c_rate_4)
+                max_c_rate.append(float(max_c_rate_4))
             if max_c_rate_5 != None and max_c_rate_5 != '':
-                max_c_rate.append(max_c_rate_5)
+                max_c_rate.append(float(max_c_rate_5))
             if energy_cap_1 != None and energy_cap_1 != '':
-                energy_cap.append(energy_cap_1)
+                energy_cap.append(float(energy_cap_1))
             if energy_cap_2 != None and energy_cap_2 != '':
-                energy_cap.append(energy_cap_2)
+                energy_cap.append(float(energy_cap_2))
             if energy_cap_3 != None and energy_cap_3 != '':
-                energy_cap.append(energy_cap_3)
+                energy_cap.append(float(energy_cap_3))
             if energy_cap_4 != None and energy_cap_4 != '':
-                energy_cap.append(energy_cap_4)
+                energy_cap.append(float(energy_cap_4))
             if energy_cap_5 != None and energy_cap_5 != '':
-                energy_cap.append(energy_cap_5)
+                energy_cap.append(float(energy_cap_5))
             print(max_c_rate, energy_cap)
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
-            user_input.battery["pack_max_Ah"] = max_amp_hours
-            user_input.battery["pack_max_voltage"] = max_voltage
-            user_input.battery["power_factor"] = power_factor
+            user_input.battery["pack_max_Ah"] = float(max_amp_hours)
+            user_input.battery["pack_max_voltage"] = float(max_voltage)
+            user_input.battery["power_factor"] = float(power_factor)
             # Nothing for capacity
             if mpc_rhc_class == "setup-button selected":
                 user_input.feeder_pop = True

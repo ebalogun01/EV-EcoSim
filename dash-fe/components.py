@@ -391,7 +391,7 @@ def create_settings_container():
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
-                                       units='kWh',
+                                       units='MW',
                                        value='1',),
 
                     # Load
@@ -821,6 +821,18 @@ def create_settings_container():
                                 children=TEXT['batteryDataTooltip']
                             )
                         ]
+                    ),
+                    html.Button(
+                        id='run-battery-system-identification-button',
+                        className='action disabled tooltip',
+                        style={
+                            'position': 'relative',
+                            'float': 'right'
+                        },
+                        children=[
+                            "Run battery system identification",
+                        ],
+                        disabled=True
                     ),
                 ]
             )
