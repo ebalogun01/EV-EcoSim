@@ -391,7 +391,7 @@ def create_settings_container():
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
-                                       units='kWh',
+                                       units='MW',
                                        value='1',),
 
                     # Load
