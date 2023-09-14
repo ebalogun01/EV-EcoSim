@@ -1,10 +1,9 @@
-from dash import dcc, html, Input, Output
+from dash import dcc
 import plotly.express as px
 import plotly.graph_objs as go
-import pandas as pd
 
 
-## Dummy graph
+# Dummy graph
 def create_dummy_graph():
     """
     Dummy placeholder graph creation
@@ -16,7 +15,7 @@ def create_dummy_graph():
     return chart
 
 
-## Create bar graph
+# Create bar graph
 def create_bar_graph(data, x=None, y=None, color=None):
     """
     Total bar graph creation
@@ -37,7 +36,7 @@ def create_bar_graph(data, x=None, y=None, color=None):
     return dcc.Graph(figure=fig)
 
 
-## Create bar graph
+# Create bar graph
 def create_total_bar_graph(data, x=None, y=None):
     """
     Bar graph creation
@@ -56,7 +55,7 @@ def create_total_bar_graph(data, x=None, y=None):
     return dcc.Graph(figure=fig)
 
 
-## Create line graph
+# Create line graph
 def create_line_graph(data, x=None, y=None):
     """
     Line graph creation
@@ -72,6 +71,24 @@ def create_line_graph(data, x=None, y=None):
                   # color_discrete_sequence=px.colors.qualitative.Set1
                   )
     return dcc.Graph(figure=fig)
+
+
+# Create heatmap
+def create_heatmap(data, x=None, y=None):
+    """
+    Line graph creation
+
+    :param data: source data
+    :param x: x-axis
+    :param y: y-axis
+    :return: Heatmap
+    """
+    fig = px.imshow(data,
+                  x=x,
+                  y=y,
+                  )
+    return dcc.Graph(figure=fig)
+
 
 
 # Create 4D graph
