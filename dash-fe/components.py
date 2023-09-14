@@ -8,7 +8,7 @@ import pandas as pd
 from constants import TEXT
 
 
-def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text):
+def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text=None):
     """
     Section label component creation
 
@@ -19,31 +19,51 @@ def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text):
     :param tooltip_text: Explanation texts
     :return: Section label component
     """
-    return html.Div(
-        className='setting-label tooltip',
-        style={
-            'grid-row': grid_row,
-            'grid-column': grid_column,
-        },
-        children=[
-            DashIconify(
-                icon=icon,
-                width=30,
-                style={'margin': '0', 'margin-right': '10px'},
-            ),
-            html.H3(
-                text,
-                style={'margin': '0'},
-            ),
-            html.Span(
-                className='tooltip-text',
-                children=tooltip_text
-            )
-        ]
-    )
+    if tooltip_text is not None:
+        return html.Div(
+            className='setting-label tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column,
+            },
+            children=[
+                DashIconify(
+                    icon=icon,
+                    width=30,
+                    style={'margin': '0', 'margin-right': '10px'},
+                ),
+                html.H3(
+                    text,
+                    style={'margin': '0'},
+                ),
+                html.Span(
+                    className='tooltip-text',
+                    children=tooltip_text
+                )
+            ]
+        )
+    else:
+        return html.Div(
+            className='setting-label tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column,
+            },
+            children=[
+                DashIconify(
+                    icon=icon,
+                    width=30,
+                    style={'margin': '0', 'margin-right': '10px'},
+                ),
+                html.H3(
+                    text,
+                    style={'margin': '0'},
+                ),
+            ]
+        )
 
 
-def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_text):
+def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_text=None):
     """
     Battery input component creation
 
@@ -57,47 +77,83 @@ def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_t
     :param tooltip_text: Explanation texts
     :return: Battery input component
     """
-    return html.Div(
-        className='setup-input-container tooltip',
-        style={
-            'grid-row': grid_row,
-            'grid-column': grid_column
-        },
-        children=[
-            html.Span(label),
-            html.Div(
-                style={
-                    'display': 'flex',
-                    'justify-content': 'space-between',
-                },
-                children=[
-                    dcc.Input(
-                        id=id,
-                        className='setup-input',
-                        style={
-                            'width': '100%'
-                        },
-                        value=value,
-                    ),
-                    html.Span(
-                        style={
-                            'display': 'inline-block',
-                            'white-space': 'nowrap',
-                            'padding-left': '12px'
-                        },
-                        children=[units]
-                    )
-                ]
-            ),
-            html.Span(
-                className='tooltip-text',
-                children=tooltip_text
-            )
-        ]
-    )
+    if tooltip_text is not None:
+        return html.Div(
+            className='setup-input-container tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column
+            },
+            children=[
+                html.Span(label),
+                html.Div(
+                    style={
+                        'display': 'flex',
+                        'justify-content': 'space-between',
+                    },
+                    children=[
+                        dcc.Input(
+                            id=id,
+                            className='setup-input',
+                            style={
+                                'width': '100%'
+                            },
+                            value=value,
+                        ),
+                        html.Span(
+                            style={
+                                'display': 'inline-block',
+                                'white-space': 'nowrap',
+                                'padding-left': '12px'
+                            },
+                            children=[units]
+                        )
+                    ]
+                ),
+                html.Span(
+                    className='tooltip-text',
+                    children=tooltip_text
+                )
+            ]
+        )
+    else:
+        return html.Div(
+            className='setup-input-container tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column
+            },
+            children=[
+                html.Span(label),
+                html.Div(
+                    style={
+                        'display': 'flex',
+                        'justify-content': 'space-between',
+                    },
+                    children=[
+                        dcc.Input(
+                            id=id,
+                            className='setup-input',
+                            style={
+                                'width': '100%'
+                            },
+                            value=value,
+                        ),
+                        html.Span(
+                            style={
+                                'display': 'inline-block',
+                                'white-space': 'nowrap',
+                                'padding-left': '12px'
+                            },
+                            children=[units]
+                        )
+                    ]
+                ),
+            ]
+        )
 
 
-def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, tooltip_text):
+def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, multi=False, tooltip_text=None):
     """
     Battery dropdown component creation
 
@@ -111,45 +167,84 @@ def make_battery_dropdown(id, grid_row, grid_column, label, units, options, valu
     :param tooltip_text: Explanation texts
     :return: Battery dropdown component
     """
-    return html.Div(
-        className='setup-dropdown-container tooltip',
-        style={
-            'grid-row': grid_row,
-            'grid-column': grid_column
-        },
-        children=[
-            html.Span(label),
-            html.Div(
-                style={
-                    'display': 'flex',
-                    'justify-content': 'space-between',
-                },
-                children=[
-                    dcc.Dropdown(
-                        id=id,
-                        className='setup-dropdown',
-                        style={
-                            'width': '100%'
-                        },
-                        options=options,
-                        value=value,
-                    ),
-                    html.Span(
-                        style={
-                            'display': 'inline-block',
-                            'white-space': 'nowrap',
-                            'padding-left': '12px'
-                        },
-                        children=[units]
-                    )
-                ]
-            ),
-            html.Span(
-                className='tooltip-text',
-                children=tooltip_text
-            )
-        ]
-    )
+    if tooltip_text is not None:
+        return html.Div(
+            className='setup-dropdown-container tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column
+            },
+            children=[
+                html.Span(label),
+                html.Div(
+                    style={
+                        'display': 'flex',
+                        'justify-content': 'space-between',
+                    },
+                    children=[
+                        dcc.Dropdown(
+                            id=id,
+                            className='setup-dropdown',
+                            style={
+                                'width': '100%'
+                            },
+                            options=options,
+                            value=value,
+                            multi=multi
+                        ),
+                        html.Span(
+                            style={
+                                'display': 'inline-block',
+                                'white-space': 'nowrap',
+                                'padding-left': '12px'
+                            },
+                            children=[units]
+                        )
+                    ]
+                ),
+                html.Span(
+                    className='tooltip-text',
+                    children=tooltip_text
+                )
+            ]
+        )
+    else:
+            return html.Div(
+            className='setup-dropdown-container tooltip',
+            style={
+                'grid-row': grid_row,
+                'grid-column': grid_column
+            },
+            children=[
+                html.Span(label),
+                html.Div(
+                    style={
+                        'display': 'flex',
+                        'justify-content': 'space-between',
+                    },
+                    children=[
+                        dcc.Dropdown(
+                            id=id,
+                            className='setup-dropdown',
+                            style={
+                                'width': '100%'
+                            },
+                            options=options,
+                            value=value,
+                            multi=multi
+                        ),
+                        html.Span(
+                            style={
+                                'display': 'inline-block',
+                                'white-space': 'nowrap',
+                                'padding-left': '12px'
+                            },
+                            children=[units]
+                        )
+                    ]
+                ),
+            ]
+        )
 
 
 def create_settings_container():
@@ -171,8 +266,7 @@ def create_settings_container():
             make_input_section_label(grid_row='1',
                                      grid_column='2 / span 4',
                                      icon='heroicons:magnifying-glass-plus-20-solid',
-                                     text='Simulation mode',
-                                     tooltip_text='Tooltip'),
+                                     text='Simulation mode',),
             html.Div(
                 style={
                     'grid-row': '2',
@@ -205,16 +299,6 @@ def create_settings_container():
                 ]
             ),
 
-            html.P(
-                className='helper-text',
-                id='mode-helper-text',
-                style={
-                    'grid-row': '3',
-                    'grid-column': '2 / span 4'
-                },
-                children=['Helper text 1']
-            ),
-
             html.Div(
                 id='simulation-container',
                 style={
@@ -242,8 +326,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='2',
                                              grid_column='1 / span 3',
                                              icon='ph:thermometer-simple-bold',
-                                             text='Ambient temperature data',
-                                             tooltip_text='Tooltip'),
+                                             text='Ambient temperature data',),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -265,7 +348,7 @@ def create_settings_container():
                             ),
                             html.Span(
                                 className='tooltip-text',
-                                children='Tooltip'
+                                children=TEXT['ambientDataTooltip']
                             )
                         ]
                     ),
@@ -274,8 +357,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='2',
                                              grid_column='4 / span 3',
                                              icon='fa6-solid:solar-panel',
-                                             text='Solar',
-                                             tooltip_text='Tooltip'),
+                                             text='Solar'),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -295,7 +377,7 @@ def create_settings_container():
                             ),
                             html.Span(
                                 className='tooltip-text',
-                                children='Tooltip'
+                                children=TEXT['solarDataTooltip']
                             )
                         ]
                     ),
@@ -304,22 +386,19 @@ def create_settings_container():
                                        grid_column='4 / span 3',
                                        label='Efficiency',
                                        units='units',
-                                       value='1',
-                                       tooltip_text='Tooltip'),
+                                       value='1',),
                     make_battery_input(id="solar-capacity-input",
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
                                        units='units',
-                                       value='1',
-                                       tooltip_text='Tooltip'),
+                                       value='1',),
 
                     # Load
                     make_input_section_label(grid_row='4',
                                              grid_column='1 / span 3',
                                              icon='icon-park-solid:screenshot-one',
-                                             text='Load',
-                                             tooltip_text='Tooltip'),
+                                             text='Load',),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -336,10 +415,6 @@ def create_settings_container():
                                         children='No file chosen'
                                     )
                                 ],
-                            ),
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
                             )
                         ]
                     ),
@@ -376,6 +451,8 @@ def create_settings_container():
                                 },
                                 children=['Helper text']
                             ),
+                            make_input_section_label(grid_row='1', grid_column='1', icon='fa6-regular:window-restore',
+                                                     text='Feeder population'),
                             html.Div(
                                 className='upload-container',
                                 style={
@@ -403,8 +480,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='9',
                                              grid_column='1 / span 3',
                                              icon='heroicons:magnifying-glass-plus-20-solid',
-                                             text='Timescale',
-                                             tooltip_text='Tooltip'),
+                                             text='Timescale',),
                     make_battery_dropdown(id='month-dropdown',
                                           grid_row='10',
                                           grid_column='1 / span 3',
@@ -424,29 +500,25 @@ def create_settings_container():
                                               {'label': 'November', 'value': '11'},
                                               {'label': 'December', 'value': '12'},
                                           ],
-                                          value=1,
-                                          tooltip_text='Tooltip'),
+                                          value=1,),
                     make_battery_input(id='year-input',
                                        grid_row='11',
                                        grid_column='1 / span 3',
                                        label='Year',
                                        units='',
-                                       value='2022',
-                                       tooltip_text='Tooltip'),
+                                       value='2022',),
                     make_battery_input(id='days-input',
                                        grid_row='12',
                                        grid_column='1 / span 3',
                                        label='Number of days',
                                        units='days',
-                                       value='30',
-                                       tooltip_text='Tooltip'),
+                                       value='30',),
 
                     # Electricity price
                     make_input_section_label(grid_row='9',
                                              grid_column='4 / span 3',
                                              icon='clarity:dollar-solid',
-                                             text='Electricity price',
-                                             tooltip_text='Tooltip'),
+                                             text='Electricity price',),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -466,7 +538,7 @@ def create_settings_container():
                             ),
                             html.Span(
                                 className='tooltip-text',
-                                children='Tooltip'
+                                children=TEXT['priceDataTooltip']
                             )
                         ]
                     ),
@@ -474,8 +546,7 @@ def create_settings_container():
                     # Charging station
                     make_input_section_label(grid_row='13', grid_column='1 / span 3',
                                              icon='carbon:charging-station-filled',
-                                             text='Charging station',
-                                             tooltip_text='Tooltip'),
+                                             text='Charging station',),
                     make_battery_dropdown(id='dcfc-rating-dropdown',
                                           grid_row='14',
                                           grid_column='1 / span 3',
@@ -485,7 +556,6 @@ def create_settings_container():
                                               {'label': '75', 'value': '75'},
                                           ],
                                           value='75',
-                                          tooltip_text='Tooltip'
                                           ),
                     make_battery_dropdown(id='l2-rating-dropdown',
                                           grid_row='15',
@@ -495,7 +565,7 @@ def create_settings_container():
                                           options=[
                                               {'label': '11.5', 'value': '11.5'},
                                           ],
-                                          value='11.5', tooltip_text='Tooltip'
+                                          value='11.5',
                                           ),
                     make_battery_dropdown(id='num-dcfc-stalls-dropdown',
                                           grid_row='16',
@@ -505,7 +575,7 @@ def create_settings_container():
                                           options=[
                                               {'label': '5', 'value': '5'},
                                           ],
-                                          value='5', tooltip_text='Tooltip'
+                                          value='5',
                                           ),
                     make_battery_dropdown(id='num-l2-stalls-dropdown',
                                           grid_row='17',
@@ -516,7 +586,6 @@ def create_settings_container():
                                               {'label': '0', 'value': '0'},
                                           ],
                                           value='0',
-                                          tooltip_text='Tooltip'
                                           ),
                     make_battery_dropdown(id='transformer-capacity-dropdown',
                                           grid_row='18',
@@ -526,7 +595,7 @@ def create_settings_container():
                                           options=[
                                               {'label': '75', 'value': '75'},
                                           ],
-                                          value='75', tooltip_text='Tooltip'
+                                          value='75'
                                           ),
 
                     # Power factor under Charging station TODO change to component
@@ -575,10 +644,6 @@ def create_settings_container():
                                 },
                                 children=["Power factor"]
                             ),
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
-                            )
                         ]
                     ),
                     # Capacity under Charging station
@@ -587,61 +652,47 @@ def create_settings_container():
                                        grid_column='1 / span 3',
                                        label='Capacity',
                                        units='units',
-                                       value='1.0',
-                                       tooltip_text='Tooltip'),
+                                       value='1.0',),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
-                                             text='Battery', tooltip_text='Tooltip'),
+                                             text='Battery'),
                     make_battery_dropdown(id='max-c-rate-dropdown', grid_row='12', grid_column='4 / span 3',
                                           label='Maximum C-rate', units='',
                                           options=[
-                                              {'label': 'Value 1', 'value': '1'},
-                                              {'label': 'Value 2', 'value': '2'},
-                                              {'label': 'Value 3', 'value': '3'}
+                                              {'label': '1', 'value': '1'},
+                                              {'label': '2', 'value': '2'},
                                           ],
-                                          value='1', tooltip_text='Tooltip'
+                                          value='1',
+                                          multi=True
                                           ),
                     make_battery_dropdown(id='energy-cap-dropdown', grid_row='13', grid_column='4 / span 3',
-                                          label='Energy capacity', units='units',
+                                          label='Energy capacity', units='kWh',
                                           options=[
-                                              {'label': 'Value 1', 'value': '1'},
-                                              {'label': 'Value 2', 'value': '2'},
-                                              {'label': 'Value 3', 'value': '3'}
+                                              {'label': '5e4', 'value': '5e4'},
+                                              {'label': '10e4', 'value': '10e4'},
                                           ],
-                                          value='1', tooltip_text='Tooltip'
+                                          value='5e4',
+                                          multi=True
                                           ),
                     make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
                                           label='Maximum amp hours', units='Ah',
                                           options=[
-                                              {'label': 'Value 1', 'value': '1'},
-                                              {'label': 'Value 2', 'value': '2'},
-                                              {'label': 'Value 3', 'value': '3'}
+                                              {'label': '250', 'value': '250'},
+                                              {'label': '400', 'value': '400'},
                                           ],
-                                          value='1', tooltip_text='Tooltip'
+                                          value='250',
+                                          multi=True
                                           ),
                     make_battery_dropdown(id='max-voltage-dropdown', grid_row='15', grid_column='4 / span 3',
                                           label='Maximum voltage', units='V',
                                           options=[
-                                              {'label': 'Value 1', 'value': '1'},
-                                              {'label': 'Value 2', 'value': '2'},
-                                              {'label': 'Value 3', 'value': '3'}
+                                              {'label': '250', 'value': '250'},
+                                              {'label': '400', 'value': '400'},
                                           ],
-                                          value='1', tooltip_text='Tooltip'
+                                          value='250',
+                                          multi=True
                                           ),
-                    make_battery_dropdown(id='voltage-dropdown', grid_row='16', grid_column='4 / span 3',
-                                          label='Cell voltage', units='V',
-                                          options=[
-                                              {'label': 'Value 1', 'value': '1'},
-                                              {'label': 'Value 2', 'value': '2'},
-                                              {'label': 'Value 3', 'value': '3'}
-                                          ],
-                                          value='1', tooltip_text='Tooltip'
-                                          ),
-                    make_battery_input(id='soh-input', grid_row='17', grid_column='4 / span 3', label='State of health',
-                                       units='', value='1.0', tooltip_text='Tooltip'),
-                    make_battery_input(id='soc-input', grid_row='18', grid_column='4 / span 3', label='State of charge',
-                                       units='', value='1.0', tooltip_text='Tooltip'),
                 ]
             ),
 
@@ -667,7 +718,7 @@ def create_settings_container():
                             ),
                             html.Span(
                                 className='tooltip-text',
-                                children='Tooltip'
+                                children=TEXT['batteryDataTooltip']
                             )
                         ]
                     ),
@@ -751,10 +802,6 @@ def create_home_page():
                         style={'grid-row': '2'},
                         children=[
                             "Preset 1",
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
-                            )
                         ]
                     ),
                     html.Button(
@@ -763,10 +810,6 @@ def create_home_page():
                         style={'grid-row': '2'},
                         children=[
                             "Preset 2",
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
-                            )
                         ]
                     ),
                     html.Button(
@@ -775,10 +818,6 @@ def create_home_page():
                         style={'grid-row': '2'},
                         children=[
                             "Custom configuration",
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
-                            )
                         ]
                     ),
                     html.Button(
@@ -787,10 +826,6 @@ def create_home_page():
                         style={'grid-row': '2'},
                         children=[
                             "Run simulation",
-                            html.Span(
-                                className='tooltip-text',
-                                children='Tooltip'
-                            )
                         ]
                     ),
                 ]

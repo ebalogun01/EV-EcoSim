@@ -4,6 +4,10 @@ TEXT = {
     'credits1': 'This online tool was created by Emmanuel Balogun, Lily Buechler, Marek Miltner and Koye Alagbe of Stanford University to accompany the publication \"EV-ecosim: A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations\".',
     'credits2': 'If you use this tool or the corresponding source code of EV-Ecosim for a publication you are required to cite it, e.g., Balogun, E., Buechler, L., Miltner, M., Alagbe, K., \"EV-Ecosim Version major.minor.patch-build (branch) platform\", (year) [online]. Available at url, Accessed on: month day, year.',
     'credits3': 'We also recommend citing GridLAB-D as it is an internal core this work is building on.',
+    'ambientDataTooltip': 'Only the time fields, temperature field, and year are needed',
+    'solarDataTooltip': 'Only Month, Day, Hour and GHI needed. Downscaled from an hour to 15 min',
+    'batteryDataTooltip': 'All fields required on a second by second resolution',
+    'priceDataTooltip': 'Include the TOU rates for a whole year, at 15 min intervals',
 }
 
 #TODO: UPDATE PRESETS IF NEEDED
