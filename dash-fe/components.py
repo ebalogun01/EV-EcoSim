@@ -363,8 +363,11 @@ def create_settings_container():
                             'display': 'none',
                         },
                         children=[
-                            make_input_section_label(grid_row='1', grid_column='1', icon='fa6-regular:window-restore',
-                                                     text='Feeder population', tooltip_text='Tooltip'),
+                            make_input_section_label(grid_row='1',
+                                                     grid_column='1',
+                                                     icon='fa6-regular:window-restore',
+                                                     text='Feeder population',
+                                                     tooltip_text='Tooltip'),
                             html.P(
                                 className='helper-text',
                                 style={
@@ -989,8 +992,7 @@ def create_price_section():
 
     :return: Price section component
     """
-    ## TODO == PRICE SECTION ==
-    ## TODO custom data
+    ## == PRICE SECTION ==
 
     ## LCOE
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
@@ -1089,7 +1091,7 @@ def create_charging_section():
 
     :return: Charging section component
     """
-    ## TODO == CHARGING STATION SECTION ==
+    ## == CHARGING STATION SECTION ==
 
     ## Charging station data setup
     charging_station_data = pd.read_csv(
@@ -1138,24 +1140,24 @@ def create_battery_section():
 
     :return: Battery section component
     """
-    ## TODO == BATTERY SECTION ==
+    ## == BATTERY SECTION ==
 
     ## Battery data setup
     battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
 
-    ## TODO State of charge (SOC)
+    ## State of charge (SOC)
     soc_data = battery_data.filter(['SOC'], axis="columns")
 
-    ## TODO Current
+    ## Current
     current_data = battery_data.filter(['currents_pack'], axis="columns")
 
-    ## TODO Voltage
+    ## Voltage
     voltage_data = battery_data.filter(['Voltage_pack'], axis="columns")
 
-    ## TODO Power
+    ## Power
     power_data = battery_data.filter(['power_kW'], axis="columns")
 
-    ## TODO State of health (SOH)
+    ## State of health (SOH)
     soh_data = battery_data.filter(['SOH'], axis="columns")
 
     battery_section = dmc.Card(
@@ -1317,7 +1319,10 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_bar_graph(data, x=x, y=y, color=color)
+                              children=create_bar_graph(data,
+                                                        x=x,
+                                                        y=y,
+                                                        color=color)
                               ),
             mb=10,
         )
@@ -1325,7 +1330,9 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
         return dmc.Skeleton(
             visible=False,
             children=html.Div(className="graph-container",
-                              children=create_line_graph(data, x=x, y=y)
+                              children=create_line_graph(data,
+                                                         x=x,
+                                                         y=y)
                               ),
             mb=10,
         )
