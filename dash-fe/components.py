@@ -1124,7 +1124,18 @@ def create_charging_section():
                         y='station_net_grid_load_kW',
                         graph_type='line',
                         download_link="#"
-                    )
+                    ),
+                    # TODO 4D graph refine
+                    # create_graph_card(
+                    #     title="Net grid load",
+                    #     data=ngl_data,
+                    #     x='',
+                    #     y='station_net_grid_load_kW',
+                    #     z='',
+                    #     q='',
+                    #     graph_type='4D',
+                    #     download_link="#"
+                    # ),
                 ]
             )
         ],
@@ -1223,9 +1234,16 @@ def create_battery_section():
     return battery_section
 
 
-def create_graph_card(title="Undefined title", description="Undefined description", data=None, graph_type='bar',
+def create_graph_card(title="Undefined title",
+                      description="Undefined description",
+                      data=None,
+                      graph_type='bar',
                       bar_color=None,
-                      download_link=None, x='c', y='50.0'):
+                      download_link=None,
+                      x='c',
+                      y='50.0',
+                      z='',
+                      q=''):
     """
     Graph card component creation
 
@@ -1280,6 +1298,8 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
                                      graph_type=graph_type,
                                      x=x,
                                      y=y,
+                                     z=z,
+                                     q=q,
                                      color=bar_color
                                      )
             ),
@@ -1296,7 +1316,7 @@ def create_graph_card(title="Undefined title", description="Undefined descriptio
     return card
 
 
-def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0'):
+def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0', z='', q=''):
     """
     Graph element component creation
 
@@ -1333,6 +1353,19 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
                               children=create_line_graph(data,
                                                          x=x,
                                                          y=y)
+                              ),
+            mb=10,
+        )
+    elif graph_type == '4D':
+        return dmc.Skeleton(
+            visible=False,
+            children=html.Div(className="graph-container",
+                              children=create_4D_graph(data,
+                                                       x=x,
+                                                       y=y,
+                                                       z=z,
+                                                       q=q
+                                                       )
                               ),
             mb=10,
         )

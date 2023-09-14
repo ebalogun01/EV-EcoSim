@@ -36,6 +36,7 @@ def create_bar_graph(data, x=None, y=None, color=None):
     fig.update_xaxes(type='category')
     return dcc.Graph(figure=fig)
 
+
 ## Create bar graph
 def create_total_bar_graph(data, x=None, y=None):
     """
@@ -54,6 +55,7 @@ def create_total_bar_graph(data, x=None, y=None):
     fig.update_xaxes(type='category')
     return dcc.Graph(figure=fig)
 
+
 ## Create line graph
 def create_line_graph(data, x=None, y=None):
     """
@@ -65,13 +67,14 @@ def create_line_graph(data, x=None, y=None):
     :return: Line graph
     """
     fig = px.line(data,
-                 x=x,
-                 y=y,
-                 #color_discrete_sequence=px.colors.qualitative.Set1
-                 )
+                  x=x,
+                  y=y,
+                  # color_discrete_sequence=px.colors.qualitative.Set1
+                  )
     return dcc.Graph(figure=fig)
 
-## Create 4D graph
+
+# Create 4D graph
 def create_4D_graph(data, x=None, y=None, z=None, q=None):
     """
     4D graph creation
@@ -83,22 +86,17 @@ def create_4D_graph(data, x=None, y=None, z=None, q=None):
     :param q: q-axis, shown as color
     :return: 4D graph
     """
-    fig = px.line(data,
-                 x=x,
-                 y=y,
-                 #color_discrete_sequence=px.colors.qualitative.Set1
-                 )
 
     # Src: https://github.com/ostwalprasad/PythonMultiDimensionalPlots/blob/master/src/4D.py
     fig = go.Scatter3d(x=x,
-                        y=y,
-                        z=z,
-                        marker=dict(color=q,
-                                    opacity=1,
-                                    reversescale=True,
-                                    colorscale='Blues',
-                                    size=5),
-                        line=dict(width=0.02),
-                        mode='markers')
+                       y=y,
+                       z=z,
+                       marker=dict(color=q,
+                                   opacity=1,
+                                   reversescale=True,
+                                   colorscale='Blues',
+                                   size=5),
+                       line=dict(width=0.02),
+                       mode='markers')
 
     return dcc.Graph(figure=fig)
