@@ -575,7 +575,10 @@ def run_simulation(
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = [float(max_amp_hours)]  # Would make an exhaustive list later
-            user_input.battery["pack_max_voltage"] = [float(max_voltage)]
+            if isinstance(user_input.battery["pack_max_voltage"], list):
+                user_input.battery["pack_max_voltage"] = [float(max_v) for max_v in max_voltage]
+            else:
+                user_input.battery["pack_max_voltage"] = [float(max_voltage)]
             user_input.battery["power_factor"] = float(power_factor)
             # Nothing for capacity
             if mpc_rhc_class == "setup-button selected":
