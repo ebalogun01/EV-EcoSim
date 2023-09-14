@@ -209,7 +209,7 @@ def make_battery_dropdown(id, grid_row, grid_column, label, units, options, valu
             ]
         )
     else:
-            return html.Div(
+        return html.Div(
             className='setup-dropdown-container tooltip',
             style={
                 'grid-row': grid_row,
@@ -266,7 +266,7 @@ def create_settings_container():
             make_input_section_label(grid_row='1',
                                      grid_column='2 / span 4',
                                      icon='heroicons:magnifying-glass-plus-20-solid',
-                                     text='Simulation mode',),
+                                     text='Simulation mode', ),
             html.Div(
                 style={
                     'grid-row': '2',
@@ -326,7 +326,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='2',
                                              grid_column='1 / span 3',
                                              icon='ph:thermometer-simple-bold',
-                                             text='Ambient temperature data',),
+                                             text='Ambient temperature data', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -386,19 +386,19 @@ def create_settings_container():
                                        grid_column='4 / span 3',
                                        label='Efficiency',
                                        units='units',
-                                       value='1',),
+                                       value='1', ),
                     make_battery_input(id="solar-capacity-input",
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
                                        units='units',
-                                       value='1',),
+                                       value='1', ),
 
                     # Load
                     make_input_section_label(grid_row='4',
                                              grid_column='1 / span 3',
                                              icon='icon-park-solid:screenshot-one',
-                                             text='Load',),
+                                             text='Load', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -480,7 +480,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='9',
                                              grid_column='1 / span 3',
                                              icon='heroicons:magnifying-glass-plus-20-solid',
-                                             text='Timescale',),
+                                             text='Timescale', ),
                     make_battery_dropdown(id='month-dropdown',
                                           grid_row='10',
                                           grid_column='1 / span 3',
@@ -500,25 +500,25 @@ def create_settings_container():
                                               {'label': 'November', 'value': '11'},
                                               {'label': 'December', 'value': '12'},
                                           ],
-                                          value=1,),
+                                          value=1, ),
                     make_battery_input(id='year-input',
                                        grid_row='11',
                                        grid_column='1 / span 3',
                                        label='Year',
                                        units='',
-                                       value='2022',),
+                                       value='2022', ),
                     make_battery_input(id='days-input',
                                        grid_row='12',
                                        grid_column='1 / span 3',
                                        label='Number of days',
                                        units='days',
-                                       value='30',),
+                                       value='30', ),
 
                     # Electricity price
                     make_input_section_label(grid_row='9',
                                              grid_column='4 / span 3',
                                              icon='clarity:dollar-solid',
-                                             text='Electricity price',),
+                                             text='Electricity price', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -546,7 +546,7 @@ def create_settings_container():
                     # Charging station
                     make_input_section_label(grid_row='13', grid_column='1 / span 3',
                                              icon='carbon:charging-station-filled',
-                                             text='Charging station',),
+                                             text='Charging station', ),
                     make_battery_dropdown(id='dcfc-rating-dropdown',
                                           grid_row='14',
                                           grid_column='1 / span 3',
@@ -652,7 +652,7 @@ def create_settings_container():
                                        grid_column='1 / span 3',
                                        label='Capacity',
                                        units='units',
-                                       value='1.0',),
+                                       value='1.0', ),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
