@@ -1144,8 +1144,7 @@ def create_price_section():
     ## LCOE
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
     lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
-    lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
-
+    lcoe_data = lcoe_data.set_index(['c'])
     ## Battery aging costs
     bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
     bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
@@ -1180,7 +1179,7 @@ def create_price_section():
     tra_age_data['type'] = 'Transformer aging'
     elec_data['type'] = 'Electricity costs'
     solar_data['type'] = 'Solar costs'
-    lcoe_data = pd.concat(
+    lcoe_data_segmented = pd.concat(
         [
             # bat_age_data,
             bat_cost_data,
@@ -1205,6 +1204,14 @@ def create_price_section():
             create_graph_card(
                 title="Levelized Cost of Energy (LCOE)",
                 data=lcoe_data,
+                graph_type='heatmap',
+                download_link="#",
+                x=lcoe_data.columns,
+                y=lcoe_data.index
+            ),
+            create_graph_card(
+                title="Levelized Cost of Energy (LCOE)",
+                data=lcoe_data_segmented,
                 bar_color="type",
                 download_link="#",
             ),
@@ -1513,6 +1520,16 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
             visible=False,
             children=html.Div(className="graph-container",
                               children=create_line_graph(data,
+                                                         x=x,
+                                                         y=y)
+                              ),
+            mb=10,
+        )
+    elif graph_type == 'heatmap':
+        return dmc.Skeleton(
+            visible=False,
+            children=html.Div(className="graph-container",
+                              children=create_heatmap(data,
                                                          x=x,
                                                          y=y)
                               ),
