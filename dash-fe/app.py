@@ -8,7 +8,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from constants import PRESET1, PRESET2
-# from run_simulation import *
+from run_simulation import *
 
 # Create Dash app
 app = dash.Dash(__name__)
