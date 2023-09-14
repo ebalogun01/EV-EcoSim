@@ -106,7 +106,7 @@ class Config:
 
         :return: Config JSON dictionary for printing
         """
-        return (json.dumps(self.get_config_json()))
+        return json.dumps(self.get_config_json())
 
     # Generates JSON
     def get_config_json(self):
@@ -122,8 +122,5 @@ class Config:
         # I made this a loop over all attributes and am very proud of myself
         for attribute in [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]:
             data[attribute] = eval('self.' + attribute)
-
-        # Json to sting
-        json_data = json.dumps(data)
 
         return data
