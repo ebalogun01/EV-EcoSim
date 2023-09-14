@@ -454,8 +454,16 @@ def power_factor_update(value):
     State(component_id="num-dcfc-stalls-dropdown", component_property="value"),
     State(component_id="num-l2-stalls-dropdown", component_property="value"),
     State(component_id="transformer-capacity-dropdown", component_property="value"),
-    State(component_id="max-c-rate-dropdown", component_property="value"),
-    State(component_id="energy-cap-dropdown", component_property="value"),
+    State(component_id="max-c-rate-input1", component_property="value"),
+    State(component_id="max-c-rate-input2", component_property="value"),
+    State(component_id="max-c-rate-input3", component_property="value"),
+    State(component_id="max-c-rate-input4", component_property="value"),
+    State(component_id="max-c-rate-input5", component_property="value"),
+    State(component_id="energy-cap-input1", component_property="value"),
+    State(component_id="energy-cap-input2", component_property="value"),
+    State(component_id="energy-cap-input3", component_property="value"),
+    State(component_id="energy-cap-input4", component_property="value"),
+    State(component_id="energy-cap-input5", component_property="value"),
     State(component_id="max-amp-hours-dropdown", component_property="value"),
     State(component_id="max-voltage-dropdown", component_property="value"),
     State(component_id="power-factor-slider", component_property="value"),
@@ -486,8 +494,16 @@ def run_simulation(
         num_dcfc_stalls,
         num_l2_stalls,
         transformer_capactiy,
-        max_c_rate,
-        energy_cap,
+        max_c_rate_1,
+        max_c_rate_2,
+        max_c_rate_3,
+        max_c_rate_4,
+        max_c_rate_5,
+        energy_cap_1,
+        energy_cap_2,
+        energy_cap_3,
+        energy_cap_4,
+        energy_cap_5,
         max_amp_hours,
         max_voltage,
         power_factor,
@@ -531,7 +547,29 @@ def run_simulation(
             user_input.charging_station["num_l2_stalls_per_node"] = num_l2_stalls
             user_input.charging_station["commercial_building_trans"] = transformer_capactiy # is this the correct property?
             # TODO: fill in bettery dropdown values and format the values accordingly
-            print(max_c_rate)
+            max_c_rate = []
+            energy_cap = []
+            if max_c_rate_1 != None and max_c_rate_1 != '':
+                max_c_rate.append(max_c_rate_1)
+            if max_c_rate_2 != None and max_c_rate_2 != '':
+                max_c_rate.append(max_c_rate_2)
+            if max_c_rate_3 != None and max_c_rate_3 != '':
+                max_c_rate.append(max_c_rate_3)
+            if max_c_rate_4 != None and max_c_rate_4 != '':
+                max_c_rate.append(max_c_rate_4)
+            if max_c_rate_5 != None and max_c_rate_5 != '':
+                max_c_rate.append(max_c_rate_5)
+            if energy_cap_1 != None and energy_cap_1 != '':
+                energy_cap.append(energy_cap_1)
+            if energy_cap_2 != None and energy_cap_2 != '':
+                energy_cap.append(energy_cap_2)
+            if energy_cap_3 != None and energy_cap_3 != '':
+                energy_cap.append(energy_cap_3)
+            if energy_cap_4 != None and energy_cap_4 != '':
+                energy_cap.append(energy_cap_4)
+            if energy_cap_5 != None and energy_cap_5 != '':
+                energy_cap.append(energy_cap_5)
+            print(max_c_rate, energy_cap)
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = max_amp_hours
