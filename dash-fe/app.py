@@ -385,6 +385,7 @@ def price_upload(contents, name):
 # Battery data uploaded
 @app.callback(
     Output(component_id="battery-data-file", component_property="children"),
+    Output(component_id="run-battery-system-identification-button", component_property="className"),
     Input(component_id="battery-data-upload", component_property="contents"),
     State(component_id="battery-data-upload", component_property="filename")
 )
@@ -395,9 +396,9 @@ def battery_upload(contents, name):
     :return: File for battery
     """
     if contents is not None:
-        return name
+        return name, 'action tooltip'
     else:
-        return "No file chosen"
+        return "No file chosen", 'action disabled tooltip'
     
 # Feeder population data uploaded
 @app.callback(
@@ -530,7 +531,8 @@ def run_simulation(
             user_input.sim_mode = "battery"
             user_input.only_batt_sys = True # I think?
         if battery_system_class == "setup-button selected":
-            user_input.battery["data"] = battery_filename
+            #user_input.battery["data"] = battery_filename
+            return {'grid-row': '2'}
         else:
             user_input.ambient_data = temperature_filename
             user_input.load["data"] = load_filename

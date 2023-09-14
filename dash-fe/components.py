@@ -809,6 +809,18 @@ def create_settings_container():
                             )
                         ]
                     ),
+                    html.Button(
+                        id='run-battery-system-identification-button',
+                        className='action disabled tooltip',
+                        style={
+                            'position': 'relative',
+                            'float': 'right'
+                        },
+                        children=[
+                            "Run battery system identification",
+                        ],
+                        disabled=True
+                    ),
                 ]
             )
         ]
