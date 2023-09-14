@@ -1170,8 +1170,9 @@ def create_price_section():
     # TODO connect to chargingsim/config/solar.json
     solar_data = [0.08 for i in range(len(elec_data))]
     solar_data = pd.DataFrame(solar_data)
-    solar_data['c'] = 0.08
+    solar_data['c'] = [0.1,0.2,0.5,1.0,2.0]
     solar_data['50.0'] = 0.08
+    solar_data = solar_data.drop(solar_data.columns[0], axis=1)
 
     ## LCOE
     bat_age_data['type'] = 'Battery aging'
