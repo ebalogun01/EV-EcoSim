@@ -84,12 +84,12 @@ def simulate(user_inputs):
     param_dict = station_config.read()
     station_config.close()
     param_dict = ast.literal_eval(param_dict)
-    print('Testing param dict: \n', param_dict)
-    print('\n', user_inputs)
-    print(type(user_inputs))
+    # print('Testing param dict: \n', param_dict)
+    # print('\n', user_inputs)
+    # print(type(user_inputs))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
-    print('ok')
+    # print('ok')
 
     charging_station_config = user_inputs["charging_station"]
     battery_config = user_inputs["battery"]
@@ -174,6 +174,7 @@ def simulate(user_inputs):
         """
         scenarios_list = []
         voltage_idx, idx = 0, 0
+        # Seems like we don't get list[int] for voltages
         for Er in energy_ratings:
             for c_rate in max_c_rates:
                 scenario = {
