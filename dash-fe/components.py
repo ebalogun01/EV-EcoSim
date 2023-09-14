@@ -209,7 +209,7 @@ def make_battery_dropdown(id, grid_row, grid_column, label, units, options, valu
             ]
         )
     else:
-            return html.Div(
+        return html.Div(
             className='setup-dropdown-container tooltip',
             style={
                 'grid-row': grid_row,
@@ -266,7 +266,7 @@ def create_settings_container():
             make_input_section_label(grid_row='1',
                                      grid_column='2 / span 4',
                                      icon='heroicons:magnifying-glass-plus-20-solid',
-                                     text='Simulation mode',),
+                                     text='Simulation mode', ),
             html.Div(
                 style={
                     'grid-row': '2',
@@ -326,7 +326,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='2',
                                              grid_column='1 / span 3',
                                              icon='ph:thermometer-simple-bold',
-                                             text='Ambient temperature data',),
+                                             text='Ambient temperature data', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -386,19 +386,19 @@ def create_settings_container():
                                        grid_column='4 / span 3',
                                        label='Efficiency',
                                        units='',
-                                       value='1',),
+                                       value='1', ),
                     make_battery_input(id="solar-capacity-input",
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
                                        units='MW',
-                                       value='1',),
+                                       value='1', ),
 
                     # Load
                     make_input_section_label(grid_row='4',
                                              grid_column='1 / span 3',
                                              icon='icon-park-solid:screenshot-one',
-                                             text='Load',),
+                                             text='Load', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -480,7 +480,7 @@ def create_settings_container():
                     make_input_section_label(grid_row='9',
                                              grid_column='1 / span 3',
                                              icon='heroicons:magnifying-glass-plus-20-solid',
-                                             text='Timescale',),
+                                             text='Timescale', ),
                     make_battery_dropdown(id='month-dropdown',
                                           grid_row='10',
                                           grid_column='1 / span 3',
@@ -500,25 +500,25 @@ def create_settings_container():
                                               {'label': 'November', 'value': '11'},
                                               {'label': 'December', 'value': '12'},
                                           ],
-                                          value=1,),
+                                          value=1, ),
                     make_battery_input(id='year-input',
                                        grid_row='11',
                                        grid_column='1 / span 3',
                                        label='Year',
                                        units='',
-                                       value='2022',),
+                                       value='2022', ),
                     make_battery_input(id='days-input',
                                        grid_row='12',
                                        grid_column='1 / span 3',
                                        label='Number of days',
                                        units='days',
-                                       value='30',),
+                                       value='30', ),
 
                     # Electricity price
                     make_input_section_label(grid_row='9',
                                              grid_column='4 / span 3',
                                              icon='clarity:dollar-solid',
-                                             text='Electricity price',),
+                                             text='Electricity price', ),
                     html.Div(
                         className='upload-container tooltip',
                         style={
@@ -546,7 +546,7 @@ def create_settings_container():
                     # Charging station
                     make_input_section_label(grid_row='13', grid_column='1 / span 3',
                                              icon='carbon:charging-station-filled',
-                                             text='Charging station',),
+                                             text='Charging station', ),
                     make_battery_dropdown(id='dcfc-rating-dropdown',
                                           grid_row='14',
                                           grid_column='1 / span 3',
@@ -652,7 +652,7 @@ def create_settings_container():
                                        grid_column='1 / span 3',
                                        label='Capacity',
                                        units='kW',
-                                       value='700.0',),
+                                       value='700.0', ),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
@@ -713,7 +713,7 @@ def create_settings_container():
                                     ),
                                 ]
                             )
-                            
+
                         ]
                     ),
                     html.Div(
@@ -772,7 +772,7 @@ def create_settings_container():
                                     ),
                                 ]
                             )
-                            
+
                         ]
                     ),
                     make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
@@ -1144,8 +1144,7 @@ def create_price_section():
     ## LCOE
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
     lcoe_data = lcoe_data.rename(columns={'Unnamed: 0': 'c'})
-    lcoe_data = lcoe_data.filter(['c', '50.0'], axis="columns")
-
+    lcoe_data = lcoe_data.set_index(['c'])
     ## Battery aging costs
     bat_age_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/June_battery_aging_costs_per_day.csv')
     bat_age_data = bat_age_data.rename(columns={'Unnamed: 0': 'c'})
@@ -1166,13 +1165,28 @@ def create_price_section():
     elec_data = elec_data.rename(columns={'Unnamed: 0': 'c'})
     elec_data = elec_data.filter(['c', '50.0'], axis="columns")
 
+    ## Solar cost
+    # TODO connect to chargingsim/config/solar.json
+    solar_data = [0.08 for i in range(len(elec_data))]
+    solar_data = pd.DataFrame(solar_data)
+    solar_data['c'] = [0.1,0.2,0.5,1.0,2.0]
+    solar_data['50.0'] = 0.08
+    solar_data = solar_data.drop(solar_data.columns[0], axis=1)
+
     ## LCOE
     bat_age_data['type'] = 'Battery aging'
     bat_cost_data['type'] = 'Battery costs'
     tra_age_data['type'] = 'Transformer aging'
     elec_data['type'] = 'Electricity costs'
-    lcoe_data = pd.concat(
-        [bat_age_data, bat_cost_data, tra_age_data, elec_data],
+    solar_data['type'] = 'Solar costs'
+    lcoe_data_segmented = pd.concat(
+        [
+            # bat_age_data,
+            bat_cost_data,
+            # tra_age_data,
+            elec_data,
+            solar_data
+        ],
         axis=0,
         join="outer",
         ignore_index=False,
@@ -1190,6 +1204,14 @@ def create_price_section():
             create_graph_card(
                 title="Levelized Cost of Energy (LCOE)",
                 data=lcoe_data,
+                graph_type='heatmap',
+                download_link="#",
+                x=lcoe_data.columns,
+                y=lcoe_data.index
+            ),
+            create_graph_card(
+                title="Levelized Cost of Energy (LCOE)",
+                data=lcoe_data_segmented,
                 bar_color="type",
                 download_link="#",
             ),
@@ -1498,6 +1520,16 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
             visible=False,
             children=html.Div(className="graph-container",
                               children=create_line_graph(data,
+                                                         x=x,
+                                                         y=y)
+                              ),
+            mb=10,
+        )
+    elif graph_type == 'heatmap':
+        return dmc.Skeleton(
+            visible=False,
+            children=html.Div(className="graph-container",
+                              children=create_heatmap(data,
                                                          x=x,
                                                          y=y)
                               ),
