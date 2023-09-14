@@ -385,13 +385,13 @@ def create_settings_container():
                                        grid_row='4',
                                        grid_column='4 / span 3',
                                        label='Efficiency',
-                                       units='units',
+                                       units='',
                                        value='1',),
                     make_battery_input(id="solar-capacity-input",
                                        grid_row='5',
                                        grid_column='4 / span 3',
                                        label='Capacity',
-                                       units='units',
+                                       units='kWh',
                                        value='1',),
 
                     # Load
@@ -651,30 +651,130 @@ def create_settings_container():
                                        grid_row='20',
                                        grid_column='1 / span 3',
                                        label='Capacity',
-                                       units='units',
+                                       units='kWh',
                                        value='1.0',),
 
                     # Battery
                     make_input_section_label(grid_row='11', grid_column='4 / span 3', icon='clarity:battery-solid',
                                              text='Battery'),
-                    make_battery_dropdown(id='max-c-rate-dropdown', grid_row='12', grid_column='4 / span 3',
-                                          label='Maximum C-rate', units='',
-                                          options=[
-                                              {'label': '1', 'value': '1'},
-                                              {'label': '2', 'value': '2'},
-                                          ],
-                                          value='1',
-                                          multi=True
-                                          ),
-                    make_battery_dropdown(id='energy-cap-dropdown', grid_row='13', grid_column='4 / span 3',
-                                          label='Energy capacity', units='kWh',
-                                          options=[
-                                              {'label': '5e4', 'value': '5e4'},
-                                              {'label': '10e4', 'value': '10e4'},
-                                          ],
-                                          value='5e4',
-                                          multi=True
-                                          ),
+                    html.Div(
+                        style={
+                            'grid-row': '12',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Maximum C-rate'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='max-c-rate-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='1.0',
+                                    ),
+                                    dcc.Input(
+                                        id='max-c-rate-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-c-rate-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-c-rate-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-c-rate-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+                            
+                        ]
+                    ),
+                    html.Div(
+                        style={
+                            'grid-row': '13',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Energy capacity (Wh)'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='energy-cap-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='50.0',
+                                    ),
+                                    dcc.Input(
+                                        id='energy-cap-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='energy-cap-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='energy-cap-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='energy-cap-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+                            
+                        ]
+                    ),
                     make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
                                           label='Maximum amp hours', units='Ah',
                                           options=[
