@@ -8,7 +8,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from constants import PRESET1, PRESET2
-from run_simulation import *
+# from run_simulation import *
 
 # Create Dash app
 app = dash.Dash(__name__)
@@ -242,7 +242,6 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     Output(component_id="simulation-container", component_property="style"),
     Output(component_id="feeder-population-container", component_property="style"),
     Output(component_id="battery-system-container", component_property="style"),
-    Output(component_id="mode-helper-text", component_property="children"),
     Input(component_id="oneshot-button", component_property="n_clicks"),
     Input(component_id="mpc-rhc-button", component_property="n_clicks"),
     Input(component_id="battery-system-button", component_property="n_clicks"),
@@ -270,7 +269,7 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
             'display': 'none',
         }, {
             'display': 'none',
-        }, 'Helper text 1'
+        }
     elif triggered_id == "mpc-rhc-button":
         # Show everything
         return "setup-button", "setup-button selected", "setup-button", {
@@ -288,7 +287,7 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
             'grid-column': '2 / span 4'
         }, {
             'display': 'none',
-        }, 'Helper text 2'
+        }
     elif triggered_id == "battery-system-button":
         # Load custom settings
         return "setup-button", "setup-button", "setup-button selected", {
@@ -299,7 +298,7 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
             'display': 'block',
             'grid-row': '4',
             'grid-column': '2 / span 4',
-        }, 'Helper text 3'
+        }
     else:
         return "setup-button", "setup-button", "setup-button", {
             'display': 'grid',
@@ -459,9 +458,6 @@ def power_factor_update(value):
     State(component_id="energy-cap-dropdown", component_property="value"),
     State(component_id="max-amp-hours-dropdown", component_property="value"),
     State(component_id="max-voltage-dropdown", component_property="value"),
-    State(component_id="voltage-dropdown", component_property="value"),
-    State(component_id="soh-input", component_property="value"),
-    State(component_id="soc-input", component_property="value"),
     State(component_id="power-factor-slider", component_property="value"),
     State(component_id="battery-capacity-input", component_property="value"),
     State(component_id="feeder-population-data-upload", component_property="filename"),
@@ -494,9 +490,6 @@ def run_simulation(
         energy_cap,
         max_amp_hours,
         max_voltage,
-        voltage,
-        soh,
-        soc,
         power_factor,
         battery_capacity,
         feeder_population_filename
@@ -538,12 +531,11 @@ def run_simulation(
             user_input.charging_station["num_l2_stalls_per_node"] = num_l2_stalls
             user_input.charging_station["commercial_building_trans"] = transformer_capactiy # is this the correct property?
             # TODO: fill in bettery dropdown values and format the values accordingly
+            print(max_c_rate)
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = max_amp_hours
             user_input.battery["pack_max_voltage"] = max_voltage
-            # Nothing for voltage
-            # Nothing for SOC, SOH
             user_input.battery["power_factor"] = power_factor
             # Nothing for capacity
             if mpc_rhc_class == "setup-button selected":
