@@ -3,7 +3,7 @@ from batt_sys_identification.battery_identification import BatteryParams
 import pandas as pd
 
 
-data = pd.read_csv('../batt_sys_identification/batt_iden_test_data_W10_2.csv')
+data = pd.read_csv('../batt_sys_identification/batt_iden_test_data_W10_2_old.csv')
 
 
 class MyTestCase(unittest.TestCase):

@@ -4,10 +4,16 @@ TEXT = {
     'credits1': 'This online tool was created by Emmanuel Balogun, Lily Buechler, Marek Miltner and Koye Alagbe of Stanford University to accompany the publication \"EV-ecosim: A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations\".',
     'credits2': 'If you use this tool or the corresponding source code of EV-Ecosim for a publication you are required to cite it, e.g., Balogun, E., Buechler, L., Miltner, M., Alagbe, K., \"EV-Ecosim Version major.minor.patch-build (branch) platform\", (year) [online]. Available at url, Accessed on: month day, year.',
     'credits3': 'We also recommend citing GridLAB-D as it is an internal core this work is building on.',
-    'ambientDataTooltip': 'Only the time fields, temperature field, and year are needed',
-    'solarDataTooltip': 'Only Month, Day, Hour and GHI needed. Downscaled from an hour to 15 min',
-    'batteryDataTooltip': 'All fields required on a second by second resolution',
-    'priceDataTooltip': 'Include the TOU rates for a whole year, at 15 min intervals',
+    'ambientDataTooltip': 'Only the time fields, temperature field, and year are needed, please provide at 15min intervals',
+    'solarDataTooltip': 'Only Month, Day, Hour, and GHI needed. Please provide data at 15 minutes intervals for a year',
+    'batteryDataTooltip': 'Required fields are indicated in the data prototype at a 1s resolution',
+    'priceDataTooltip': 'Include the electricity time-of-use rates for a whole year, at 15 min intervals',
+    'oneShotTooltip': 'This mode runs the full optimization for an entire horizon (default is a month) and leverages '
+                      'the solution within the simulation. This will run faster than an MPC mode, which solves and optimization problem'
+                      'at each time step or interval.',
+    'feederPopTooltip': 'This is the feeder population module within the battery test case. This file performs the pre-simulation step for '
+                        'running EV-Ecosim. It takes in a base Gridlab-D Model (GLM) file (for example, `IEEE123.glm`), and modifies that file by including'
+
 }
 
 #TODO: UPDATE PRESETS IF NEEDED
@@ -100,3 +106,18 @@ PRESET2 = {
         "month": 7
     }
 }
+
+MONTH_DROPDOWN = [
+    {'label': 'January', 'value': '1'},
+    {'label': 'February', 'value': '2'},
+    {'label': 'March', 'value': '3'},
+    {'label': 'April', 'value': '4'},
+    {'label': 'May', 'value': '5'},
+    {'label': 'June', 'value': '6'},
+    {'label': 'July', 'value': '7'},
+    {'label': 'August', 'value': '8'},
+    {'label': 'September', 'value': '9'},
+    {'label': 'October', 'value': '10'},
+    {'label': 'November', 'value': '11'},
+    {'label': 'December', 'value': '12'}
+]
