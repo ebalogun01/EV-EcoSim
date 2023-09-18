@@ -466,8 +466,16 @@ def power_factor_update(value):
     State(component_id="energy-cap-input3", component_property="value"),
     State(component_id="energy-cap-input4", component_property="value"),
     State(component_id="energy-cap-input5", component_property="value"),
-    State(component_id="max-amp-hours-dropdown", component_property="value"),
-    State(component_id="max-voltage-dropdown", component_property="value"),
+    State(component_id="max-ah-input1", component_property="value"),
+    State(component_id="max-ah-input2", component_property="value"),
+    State(component_id="max-ah-input3", component_property="value"),
+    State(component_id="max-ah-input4", component_property="value"),
+    State(component_id="max-ah-input5", component_property="value"),
+    State(component_id="max-voltage-input1", component_property="value"),
+    State(component_id="max-voltage-input2", component_property="value"),
+    State(component_id="max-voltage-input3", component_property="value"),
+    State(component_id="max-voltage-input4", component_property="value"),
+    State(component_id="max-voltage-input5", component_property="value"),
     State(component_id="power-factor-slider", component_property="value"),
     State(component_id="battery-capacity-input", component_property="value"),
     State(component_id="feeder-population-data-upload", component_property="filename"),
@@ -506,8 +514,16 @@ def run_simulation(
         energy_cap_3,
         energy_cap_4,
         energy_cap_5,
-        max_amp_hours,
-        max_voltage,
+        max_ah_1,
+        max_ah_2,
+        max_ah_3,
+        max_ah_4,
+        max_ah_5,
+        max_voltage_1,
+        max_voltage_2,
+        max_voltage_3,
+        max_voltage_4,
+        max_voltage_5,
         power_factor,
         battery_capacity,
         feeder_population_filename
@@ -552,6 +568,9 @@ def run_simulation(
             # TODO: fill in bettery dropdown values and format the values accordingly
             max_c_rate = []
             energy_cap = []
+            max_ah = []
+            max_voltage = []
+
             if max_c_rate_1 != None and max_c_rate_1 != '':
                 max_c_rate.append(float(max_c_rate_1))
             if max_c_rate_2 != None and max_c_rate_2 != '':
@@ -562,6 +581,7 @@ def run_simulation(
                 max_c_rate.append(float(max_c_rate_4))
             if max_c_rate_5 != None and max_c_rate_5 != '':
                 max_c_rate.append(float(max_c_rate_5))
+
             if energy_cap_1 != None and energy_cap_1 != '':
                 energy_cap.append(float(energy_cap_1))
             if energy_cap_2 != None and energy_cap_2 != '':
@@ -572,14 +592,34 @@ def run_simulation(
                 energy_cap.append(float(energy_cap_4))
             if energy_cap_5 != None and energy_cap_5 != '':
                 energy_cap.append(float(energy_cap_5))
-            print(max_c_rate, energy_cap)
+
+            if max_ah_1 != None and max_ah_1 != '':
+                max_ah.append(float(max_ah_1))
+            if max_ah_2 != None and max_ah_2 != '':
+                max_ah.append(float(max_ah_2))
+            if max_ah_3 != None and max_ah_3 != '':
+                max_ah.append(float(max_ah_3))
+            if max_ah_4 != None and max_ah_4 != '':
+                max_ah.append(float(max_ah_4))
+            if max_ah_5 != None and max_ah_5 != '':
+                max_ah.append(float(max_ah_5))
+
+            if max_voltage_1 != None and max_voltage_1 != '':
+                max_voltage.append(float(max_voltage_1))
+            if max_voltage_2 != None and max_voltage_2 != '':
+                max_voltage.append(float(max_voltage_2))
+            if max_voltage_3 != None and max_voltage_3 != '':
+                max_voltage.append(float(max_voltage_3))
+            if max_voltage_4 != None and max_voltage_4 != '':
+                max_voltage.append(float(max_voltage_4))
+            if max_voltage_5 != None and max_voltage_5 != '':
+                max_voltage.append(float(max_voltage_5))
+
+            print(max_c_rate, energy_cap, max_ah, max_voltage)
             user_input.battery["max_c_rate"] = max_c_rate 
             user_input.battery["pack_energy_cap"] = energy_cap
-            user_input.battery["pack_max_Ah"] = [float(max_amp_hours)]  # Would make an exhaustive list later
-            if isinstance(user_input.battery["pack_max_voltage"], list):
-                user_input.battery["pack_max_voltage"] = [float(max_v) for max_v in max_voltage]
-            else:
-                user_input.battery["pack_max_voltage"] = [float(max_voltage)]
+            user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
+            user_input.battery["pack_max_voltage"] = max_voltage
             user_input.battery["power_factor"] = float(power_factor)
             # Nothing for capacity
             if mpc_rhc_class == "setup-button selected":
@@ -591,6 +631,15 @@ def run_simulation(
     simulate(user_input)
 
     return {'grid-row': '2'}
+
+@app.callback(
+    Output(component_id="run-battery-system-identification-button", component_property="style"),
+    Input(component_id="run-battery-system-identification-button", component_property="n_clicks")
+)
+def run_battery_system_identification(run_battery_system_n_clicks):
+    # TODO: Run battery system identification here
+    print("Run Battery System")
+    return {'position': 'relative', 'float': 'right' }
 
 
 if __name__ == '__main__':

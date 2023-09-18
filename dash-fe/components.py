@@ -5,7 +5,7 @@ from dash_iconify import DashIconify
 import plotly.express as px
 from graphs import *
 import pandas as pd
-from constants import TEXT
+from constants import TEXT, MONTH_DROPDOWN
 
 
 def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text=None):
@@ -155,7 +155,7 @@ def make_battery_input(id, grid_row, grid_column, label, units, value, tooltip_t
 
 def make_battery_dropdown(id, grid_row, grid_column, label, units, options, value, multi=False, tooltip_text=None):
     """
-    Battery dropdown component creation
+    Battery dropdown component creation (for dropdowns with units)
 
     :param id: ID
     :param grid_row: Row in grid
@@ -442,7 +442,7 @@ def create_settings_container():
                                                      grid_column='1',
                                                      icon='fa6-regular:window-restore',
                                                      text='Feeder population',
-                                                     tooltip_text='Tooltip'),
+                                                     tooltip_text=TEXT['feederPopTooltip']),
                             html.P(
                                 className='helper-text',
                                 style={
@@ -452,7 +452,7 @@ def create_settings_container():
                                 children=['Helper text']
                             ),
                             make_input_section_label(grid_row='1', grid_column='1', icon='fa6-regular:window-restore',
-                                                     text='Feeder population'),
+                                                     text='Feeder population', tooltip_text=TEXT['feederPopTooltip']),
                             html.Div(
                                 className='upload-container',
                                 style={
@@ -486,20 +486,7 @@ def create_settings_container():
                                           grid_column='1 / span 3',
                                           label='Month',
                                           units='',
-                                          options=[
-                                              {'label': 'January', 'value': '1'},
-                                              {'label': 'February', 'value': '2'},
-                                              {'label': 'March', 'value': '3'},
-                                              {'label': 'April', 'value': '4'},
-                                              {'label': 'May', 'value': '5'},
-                                              {'label': 'June', 'value': '6'},
-                                              {'label': 'July', 'value': '7'},
-                                              {'label': 'August', 'value': '8'},
-                                              {'label': 'September', 'value': '9'},
-                                              {'label': 'October', 'value': '10'},
-                                              {'label': 'November', 'value': '11'},
-                                              {'label': 'December', 'value': '12'},
-                                          ],
+                                          options=MONTH_DROPDOWN,
                                           value=1, ),
                     make_battery_input(id='year-input',
                                        grid_row='11',
@@ -546,7 +533,8 @@ def create_settings_container():
                     # Charging station
                     make_input_section_label(grid_row='13', grid_column='1 / span 3',
                                              icon='carbon:charging-station-filled',
-                                             text='Charging station', ),
+                                             text='Charging station',
+                                             ),
                     make_battery_dropdown(id='dcfc-rating-dropdown',
                                           grid_row='14',
                                           grid_column='1 / span 3',
@@ -630,7 +618,7 @@ def create_settings_container():
                                             0.95: '0.95',
                                             1: '1.0'
                                         },
-                                        value=0.8,  # Default value
+                                        value=1.0,  # Default value
                                         included=True,
                                     ),
 
@@ -775,24 +763,124 @@ def create_settings_container():
 
                         ]
                     ),
-                    make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
-                                          label='Maximum amp hours', units='Ah',
-                                          options=[
-                                              {'label': '250', 'value': '250'},
-                                              {'label': '400', 'value': '400'},
-                                          ],
-                                          value='250',
-                                          multi=True
-                                          ),
-                    make_battery_dropdown(id='max-voltage-dropdown', grid_row='15', grid_column='4 / span 3',
-                                          label='Maximum voltage', units='V',
-                                          options=[
-                                              {'label': '250', 'value': '250'},
-                                              {'label': '400', 'value': '400'},
-                                          ],
-                                          value='250',
-                                          multi=True
-                                          ),
+                    html.Div(
+                        style={
+                            'grid-row': '14',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Maximum amp hours (Ah)'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='max-ah-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='250.0',
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+
+                        ]
+                    ),
+                    html.Div(
+                        style={
+                            'grid-row': '15',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Maximum voltage (V)'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='max-voltage-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='250.0',
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+
+                        ]
+                    ),
                 ]
             ),
 
