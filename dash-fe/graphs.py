@@ -84,11 +84,14 @@ def create_heatmap(data, x=None, y=None):
     :return: Heatmap
     """
     fig = px.imshow(data,
-                  x=x,
-                  y=y,
-                  )
+                    x=x,
+                    y=y,
+                    # aspect="auto", TODO optimize aspect ratio
+                    color_continuous_scale='matter'
+                    )
+    fig.update_xaxes(type='category')
+    fig.update_yaxes(type='category')
     return dcc.Graph(figure=fig)
-
 
 
 # Create 4D graph
