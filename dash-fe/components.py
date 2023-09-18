@@ -763,24 +763,124 @@ def create_settings_container():
 
                         ]
                     ),
-                    make_battery_dropdown(id='max-amp-hours-dropdown', grid_row='14', grid_column='4 / span 3',
-                                          label='Maximum amp hours', units='Ah',
-                                          options=[
-                                              {'label': '250', 'value': '250'},
-                                              {'label': '400', 'value': '400'},
-                                          ],
-                                          value='250',
-                                          multi=True
-                                          ),
-                    make_battery_dropdown(id='max-voltage-dropdown', grid_row='15', grid_column='4 / span 3',
-                                          label='Maximum voltage', units='V',
-                                          options=[
-                                              {'label': '250', 'value': '250'},
-                                              {'label': '400', 'value': '400'},
-                                          ],
-                                          value='250',
-                                          multi=True
-                                          ),
+                    html.Div(
+                        style={
+                            'grid-row': '14',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Maximum amp hours (Ah)'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='max-ah-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='250.0',
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-ah-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+
+                        ]
+                    ),
+                    html.Div(
+                        style={
+                            'grid-row': '15',
+                            'grid-column': '4 / span 3',
+                        },
+                        children=[
+                            html.Span('Maximum voltage (V)'),
+                            html.Div(
+                                style={
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                },
+                                children=[
+                                    dcc.Input(
+                                        id='max-voltage-input1',
+                                        className='setup-input',
+                                        style={
+                                            'margin-right': '8px',
+                                            'width': '100%',
+                                        },
+                                        value='250.0',
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input2',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input3',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input4',
+                                        className='setup-input',
+                                        style={
+                                            'margin': '0 8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                    dcc.Input(
+                                        id='max-voltage-input5',
+                                        className='setup-input',
+                                        style={
+                                            'margin-left': '8px',
+                                            'width': '100%',
+                                        },
+                                    ),
+                                ]
+                            )
+
+                        ]
+                    ),
                 ]
             ),
 
