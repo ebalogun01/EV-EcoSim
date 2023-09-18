@@ -1182,9 +1182,9 @@ def create_price_section():
     lcoe_data_segmented = pd.concat(
         [
             # bat_age_data,
-            bat_cost_data,
             # tra_age_data,
             elec_data,
+            bat_cost_data,
             solar_data
         ],
         axis=0,

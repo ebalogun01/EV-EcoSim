@@ -7,6 +7,7 @@ import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
+from sim_run import Sim_run
 from constants import PRESET1, PRESET2
 from run_simulation import *
 
