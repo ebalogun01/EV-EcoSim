@@ -142,7 +142,7 @@ class BatteryParams:
         gene_space_range = [{'low': low, 'high': high} for low, high in zip(lb2, ub2)]
         return gene_space_range
 
-    def ga(self, num_generations=100, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
+    def ga(self, num_generations=5, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
            mutation_type="adaptive", parent_selection_type="sss", mutation_percent_genes=60,
            mutation_prob=(0.3, 0.1), crossover_prob=None):
         """
@@ -267,10 +267,12 @@ class BatteryParams:
         print("OCV correction beta: ",  beta.value)
         print("OCV correction const. bias: ", const_bias.value)
         ocv_bias_correction_vector = np.array([beta.value, const_bias.value])
-        np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn), ocv_bias_correction_vector)
+        np.savetxt('../batt_sys_identification/OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn),
+                   ocv_bias_correction_vector)
         self.ocv = ocv_corr.value
         self.data['ocv_corr'] = self.ocv
-        self.data.to_csv('input_data_with_ocv_corr_voltage.csv')    # adds corrected ocv as field and writes the input data
+        self.data.to_csv('../batt_sys_identification/input_data_with_ocv_corr_voltage.csv')
+        #    Adds corrected ocv as field and writes the input data
 
     def _validate_params(self):
         """
@@ -301,7 +303,7 @@ class BatteryParams:
         plt.ylabel("Voltage")
         plt.legend()
         plt.tight_layout()
-        plt.savefig('model_comparison_ocv_correction_scheme.png')
+        plt.savefig('../batt_sys_identification/model_comparison_ocv_correction_scheme.png')
 
     def get_uncorrected_voltages(self):
         """
@@ -411,7 +413,7 @@ if __name__ == '__main__':
     import os
     # List all the csv files in current directory and let user choose one.
     # User uploaded data will be saved in the current directory as a temp_data.csv file.
-    data_path = os.path.join(os.getcwd(), 'temp_data.csv')
+    data_path = os.path.join(os.getcwd(), 'temp.csv')
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)
     # Create button option to toggle initial population on or off.

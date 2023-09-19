@@ -2,6 +2,7 @@ import sys
 sys.path.append('../charging_sim')
 import plotly.express as px
 import dash
+import pandas as pd
 from dash import dcc, html, ctx, Input, Output, State
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -10,8 +11,13 @@ from config import Config
 from sim_run import Sim_run
 from constants import PRESET1, PRESET2
 from run_simulation import *
+import base64
+import datetime
+import io
 
-# Create Dash app
+
+
+#   Create Dash app
 app = dash.Dash(__name__)
 
 # Create app layout
@@ -182,7 +188,7 @@ def page_update(radio_value):
     :return: Page to be rendered
     """
     # Debug option:
-    if app.server.debug==True:
+    if app.server.debug == True:
         pass
         print(radio_value)
     if radio_value == "INP":
@@ -397,6 +403,8 @@ def battery_upload(contents, name):
     :return: File for battery
     """
     if contents is not None:
+        df = parse_contents_to_df(contents, name)
+        df.to_csv('../batt_sys_identification/temp.csv', index=False)
         return name, 'action tooltip'
     else:
         return "No file chosen", 'action disabled tooltip'
@@ -414,6 +422,7 @@ def feeder_population_upload(contents, name):
     :return: File for feeder popúulation
     """
     if contents is not None:
+        # todo: save the feeder_pop file in the required folder
         return name
     else:
         return "No file chosen"
@@ -571,48 +580,48 @@ def run_simulation(
             max_ah = []
             max_voltage = []
 
-            if max_c_rate_1 != None and max_c_rate_1 != '':
+            if max_c_rate_1 and max_c_rate_1 != '':
                 max_c_rate.append(float(max_c_rate_1))
-            if max_c_rate_2 != None and max_c_rate_2 != '':
+            if max_c_rate_2 and max_c_rate_2 != '':
                 max_c_rate.append(float(max_c_rate_2))
-            if max_c_rate_3 != None and max_c_rate_3 != '':
+            if max_c_rate_3 and max_c_rate_3 != '':
                 max_c_rate.append(float(max_c_rate_3))
-            if max_c_rate_4 != None and max_c_rate_4 != '':
+            if max_c_rate_4 and max_c_rate_4 != '':
                 max_c_rate.append(float(max_c_rate_4))
-            if max_c_rate_5 != None and max_c_rate_5 != '':
+            if max_c_rate_5 and max_c_rate_5 != '':
                 max_c_rate.append(float(max_c_rate_5))
 
-            if energy_cap_1 != None and energy_cap_1 != '':
+            if energy_cap_1 and energy_cap_1 != '':
                 energy_cap.append(float(energy_cap_1))
-            if energy_cap_2 != None and energy_cap_2 != '':
+            if energy_cap_2 and energy_cap_2 != '':
                 energy_cap.append(float(energy_cap_2))
-            if energy_cap_3 != None and energy_cap_3 != '':
+            if energy_cap_3 and energy_cap_3 != '':
                 energy_cap.append(float(energy_cap_3))
-            if energy_cap_4 != None and energy_cap_4 != '':
+            if energy_cap_4 and energy_cap_4 != '':
                 energy_cap.append(float(energy_cap_4))
-            if energy_cap_5 != None and energy_cap_5 != '':
+            if energy_cap_5 and energy_cap_5 != '':
                 energy_cap.append(float(energy_cap_5))
 
-            if max_ah_1 != None and max_ah_1 != '':
+            if max_ah_1 and max_ah_1 != '':
                 max_ah.append(float(max_ah_1))
-            if max_ah_2 != None and max_ah_2 != '':
+            if max_ah_2 and max_ah_2 != '':
                 max_ah.append(float(max_ah_2))
-            if max_ah_3 != None and max_ah_3 != '':
+            if max_ah_3 and max_ah_3 != '':
                 max_ah.append(float(max_ah_3))
-            if max_ah_4 != None and max_ah_4 != '':
+            if max_ah_4 and max_ah_4 != '':
                 max_ah.append(float(max_ah_4))
-            if max_ah_5 != None and max_ah_5 != '':
+            if max_ah_5 and max_ah_5 != '':
                 max_ah.append(float(max_ah_5))
 
-            if max_voltage_1 != None and max_voltage_1 != '':
+            if max_voltage_1 and max_voltage_1 != '':
                 max_voltage.append(float(max_voltage_1))
-            if max_voltage_2 != None and max_voltage_2 != '':
+            if max_voltage_2 and max_voltage_2 != '':
                 max_voltage.append(float(max_voltage_2))
-            if max_voltage_3 != None and max_voltage_3 != '':
+            if max_voltage_3 and max_voltage_3 != '':
                 max_voltage.append(float(max_voltage_3))
-            if max_voltage_4 != None and max_voltage_4 != '':
+            if max_voltage_4 and max_voltage_4 != '':
                 max_voltage.append(float(max_voltage_4))
-            if max_voltage_5 != None and max_voltage_5 != '':
+            if max_voltage_5 and max_voltage_5 != '':
                 max_voltage.append(float(max_voltage_5))
 
             print(max_c_rate, energy_cap, max_ah, max_voltage)
@@ -638,8 +647,49 @@ def run_simulation(
 )
 def run_battery_system_identification(run_battery_system_n_clicks):
     # TODO: Run battery system identification here
-    print("Run Battery System")
-    return {'position': 'relative', 'float': 'right' }
+    from batt_sys_identification.battery_identification import BatteryParams
+    try:
+        battery_data = pd.read_csv('../batt_sys_identification/temp.csv')
+        module = BatteryParams(battery_data)
+        module.run_sys_identification()
+
+    except Exception as e:
+        print(e)
+        return html.Div(['No file uploaded for battery system identification!'])
+
+    print("Run Battery System done")
+    return {'position': 'relative', 'float': 'right'}
+
+
+def parse_contents_to_df(contents, filename):
+    """
+    This function takes in the string bytes of uploaded csv and excel file and returns a Pandas df.
+    Throws an exception and returns an error message if file is not csv or excel spreadsheet.
+    Code reference: https://dash.plotly.com/dash-core-components/upload
+
+    :param contents: Contents from the str bytes parsed from upload.
+    :param filename: Name of file uploaded.
+    :return: Pandas dataframe of contents.
+    """
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    df = None
+    # todo: need to fix input data to not include index column else this can be buggy in the future.
+    #  Leaving for now for testing purposes.
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')), index_col=0)
+        elif 'xls' in filename:
+            df = pd.read_excel(io.BytesIO(decoded), index_col=0)
+            print(df)
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+    return df
 
 
 if __name__ == '__main__':
