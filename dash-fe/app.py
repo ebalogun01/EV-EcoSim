@@ -646,7 +646,7 @@ def run_simulation(
     Input(component_id="run-battery-system-identification-button", component_property="n_clicks")
 )
 def run_battery_system_identification(run_battery_system_n_clicks):
-    # TODO: Run battery system identification here
+    # TODO: Include option to choose number of populations for the GA algorithm.
     from batt_sys_identification.battery_identification import BatteryParams
     try:
         battery_data = pd.read_csv('../batt_sys_identification/temp.csv')
