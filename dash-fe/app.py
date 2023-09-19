@@ -19,6 +19,12 @@ import io
 #   Create Dash app
 app = dash.Dash(__name__)
 
+# Create config object
+user_input = Config()  # Default setup
+
+# Create sim run object
+sim_run = Sim_run()
+
 # Create app layout
 app.layout = html.Div([
     html.Link(rel="stylesheet", href="assets/style.css"),
@@ -555,7 +561,7 @@ def run_simulation(
     """
 
     # either use preset_1, preset_2, or user_input depending on which is selected
-    user_input = Config()  # Default setup
+
     if preset2_class == "setup-button selected tooltip":
         user_input = PRESET2  # TODO: Create config object from preset 2
     elif custom_settings_class == "setup-button selected tooltip":
@@ -650,8 +656,6 @@ def run_simulation(
     # Get json from config
     user_input_json = user_input.get_config_json()
 
-    # Create sim run object
-    sim_run = Sim_run()
     sim_run.config = user_input
 
     # Save input as json
