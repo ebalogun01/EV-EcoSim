@@ -1,7 +1,12 @@
-import config
+from config import Config
+import json
 
 class Sim_run:
     # Class initialization with default values
     def __init__(self):
         self.run_period_name = "Not-initialized"
-        self.config = None
+        self.config = Config()
+
+    def save_config_to_json(self):
+        with open('input/sim_run_settings.json', 'w') as settings_json:
+            json.dump(self.config.get_config_json(), settings_json)

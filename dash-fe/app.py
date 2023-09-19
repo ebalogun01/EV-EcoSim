@@ -646,11 +646,19 @@ def run_simulation(
             if mpc_rhc_class == "setup-button selected":
                 user_input.feeder_pop = True
                 # Nothing for feeder pop data
-        user_input = user_input.get_config_json()
+
+    # Get json from config
+    user_input_json = user_input.get_config_json()
+
+    # Create sim run object
+    sim_run = Sim_run()
+    sim_run.config = user_input
+
+    # Save input as json
+    sim_run.save_config_to_json()
 
     # Connect to backend here - pass user_input.get_config_json()
-    simulate(user_input)
-
+    simulate(user_input_json)
     return {'grid-row': '2'}
 
 
