@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('../charging_sim')
 import plotly.express as px
 import dash
@@ -14,8 +15,6 @@ from run_simulation import *
 import base64
 import datetime
 import io
-
-
 
 #   Create Dash app
 app = dash.Dash(__name__)
@@ -173,6 +172,7 @@ app.layout = html.Div([
     ]),
 ])
 
+
 # Callbacks
 # Radio buttons change value
 @app.callback(
@@ -198,8 +198,9 @@ def page_update(radio_value):
     elif radio_value == "OUT":
         return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}
     else:
-        return {'display': 'none'}, {'display':'none'}
-    
+        return {'display': 'none'}, {'display': 'none'}
+
+
 # Preset selected
 @app.callback(
     Output(component_id="preset1-button", component_property="className"),
@@ -215,7 +216,8 @@ def page_update(radio_value):
     State(component_id="custom-settings-button", component_property="className"),
     prevent_initial_call=True
 )
-def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value, preset1_class, preset2_class, custom_settings_class):
+def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value, preset1_class,
+           preset2_class, custom_settings_class):
     """
     Preset selection trigger
 
@@ -240,7 +242,8 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
             return preset1_class, preset2_class, custom_settings_class, None
     else:
         return "setup-button tooltip", "setup-button tooltip", "setup-button tooltip", None
-    
+
+
 # Simulation mode selected
 @app.callback(
     Output(component_id="oneshot-button", component_property="className"),
@@ -321,6 +324,7 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
             'display': 'none',
         },
 
+
 # Temperature data uploaded
 @app.callback(
     Output(component_id="temperature-data-file", component_property="children"),
@@ -337,7 +341,8 @@ def temperature_upload(contents, name):
         return name
     else:
         return "No file chosen"
-    
+
+
 # Solar data uploaded
 @app.callback(
     Output(component_id="solar-data-file", component_property="children"),
@@ -354,7 +359,8 @@ def solar_upload(contents, name):
         return name
     else:
         return "No file chosen"
-    
+
+
 # Load data uploaded
 @app.callback(
     Output(component_id="load-data-file", component_property="children"),
@@ -371,7 +377,8 @@ def load_upload(contents, name):
         return name
     else:
         return "No file chosen"
-    
+
+
 # Price data uploaded
 @app.callback(
     Output(component_id="price-data-file", component_property="children"),
@@ -388,7 +395,8 @@ def price_upload(contents, name):
         return name
     else:
         return "No file chosen"
-    
+
+
 # Battery data uploaded
 @app.callback(
     Output(component_id="battery-data-file", component_property="children"),
@@ -408,7 +416,8 @@ def battery_upload(contents, name):
         return name, 'action tooltip'
     else:
         return "No file chosen", 'action disabled tooltip'
-    
+
+
 # Feeder population data uploaded
 @app.callback(
     Output(component_id="feeder-population-data-file", component_property="children"),
@@ -426,7 +435,8 @@ def feeder_population_upload(contents, name):
         return name
     else:
         return "No file chosen"
-    
+
+
 # Power factor adjusted
 @app.callback(
     Output(component_id="power-factor-label", component_property="children"),
@@ -439,6 +449,7 @@ def power_factor_update(value):
     :return: Power factor
     """
     return value
+
 
 # Run simulation
 @app.callback(
@@ -492,8 +503,8 @@ def power_factor_update(value):
 )
 def run_simulation(
         run_button_n_clicks,
-        preset1_class, 
-        preset2_class, 
+        preset1_class,
+        preset2_class,
         custom_settings_class,
         oneshot_class,
         mpc_rhc_class,
@@ -536,7 +547,7 @@ def run_simulation(
         power_factor,
         battery_capacity,
         feeder_population_filename
-    ):
+):
     """
     Simulation settings collection trigger
 
@@ -544,9 +555,9 @@ def run_simulation(
     """
 
     # either use preset_1, preset_2, or user_input depending on which is selected
-    user_input = Config() # Default setup
+    user_input = Config()  # Default setup
     if preset2_class == "setup-button selected tooltip":
-        user_input = PRESET2 # TODO: Create config object from preset 2
+        user_input = PRESET2  # TODO: Create config object from preset 2
     elif custom_settings_class == "setup-button selected tooltip":
         user_input = Config()
         if oneshot_class == "setup-button selected":
@@ -555,9 +566,9 @@ def run_simulation(
             user_input.sim_mode = "mpc_rhc"
         elif battery_system_class == "setup-button selected":
             user_input.sim_mode = "battery"
-            user_input.only_batt_sys = True # I think?
+            user_input.only_batt_sys = True  # I think?
         if battery_system_class == "setup-button selected":
-            #user_input.battery["data"] = battery_filename
+            # user_input.battery["data"] = battery_filename
             return {'grid-row': '2'}
         else:
             user_input.ambient_data = temperature_filename
@@ -573,7 +584,8 @@ def run_simulation(
             user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
             user_input.charging_station["num_dcfc_stalls_per_node"] = int(num_dcfc_stalls)
             user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
-            user_input.charging_station["commercial_building_trans"] = float(transformer_capactiy) # is this the correct property? Yes -Emmanuel
+            user_input.charging_station["commercial_building_trans"] = float(
+                transformer_capactiy)  # is this the correct property? Yes -Emmanuel
             # TODO: fill in bettery dropdown values and format the values accordingly
             max_c_rate = []
             energy_cap = []
@@ -625,7 +637,7 @@ def run_simulation(
                 max_voltage.append(float(max_voltage_5))
 
             print(max_c_rate, energy_cap, max_ah, max_voltage)
-            user_input.battery["max_c_rate"] = max_c_rate 
+            user_input.battery["max_c_rate"] = max_c_rate
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
             user_input.battery["pack_max_voltage"] = max_voltage
@@ -640,6 +652,7 @@ def run_simulation(
     simulate(user_input)
 
     return {'grid-row': '2'}
+
 
 @app.callback(
     Output(component_id="run-battery-system-identification-button", component_property="style"),
@@ -657,7 +670,32 @@ def run_battery_system_identification(run_battery_system_n_clicks):
         print(e)
         return html.Div(['No file uploaded for battery system identification!'])
 
-    print("Run Battery System done")
+    print("Run Battery System Identification done!")
+    return {'position': 'relative', 'float': 'right'}
+
+
+@app.callback(
+    Output(component_id="run-post-opt-analysis-button", component_property="style"),
+    Input(component_id="run-post-opt-analysis-button", component_property="n_clicks")
+)
+def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
+    """
+    Runs the post-simulation cost analysis and produces the relevant files and results.
+
+    :param run_post_opt_analysis_n_clicks:
+    :return:
+    """
+    from batt_sys_identification.battery_identification import BatteryParams
+    try:
+        battery_data = pd.read_csv('../batt_sys_identification/temp.csv')
+        module = BatteryParams(battery_data)
+        module.run_sys_identification()
+
+    except Exception as e:
+        print(e)
+        return html.Div(['No file uploaded for battery system identification!'])
+
+    print("Run Battery System Identification done!")
     return {'position': 'relative', 'float': 'right'}
 
 
@@ -683,7 +721,6 @@ def parse_contents_to_df(contents, filename):
                 io.StringIO(decoded.decode('utf-8')), index_col=0)
         elif 'xls' in filename:
             df = pd.read_excel(io.BytesIO(decoded), index_col=0)
-            print(df)
     except Exception as e:
         print(e)
         return html.Div([

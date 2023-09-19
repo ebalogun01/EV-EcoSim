@@ -2,7 +2,7 @@
 Runs the application from front-end to back-end.
 """
 import sys
-
+from dash import html
 sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
@@ -33,6 +33,16 @@ def validate_options(front_input: dict):
     print("Validating user input options...")
     return None
 
+
+def create_results_folder():
+    """
+    Creates a results dir if one does not exist
+
+    :return:
+    """
+    if os.path.isdir('results'):
+        return
+    os.mkdir('results')
 
 def load_default_input():
     """
@@ -74,22 +84,19 @@ def make_month_str(month_int: int):
 
 def simulate(user_inputs):
     # Updating the user inputs based on frontend inputs.
+    create_results_folder()     # Make a results folder if it does not exist.
 
     path_prefix = os.getcwd()
     # Change below to name of the repo.
+    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis'
     path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
     param_dict = station_config.read()
     station_config.close()
-    param_dict = ast.literal_eval(param_dict)
-    # print('Testing param dict: \n', param_dict)
-    # print('\n', user_inputs)
-    # print(type(user_inputs))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
-    # print('ok')
 
     charging_station_config = user_inputs["charging_station"]
     battery_config = user_inputs["battery"]
@@ -146,8 +153,7 @@ def simulate(user_inputs):
     for node in dcfc_nodes:
         dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
 
-    L2_charging_nodes = np.loadtxt('../test_cases/battery/L2charging_bus.txt',
-                                   dtype=str).tolist()  # this is for L2 charging
+    L2_charging_nodes = np.loadtxt('../test_cases/battery/L2charging_bus.txt', dtype=str).tolist()  # this is for L2
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
     l2_dicts_list = []
@@ -217,7 +223,7 @@ def simulate(user_inputs):
         :return: None. Runs the `scenario`.
         """
         EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
-        save_folder_prefix = f'oneshot_{month_str}{str(scenario["index"])}/'
+        save_folder_prefix = f'{results_folder_path}/oneshot_{month_str}{str(scenario["index"])}/'
         if not os.path.exists(save_folder_prefix):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
@@ -225,23 +231,6 @@ def simulate(user_inputs):
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
             json.dump(scenario, outfile, indent=4)
-
-    def run_scenarios_parallel():
-        """
-        Runs the scenarios in parallel using the `multiprocessing` library. User should have enough cores and RAM,
-        otherwise, this may lead to entire process freezing.
-
-        :return: None
-        """
-        scenarios = make_scenarios()
-        start_idx = 0
-        end_idx = 10
-        num_cores = mp.cpu_count()
-        if num_cores > 1:
-            use_cores_count = min(num_cores - 2, end_idx - start_idx)  # leave one out
-            print(f"Running {use_cores_count} parallel scenarios...")
-            with mp.get_context("spawn").Pool(use_cores_count) as pool:
-                pool.map(run, [scenarios[i] for i in range(start_idx, min(use_cores_count + start_idx, end_idx))])
 
     def run_scenarios_sequential():
         """
@@ -267,6 +256,6 @@ def simulate(user_inputs):
     if sequential_run:
         print("Running scenarios sequentially...")
         run_scenarios_sequential()
-        print("Run complete!")
-    else:
-        run_scenarios_parallel()
+        print("Simulation complete!")
+        return html.Div(['For post-simulation analysis, hit the post-sim analysis button.'])
+
