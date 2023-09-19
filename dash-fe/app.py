@@ -656,7 +656,8 @@ def run_simulation(
 
 @app.callback(
     Output(component_id="run-battery-system-identification-button", component_property="style"),
-    Input(component_id="run-battery-system-identification-button", component_property="n_clicks")
+    Input(component_id="run-battery-system-identification-button", component_property="n_clicks"),
+    prevent_initial_call=True
 )
 def run_battery_system_identification(run_battery_system_n_clicks):
     # TODO: Include option to choose number of populations for the GA algorithm.
@@ -676,7 +677,8 @@ def run_battery_system_identification(run_battery_system_n_clicks):
 
 @app.callback(
     Output(component_id="run-post-opt-analysis-button", component_property="style"),
-    Input(component_id="run-post-opt-analysis-button", component_property="n_clicks")
+    Input(component_id="run-post-opt-analysis-button", component_property="n_clicks"),
+    prevent_initial_call=True
 )
 def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
     """
