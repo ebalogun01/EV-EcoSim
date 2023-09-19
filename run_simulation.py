@@ -50,7 +50,7 @@ def load_default_input():
 
     :return:
     """
-    with open('user_input.json', "r") as f:
+    with open('default_user_input.json', "r") as f:
         user_input = json.load(f)
     validate_options(user_input)  # todo: Finish implementing this part later.
     return user_input
