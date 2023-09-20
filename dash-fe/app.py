@@ -572,7 +572,7 @@ def run_simulation(
     """
 
     # either use preset_1, preset_2, or user_input depending on which is selected
-    # user_input = PRESET2
+    user_input = PRESET2
     if preset2_class == "setup-button selected tooltip":
         user_input = PRESET2  # TODO: Create config object from preset 2
     elif custom_settings_class == "setup-button selected tooltip":
@@ -611,46 +611,46 @@ def run_simulation(
 
             if max_c_rate_1 and max_c_rate_1 != '':
                 max_c_rate.append(float(max_c_rate_1))
-            if max_c_rate_2 and max_c_rate_2 != '':
+            if max_c_rate_2:
                 max_c_rate.append(float(max_c_rate_2))
-            if max_c_rate_3 and max_c_rate_3 != '':
+            if max_c_rate_3:
                 max_c_rate.append(float(max_c_rate_3))
-            if max_c_rate_4 and max_c_rate_4 != '':
+            if max_c_rate_4:
                 max_c_rate.append(float(max_c_rate_4))
-            if max_c_rate_5 and max_c_rate_5 != '':
+            if max_c_rate_5:
                 max_c_rate.append(float(max_c_rate_5))
 
-            if energy_cap_1 and energy_cap_1 != '':
+            if energy_cap_1:
                 energy_cap.append(float(energy_cap_1))
-            if energy_cap_2 and energy_cap_2 != '':
+            if energy_cap_2:
                 energy_cap.append(float(energy_cap_2))
-            if energy_cap_3 and energy_cap_3 != '':
+            if energy_cap_3:
                 energy_cap.append(float(energy_cap_3))
-            if energy_cap_4 and energy_cap_4 != '':
+            if energy_cap_4:
                 energy_cap.append(float(energy_cap_4))
-            if energy_cap_5 and energy_cap_5 != '':
+            if energy_cap_5:
                 energy_cap.append(float(energy_cap_5))
 
-            if max_ah_1 and max_ah_1 != '':
+            if max_ah_1:
                 max_ah.append(float(max_ah_1))
-            if max_ah_2 and max_ah_2 != '':
+            if max_ah_2:
                 max_ah.append(float(max_ah_2))
-            if max_ah_3 and max_ah_3 != '':
+            if max_ah_3:
                 max_ah.append(float(max_ah_3))
-            if max_ah_4 and max_ah_4 != '':
+            if max_ah_4:
                 max_ah.append(float(max_ah_4))
-            if max_ah_5 and max_ah_5 != '':
+            if max_ah_5:
                 max_ah.append(float(max_ah_5))
 
-            if max_voltage_1 and max_voltage_1 != '':
+            if max_voltage_1:
                 max_voltage.append(float(max_voltage_1))
-            if max_voltage_2 and max_voltage_2 != '':
+            if max_voltage_2:
                 max_voltage.append(float(max_voltage_2))
-            if max_voltage_3 and max_voltage_3 != '':
+            if max_voltage_3:
                 max_voltage.append(float(max_voltage_3))
-            if max_voltage_4 and max_voltage_4 != '':
+            if max_voltage_4:
                 max_voltage.append(float(max_voltage_4))
-            if max_voltage_5 and max_voltage_5 != '':
+            if max_voltage_5:
                 max_voltage.append(float(max_voltage_5))
 
             # print(max_c_rate, energy_cap, max_ah, max_voltage)
@@ -690,6 +690,7 @@ def run_simulation(
 )
 def run_battery_system_identification(run_battery_system_n_clicks):
     # TODO: Include option to choose number of populations for the GA algorithm.
+    print("batt sys trigger")
     from batt_sys_identification.battery_identification import BatteryParams
     try:
         battery_data = pd.read_csv('../batt_sys_identification/temp.csv')

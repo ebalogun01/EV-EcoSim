@@ -8,7 +8,7 @@ from charging_sim.orchestrator import ChargingSim
 import numpy as np
 import json
 from charging_sim.utils import month_days
-
+import ast
 
 # if running app and uploading data, the system must load the different classes with the right temp datasets.
 
@@ -90,8 +90,9 @@ def simulate(user_inputs):
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
-    param_dict = station_config.read()
+    param_dict = ast.literal_eval(station_config.read())
     station_config.close()
+    print(type(param_dict))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
 
