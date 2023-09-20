@@ -43,9 +43,10 @@ button:hover {
 }
 
 .action {
+    padding: 20px;
+    margin: 0 8px;
     background-color: #b01b1b;
     color: white;
-    padding: 12px 24px; 
     border-radius: 8px;
     border: 0;
     font-size: 20px;
@@ -64,9 +65,9 @@ button:hover {
     padding: 20px;
     margin: 0 8px;
     background-color: white;
-    border: 1px solid #e48d81;
     color: #e48d81;
     border-radius: 8px;
+    border: 1px solid #e48d81;
     font-size: 20px;
 }
 
@@ -114,7 +115,7 @@ button:hover {
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent #555 transparent;
-  }
+}
 
 .tooltip:hover .tooltip-text {
     visibility: visible;
@@ -124,7 +125,7 @@ button:hover {
     width: 100%;
 }
 
-.rc-slider-track{
+.rc-slider-track {
     background-color: #e48d81;
 }
 
