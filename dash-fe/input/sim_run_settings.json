@@ -3,16 +3,20 @@
  "battery": {
   "data": null,
   "max_c_rate": [
-   1.0
+   1.0,
+   2.0
   ],
   "pack_max_voltage": [
-   250.0
+   250.0,
+   400.0
   ],
   "pack_energy_cap": [
-   50000.0
+   50000.0,
+   10000.0
   ],
   "pack_max_Ah": [
-   250.0
+   250.0,
+   400.0
   ],
   "SOC_min": 0.2,
   "SOC_max": 0.9,
@@ -41,7 +45,7 @@
  "load": {
   "data": null
  },
- "month": 1,
+ "month": 3,
  "num_days": 30,
  "only_batt_sys": false,
  "sim_mode": "offline",

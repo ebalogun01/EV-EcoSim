@@ -19,6 +19,7 @@
 
 **results
 source
+analysis/results/*
 charging_sim/__pycache__
 **.Identifier
 battery_data
