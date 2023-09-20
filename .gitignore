@@ -17,6 +17,9 @@
 # Dash frontend whitelist
 !dash-fe/data/*
 
+dash-fe/input/sim_run_settings.json
+
+
 **results
 source
 charging_sim/__pycache__
