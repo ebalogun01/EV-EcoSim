@@ -1,3 +1,5 @@
+from config import Config
+
 TEXT = {
     'intro': 'We have made EV-Ecosim a simple, online platform tailored for scientific and non-technical communities immersed in Electric Vehicle (EV) infrastructure planning and operation. Its robust co-simulation framework empowers researchers, experts, practitioners, or any curious person to explore the design of efficient, sustainable EV charging infrastructures harmonized with DERs, fostering deeper understanding in this evolving domain.',
     'howToUse': 'This tool can be leveraged through a simple 3-step process: Setup-Simulate-Assess. First the simulation parameters need to be defined, where either a prepared scenario can be run, or the input may be fully customized. Then, the defined scenario is run. As this is a complex computation, this step may take significant time periods. After the output is calculated, a dashboard is shown with visualised key data, and the data may be exported for further analysis, or the simulation may be run again with adjusted input.',
@@ -16,96 +18,51 @@ TEXT = {
 
 }
 
-#TODO: UPDATE PRESETS IF NEEDED
-PRESET1 = {
-    "sim_mode": "offline",
-    "feeder_pop": False,
-    "only_batt_sys": False,
-    "ambient_data": False,
-     "month": 7,
-    "num_days": 30,
-    "solar": {
-        "data": None,
-        "efficiency": None,
-        "rating": None
-    },
-    "battery": {
-        "data": None,
-        "max_c_rate": [1, 2],
-        "pack_max_voltage": [250, 400],
-        "pack_energy_cap": [5e4, 10e4],
-        "pack_max_Ah": [250, 400],
-        "SOC_min": 0.2,
-        "SOC_max": 0.9,
-        "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
-        "OCV_map_SOC": "/battery_data/SOC_corr_W8_1.csv",
-        "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv"
-    },
-    "charging_station": {
-        "power_factor": None,
-        "dcfc_power_cap": 700,
-        "power_cap_units": "kW",
-        "dcfc_charging_stall_base_rating": "75_kW",
-        "l2_charging_stall_base_rating": "11.5_kW",
-        "num_dcfc_nodes": 1,
-        "num_l2_nodes": 0,
-        "num_dcfc_stalls_per_node": 5,
-        "num_l2_stalls_per_node": 0,
-        "commercial_building_trans": 75
-    },
-    "load": {
-        "data": None
-    },
-    "elec_prices": {
-        "data": None,
-        "month": 7
-    }
+preset_config = Config()
+preset_config.sim_mode = "offline"
+preset_config.feeder_pop = False
+preset_config.only_batt_sys = False
+preset_config.ambient_data = False
+preset_config.month = 7
+preset_config.num_days = 30
+preset_config.solar = {
+    "data": None,
+    "efficiency": None,
+    "rating": None
+},
+preset_config.battery = {
+    "data": None,
+    "max_c_rate": [1, 2],
+    "pack_max_voltage": [250, 400],
+    "pack_energy_cap": [5e4, 10e4],
+    "pack_max_Ah": [250, 400],
+    "SOC_min": 0.2,
+    "SOC_max": 0.9,
+    "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
+    "OCV_map_SOC": "/battery_data/SOC_corr_W8_1.csv",
+    "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv"
+},
+preset_config.charging_station = {
+    "power_factor": None,
+    "dcfc_power_cap": 700,
+    "power_cap_units": "kW",
+    "dcfc_charging_stall_base_rating": "75_kW",
+    "l2_charging_stall_base_rating": "11.5_kW",
+    "num_dcfc_nodes": 1,
+    "num_l2_nodes": 0,
+    "num_dcfc_stalls_per_node": 5,
+    "num_l2_stalls_per_node": 0,
+    "commercial_building_trans": 75
+},
+preset_config.load = {
+    "data": None
+},
+preset_config.elec_prices = {
+    "data": None,
+    "month": 7
 }
 
-PRESET2 = {
-    "sim_mode": "offline",
-    "feeder_pop": False,
-    "only_batt_sys": False,
-    "ambient_data": False,
-     "month": 7,
-    "num_days": 30,
-    "solar": {
-        "data": None,
-        "efficiency": None,
-        "rating": None
-    },
-    "battery": {
-        "data": None,
-        "max_c_rate": [1, 2],
-        "pack_max_voltage": [250, 400],
-        "pack_energy_cap": [5e4, 10e4],
-        "pack_max_Ah": [250, 400],
-        "SOC_min": 0.2,
-        "SOC_max": 0.9,
-        "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
-        "OCV_map_SOC": "/battery_data/SOC_corr_W8_1.csv",
-        "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv"
-    },
-    "charging_station": {
-        "power_factor": None,
-        "dcfc_power_cap": 700,
-        "power_cap_units": "kW",
-        "dcfc_charging_stall_base_rating": "75_kW",
-        "l2_charging_stall_base_rating": "11.5_kW",
-        "num_dcfc_nodes": 1,
-        "num_l2_nodes": 0,
-        "num_dcfc_stalls_per_node": 5,
-        "num_l2_stalls_per_node": 0,
-        "commercial_building_trans": 75
-    },
-    "load": {
-        "data": None
-    },
-    "elec_prices": {
-        "data": None,
-        "month": 7
-    }
-}
+PRESET2 = preset_config
 
 MONTH_DROPDOWN = [
     {'label': 'January', 'value': '1'},

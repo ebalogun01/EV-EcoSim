@@ -11,7 +11,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from sim_run import SimRun
-from constants import PRESET1, PRESET2
+from constants import PRESET2
 from run_simulation import *
 import base64
 import datetime
@@ -573,12 +573,11 @@ def run_simulation(
     :return: Simulation settings JSON
     """
 
-    # either use preset_1, preset_2, or user_input depending on which is selected
-
+    # either use preset or user_input depending on which is selected #TODO rename preset2 to preset
+    user_input = Config()
     if preset2_class == "setup-button selected tooltip":
-        user_input = PRESET2  # TODO: Create config object from preset 2
+        user_input = PRESET2
     elif custom_settings_class == "setup-button selected tooltip":
-        user_input = Config()
         if oneshot_class == "setup-button selected":
             user_input.sim_mode = "offline"
         elif mpc_rhc_class == "setup-button selected":
