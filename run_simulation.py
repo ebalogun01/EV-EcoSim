@@ -1,15 +1,12 @@
 """
 Runs the application from front-end to back-end.
 """
-import sys
 from dash import html
-sys.path.append('./charging_sim')
+# sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
-import multiprocessing as mp
 import numpy as np
 import json
-import ast
 from charging_sim.utils import month_days
 
 
@@ -258,4 +255,6 @@ def simulate(user_inputs):
         run_scenarios_sequential()
         print("Simulation complete!")
         return html.Div(['For post-simulation analysis, hit the post-sim analysis button.'])
+
+    return
 

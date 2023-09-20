@@ -13,8 +13,15 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
 
-ENERGY_RATINGS = [5e4, 10e4, 20e4, 40e4, 80e4]
-MAX_C_RATES = [0.1, 0.2, 0.5, 1, 2]
+
+# Load the user_input dict state.
+
+USR_INPUT_PATH = '../dash-fe/input/sim_run_settings.json'
+with open(USR_INPUT_PATH, "r") as f:
+    USR_INPUT_DICT = json.load(f)
+
+ENERGY_RATINGS = USR_INPUT_DICT['battery']['pack_energy_cap']
+MAX_C_RATES = USR_INPUT_DICT['battery']['max_c_rate']
 PLOT_FONT_SIZE = 16
 matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 
@@ -151,7 +158,8 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
         plt.close('all')
 
 
-def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = True, trans_cost: bool = False):
+def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = True, trans_cost: bool = False,
+                oneshot=False):
     """
     Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.
 
@@ -163,11 +171,11 @@ def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = 
     :return: None.
     """
     estimator = CostEstimator(days_count)
-    #   calculated values are populated in their respective scenario directories
+    #   Calculated values are populated in their respective scenario directories.
     if batt_cost:
         estimator.calculate_battery_cost(case_dir)
     if elec_cost:
-        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_seperate_file=oneshot)
+        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_separate_file=oneshot)
         # not to add option into this for easy toggling
     if trans_cost:
         estimator.calculate_trans_loss_of_life(case_dir)
@@ -247,17 +255,20 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
                 trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir)
 
 
-# RUN THIS FILE
-if __name__ == '__main__':
-    # desired_month = 'January'  # might change this to input
-    desired_month = input("Type in the month you want to run results, first letter UPPER CASE: ")
+def run():
+    desired_month = USR_INPUT_DICT['month']
     oneshot = True
     include_trans = False
-    days = 30  # number of days
+    days = USR_INPUT_DICT['num_days']  # number of days
     for i in range(0, len(ENERGY_RATINGS) * len(MAX_C_RATES)):
         if oneshot:
             result_dir = f'results/oneshot_{desired_month}{i}'
         else:
             result_dir = f'results/{desired_month}{i}'
-        run_results(result_dir, days, trans_cost=include_trans)
+        run_results(result_dir, days, trans_cost=include_trans, oneshot=oneshot)
     collate_results(desired_month, trans=include_trans, oneshot=oneshot)
+
+
+# RUN THIS FILE
+if __name__ == '__main__':
+    run()

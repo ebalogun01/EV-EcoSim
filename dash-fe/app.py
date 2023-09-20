@@ -9,12 +9,13 @@ import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
-from sim_run import Sim_run
+from sim_run import SimRun
 from constants import PRESET1, PRESET2
 from run_simulation import *
 import base64
 import datetime
 import io
+import analysis.load_post_opt_costs as post_opt_module
 
 #   Create Dash app
 app = dash.Dash(__name__)
@@ -23,7 +24,7 @@ app = dash.Dash(__name__)
 user_input = Config()  # Default setup
 
 # Create sim run object
-sim_run = Sim_run()
+sim_run = SimRun()
 
 # Create app layout
 app.layout = html.Div([
@@ -642,7 +643,7 @@ def run_simulation(
             if max_voltage_5 and max_voltage_5 != '':
                 max_voltage.append(float(max_voltage_5))
 
-            print(max_c_rate, energy_cap, max_ah, max_voltage)
+            # print(max_c_rate, energy_cap, max_ah, max_voltage)
             user_input.battery["max_c_rate"] = max_c_rate
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
@@ -662,7 +663,9 @@ def run_simulation(
     sim_run.save_config_to_json()
 
     # Connect to backend here - pass user_input.get_config_json()
+    print('Simulation start...')
     simulate(user_input_json)
+    print("Simulation complete!")
     return {'grid-row': '2'}
 
 
