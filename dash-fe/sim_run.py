@@ -4,10 +4,10 @@ import json
 
 class SimRun:
     # Class initialization with default values
-    def __init__(self):
+    def __init__(self, config):
         self.run_period_name = "Not-initialized"
-        self.config = Config()
+        self.config = config
 
     def save_config_to_json(self):
         with open('input/sim_run_settings.json', 'w') as settings_json:
-            json.dump(self.config.get_config_json(), settings_json, indent=1)
+            json.dump(self.config, settings_json, indent=1)

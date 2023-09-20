@@ -102,6 +102,7 @@ def simulate(user_inputs):
     OPT_TIME_RES = 15  # minutes
     NUM_DAYS = user_inputs["num_days"]  # determines optimization horizon
     NUM_STEPS = NUM_DAYS * DAY_MINUTES // OPT_TIME_RES  # number of steps to initialize variables for opt
+    print("basic configs done...")
 
     # Modify configs based on user inputs.
     # Modify the config file in feeder population based on the user inputs.
@@ -128,10 +129,8 @@ def simulate(user_inputs):
             param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
     # Obtaining the charging station capacities.
-    dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * \
-                       param_dict['num_dcfc_stalls_per_node']
-    L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict[
-        'num_l2_stalls_per_node']
+    dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
+    L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
     month = int(str(param_dict['starttime']).split('-')[1])
     # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
     month_str = list(month_days.keys())[month - 1]
@@ -162,16 +161,16 @@ def simulate(user_inputs):
     #   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.
     #   (Does not work currently)
     sequential_run = True
-    parallel_run = False
 
     # Battery scenarios.
-    energy_ratings = user_inputs["battery"]["pack_energy_cap"]  # kWh
-    max_c_rates = user_inputs["battery"]["max_c_rate"]  # kW
+    energy_ratings = battery_config["pack_energy_cap"]  # kWh
+    max_c_rates = battery_config["max_c_rate"]  # kW
 
     def make_scenarios():
         """
         This is used to make the list of scenarios (dicts) that are used to run the simulations.
-        No inputs. However, it uses preloaded global functions from a `config.txt` file.
+        No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
+        settings and inputs.
 
         :return list scenarios_list: List of scenario dicts.
         """
@@ -224,10 +223,12 @@ def simulate(user_inputs):
         if not os.path.exists(save_folder_prefix):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
+        print('multistep')
         EV_charging_sim.multistep()
+        print('multistep done')
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
-            json.dump(scenario, outfile, indent=4)
+            json.dump(scenario, outfile, indent=1)
 
     def run_scenarios_sequential():
         """
@@ -239,9 +240,11 @@ def simulate(user_inputs):
         start_idx = 0
         end_idx = len(energy_ratings) * len(max_c_rates)
         idx_list = list(range(start_idx, end_idx))
+        print('making scenarios')
         scenarios_list = make_scenarios()
         scenarios = [scenarios_list[idx] for idx in idx_list]
         for scenario in scenarios:
+            print(scenario)
             scenario["L2_nodes"] = L2_charging_nodes
             scenario["dcfc_nodes"] = dcfc_nodes
             if dcfc_dicts_list:

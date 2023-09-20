@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../charging_sim')
+sys.path.append('../analysis')
 
 import plotly.express as px
 import dash
@@ -15,7 +16,7 @@ from run_simulation import *
 import base64
 import datetime
 import io
-import analysis.load_post_opt_costs as post_opt_module
+# import analysis.load_post_opt_costs as post_opt_module
 import time
 
 #   Create Dash app
@@ -23,9 +24,6 @@ app = dash.Dash(__name__)
 
 # Create config object
 user_input = Config()  # Default setup
-
-# Create sim run object
-sim_run = SimRun()
 
 # Create app layout
 app.layout = html.Div([
@@ -580,7 +578,7 @@ def run_simulation(
     """
 
     # either use preset_1, preset_2, or user_input depending on which is selected
-
+    # user_input = PRESET2
     if preset2_class == "setup-button selected tooltip":
         user_input = PRESET2  # TODO: Create config object from preset 2
     elif custom_settings_class == "setup-button selected tooltip":
@@ -673,16 +671,20 @@ def run_simulation(
                 # Nothing for feeder pop data
 
     # Get json from config
-    user_input_json = user_input.get_config_json()
+    if not type(user_input) is dict:
+        user_input_dict = user_input.get_config_json()
+    else:
+        user_input_dict = user_input    # Already a default Dict.
 
-    sim_run.config = user_input
+    sim_run = SimRun(user_input_dict)
 
     # Save input as json
     sim_run.save_config_to_json()
 
     # Connect to backend here - pass user_input.get_config_json()
     print('Simulation start...')
-    simulate(user_input_json)
+    print(type(user_input_dict))
+    simulate(user_input_dict)
     print("Simulation complete!")
     return {'grid-row': '2'}
 
