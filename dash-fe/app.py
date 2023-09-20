@@ -16,7 +16,7 @@ from run_simulation import *
 import base64
 import datetime
 import io
-import analysis.load_post_opt_costs as post_opt_module
+# import analysis.load_post_opt_costs as post_opt_module
 import time
 
 #   Create Dash app
@@ -730,10 +730,10 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
 
     except Exception as e:
         print(e)
-        return html.Div(['No file uploaded for battery system identification!'])
+        #return html.Div(['No file uploaded for battery system identification!'])
 
     print("Run Battery System Identification done!")
-    return {'position': 'relative', 'float': 'right'}
+    return {'grid-row': '2'}
 
 
 def parse_contents_to_df(contents, filename):

@@ -997,19 +997,11 @@ def create_home_page():
                         children=["Simulation setup"]
                     ),
                     html.Button(
-                        id="preset1-button",
-                        className='setup-button selected tooltip',
-                        style={'grid-row': '2'},
-                        children=[
-                            "Preset 1",
-                        ]
-                    ),
-                    html.Button(
                         id="preset2-button",
                         className='setup-button tooltip',
                         style={'grid-row': '2'},
                         children=[
-                            "Preset 2",
+                            "Preset",
                         ]
                     ),
                     html.Button(
@@ -1026,6 +1018,14 @@ def create_home_page():
                         style={'grid-row': '2'},
                         children=[
                             "Run simulation",
+                        ]
+                    ),
+                    html.Button(
+                        id="run-post-opt-analysis-button",
+                        className='action tooltip',
+                        style={'grid-row': '2'},
+                        children=[
+                            "Post-sim analysis",
                         ]
                     ),
                 ]
