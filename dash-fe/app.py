@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('../charging_sim')
 
 import plotly.express as px
@@ -197,6 +198,7 @@ app.layout = html.Div([
 def func(n_clicks):
     time.sleep(2)
     return no_update
+
 
 # Radio buttons change value
 @app.callback(
