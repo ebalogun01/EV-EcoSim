@@ -230,20 +230,17 @@ def page_update(radio_value):
 
 # Preset selected
 @app.callback(
-    Output(component_id="preset1-button", component_property="className"),
     Output(component_id="preset2-button", component_property="className"),
     Output(component_id="custom-settings-button", component_property="className"),
     Output(component_id="custom-settings-accordion", component_property="value"),
-    Input(component_id="preset1-button", component_property="n_clicks"),
     Input(component_id="preset2-button", component_property="n_clicks"),
     Input(component_id="custom-settings-button", component_property="n_clicks"),
     Input(component_id="custom-settings-accordion", component_property="value"),
-    State(component_id="preset1-button", component_property="className"),
     State(component_id="preset2-button", component_property="className"),
     State(component_id="custom-settings-button", component_property="className"),
     prevent_initial_call=True
 )
-def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_settings_value, preset1_class,
+def select(preset2_n_clicks, custom_settings_n_clicks, custom_settings_value,
            preset2_class, custom_settings_class):
     """
     Preset selection trigger
@@ -252,23 +249,20 @@ def select(preset1_n_clicks, preset2_n_clicks, custom_settings_n_clicks, custom_
     """
     triggered_id = ctx.triggered_id
     print(triggered_id)
-    if triggered_id == "preset1-button":
-        # Load preset 1
-        return "setup-button selected tooltip", "setup-button tooltip", "setup-button tooltip", None
-    elif triggered_id == "preset2-button":
-        # Load preset 2
-        return "setup-button tooltip", "setup-button selected tooltip", "setup-button tooltip", None
+    if triggered_id == "preset2-button":
+        # Load preset
+        return "setup-button selected tooltip", "setup-button tooltip", None
     elif triggered_id == "custom-settings-button":
-        return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
+        return "setup-button tooltip", "setup-button selected tooltip", "customSettings"
     elif triggered_id == "custom-settings-accordion":
         # Load custom settings
         print(custom_settings_value)
         if custom_settings_value == "customSettings":
-            return "setup-button tooltip", "setup-button tooltip", "setup-button selected tooltip", "customSettings"
+            return "setup-button tooltip", "setup-button selected tooltip", "customSettings"
         else:
-            return preset1_class, preset2_class, custom_settings_class, None
+            return preset2_class, custom_settings_class, None
     else:
-        return "setup-button tooltip", "setup-button tooltip", "setup-button tooltip", None
+        return "setup-button tooltip", "setup-button tooltip", None
 
 
 # Simulation mode selected
@@ -482,7 +476,6 @@ def power_factor_update(value):
 @app.callback(
     Output(component_id="run-simulation-button", component_property="style"),
     Input(component_id="run-simulation-button", component_property='n_clicks'),
-    State(component_id="preset1-button", component_property="className"),
     State(component_id="preset2-button", component_property="className"),
     State(component_id="custom-settings-button", component_property="className"),
     State(component_id="oneshot-button", component_property="className"),
@@ -530,7 +523,6 @@ def power_factor_update(value):
 )
 def run_simulation(
         run_button_n_clicks,
-        preset1_class,
         preset2_class,
         custom_settings_class,
         oneshot_class,
