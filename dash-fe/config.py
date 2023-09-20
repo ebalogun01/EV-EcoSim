@@ -121,6 +121,6 @@ class Config:
         # Assign proper values for each attribute in class
         # I made this a loop over all attributes and am very proud of myself
         for attribute in [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]:
-            data[attribute] = eval('self.' + attribute)
+            data[attribute] = getattr(self, attribute)
 
         return data

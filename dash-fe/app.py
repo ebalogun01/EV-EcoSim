@@ -602,57 +602,13 @@ def run_simulation(
             user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
             user_input.charging_station["commercial_building_trans"] = float(
                 transformer_capactiy)  # is this the correct property? Yes -Emmanuel
-            # TODO: fill in bettery dropdown values and format the values accordingly
-            max_c_rate = []
-            energy_cap = []
-            max_ah = []
-            max_voltage = []
 
-            if max_c_rate_1 and max_c_rate_1 != '':
-                max_c_rate.append(float(max_c_rate_1))
-            if max_c_rate_2:
-                max_c_rate.append(float(max_c_rate_2))
-            if max_c_rate_3:
-                max_c_rate.append(float(max_c_rate_3))
-            if max_c_rate_4:
-                max_c_rate.append(float(max_c_rate_4))
-            if max_c_rate_5:
-                max_c_rate.append(float(max_c_rate_5))
+            # Decomposed this code block.
+            max_c_rate = aggregate_user_battery_inputs(max_c_rate_1, max_c_rate_2, max_c_rate_3, max_c_rate_4, max_c_rate_5)
+            energy_cap = aggregate_user_battery_inputs(energy_cap_1, energy_cap_2, energy_cap_3, energy_cap_4, energy_cap_5)
+            max_ah = aggregate_user_battery_inputs(max_ah_1, max_ah_2, max_ah_3, max_ah_4, max_ah_5)
+            max_voltage = aggregate_user_battery_inputs(max_voltage_1, max_voltage_2, max_voltage_3, max_voltage_4, max_voltage_5)
 
-            if energy_cap_1:
-                energy_cap.append(float(energy_cap_1))
-            if energy_cap_2:
-                energy_cap.append(float(energy_cap_2))
-            if energy_cap_3:
-                energy_cap.append(float(energy_cap_3))
-            if energy_cap_4:
-                energy_cap.append(float(energy_cap_4))
-            if energy_cap_5:
-                energy_cap.append(float(energy_cap_5))
-
-            if max_ah_1:
-                max_ah.append(float(max_ah_1))
-            if max_ah_2:
-                max_ah.append(float(max_ah_2))
-            if max_ah_3:
-                max_ah.append(float(max_ah_3))
-            if max_ah_4:
-                max_ah.append(float(max_ah_4))
-            if max_ah_5:
-                max_ah.append(float(max_ah_5))
-
-            if max_voltage_1:
-                max_voltage.append(float(max_voltage_1))
-            if max_voltage_2:
-                max_voltage.append(float(max_voltage_2))
-            if max_voltage_3:
-                max_voltage.append(float(max_voltage_3))
-            if max_voltage_4:
-                max_voltage.append(float(max_voltage_4))
-            if max_voltage_5:
-                max_voltage.append(float(max_voltage_5))
-
-            # print(max_c_rate, energy_cap, max_ah, max_voltage)
             user_input.battery["max_c_rate"] = max_c_rate
             user_input.battery["pack_energy_cap"] = energy_cap
             user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
@@ -675,6 +631,7 @@ def run_simulation(
     # Connect to backend here - pass user_input.get_config_json()
     print('Simulation start...')
     print(type(user_input_dict))
+    print(user_input_dict)
     simulate(user_input_dict)
     print("Simulation complete!")
     return {'grid-row': '2'}
@@ -726,6 +683,24 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
 
     print("Run Battery System Identification done!")
     return {'grid-row': '2'}
+
+
+def aggregate_user_battery_inputs(input_1, input_2, input_3, input_4, input_5):
+    input_list = []
+    if input_1:
+        input_list.append(float(input_1))
+    if input_2:
+        input_list.append(float(input_2))
+    if input_3:
+        input_list.append(float(input_3))
+    if input_4:
+        input_list.append(float(input_4))
+    if input_5:
+        input_list.append(float(input_5))
+
+    return input_list
+
+
 
 
 def parse_contents_to_df(contents, filename):

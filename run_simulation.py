@@ -85,7 +85,7 @@ def simulate(user_inputs):
 
     path_prefix = os.getcwd()
     # Change below to name of the repo.
-    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis'
+    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
     path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
 
     # PRELOAD
@@ -113,11 +113,13 @@ def simulate(user_inputs):
     param_dict['starttime'] = f'{start_time}'
     param_dict['endtime'] = f'{end_time}'
 
+    print(charging_station_config)
     # Control user inputs for charging stations.
     if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
         raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
 
     # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
+    print(charging_station_config)
 
     if charging_station_config['num_dcfc_stalls_per_node']:
         param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
