@@ -1,10 +1,10 @@
 import sys
-
 sys.path.append('../charging_sim')
+
 import plotly.express as px
 import dash
 import pandas as pd
-from dash import dcc, html, ctx, Input, Output, State
+from dash import dcc, html, ctx, Input, Output, State, no_update
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
@@ -16,6 +16,7 @@ import base64
 import datetime
 import io
 import analysis.load_post_opt_costs as post_opt_module
+import time
 
 #   Create Dash app
 app = dash.Dash(__name__)
@@ -151,36 +152,53 @@ app.layout = html.Div([
     ]),
 
     # Body
-    html.Div(className="background", children=[
-        html.Div(className="content", children=[
-            html.Div(
-                className="content-container",
-                style={'margin-top': '100px'},
-                children=[
-                    html.Div([
-                        dcc.RadioItems(
-                            id="category-radio",
-                            value="INP",
-                            options=[
-                                {"label": "Input", "value": "INP"},
-                                {"label": "Tutorial", "value": "TUT"},
-                                {"label": "Output", "value": "OUT"}],
-                            inline=True,
-                        ),
-                        html.Br(),
-                    ]),
+    html.Div(className="background",
+             children=[
+                 html.Div(className="content",
+                          children=[
+                              dmc.LoadingOverlay(
+                                  html.Div(
+                                      className="content-container",
+                                      id="main-container",
+                                      style={'margin-top': '100px'},
+                                      children=[
+                                          html.Div([
+                                              dcc.RadioItems(
+                                                  id="category-radio",
+                                                  value="INP",
+                                                  options=[
+                                                      {"label": "Input", "value": "INP"},
+                                                      {"label": "Tutorial", "value": "TUT"},
+                                                      {"label": "Output", "value": "OUT"}],
+                                                  inline=True,
+                                              ),
+                                              html.Br(),
+                                          ]),
 
-                    create_home_page(),
-                    create_tutorial_page(),
-                    create_output_page(),
-                ],
-            ),
-        ]),
-    ]),
+                                          create_home_page(),
+                                          create_tutorial_page(),
+                                          create_output_page(),
+                                      ],
+                                  ),
+                                  loaderProps={"variant": "oval", "color": "red", "size": "xl"},
+                              ),
+                          ]),
+             ]),
 ])
 
 
 # Callbacks
+
+# Loading state TODO end when function is done
+@app.callback(
+    Output("main-container", "children"),
+    Input("run-simulation-button", "n_clicks"),
+    prevent_initial_call=True,
+)
+def func(n_clicks):
+    time.sleep(2)
+    return no_update
+
 # Radio buttons change value
 @app.callback(
     Output(component_id="home-page", component_property="style"),
