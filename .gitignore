@@ -22,6 +22,7 @@ dash-fe/input/sim_run_settings.json
 
 **results
 source
+analysis/results/*
 charging_sim/__pycache__
 **.Identifier
 battery_data
