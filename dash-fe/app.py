@@ -643,6 +643,11 @@ def run_simulation(
     prevent_initial_call=True
 )
 def run_battery_system_identification(run_battery_system_n_clicks):
+    """
+    Run battery simulation identification module
+
+    :return: Battery System identifiaction data file settings
+    """
     # TODO: Include option to choose number of populations for the GA algorithm.
     print("batt sys trigger")
     from batt_sys_identification.battery_identification import BatteryParams
@@ -686,6 +691,11 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
 
 
 def aggregate_user_battery_inputs(input_1, input_2, input_3, input_4, input_5):
+    """
+    Aggregate battery inputs from front end
+
+    :return: list of inputs as floats
+    """
     input_list = []
     if input_1:
         input_list.append(float(input_1))
