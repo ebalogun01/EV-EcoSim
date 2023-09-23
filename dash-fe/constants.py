@@ -71,7 +71,7 @@ preset_config.load["data"] = None
 preset_config.elec_prices["data"] = None
 preset_config.elec_prices["month"] = 7
 
-PRESET2 = preset_config
+PRESET = preset_config
 
 MONTH_DROPDOWN = [
     {'label': 'January', 'value': '1'},

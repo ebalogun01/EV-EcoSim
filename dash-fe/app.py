@@ -12,7 +12,7 @@ from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
 from sim_run import SimRun
-from constants import PRESET2
+from constants import PRESET as preset
 from run_simulation import *
 import base64
 import datetime
@@ -228,18 +228,18 @@ def page_update(radio_value):
 
 # Preset selected
 @app.callback(
-    Output(component_id="preset2-button", component_property="className"),
+    Output(component_id="preset-button", component_property="className"),
     Output(component_id="custom-settings-button", component_property="className"),
     Output(component_id="custom-settings-accordion", component_property="value"),
-    Input(component_id="preset2-button", component_property="n_clicks"),
+    Input(component_id="preset-button", component_property="n_clicks"),
     Input(component_id="custom-settings-button", component_property="n_clicks"),
     Input(component_id="custom-settings-accordion", component_property="value"),
-    State(component_id="preset2-button", component_property="className"),
+    State(component_id="preset-button", component_property="className"),
     State(component_id="custom-settings-button", component_property="className"),
     prevent_initial_call=True
 )
-def select(preset2_n_clicks, custom_settings_n_clicks, custom_settings_value,
-           preset2_class, custom_settings_class):
+def select(preset_n_clicks, custom_settings_n_clicks, custom_settings_value,
+           preset_class, custom_settings_class):
     """
     Preset selection trigger
 
@@ -247,7 +247,7 @@ def select(preset2_n_clicks, custom_settings_n_clicks, custom_settings_value,
     """
     triggered_id = ctx.triggered_id
     print(triggered_id)
-    if triggered_id == "preset2-button":
+    if triggered_id == "preset-button":
         # Load preset
         return "setup-button selected tooltip", "setup-button tooltip", None
     elif triggered_id == "custom-settings-button":
@@ -258,7 +258,7 @@ def select(preset2_n_clicks, custom_settings_n_clicks, custom_settings_value,
         if custom_settings_value == "customSettings":
             return "setup-button tooltip", "setup-button selected tooltip", "customSettings"
         else:
-            return preset2_class, custom_settings_class, None
+            return preset_class, custom_settings_class, None
     else:
         return "setup-button tooltip", "setup-button tooltip", None
 
@@ -474,7 +474,7 @@ def power_factor_update(value):
 @app.callback(
     Output(component_id="run-simulation-button", component_property="style"),
     Input(component_id="run-simulation-button", component_property='n_clicks'),
-    State(component_id="preset2-button", component_property="className"),
+    State(component_id="preset-button", component_property="className"),
     State(component_id="custom-settings-button", component_property="className"),
     State(component_id="oneshot-button", component_property="className"),
     State(component_id="mpc-rhc-button", component_property="className"),
@@ -521,7 +521,7 @@ def power_factor_update(value):
 )
 def run_simulation(
         run_button_n_clicks,
-        preset2_class,
+        preset_class,
         custom_settings_class,
         oneshot_class,
         mpc_rhc_class,
@@ -570,11 +570,10 @@ def run_simulation(
 
     :return: Simulation settings JSON
     """
-    # either use preset_1, preset_2, or user_input depending on which is selected
-    # either use preset or user_input depending on which is selected #TODO rename preset2 to preset
+    # either use preset, or user_input depending on which is selected
     user_input = Config()
-    if preset2_class == "setup-button selected tooltip":
-        user_input = PRESET2
+    if preset_class == "setup-button selected tooltip":
+        user_input = preset
     elif custom_settings_class == "setup-button selected tooltip":
         if oneshot_class == "setup-button selected":
             user_input.sim_mode = "offline"
