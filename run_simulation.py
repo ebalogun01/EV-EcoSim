@@ -37,9 +37,9 @@ def create_results_folder():
 
     :return:
     """
-    if os.path.isdir('results'):
+    if os.path.isdir('../analysis/results'):
         return
-    os.mkdir('results')
+    os.mkdir('../analysis/results')
 
 def load_default_input():
     """

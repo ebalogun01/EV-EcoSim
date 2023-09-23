@@ -9,7 +9,7 @@
    250.0
   ],
   "pack_energy_cap": [
-   50.0
+   50000.0
   ],
   "pack_max_Ah": [
    250.0
@@ -47,7 +47,7 @@
  "sim_mode": "offline",
  "solar": {
   "data": null,
-  "efficiency": 1.0,
-  "rating": 1.0
+  "efficiency": 0.2,
+  "rating": 0.05
  }
 }
