@@ -16,9 +16,9 @@
 
 # Dash frontend whitelist
 !dash-fe/data/*
-
+# Dash generated files
 dash-fe/input/sim_run_settings.json
-
+dash-fe/results/*
 
 **results
 source
