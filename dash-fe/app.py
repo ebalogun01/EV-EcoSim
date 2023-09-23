@@ -604,10 +604,13 @@ def run_simulation(
                 transformer_capactiy)  # is this the correct property? Yes -Emmanuel
 
             # Decomposed this code block.
-            max_c_rate = aggregate_user_battery_inputs(max_c_rate_1, max_c_rate_2, max_c_rate_3, max_c_rate_4, max_c_rate_5)
-            energy_cap = aggregate_user_battery_inputs(energy_cap_1, energy_cap_2, energy_cap_3, energy_cap_4, energy_cap_5)
+            max_c_rate = aggregate_user_battery_inputs(max_c_rate_1, max_c_rate_2, max_c_rate_3, max_c_rate_4,
+                                                       max_c_rate_5)
+            energy_cap = aggregate_user_battery_inputs(energy_cap_1, energy_cap_2, energy_cap_3, energy_cap_4,
+                                                       energy_cap_5)
             max_ah = aggregate_user_battery_inputs(max_ah_1, max_ah_2, max_ah_3, max_ah_4, max_ah_5)
-            max_voltage = aggregate_user_battery_inputs(max_voltage_1, max_voltage_2, max_voltage_3, max_voltage_4, max_voltage_5)
+            max_voltage = aggregate_user_battery_inputs(max_voltage_1, max_voltage_2, max_voltage_3, max_voltage_4,
+                                                        max_voltage_5)
 
             user_input.battery["max_c_rate"] = max_c_rate
             user_input.battery["pack_energy_cap"] = energy_cap
@@ -679,9 +682,9 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
 
     except Exception as e:
         print(e)
-        #return html.Div(['No file uploaded for battery system identification!'])
+        # return html.Div(['No file uploaded for battery system identification!'])
 
-    print("Run Battery System Identification done!")
+    print("Run Post Sim Analysis done!")
     return {'grid-row': '2'}
 
 
@@ -699,8 +702,6 @@ def aggregate_user_battery_inputs(input_1, input_2, input_3, input_4, input_5):
         input_list.append(float(input_5))
 
     return input_list
-
-
 
 
 def parse_contents_to_df(contents, filename):
