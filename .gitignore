@@ -36,7 +36,9 @@ test_cases/**.txt/
 test_cases/**.csv/
 test_files
 mosek
-.idea
+
+# PyCharm IDE files
+.idea/*
 **.idea/
 
 
