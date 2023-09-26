@@ -9,7 +9,7 @@
    250.0
   ],
   "pack_energy_cap": [
-   50000.0
+   60000.0
   ],
   "pack_max_Ah": [
    250.0
@@ -48,6 +48,6 @@
  "solar": {
   "data": null,
   "efficiency": 0.2,
-  "rating": 0.05
+  "rating": 0.08
  }
 }
