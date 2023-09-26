@@ -123,8 +123,8 @@ def simulate(user_inputs):
 
     if charging_station_config['num_dcfc_stalls_per_node']:
         param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
-        if charging_station_config["dcfc_power_cap"]:
-            param_dict['dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_power_cap"]}_kW'
+        if charging_station_config["dcfc_charging_stall_base_rating"]:
+            param_dict['dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
 
     if charging_station_config['num_l2_stalls_per_node']:
         param_dict['num_l2_stalls_per_node'] = charging_station_config['num_l2_stalls_per_node']
