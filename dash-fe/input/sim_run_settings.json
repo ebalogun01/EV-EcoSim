@@ -1,25 +1,28 @@
 {
- "ambient_data": null,
+ "ambient_data": false,
  "battery": {
   "data": null,
   "max_c_rate": [
-   1.0
+   1,
+   2
   ],
   "pack_max_voltage": [
-   250.0
+   250,
+   400
   ],
   "pack_energy_cap": [
-   60000.0
+   50000.0,
+   100000.0
   ],
   "pack_max_Ah": [
-   250.0
+   250,
+   400
   ],
   "SOC_min": 0.2,
   "SOC_max": 0.9,
   "params_0_cycles": "/battery_data/params_OCV_corr_W8_1",
   "OCV_map_SOC": "/battery_data/SOC_corr_W8_1.csv",
-  "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv",
-  "power_factor": 1.0
+  "OCV_map_voltage": "/battery_data/OCV_corr_W8_1.csv"
  },
  "charging_station": {
   "power_factor": null,
@@ -31,7 +34,7 @@
   "num_l2_nodes": 0,
   "num_dcfc_stalls_per_node": 5,
   "num_l2_stalls_per_node": 0,
-  "commercial_building_trans": 75.0
+  "commercial_building_trans": 75
  },
  "elec_prices": {
   "data": null,
@@ -41,13 +44,13 @@
  "load": {
   "data": null
  },
- "month": 1,
+ "month": 7,
  "num_days": 30,
  "only_batt_sys": false,
  "sim_mode": "offline",
  "solar": {
   "data": null,
-  "efficiency": 0.2,
-  "rating": 0.08
+  "efficiency": null,
+  "rating": null
  }
 }

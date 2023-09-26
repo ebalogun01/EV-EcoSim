@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 sys.path.append('../charging_sim')
@@ -17,7 +18,7 @@ from run_simulation import *
 import base64
 import datetime
 import io
-# import analysis.load_post_opt_costs as post_opt_module
+from analysis import load_post_opt_costs as post_opt_module
 import time
 
 #   Create Dash app
@@ -678,16 +679,11 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
     :param run_post_opt_analysis_n_clicks:
     :return:
     """
-    from batt_sys_identification.battery_identification import BatteryParams
-    try:
-        battery_data = pd.read_csv('../batt_sys_identification/temp.csv')
-        module = BatteryParams(battery_data)
-        module.run_sys_identification()
+    # first check if the results folder exists
+    if not os.path.isdir('../analysis/results'):
+        raise FileNotFoundError('result/ folder does not exist, please run simulation first!')
 
-    except Exception as e:
-        print(e)
-        # return html.Div(['No file uploaded for battery system identification!'])
-
+    post_opt_module.run()   # Runs the post-optimization cost module.
     print("Run Post Sim Analysis done!")
     return {'grid-row': '2'}
 

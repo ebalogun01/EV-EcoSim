@@ -58,7 +58,7 @@ class CostEstimator:
         with open('scenario.json', "r") as f:
             scenario = json.load(f)
         result_dict = {}
-        capital_cost = self.battery_price_per_kWh / 1000 * scenario['pack_energy_cap']
+        capital_cost = self.battery_price_per_kWh / 1000 * scenario['battery']['pack_energy_cap']
         for root, dirs, files, in os.walk(".", topdown=True):
             for file in files:
                 path_lst = file.split("_")

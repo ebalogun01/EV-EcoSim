@@ -12,6 +12,7 @@ from cost_analysis import CostEstimator
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
+from charging_sim.utils import MONTHS_LIST
 
 
 # Load the user_input dict state.
@@ -21,7 +22,9 @@ with open(USR_INPUT_PATH, "r") as f:
     USR_INPUT_DICT = json.load(f)
 
 ENERGY_RATINGS = USR_INPUT_DICT['battery']['pack_energy_cap']
+# ENERGY_RATINGS = [ENERGY_RATINGS_WH[i]/1000 for i in range(len(ENERGY_RATINGS_WH))]
 MAX_C_RATES = USR_INPUT_DICT['battery']['max_c_rate']
+print(ENERGY_RATINGS, MAX_C_RATES)
 PLOT_FONT_SIZE = 16
 matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 
@@ -97,7 +100,7 @@ def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None,
             plt.savefig(f'{save_plots_folder}/batt_aging_{row[0]}kWh.png')
             plt.close()
 
-    plot_stacked_bar(elec_cost_dtable, batt_dtable, save_plots_folder, solar_costs=solar_cost_table)
+    plot_stacked_bar(elec_cost_dtable, batt_dtable, solar_costs=solar_cost_table, save_plot_path=save_plots_folder)
 
 
 def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""):
@@ -196,7 +199,7 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         solar_lcoe = 0.067
     main_dir = os.getcwd()
     data_table = pd.DataFrame(
-        {energy_rating / 10.00: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
+        {energy_rating / 1000: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
     data_table = data_table.set_index(pd.Index(MAX_C_RATES))
     # Now go through all files and update table results for both electricity cost and battery costs.
     battery_dtable = copy.deepcopy(data_table)
@@ -212,8 +215,8 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         os.chdir(resul_dir)
         with open('scenario.json', "r") as f:
             scenario = json.load(f)
-            c_rate = scenario['max_c_rate']
-            energy = scenario['pack_energy_cap'] / 1000
+            c_rate = scenario['battery']['max_c_rate']
+            energy = scenario['battery']['pack_energy_cap'] / 1000
         with open('postopt_cost_batt.json', "r") as f:
             batt_costs = json.load(f)
             batt_total_cost = batt_costs['battery_sim_0']['lcoe']
@@ -221,7 +224,6 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         with open('postopt_cost_charging.json', "r") as f:
             elec_costs = json.load(f)
             elec_total_cost = elec_costs['charging_station_sim_0']['cost_per_kWh']
-            print(elec_costs)
         avg_trans_lol = 0
         if trans:
             with open('postopt_trans_lol.json', "r") as f:
@@ -256,10 +258,13 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
 
 
 def run():
-    desired_month = USR_INPUT_DICT['month']
+    desired_month = MONTHS_LIST[USR_INPUT_DICT['month']-1]
+    print('Running analysis for month: ', desired_month)
     oneshot = True
     include_trans = False
     days = USR_INPUT_DICT['num_days']  # number of days
+    # Change directory to working directory for this file
+    os.chdir('../analysis')
     for i in range(0, len(ENERGY_RATINGS) * len(MAX_C_RATES)):
         if oneshot:
             result_dir = f'results/oneshot_{desired_month}{i}'
@@ -270,5 +275,5 @@ def run():
 
 
 # RUN THIS FILE
-if __name__ == '__main__':
-    run()
+# if __name__ == '__main__':
+#     run()
