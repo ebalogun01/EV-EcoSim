@@ -997,7 +997,7 @@ def create_home_page():
                         children=["Simulation setup"]
                     ),
                     html.Button(
-                        id="preset2-button",
+                        id="preset-button",
                         className='setup-button tooltip',
                         style={'grid-row': '2'},
                         children=[

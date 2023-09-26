@@ -26,15 +26,30 @@ preset_config.ambient_data = False
 preset_config.month = 7
 preset_config.num_days = 30
 
+# preset_config.solar = {
+#     "data": None,
+#     "efficiency": None,
+#     "rating": None
+# },
+# preset_config.battery = dict(data=None,
+#                              max_c_rate=[1, 2],
+#                              pack_max_voltage=[250, 400],
+#                              pack_energy_cap=[5e4, 10e4],
+#                              pack_max_Ah=[250, 400],
+#                              SOC_min=0.2,
+#                              SOC_max=0.9,
+#                              params_0_cycles="/battery_data/params_OCV_corr_W8_1",
+#                              OCV_map_SOC="/battery_data/SOC_corr_W8_1.csv",
+#                              OCV_map_voltage="/battery_data/OCV_corr_W8_1.csv"),
 preset_config.solar["data"] = None
-preset_config.solar["efficiency"] = None
-preset_config.solar["rating"] = None
+preset_config.solar["data"] = None
+preset_config.solar["data"] = None
 
 preset_config.battery["data"] = None
-preset_config.battery["max_c_rate"] = [1, 2],
-preset_config.battery["pack_max_voltage"] = [250, 400],
-preset_config.battery["pack_energy_cap"] = [int(5e4), int(10e4)],
-preset_config.battery["pack_max_Ah"] = [250, 400],
+preset_config.battery["max_c_rate"] = [1, 2]
+preset_config.battery["pack_max_voltage"] = [250, 400]
+preset_config.battery["pack_energy_cap"] = [5e4, 10e4]
+preset_config.battery["pack_max_Ah"] = [250, 400]
 preset_config.battery["SOC_min"] = 0.2
 preset_config.battery["SOC_max"] = 0.9
 preset_config.battery["params_0_cycles"] = "/battery_data/params_OCV_corr_W8_1"
@@ -56,7 +71,7 @@ preset_config.load["data"] = None
 preset_config.elec_prices["data"] = None
 preset_config.elec_prices["month"] = 7
 
-PRESET2 = preset_config
+PRESET = preset_config
 
 MONTH_DROPDOWN = [
     {'label': 'January', 'value': '1'},

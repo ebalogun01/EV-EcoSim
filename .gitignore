@@ -16,9 +16,9 @@
 
 # Dash frontend whitelist
 !dash-fe/data/*
-
+# Dash generated files
 dash-fe/input/sim_run_settings.json
-
+dash-fe/results/*
 
 **results
 source
@@ -36,7 +36,10 @@ test_cases/**.txt/
 test_cases/**.csv/
 test_files
 mosek
+
+# PyCharm IDE files
 .idea
+.idea/*
 **.idea/
 
 
