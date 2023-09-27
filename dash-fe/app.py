@@ -232,6 +232,8 @@ def page_update(radio_value):
     Output(component_id="preset-button", component_property="className"),
     Output(component_id="custom-settings-button", component_property="className"),
     Output(component_id="custom-settings-accordion", component_property="value"),
+    Output(component_id="run-simulation-button", component_property="className"),
+    Output(component_id="run-simulation-button", component_property="disabled"),
     Input(component_id="preset-button", component_property="n_clicks"),
     Input(component_id="custom-settings-button", component_property="n_clicks"),
     Input(component_id="custom-settings-accordion", component_property="value"),
@@ -250,18 +252,18 @@ def select(preset_n_clicks, custom_settings_n_clicks, custom_settings_value,
     print(triggered_id)
     if triggered_id == "preset-button":
         # Load preset
-        return "setup-button selected tooltip", "setup-button tooltip", None
+        return "setup-button selected tooltip", "setup-button tooltip", None, "action tooltip", False
     elif triggered_id == "custom-settings-button":
-        return "setup-button tooltip", "setup-button selected tooltip", "customSettings"
+        return "setup-button tooltip", "setup-button selected tooltip", "customSettings", "action tooltip", False
     elif triggered_id == "custom-settings-accordion":
         # Load custom settings
         print(custom_settings_value)
         if custom_settings_value == "customSettings":
-            return "setup-button tooltip", "setup-button selected tooltip", "customSettings"
+            return "setup-button tooltip", "setup-button selected tooltip", "customSettings", "action tooltip", False
         else:
-            return preset_class, custom_settings_class, None
+            return preset_class, custom_settings_class, None, "action tooltip", False
     else:
-        return "setup-button tooltip", "setup-button tooltip", None
+        return "setup-button tooltip", "setup-button tooltip", None,  "action disabled tooltip", True
 
 
 # Simulation mode selected
@@ -421,6 +423,7 @@ def price_upload(contents, name):
 @app.callback(
     Output(component_id="battery-data-file", component_property="children"),
     Output(component_id="run-battery-system-identification-button", component_property="className"),
+    Output(component_id="run-battery-system-identification-button", component_property="disabled"),
     Input(component_id="battery-data-upload", component_property="contents"),
     State(component_id="battery-data-upload", component_property="filename")
 )
@@ -433,9 +436,9 @@ def battery_upload(contents, name):
     if contents is not None:
         df = parse_contents_to_df(contents, name)
         df.to_csv('../batt_sys_identification/temp.csv', index=False)
-        return name, 'action tooltip'
+        return name, 'action tooltip', False
     else:
-        return "No file chosen", 'action disabled tooltip'
+        return "No file chosen", 'action disabled tooltip', True
 
 
 # Feeder population data uploaded

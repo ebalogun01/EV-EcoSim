@@ -1014,11 +1014,12 @@ def create_home_page():
                     ),
                     html.Button(
                         id='run-simulation-button',
-                        className='action tooltip',
+                        className='action disabled tooltip',
                         style={'grid-row': '2'},
                         children=[
                             "Run simulation",
-                        ]
+                        ],
+                        disabled=True
                     ),
                     html.Button(
                         id="run-post-opt-analysis-button",
