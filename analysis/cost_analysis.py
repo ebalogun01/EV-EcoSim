@@ -154,9 +154,9 @@ class CostEstimator:
                     soc = pd.read_csv(file)['SOC'].to_numpy()[1:]
                     soc_pred = pd.read_csv(file)['SOC_pred'].to_numpy()[1:]
                     self.plot_soc(soc, soc_pred, prefix=f'{file.split(".")[0]}_SOC',
-                                  labels=['true soc', 'pred soc', 'SoC'])
+                                  labels=['True SoC', 'Predicted SoC', 'SoC'])
                     self.plot_power(power, power_pred, prefix=f'{file.split(".")[0]}_power',
-                                    labels=['true power', 'pred power', 'power (kW)'])
+                                    labels=['True power', 'Predicted power', 'Power (kW)'])
 
         with open("postopt_cost_charging.json", 'w') as config_file_path:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
@@ -236,9 +236,10 @@ class CostEstimator:
 
         ax.plot(x_vals, soc_plot, color='tab:blue', label=labels[0])
         ax.plot(x_vals, soc_pred_plot, '--', color='tab:red', label=labels[1])
-        plt.xlabel('Hour of day')
+        plt.xlabel('Hour')
         plt.ylabel(labels[2])
-        plt.legend()
+        plt.legend(loc='upper left', prop={'size': 14})
+        plt.ylim([0.1, 1])
         fig.tight_layout()
         if prefix:
             plt.savefig(f'{prefix}_soc_plot.png')
@@ -271,9 +272,9 @@ class CostEstimator:
 
         ax.plot(x_vals, power_plot, color='tab:blue', label=labels[0])
         ax.plot(x_vals, power_pred_plot, '--', color='tab:red', label=labels[1])
-        plt.xlabel('Hour of day')
+        plt.xlabel('Hour')
         plt.ylabel(labels[2])
-        plt.legend()
+        plt.legend(loc='upper left', prop={'size': 14})
         fig.tight_layout()
         if prefix:
             plt.savefig(f'{prefix}_power_plot.png')

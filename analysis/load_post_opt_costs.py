@@ -121,6 +121,7 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
 
     fig, ax = plt.subplots()
     bottom = np.zeros(len(capacities))
+    Y_LIM = 0.4
 
     for name, cost in cost_component.items():
         if np.any(cost < 0) and name == 'Electricity':
@@ -135,12 +136,13 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
         plt.ylabel("LCOE ($/kWh)")
         plt.xlabel("Battery Energy Capacity (kWh)")
         ax.set_title('LCOE breakdown')
-        ax.legend(loc='upper right')
+        ax.legend(loc='upper center', ncol=len(list(cost_component.keys())), frameon=False, prop={'size': 14})
     else:
         plt.ylabel("Total expenditure ($)")
         plt.xlabel("Battery Energy Capacity (kWh)")
         ax.set_title('Cost breakdown')
-        ax.legend(loc='upper right')
+        ax.legend(loc='upper center', ncol=len(list(cost_component.keys())))
+    plt.ylim([0, Y_LIM])
     fig.tight_layout()
 
     if save_plot_path:
@@ -160,6 +162,7 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
         ax.set_title('Cost (system + elec)')
         plt.ylabel("Total expenditure ($)")
         plt.xlabel("Battery Energy Capacity (kWh)")
+    plt.ylim([0, Y_LIM])
     fig.tight_layout()
 
     if save_plot_path:
