@@ -196,6 +196,13 @@ app.layout = html.Div([
     prevent_initial_call=True,
 )
 def func(n_clicks):
+    """
+    This function causes a delay when the run simulation button is clicked before loading the results
+
+    :param n_clicks: the number of clicks of the Run simulation button (Unused)
+
+    :returns: dash.no_update to prevent main-container from updating
+    """
     time.sleep(2)
     return no_update
 
@@ -209,9 +216,11 @@ def func(n_clicks):
 )
 def page_update(radio_value):
     """
-    Updating page based on selected radio button (To be deprecated by pagination)
+    This function updates the visible page according to the radio buttons (To be deprecated by pagination)
 
-    :return: Page to be rendered
+    :param radio_value: The selected page
+
+    :return: Style objects for the pages to be rendered
     """
     # Debug option:
     if app.server.debug == True:
@@ -244,9 +253,16 @@ def page_update(radio_value):
 def select(preset_n_clicks, custom_settings_n_clicks, custom_settings_value,
            preset_class, custom_settings_class):
     """
-    Preset selection trigger
+    This function updates the preset, custom settings, and run simulation buttons visually when either the preset or custom settings is
+    selected. Can be triggered by the preset button, the custom settings button, or the custom settings accordion.
 
-    :return: Preset
+    :param preset_n_clicks: Number of clicks of the preset button (Unused)
+    :param custom_settings_n_clicks: Number of clicks of the custom settings button (Unused)
+    :param custom_settings_value: Value of the custom settings accordion indicating whether it was opened or closed
+    :param preset_class: The class of the preset button before the trigger
+    :param custom_settings_class: The class of the custom settings button before the trigger
+
+    :return: Updated classes for the buttons (selected/not selected) and value for the accordion element
     """
     triggered_id = ctx.triggered_id
     print(triggered_id)
@@ -279,11 +295,15 @@ def select(preset_n_clicks, custom_settings_n_clicks, custom_settings_value,
     Input(component_id="battery-system-button", component_property="n_clicks"),
     prevent_initial_call=True
 )
-def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
+def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_system_n_clicks):
     """
-    Sim mode selection trigger
+    Updates the classes of the simulation mode buttons when a simulation mode is selected
 
-    :return: Sim mode
+    :param oneshot_n_clicks: Number of clicks of the oneshot button (unused)
+    :param mpc_rhc_n_clicks: Number of clicks of the MPC/RHC button (unused)
+    :param battery_system_n_clicks: Number of clicks of the battery system identification button (unused)
+
+    :return: Updated classes for the buttons (selected/not selected) and visibility for their corresponding input fields
     """
     triggered_id = ctx.triggered_id
     print(triggered_id)
@@ -355,9 +375,12 @@ def select(oneshot_n_clicks, mpc_rhc_n_clicks, battery_systes_n_clicks):
 )
 def temperature_upload(contents, name):
     """
-    Temperature upload trigger
+    Updates the temperature data field with the uploaded file name
 
-    :return: File for temperature
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         return name
@@ -373,9 +396,12 @@ def temperature_upload(contents, name):
 )
 def solar_upload(contents, name):
     """
-    Solar upload trigger
+    Updates the solar data field with the uploaded file name
 
-    :return: File for solar
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         return name
@@ -391,9 +417,12 @@ def solar_upload(contents, name):
 )
 def load_upload(contents, name):
     """
-    Load upload trigger
+    Updates the load data field with the uploaded file name
 
-    :return: File for load
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         return name
@@ -409,9 +438,12 @@ def load_upload(contents, name):
 )
 def price_upload(contents, name):
     """
-    Price upload trigger
+    Updates the price data field with the uploaded file name
 
-    :return: File for price
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         return name
@@ -429,9 +461,12 @@ def price_upload(contents, name):
 )
 def battery_upload(contents, name):
     """
-    Battery upload trigger
+    Updates the battery data field with the uploaded file name
 
-    :return: File for battery
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         df = parse_contents_to_df(contents, name)
@@ -449,9 +484,12 @@ def battery_upload(contents, name):
 )
 def feeder_population_upload(contents, name):
     """
-    Feeder popúulation upload trigger
+    Updates the feeder population data field with the uploaded file name
 
-    :return: File for feeder popúulation
+    :param contents: Uploaded file contents
+    :param name: Name of uploaded file
+
+    :return: Uploaded file name if something was uploaded
     """
     if contents is not None:
         # todo: save the feeder_pop file in the required folder
@@ -467,9 +505,11 @@ def feeder_population_upload(contents, name):
 )
 def power_factor_update(value):
     """
-    Power factor trigger
+    Updates the power factor label when the slider is adjusted
 
-    :return: Power factor
+    :param value: Slider value
+
+    :return: The value to populate the label with
     """
     return value
 
@@ -570,9 +610,9 @@ def run_simulation(
         feeder_population_filename
 ):
     """
-    Simulation settings collection trigger
+    Collects all the simulation settings from the settings inputs and sends them to the backend to run the simulation.
 
-    :return: Simulation settings JSON
+    :return: Style object for the run simulation button (Only used because Dash requires that callbacks have an output)
     """
     # either use preset, or user_input depending on which is selected
     user_input = Config()
@@ -651,6 +691,8 @@ def run_simulation(
 def run_battery_system_identification(run_battery_system_n_clicks):
     """
     Run battery simulation identification module
+
+    :param run_battery_system_n_clicks: Number of clicks on the run battery system identification button (unused)
 
     :return: Battery System identifiaction data file settings
     """
@@ -748,6 +790,14 @@ def parse_contents_to_df(contents, filename):
     Input(component_id='max-voltage-input1', component_property='value'),
 )
 def populate_max_ah_input1(energy_cap, voltage):
+    """
+        Updates the value of the max Ah input depending on the first energy capacity and voltage
+
+        :param energy_cap: The energy capacity as a string
+        :param voltage: The voltage as a string
+
+        :return: The max Ah value
+    """
     if energy_cap == '' or voltage == '':
         return ''
     else:
@@ -759,6 +809,14 @@ def populate_max_ah_input1(energy_cap, voltage):
     Input(component_id='max-voltage-input2', component_property='value'),
 )
 def populate_max_ah_input2(energy_cap, voltage):
+    """
+    Updates the value of the max Ah input depending on the second energy capacity and voltage
+
+    :param energy_cap: The energy capacity as a string
+    :param voltage: The voltage as a string
+
+    :return: The max Ah value
+    """
     if energy_cap == '' or voltage == '':
         return ''
     else:
@@ -770,6 +828,14 @@ def populate_max_ah_input2(energy_cap, voltage):
     Input(component_id='max-voltage-input3', component_property='value'),
 )
 def populate_max_ah_input3(energy_cap, voltage):
+    """
+    Updates the value of the max Ah input depending on the third energy capacity and voltage
+
+    :param energy_cap: The energy capacity as a string
+    :param voltage: The voltage as a string
+
+    :return: The max Ah value
+    """
     if energy_cap == '' or voltage == '':
         return ''
     else:
@@ -781,6 +847,14 @@ def populate_max_ah_input3(energy_cap, voltage):
     Input(component_id='max-voltage-input4', component_property='value'),
 )
 def populate_max_ah_input4(energy_cap, voltage):
+    """
+    Updates the value of the max Ah input depending on the fourth energy capacity and voltage
+
+    :param energy_cap: The energy capacity as a string
+    :param voltage: The voltage as a string
+
+    :return: The max Ah value
+    """
     if energy_cap == '' or voltage == '':
         return ''
     else:
@@ -792,6 +866,14 @@ def populate_max_ah_input4(energy_cap, voltage):
     Input(component_id='max-voltage-input5', component_property='value'),
 )
 def populate_max_ah_input5(energy_cap, voltage):
+    """
+    Updates the value of the max Ah input depending on the fifth energy capacity and voltage
+
+    :param energy_cap: The energy capacity as a string
+    :param voltage: The voltage as a string
+
+    :return: The max Ah value
+    """
     if energy_cap == '' or voltage == '':
         return ''
     else:
