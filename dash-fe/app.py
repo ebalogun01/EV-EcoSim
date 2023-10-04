@@ -741,6 +741,61 @@ def parse_contents_to_df(contents, filename):
         ])
     return df
 
+# Max Voltage-Max Ah dependency for all inputs
+@app.callback(
+    Output(component_id='max-ah-input1', component_property='value'),
+    Input(component_id='energy-cap-input1', component_property='value'),
+    Input(component_id='max-voltage-input1', component_property='value'),
+)
+def populate_max_ah_input1(energy_cap, voltage):
+    if energy_cap == '' or voltage == '':
+        return ''
+    else:
+        return float(energy_cap) / float(voltage)
+    
+@app.callback(
+    Output(component_id='max-ah-input2', component_property='value'),
+    Input(component_id='energy-cap-input2', component_property='value'),
+    Input(component_id='max-voltage-input2', component_property='value'),
+)
+def populate_max_ah_input2(energy_cap, voltage):
+    if energy_cap == '' or voltage == '':
+        return ''
+    else:
+        return float(energy_cap) / float(voltage)
+    
+@app.callback(
+    Output(component_id='max-ah-input3', component_property='value'),
+    Input(component_id='energy-cap-input3', component_property='value'),
+    Input(component_id='max-voltage-input3', component_property='value'),
+)
+def populate_max_ah_input3(energy_cap, voltage):
+    if energy_cap == '' or voltage == '':
+        return ''
+    else:
+        return float(energy_cap) / float(voltage)
+
+@app.callback(
+    Output(component_id='max-ah-input4', component_property='value'),
+    Input(component_id='energy-cap-input4', component_property='value'),
+    Input(component_id='max-voltage-input4', component_property='value'),
+)
+def populate_max_ah_input4(energy_cap, voltage):
+    if energy_cap == '' or voltage == '':
+        return ''
+    else:
+        return float(energy_cap) / float(voltage)
+    
+@app.callback(
+    Output(component_id='max-ah-input5', component_property='value'),
+    Input(component_id='energy-cap-input5', component_property='value'),
+    Input(component_id='max-voltage-input5', component_property='value'),
+)
+def populate_max_ah_input5(energy_cap, voltage):
+    if energy_cap == '' or voltage == '':
+        return ''
+    else:
+        return float(energy_cap) / float(voltage)
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8050)

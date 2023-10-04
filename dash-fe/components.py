@@ -733,6 +733,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input3',
@@ -741,6 +742,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input4',
@@ -749,6 +751,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input5',
@@ -757,6 +760,7 @@ def create_settings_container():
                                             'margin-left': '8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                 ]
                             )
@@ -783,7 +787,8 @@ def create_settings_container():
                                             'margin-right': '8px',
                                             'width': '100%',
                                         },
-                                        value='250.0',
+                                        disabled=True,
+                                        value='',
                                     ),
                                     dcc.Input(
                                         id='max-ah-input2',
@@ -792,6 +797,8 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        disabled=True,
+                                        value='',
                                     ),
                                     dcc.Input(
                                         id='max-ah-input3',
@@ -800,6 +807,8 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        disabled=True,
+                                        value='',
                                     ),
                                     dcc.Input(
                                         id='max-ah-input4',
@@ -808,6 +817,8 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        disabled=True,
+                                        value='',
                                     ),
                                     dcc.Input(
                                         id='max-ah-input5',
@@ -816,6 +827,8 @@ def create_settings_container():
                                             'margin-left': '8px',
                                             'width': '100%',
                                         },
+                                        disabled=True,
+                                        value='',
                                     ),
                                 ]
                             )
@@ -851,6 +864,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input3',
@@ -859,6 +873,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input4',
@@ -867,6 +882,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input5',
@@ -875,6 +891,7 @@ def create_settings_container():
                                             'margin-left': '8px',
                                             'width': '100%',
                                         },
+                                        value = ''
                                     ),
                                 ]
                             )
