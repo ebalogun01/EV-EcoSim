@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d563738"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -28,7 +28,7 @@
 
           
           
-          <a href="../../index.html" class="icon icon-home">
+          <a href="../../contents.html" class="icon icon-home">
             EV-Ecosim
           </a>
 <div role="search">
@@ -39,7 +39,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
@@ -51,14 +51,14 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">EV-Ecosim</a>
+          <a href="../../contents.html">EV-Ecosim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
       <li class="breadcrumb-item active">batt_sys_identification.battery_identification</li>
       <li class="wy-breadcrumbs-aside">
@@ -83,9 +83,7 @@
 <span class="kn">import</span> <span class="nn">cvxpy</span> <span class="k">as</span> <span class="nn">cp</span>
 
 
-<div class="viewcode-block" id="BatteryParams">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams">[docs]</a>
-<span class="k">class</span> <span class="nc">BatteryParams</span><span class="p">:</span>
+<div class="viewcode-block" id="BatteryParams"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams">[docs]</a><span class="k">class</span> <span class="nc">BatteryParams</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Battery system identification class with open circuit voltage correction scheme.</span>
 <span class="sd">    This class takes in dataframe or csv with some given fields during instantiation.\n</span>
@@ -216,9 +214,7 @@
         <span class="n">gene_space_range</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;low&#39;</span><span class="p">:</span> <span class="n">low</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">:</span> <span class="n">high</span><span class="p">}</span> <span class="k">for</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lb2</span><span class="p">,</span> <span class="n">ub2</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">gene_space_range</span>
 
-<div class="viewcode-block" id="BatteryParams.ga">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.ga">[docs]</a>
-    <span class="k">def</span> <span class="nf">ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_parents_mating</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_genes</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">crossover_type</span><span class="o">=</span><span class="s2">&quot;single_point&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="BatteryParams.ga"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.ga">[docs]</a>    <span class="k">def</span> <span class="nf">ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_parents_mating</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_genes</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">crossover_type</span><span class="o">=</span><span class="s2">&quot;single_point&quot;</span><span class="p">,</span>
            <span class="n">mutation_type</span><span class="o">=</span><span class="s2">&quot;adaptive&quot;</span><span class="p">,</span> <span class="n">parent_selection_type</span><span class="o">=</span><span class="s2">&quot;sss&quot;</span><span class="p">,</span> <span class="n">mutation_percent_genes</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
            <span class="n">mutation_prob</span><span class="o">=</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">crossover_prob</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -282,10 +278,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitness value of the best solution = </span><span class="si">{</span><span class="n">solution_fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">solution</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.run_sys_identification">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_sys_identification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">diagn</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_initial_pop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quadratic_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.run_sys_identification"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification">[docs]</a>    <span class="k">def</span> <span class="nf">run_sys_identification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">diagn</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_initial_pop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quadratic_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the GA for system identification.</span>
 
@@ -303,10 +296,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ga</span><span class="p">()</span>     <span class="c1"># New params.</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;battery_params_</span><span class="si">{</span><span class="n">cell_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">diagn</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.run_ocv_correction">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_ocv_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_quadratic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cell_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">diagn</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.run_ocv_correction"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction">[docs]</a>    <span class="k">def</span> <span class="nf">run_ocv_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_quadratic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cell_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">diagn</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute. The open circuit</span>
 <span class="sd">        voltage correction scheme can be quadratic or linear. The quadratic scheme was used in the original paper.</span>
@@ -354,7 +344,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ocv_corr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocv</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;input_data_with_ocv_corr_voltage.csv&#39;</span><span class="p">)</span>    <span class="c1"># adds corrected ocv as field and writes the input data</span></div>
 
-
     <span class="k">def</span> <span class="nf">_validate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method.</span>
@@ -365,9 +354,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="BatteryParams.plot_correction_scheme_comparison">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_correction_scheme_comparison">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_correction_scheme_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">36000</span><span class="p">),</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mf">2.75</span><span class="p">,</span> <span class="mf">3.85</span><span class="p">)):</span>
+<div class="viewcode-block" id="BatteryParams.plot_correction_scheme_comparison"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_correction_scheme_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_correction_scheme_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">36000</span><span class="p">),</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mf">2.75</span><span class="p">,</span> <span class="mf">3.85</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a plot of OCV corrected model and non-OCV corrected model.</span>
 
@@ -388,10 +375,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;model_comparison_ocv_correction_scheme.png&#39;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.get_uncorrected_voltages">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_uncorrected_voltages">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_uncorrected_voltages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.get_uncorrected_voltages"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_uncorrected_voltages">[docs]</a>    <span class="k">def</span> <span class="nf">get_uncorrected_voltages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the vector of uncorrected voltages from ECM model response.</span>
 
@@ -416,10 +400,7 @@
         <span class="n">V_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocv_no_corr</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_t</span><span class="p">,</span> <span class="n">Ro</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_R1</span><span class="p">,</span> <span class="n">R1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_R2</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">V_t</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.get_corrected_voltages">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_corrected_voltages">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_corrected_voltages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.get_corrected_voltages"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_corrected_voltages">[docs]</a>    <span class="k">def</span> <span class="nf">get_corrected_voltages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the voltage response with corrected open circuit voltage.</span>
 
@@ -445,10 +426,7 @@
         <span class="n">V_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocv</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_t</span><span class="p">,</span> <span class="n">Ro</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_R1</span><span class="p">,</span> <span class="n">R1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_R2</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">V_t</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.get_Ro">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_Ro">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_Ro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.get_Ro"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_Ro">[docs]</a>    <span class="k">def</span> <span class="nf">get_Ro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the high frequency (Ro) resistance of the battery.</span>
 
@@ -459,10 +437,7 @@
         <span class="n">C_Ro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">B_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">C_Ro</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">soc</span><span class="p">)</span> <span class="o">+</span> <span class="n">A_Ro</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">soc</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.plot_Ro">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_Ro">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_Ro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.plot_Ro"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.plot_Ro">[docs]</a>    <span class="k">def</span> <span class="nf">plot_Ro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the high frequency resistance (Ro) of the battery.</span>
 
@@ -476,22 +451,16 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Ro (Resistance)&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="BatteryParams.simulate_response">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.simulate_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">simulate_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.simulate_response"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.simulate_response">[docs]</a>    <span class="k">def</span> <span class="nf">simulate_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates the response of the ECM model. Not complete yet.</span>
 
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uncorrected_voltages</span><span class="p">()</span></div>
-
         <span class="c1"># todo: complete later</span>
 
-<div class="viewcode-block" id="BatteryParams.run_pre_checks">
-<a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_pre_checks">[docs]</a>
-    <span class="k">def</span> <span class="nf">run_pre_checks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BatteryParams.run_pre_checks"><a class="viewcode-back" href="../../batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_pre_checks">[docs]</a>    <span class="k">def</span> <span class="nf">run_pre_checks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs pre-checks on input values to ensure they are all of desired lengths. This is run at the beginning to</span>
 <span class="sd">        ensure no errors in data length.</span>
@@ -499,7 +468,6 @@
 <span class="sd">        :return: None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_data_len</span><span class="p">()</span></div>
-
 
     <span class="k">def</span> <span class="nf">_estimate_soc_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -509,7 +477,6 @@
 <span class="sd">        :return: Error message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method has not been implemented yet!&quot;</span><span class="p">)</span></div>
-
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
