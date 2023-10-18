@@ -1,44 +1,39 @@
 # EV-Ecosim platform
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations. 
-Paper: https://doi.org/10.36227/techrxiv.23596725.v2
-
-[//]: # (<img src="doc_images/sim_control_diagram.png">)
-
-![sim_frame.png](doc_images%2Fsim_frame.png)
-
-[//]: # (<img src="doc_images/sim_frame.png" alt="EV-Ecosim Framework Description" width="3000" height="400" title="EV-Ecosim Framework Description">)
-
-## Authors
-Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
+[Link to preprint](https://doi.org/10.36227/techrxiv.23596725.v2)
 
 
-## Requirements
+<img src="doc_images/sim_frame.png">
 
-GiSMo SLAC GridLAB-D installation (master branch): https://github.com/arras-energy/gridlabd. 
-This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC 
-GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
+### Author
+Emmanuel Balogun: [ebalogun@stanford.edu](ebalogun@stanford.edu)
 
-## Folder descriptions
 
-### ambient_data
+### Requirements
+
+HiPAS GridLAB-D installation (master branch): [GridLAB-D](https://github.com/arras-energy/gridlabd). 
+This GridLAB-D version is required for the python co-simulation functionality with the power systems network. 
+Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
+
+### Folder descriptions
+The contents of each folder within the repository are described below.
+
+#### ambient_data
 
 Hosts ambient temperature data for capturing the effects of environmental conditions on subsystems, such as battery, 
 transformers, charging stations.
 
 
-### base_load_data
+#### base_load_data
 
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
 proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
-case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. ``
+case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation.
 
-<img src="doc_images/baseload_data_proto.png" width="800" alt="Base load data prototype.">
+<img src="doc_images/baseload_data_proto.png" width="500" alt="Base load data prototype.">
 
-[//]: # (![baseload_data_proto.png]&#40;doc_images%2Fbaseload_data_proto.png&#41;)
-
-
-### batt_sys_identification
+#### batt_sys_identification
 Battery system identification module. Hosts the class for generating battery system identification parameters
 from experimental data. This module leverages a genetic algorithm to optimize the battery model parameters. 
 The battery model is a 2nd order RC Equivalent circuit model (ECM). One can this module to generate custom NMC
@@ -46,7 +41,14 @@ battery parameters by uploading experimental data to the `batt_sys_identificatio
 The module will generate a `.csv` file with the battery parameters in the `batt_sys_identification/params` folder.
 The data prototype is shown below. Note that column fields are case-sensitive.
 
-![batt_sys_data_proto.png](doc_images%2Fbatt_sys_data_proto.png)
+<img src="doc_images/batt_sys_data_proto.png" width="500" alt="Battery data proto">
+
+
+<div style="text-align: center">
+  <img src="doc_images/ECM.png" width="400" alt="Battery ECM">
+  <figcaption>Equivalent circuit model (ECM) for battery system identification</figcaption>
+</div>
+
 
 The module will save a new `.csv` file with an additional field for the corrected open circuit voltage (OCV) values;
 this field (column) will be labelled `ocv_corr` within the new battery data csv, including the existing columns as shown
@@ -55,28 +57,29 @@ in the data prototype above.
 Once the battery parameters are generated, they can be used in the `battery_data` folder and `configs/battery.json` can 
 be modified so the model runs using the new custom parameters.
 
-### charging_sim
+#### charging_sim
 
-This contains the `configs` folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:
-##### `battery.py` - Battery cell module. 
-##### `batterypack.py` - Battery pack module.
-##### `batteryAgingSim.py` - Battery aging module.
-##### `controller.py` - Controller module.
-##### `chargingStation.py` - Charging station module.
-##### `electricityPrices.py` - Electricity prices module. 
-##### `optimization.py` - Optimization module.
-##### `orchestrator.py` - Simulation orchestrator module.
-##### `solar.py` - Solar PV module.
-##### `utils.py` - Hosts utility functions used by some modules.
-##### `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
+This contains the `configs` folder which includes the configuration files for all the relevant modules, such as battery,
+battery aging, solar modules, etc. It encompasses the implementation of the physical modules, including:
+ * `battery.py` - Battery cell module.
+ * `batterypack.py` - Battery pack module.
+ * `batteryAgingSim.py` - Battery aging module.
+ * `controller.py` - Controller module.
+ * `chargingStation.py` - Charging station module.
+ * `electricityPrices.py` - Electricity prices module.
+ * `optimization.py` - Optimization module.
+ * `orchestrator.py` - Simulation orchestrator module.
+ * `solar.py` - Solar PV module.
+ * `utils.py` - Hosts utility functions used by some modules.
+ * `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
 
 
-### DLMODELS
+#### DLMODELS
 
 This includes legacy load forecasts models developed (not needed).
 
 
-### elec_rates
+#### elec_rates
 
 Includes .csv files for electricity Time-of-use (TOU) rates. The input data prototype for electricity rates
 is shown below. User must upload a normal full-year sized data (for 365 days) to avoid
@@ -89,13 +92,13 @@ prices during optimization and simulation. The data should be one full year of T
 The `electricityPrices.py` module can also help with downscaling the data to 15 minute resolution if the data is at a
 much coarser resolution. The module will save the downscaled data in the `elec_rates` folder.
 
-### feeders
+#### feeders
 Library of IEEE test feeders and PNNL taxonomy feeders for distribution systems in the GridLAB-D `.glm` format.
 IEEE feeders have spot loads specified at primary distribution level. PNNL taxonomy feeders have spot loads specified at
 primary or secondary distribution level.
 
 
-### feeder_population
+#### feeder_population
 Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data. 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
 `feeder_population/config.txt`. This module uses the 
@@ -103,22 +106,23 @@ Requires residential load data not included in repo (limited access).
 
 
 
-### solar_data
+#### solar_data
 Includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
 data for solar irradiance is from the National Solar Radiation Database (NSRDB) for the San Francisco Bay Area.
 The data prototype is from the National Renewable Energy Laboratory (NREL) and is shown below. Note that column fields
 are case-sensitive.
 
-![solar_data_proto.png](doc_images%2Fsolar_data_proto.png)
+<img src="doc_images/solar_data_proto.png">
 
 Month labels are indexed from 1 to 12, inclusive; 1 - January, 12 - December. The original data is in hourly resolution.
 The *EV-Ecosim* data prototype is in 15 minute intervals by default, with irradiance oversampled 4 times from hourly 
 dataset. The GHI represents the "Global Horizontal Irradiance" in W/m^2, which is the total amount of shortwave radiation
 received from above by a surface horizontal to the ground. 
 
-### test_cases
+#### test_cases
+This folder contains the test cases for the co-simulation platform. The test cases are organized into folders based on
+the type of simulation. The test cases are described below.
 
-#### Co-simulation cases.
  `base_case`- Reads voltage from GridLAB-D and writes power injections at each timestep (no EV charging or DER).
 
 `rlsf` - base_case plus implements a recursive least squares filter to estimate network model online (not used)
@@ -129,7 +133,7 @@ received from above by a surface horizontal to the ground.
 
 
 
-### analysis
+#### analysis
 
 Scripts for plotting and analysis of co-simulation results. Includes post optimization and simulation cost 
 calculation modules and voltage impacts on the distribution grid.

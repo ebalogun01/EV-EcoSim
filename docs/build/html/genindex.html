@@ -10,11 +10,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -28,7 +28,7 @@
 
           
           
-          <a href="index.html" class="icon icon-home">
+          <a href="contents.html" class="icon icon-home">
             EV-Ecosim
           </a>
 <div role="search">
@@ -39,9 +39,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="Introduction/welcome.html">Introduction</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Packages</a></li>
 </ul>
 
@@ -51,14 +56,14 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">EV-Ecosim</a>
+          <a href="contents.html">EV-Ecosim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Index</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -76,10 +81,8 @@
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
- | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
- | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -89,7 +92,6 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
- | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -131,34 +133,14 @@
         <li><a href="batt_sys_identification.html#module-batt_sys_identification.battery_identification">module</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery">Battery (class in charging_sim.battery)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery">(class in charging_sim.batterypack)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.battery_setup">battery_setup() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.battery_setup">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.battery_setup_2">battery_setup_2() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.battery_setup_2">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.battery_type">battery_type (charging_sim.batterypack.Battery attribute)</a>
-</li>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging">BatteryAging (class in charging_sim.batteryAgingSim)</a>
 </li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams">BatteryParams (class in batt_sys_identification.battery_identification)</a>
 </li>
       <li><a href="charging_sim.html#charging_sim.optimization.Optimization.build_battery_cost">build_battery_cost() (charging_sim.optimization.Optimization method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.utils.build_cost_PGE_BEV2S">build_cost_PGE_BEV2S() (in module charging_sim.utils)</a>
 </li>
       <li><a href="charging_sim.html#charging_sim.utils.build_electricity_cost">build_electricity_cost() (in module charging_sim.utils)</a>
@@ -193,24 +175,10 @@
 </li>
       </ul></li>
       <li>
-    charging_sim.battery
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.battery">module</a>
-</li>
-      </ul></li>
-      <li>
     charging_sim.batteryAgingSim
 
       <ul>
         <li><a href="charging_sim.html#module-charging_sim.batteryAgingSim">module</a>
-</li>
-      </ul></li>
-      <li>
-    charging_sim.batterypack
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.batterypack">module</a>
 </li>
       </ul></li>
       <li>
@@ -220,20 +188,8 @@
         <li><a href="charging_sim.html#module-charging_sim.capacitor">module</a>
 </li>
       </ul></li>
-      <li>
-    charging_sim.chargingStation
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.chargingStation">module</a>
-</li>
-      </ul></li>
-      <li>
-    charging_sim.controller
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.controller">module</a>
-</li>
-      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     charging_sim.electricityPrices
 
@@ -241,27 +197,11 @@
         <li><a href="charging_sim.html#module-charging_sim.electricityPrices">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     charging_sim.optimization
 
       <ul>
         <li><a href="charging_sim.html#module-charging_sim.optimization">module</a>
-</li>
-      </ul></li>
-      <li>
-    charging_sim.orchestrator
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.orchestrator">module</a>
-</li>
-      </ul></li>
-      <li>
-    charging_sim.simulate
-
-      <ul>
-        <li><a href="charging_sim.html#module-charging_sim.simulate">module</a>
 </li>
       </ul></li>
       <li>
@@ -278,29 +218,7 @@
         <li><a href="charging_sim.html#module-charging_sim.utils">module</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim">ChargingSim (class in charging_sim.orchestrator)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation">ChargingStation (class in charging_sim.chargingStation)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC.compute_control">compute_control() (charging_sim.controller.MPC method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.controller.Oneshot.compute_control">(charging_sim.controller.Oneshot method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.config">config (charging_sim.batterypack.Battery attribute)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.controller">controller (charging_sim.batterypack.Battery attribute)</a>
-</li>
       <li><a href="analysis.html#analysis.cost_analysis.CostEstimator">CostEstimator (class in analysis.cost_analysis)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.create_battery_object">create_battery_object() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations">create_charging_stations() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.create_charging_stations_oneshot">create_charging_stations_oneshot() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.create_solar_object">create_solar_object() (charging_sim.orchestrator.ChargingSim method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -312,34 +230,6 @@
 
       <ul>
         <li><a href="charging_sim.html#charging_sim.solar.Solar.downscale">(charging_sim.solar.Solar method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.dynamics">dynamics() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.dynamics">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="E">E</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.est_calendar_aging">est_calendar_aging() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.est_calendar_aging">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.est_cyc_aging">est_cyc_aging() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.est_cyc_aging">(charging_sim.batterypack.Battery method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -372,29 +262,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.ga">ga() (batt_sys_identification.battery_identification.BatteryParams method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.get_action">get_action() (charging_sim.orchestrator.ChargingSim static method)</a>
+      <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_aging_value">get_aging_value() (charging_sim.batteryAgingSim.BatteryAging method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_aging_value">get_aging_value() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_aging_value">(charging_sim.batteryAgingSim.BatteryAging method)</a>
-</li>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_aging_value">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
       <li><a href="charging_sim.html#charging_sim.optimization.Optimization.get_battery_constraint">get_battery_constraint() (charging_sim.optimization.Optimization method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC.get_battery_constraints">get_battery_constraints() (charging_sim.controller.MPC method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.controller.Oneshot.get_battery_constraints">(charging_sim.controller.Oneshot method)</a>
-</li>
-      </ul></li>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_calendar_aging">get_calendar_aging() (charging_sim.batteryAgingSim.BatteryAging method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charger_obj_by_loc">get_charger_obj_by_loc() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.get_charging_sites">get_charging_sites() (charging_sim.orchestrator.ChargingSim method)</a>
 </li>
       <li><a href="charging_sim.html#charging_sim.optimization.Optimization.get_constraints">get_constraints() (charging_sim.optimization.Optimization method)</a>
 
@@ -404,81 +276,21 @@
       </ul></li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_corrected_voltages">get_corrected_voltages() (batt_sys_identification.battery_identification.BatteryParams method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.get_current_load">get_current_load() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_cyc_aging">get_cyc_aging() (charging_sim.batteryAgingSim.BatteryAging method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_OCV">get_OCV() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_OCV">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.solar.Solar.get_power">get_power() (charging_sim.solar.Solar method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_power_profile">get_power_profile() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_power_profile">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
       <li><a href="charging_sim.html#charging_sim.electricityPrices.PriceLoader.get_prices">get_prices() (charging_sim.electricityPrices.PriceLoader method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_properties">get_properties() (charging_sim.battery.Battery method)</a>
-</li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_Ro">get_Ro() (batt_sys_identification.battery_identification.BatteryParams method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.battery.Battery.get_Ro">(charging_sim.battery.Battery method)</a>
 </li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_roundtrip_efficiency">get_roundtrip_efficiency() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_roundtrip_efficiency">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
       <li><a href="charging_sim.html#charging_sim.solar.Solar.get_solar_output">get_solar_output() (charging_sim.solar.Solar method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_total_aging">get_total_aging() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_total_aging">(charging_sim.batteryAgingSim.BatteryAging method)</a>
+      <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.get_total_aging">get_total_aging() (charging_sim.batteryAgingSim.BatteryAging method)</a>
 </li>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_total_aging">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.get_true_power">get_true_power() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.get_true_power">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.get_uncorrected_voltages">get_uncorrected_voltages() (batt_sys_identification.battery_identification.BatteryParams method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="I">I</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_aging_sim">initialize_aging_sim() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_controllers">initialize_controllers() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC.initialize_forecast_data">initialize_forecast_data() (charging_sim.controller.MPC method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_price_loader">initialize_price_loader() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.initialize_solar_module">initialize_solar_module() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.is_charging">is_charging() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.is_EV_arrived">is_EV_arrived() (charging_sim.chargingStation.ChargingStation method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -490,29 +302,15 @@
 </li>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.LFP_cyc_aging">LFP_cyc_aging() (charging_sim.batteryAgingSim.BatteryAging static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="feeder_population.html#feeder_population.glm_mod_functions.load_base_glm">load_base_glm() (in module feeder_population.glm_mod_functions)</a>
 
       <ul>
         <li><a href="test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.load_base_glm">(in module test_cases.battery.feeder_population.glm_mod_functions)</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC.load_battery_ocv">load_battery_ocv() (charging_sim.controller.MPC method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.controller.Oneshot.load_battery_ocv">(charging_sim.controller.Oneshot method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.load_battery_params">load_battery_params() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.load_config">load_config() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.load_pack_props">load_pack_props() (charging_sim.batterypack.Battery method)</a>
-</li>
       <li><a href="charging_sim.html#charging_sim.utils.load_prices">load_prices() (in module charging_sim.utils)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.load_results_summary">load_results_summary() (charging_sim.orchestrator.ChargingSim method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -526,8 +324,6 @@
         <li><a href="charging_sim.html#charging_sim.solar.main">(in module charging_sim.solar)</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.simulate.make_scenarios">make_scenarios() (in module charging_sim.simulate)</a>
-</li>
       <li><a href="charging_sim.html#charging_sim.solar.Solar.modify_res">modify_res() (charging_sim.solar.Solar method)</a>
 </li>
       <li>
@@ -542,25 +338,13 @@
 </li>
         <li><a href="charging_sim.html#module-charging_sim">charging_sim</a>
 </li>
-        <li><a href="charging_sim.html#module-charging_sim.battery">charging_sim.battery</a>
-</li>
         <li><a href="charging_sim.html#module-charging_sim.batteryAgingSim">charging_sim.batteryAgingSim</a>
 </li>
-        <li><a href="charging_sim.html#module-charging_sim.batterypack">charging_sim.batterypack</a>
-</li>
         <li><a href="charging_sim.html#module-charging_sim.capacitor">charging_sim.capacitor</a>
-</li>
-        <li><a href="charging_sim.html#module-charging_sim.chargingStation">charging_sim.chargingStation</a>
-</li>
-        <li><a href="charging_sim.html#module-charging_sim.controller">charging_sim.controller</a>
 </li>
         <li><a href="charging_sim.html#module-charging_sim.electricityPrices">charging_sim.electricityPrices</a>
 </li>
         <li><a href="charging_sim.html#module-charging_sim.optimization">charging_sim.optimization</a>
-</li>
-        <li><a href="charging_sim.html#module-charging_sim.orchestrator">charging_sim.orchestrator</a>
-</li>
-        <li><a href="charging_sim.html#module-charging_sim.simulate">charging_sim.simulate</a>
 </li>
         <li><a href="charging_sim.html#module-charging_sim.solar">charging_sim.solar</a>
 </li>
@@ -582,12 +366,6 @@
 </li>
       </ul></li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC">MPC (class in charging_sim.controller)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.multistep">multistep() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-  </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
@@ -599,17 +377,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.NMC_cyc_aging">NMC_cyc_aging() (charging_sim.batteryAgingSim.BatteryAging static method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.nominal_pack_cap">nominal_pack_cap (charging_sim.batterypack.Battery attribute)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.controller.Oneshot">Oneshot (class in charging_sim.controller)</a>
-</li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.optimization.Optimization">Optimization (class in charging_sim.optimization)</a>
 </li>
@@ -641,8 +413,6 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.batterypack.Battery.R_pack">R_pack (charging_sim.batterypack.Battery attribute)</a>
-</li>
       <li><a href="feeder_population.html#feeder_population.glm_mod_functions.replace_load_w_meter">replace_load_w_meter() (in module feeder_population.glm_mod_functions)</a>
 
       <ul>
@@ -655,14 +425,6 @@
         <li><a href="test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.glm_mod_functions.replace_load_w_meter_old">(in module test_cases.battery.feeder_population.glm_mod_functions)</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.controller.MPC.reset_load">reset_load() (charging_sim.controller.MPC method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.controller.Oneshot.reset_load">(charging_sim.controller.Oneshot method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.reset_loads">reset_loads() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.run">run() (charging_sim.batteryAgingSim.BatteryAging method)</a>
@@ -670,18 +432,10 @@
       <ul>
         <li><a href="charging_sim.html#charging_sim.optimization.Optimization.run">(charging_sim.optimization.Optimization method)</a>
 </li>
-        <li><a href="charging_sim.html#charging_sim.simulate.run">(in module charging_sim.simulate)</a>
-</li>
       </ul></li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction">run_ocv_correction() (batt_sys_identification.battery_identification.BatteryParams method)</a>
 </li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_pre_checks">run_pre_checks() (batt_sys_identification.battery_identification.BatteryParams method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.simulate.run_scenario_single">run_scenario_single() (in module charging_sim.simulate)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.simulate.run_scenarios_parallel">run_scenarios_parallel() (in module charging_sim.simulate)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.simulate.run_scenarios_sequential">run_scenarios_sequential() (in module charging_sim.simulate)</a>
 </li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification">run_sys_identification() (batt_sys_identification.battery_identification.BatteryParams method)</a>
 </li>
@@ -691,37 +445,15 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.save_sim_data">save_sim_data() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.save_sim_data">(charging_sim.batterypack.Battery method)</a>
-</li>
-        <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.save_sim_data">(charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.save_states">save_states() (charging_sim.battery.Battery method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.set_current_load">set_current_load() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
       <li><a href="charging_sim.html#charging_sim.electricityPrices.PriceLoader.set_month_data">set_month_data() (charging_sim.electricityPrices.PriceLoader method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.setup">setup() (charging_sim.orchestrator.ChargingSim method)</a>
 </li>
       <li><a href="batt_sys_identification.html#batt_sys_identification.battery_identification.BatteryParams.simulate_response">simulate_response() (batt_sys_identification.battery_identification.BatteryParams method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="charging_sim.html#charging_sim.solar.Solar">Solar (class in charging_sim.solar)</a>
 </li>
       <li><a href="analysis.html#analysis.cost_analysis.CostEstimator.solar_cost">solar_cost() (analysis.cost_analysis.CostEstimator method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.state_eqn">state_eqn() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.state_eqn">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.step">step() (charging_sim.orchestrator.ChargingSim method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -729,12 +461,6 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.test">test() (in module charging_sim.battery)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.test">(in module charging_sim.batterypack)</a>
-</li>
-      </ul></li>
       <li>
     test_cases
 
@@ -772,18 +498,6 @@
         <li><a href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.glm_mod_functions">module</a>
 </li>
       </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.thermal_dynamics">thermal_dynamics() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.thermal_dynamics">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.track_SOC">track_SOC() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.track_SOC">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
       <li><a href="analysis.html#analysis.cost_analysis.CostEstimator.transformer_cost">transformer_cost() (analysis.cost_analysis.CostEstimator method)</a>
 </li>
   </ul></td>
@@ -792,60 +506,14 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.update_capacity">update_capacity() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.update_capacity">(charging_sim.batteryAgingSim.BatteryAging method)</a>
+      <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.update_capacity">update_capacity() (charging_sim.batteryAgingSim.BatteryAging method)</a>
 </li>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.update_capacity">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-      <li><a href="charging_sim.html#charging_sim.solar.Solar.update_history">update_history() (charging_sim.solar.Solar method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.update_load">update_load() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.update_load_oneshot">update_load_oneshot() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.update_max_current">update_max_current() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.update_max_current">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.update_params">update_params() (charging_sim.battery.Battery method)</a>
+      <li><a href="charging_sim.html#charging_sim.solar.Solar.update_history">update_history() (charging_sim.solar.Solar method)</a>
 </li>
       <li><a href="charging_sim.html#charging_sim.batteryAgingSim.BatteryAging.update_resistance">update_resistance() (charging_sim.batteryAgingSim.BatteryAging method)</a>
 </li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.update_scenario">update_scenario() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.update_SOC">update_SOC() (charging_sim.battery.Battery method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.update_status">update_status() (charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.orchestrator.ChargingSim.update_steps">update_steps() (charging_sim.orchestrator.ChargingSim method)</a>
-</li>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.update_voltage">update_voltage() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.update_voltage">(charging_sim.batterypack.Battery method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="V">V</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="charging_sim.html#charging_sim.battery.Battery.visualize">visualize() (charging_sim.battery.Battery method)</a>
-
-      <ul>
-        <li><a href="charging_sim.html#charging_sim.batterypack.Battery.visualize">(charging_sim.batterypack.Battery method)</a>
-</li>
-        <li><a href="charging_sim.html#charging_sim.chargingStation.ChargingStation.visualize">(charging_sim.chargingStation.ChargingStation method)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -902,7 +570,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
