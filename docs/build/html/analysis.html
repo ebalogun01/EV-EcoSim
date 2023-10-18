@@ -30,7 +30,7 @@
 
           
           
-          <a href="contents.html" class="icon icon-home">
+          <a href="index.html" class="icon icon-home">
             EV-Ecosim
           </a>
 <div role="search">
@@ -72,14 +72,14 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="contents.html">EV-Ecosim</a>
+          <a href="index.html">EV-Ecosim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
       <li class="breadcrumb-item active">Post-simulation analysis</li>
       <li class="wy-breadcrumbs-aside">
@@ -98,12 +98,16 @@
 <section id="module-analysis.cost_analysis">
 <span id="cost-analysis-module"></span><h2>cost_analysis module<a class="headerlink" href="#module-analysis.cost_analysis" title="Permalink to this heading"></a></h2>
 <p>This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components
-from the simulation.</p>
+from the simulation. This is used for the post-simulation cost calculations</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis.cost_analysis.</span></span><span class="sig-name descname"><span class="pre">CostEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_days</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is used to calculate levelized cost of DER assets in EV-Ecosim.</p>
+<p>This class is used to calculate levelized cost of DER assets in EV-Ecosim.
+The LCOE is the levelized cost of energy, which is defined as the estimated revenue or total net expenditure
+required to build and operate an energy system over a specified cost recovery period. The LCOE normalizes the entire
+system cost by the energy throughput to compare the economics energy devices that would otherwise be challenging to
+compare.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>num_days</strong> – The number of days for which the calculation is run.</p>
@@ -156,7 +160,8 @@ To be deprecated soon.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life">
 <span class="sig-name descname"><span class="pre">calculate_trans_loss_of_life</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.calculate_trans_loss_of_life"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.calculate_trans_loss_of_life" title="Permalink to this definition"></a></dt>
-<dd><p>Estimates the expected transformer loss of life.</p>
+<dd><p>Estimates the expected transformer loss of life. The transformer loss of life (or LOL) is modelled as a function
+of the hot-spot temperature.</p>
 <p>Reference:</p>
 <ul class="simple">
 <li><p>5.11.3 of IEEE Std C57.12.00-2010 a minimum normal insulation life expectancy of 180 000 hours is expected.</p></li>
@@ -231,8 +236,9 @@ To be deprecated soon.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.cost_analysis.CostEstimator.solar_cost">
 <span class="sig-name descname"><span class="pre">solar_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/cost_analysis.html#CostEstimator.solar_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.cost_analysis.CostEstimator.solar_cost" title="Permalink to this definition"></a></dt>
-<dd><p>Calculates the overall capital cost of the solar system.
-Not fully implemented.</p>
+<dd><p>Calculates the overall capital cost of the solar system. This will give the dollar cost of the solar system
+used for the charging station design problem.</p>
+<p>Not fully implemented.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>result_dir</strong> (<em>str</em>) – Location to save the result.</p>
