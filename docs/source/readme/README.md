@@ -44,10 +44,12 @@ The data prototype is shown below. Note that column fields are case-sensitive.
 <img src="doc_images/batt_sys_data_proto.png" width="500" alt="Battery data proto">
 
 
-<div style="text-align: center">
+<br />
+<div style="text-align: center" xml:space="default">
   <img src="doc_images/ECM.png" width="400" alt="Battery ECM">
   <figcaption>Equivalent circuit model (ECM) for battery system identification</figcaption>
 </div>
+<br />
 
 
 The module will save a new `.csv` file with an additional field for the corrected open circuit voltage (OCV) values;

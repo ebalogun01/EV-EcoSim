@@ -132,10 +132,12 @@ The battery model is a 2nd order RC Equivalent circuit model (ECM). One can this
 battery parameters by uploading experimental data to the <code class="docutils literal notranslate"><span class="pre">batt_sys_identification/data</span></code> folder and running the module.
 The module will generate a <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with the battery parameters in the <code class="docutils literal notranslate"><span class="pre">batt_sys_identification/params</span></code> folder.
 The data prototype is shown below. Note that column fields are case-sensitive.</p>
-<img src="doc_images/batt_sys_data_proto.png" width="500" alt="Battery data proto"><div style="text-align: center">
+<img src="doc_images/batt_sys_data_proto.png" width="500" alt="Battery data proto"><br />
+<div style="text-align: center" xml:space="default">
   <img src="doc_images/ECM.png" width="400" alt="Battery ECM">
   <figcaption>Equivalent circuit model (ECM) for battery system identification</figcaption>
-</div><p>The module will save a new <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with an additional field for the corrected open circuit voltage (OCV) values;
+</div>
+<br /><p>The module will save a new <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with an additional field for the corrected open circuit voltage (OCV) values;
 this field (column) will be labelled <code class="docutils literal notranslate"><span class="pre">ocv_corr</span></code> within the new battery data csv, including the existing columns as shown
 in the data prototype above.</p>
 <p>Once the battery parameters are generated, they can be used in the <code class="docutils literal notranslate"><span class="pre">battery_data</span></code> folder and <code class="docutils literal notranslate"><span class="pre">configs/battery.json</span></code> can
