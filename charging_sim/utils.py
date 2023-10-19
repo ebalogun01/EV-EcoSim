@@ -11,6 +11,9 @@ num_steps = int(day_minutes / resolution)  # number of time intervals in a day =
 month_days = {"January": 31, "February": 28, "March": 31, "April": 30, "May": 31, "June": 30, "July": 31,
               "August": 31, "September": 30, "October": 30, "November": 30, "December": 31}
 
+MONTHS_LIST = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+               "November", "December"]
+
 objectives = {'Transformer Aging': [0, 0, 1],
               "Electricity Cost": [1, 0, 0],
               "Battery Degradation": [1, 200, 0],
