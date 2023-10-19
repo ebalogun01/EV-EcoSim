@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Feeder population" href="feeder_population.html" />
+    <link rel="next" title="Post-simulation analysis" href="analysis.html" />
     <link rel="prev" title="EV-Ecosim platform" href="readme/README.html" /> 
 </head>
 
@@ -48,14 +48,15 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Packages</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
 </ul>
 </li>
 </ul>
@@ -87,20 +88,17 @@
 <h1>Packages<a class="headerlink" href="#packages" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="feeder_population.html">Feeder population</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Post-simulation analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.cost_analysis">analysis.cost_analysis module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.load_post_opt_costs">analysis.load_post_opt_costs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.plot_results">analysis.plot_results module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html#id1">Battery system identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html#module-batt_sys_identification.battery_identification">batt_sys_identification.battery_identification module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="charging_sim.html">Charging simulator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html#submodules">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="charging_sim.html">Charging Simulator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.battery">charging_sim.battery module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.batteryAgingSim">charging_sim.batteryAgingSim module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim.batterypack">charging_sim.batterypack module</a></li>
@@ -117,9 +115,16 @@
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html#module-charging_sim">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="feeder_population.html">Feeder population</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="test_cases.html">Test cases</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="test_cases.base_case.html">test_cases.base_case package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="test_cases.base_case.html">Base test case</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#module-contents">Module contents</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-event-handlers-module">test_cases.base_case.event_handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-gblvar-module">test_cases.base_case.gblvar module</a></li>
@@ -127,16 +132,11 @@
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-master-sim-module">test_cases.base_case.master_sim module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-sim-module">test_cases.base_case.sim module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#test-cases-base-case-voltdump2-module">test_cases.base_case.voltdump2 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html#module-test_cases.base_case">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="test_cases.battery.html">test_cases.battery package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="test_cases.battery.feeder_population.html">test_cases.battery.feeder_population package</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="test_cases.battery.html">Battery test case</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-data-analysis-module">test_cases.battery.data_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-event-handlers-module">test_cases.battery.event_handlers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-event-handlers-oneshot-module">test_cases.battery.event_handlers_oneshot module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-gblvar-module">test_cases.battery.gblvar module</a></li>
@@ -146,20 +146,10 @@
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-scenarios-module">test_cases.battery.scenarios module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-sim-module">test_cases.battery.sim module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#test-cases-battery-voltdump2-module">test_cases.battery.voltdump2 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="test_cases.battery.html#module-test_cases.battery">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.html#module-test_cases">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="analysis.html">Post-simulation analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis.cost_analysis">cost_analysis module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#load-post-opt-costs-module">load_post_opt_costs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#plot-results-module">plot_results module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-analysis">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -171,7 +161,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="readme/README.html" class="btn btn-neutral float-left" title="EV-Ecosim platform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="feeder_population.html" class="btn btn-neutral float-right" title="Feeder population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="analysis.html" class="btn btn-neutral float-right" title="Post-simulation analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

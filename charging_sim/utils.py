@@ -1,4 +1,5 @@
-"""Maybe stores general configurations and general functions"""
+"""Stores general configurations and general functions"""
+
 import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt

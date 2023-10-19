@@ -1,4 +1,9 @@
-"""This file contains the controller classes used for DER optimization and control within EV-Ecosim"""
+"""
+**Overview**
+
+This file contains the controller classes used for DER optimization and control within EV-Ecosim
+"""
+
 import os
 import matplotlib.pyplot as plt
 from optimization import Optimization
@@ -87,9 +92,10 @@ class MPC:
     def compute_control(self, load, price_vector):
         """
         Optimization-based control actions are computed and passed to the battery.
-        Inputs: load - This is the power demand from the charging station.
-                price_vector - This is usually the time of use (TOU) rate of the charging station.
-        Returns: control_action - Current signals to control the DER system for arbitrage.
+
+        :param load: This is the power demand from the charging station.
+        :param price_vector: This is usually the time of use (TOU) rate of the charging station.
+        :return: control_action - Current signals to control the DER system for arbitrage.
         """
         self.time += 1
         control_action = None
@@ -116,8 +122,9 @@ class MPC:
     def get_battery_constraints(self, ev_load):
         """
         Creates and updates the battery constraints required to be satisfied by the controller.
-        Inputs: ev_load - This is the power demand from the charging station.
-        Returns: storage_constraints - List of battery constraints to be respected.
+
+        :param ev_load: This is the power demand from the charging station.
+        :return: storage_constraints - List of battery constraints to be respected.
         """
         # TODO: can toggle between battery initial soc and planned soc trajectory
         eps = 1e-8
@@ -160,10 +167,25 @@ class MPC:
 
 
 class Oneshot:
-    """This class uses an offline control scheme for producing control currents to the BESS.
-    This is non-MPC and cannot use state feedback in control simulation."""
+    """
+    This class uses an offline control scheme for producing control currents to the BESS.
+    This is non-MPC and cannot use state feedback in control simulation.
+
+    :param config: Configuration dictionary.
+    :param storage: Storage (usually battery) module.
+    :param solar: Solar module.
+    :param num_steps: Number of steps.
+    """
 
     def __init__(self, config, storage=None, solar=None, num_steps=96):
+        """
+
+        :param config: Configuration dictionary.
+        :param storage: Storage (usually battery) module.
+        :param solar: Solar module.
+        :param num_steps: Number of steps.
+
+        """
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
         # self.charge_history = np.genfromtxt(path_prefix + config["load_history"]) * 1
@@ -213,9 +235,11 @@ class Oneshot:
         self.actions = [self.action]
 
     def load_battery_ocv(self):
-        """Learns the battery OCV Parameters from data and sets the relevant class attribute.
-        Inputs - None.
-        Returns - None."""
+        """
+        Learns the battery OCV Parameters from data and sets the relevant class attribute.
+        :param: None.
+        :return: None.
+        """
         from sklearn.linear_model import LinearRegression
         indices = ((self.storage.OCV_map_SOC <= 0.9) & (self.storage.OCV_map_SOC >= 0.2)).nonzero()[0]
         soc = self.storage.OCV_map_SOC[indices[0]: indices[-1]].reshape(-1, 1)
@@ -228,10 +252,12 @@ class Oneshot:
 
     def compute_control(self, load, price_vector):
         """
-        Optimization-based control actions are computed and passed to the battery.
-        Inputs: load - This is the power demand from the charging station.
-                price_vector - This is usually the time of use (TOU) rate of the charging station.
-        Returns: control_action - Current signals to control the DER system for arbitrage.
+        Optimization-based control actions are computed and passed to the DERs and Charging unit.
+
+        :param load: This is the power demand from the charging station.
+        :param price_vector: This is usually the time of use (TOU) rate of the charging station.
+
+        :return:
         """
         control_action = None
         if self.control_battery:

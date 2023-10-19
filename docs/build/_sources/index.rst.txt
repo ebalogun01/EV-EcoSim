@@ -3,32 +3,55 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to EV-Ecosim 1.0.0
 =====================================
-EV-Ecosim is a grid-aware python-based co-simulation platform for modeling and simulation of EV charging
-stations integrated with Solar and Battery systems. This is a python based platform that interfaces with GridLAB-D,
-a 3-phase unbalanced power flow solver, to estimate the impacts of EV (Fast) Charging Stations on power distribution
-networks.
+Welcome to EV-Ecosim 1.0.0 documentation!
+=====================================
+EV-Ecosim is a python-based multi-timescale grid-aware python-based co-simulation platform for modeling and simulation
+of electric vehicle (EV) charging stations integrated with Distributed Energy Resources (DERs), such as solar and
+battery systems. This platform interfaces with GridLAB-D, a 3-phase unbalanced power flow solver, to capture the impacts
+of EV (Fast) Charging Stations on power distribution networks.
+
+Links
+--------
+- `Preprint <https://doi.org/10.36227/techrxiv.23596725.v2>`_
+- `Repository <https://github.com/ebalogun01/EV50_cosimulation/>`_
+-  Web-tool (coming soon!)
 
 .. image:: ../../doc_images/sim_frame.png
-    :width: 100%
+    :width: 150%
+    :length: 150%
+    :caption: EV-Ecosim Simulation Framework
     :align: center
     :alt: EV-Ecosim Simulation Framework
 
-We have made a web-tool version available for public use. It runs most of the code shown in this documentation.
-
-The project is accessible via Github and still under active development and improvements.
-
-TODO - Link to tutorial.
-TODO - Include information on the container.
+We have made a web-tool version available for public use <include link>. More sophisticated users can download the
+source code and run the platform locally.
 
 .. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   Introduction<Introduction/welcome>
+
+.. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Tutorials:
 
-   readme
-   modules
+   Tutorial<tutorials>
 
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+
+   Readme<readme/README>
+
+.. toctree::
+    :hidden:
+    :maxdepth: 1
+    :caption: Modules
+
+    modules
 
 
 Indices and tables

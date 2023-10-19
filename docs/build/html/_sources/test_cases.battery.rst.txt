@@ -1,4 +1,4 @@
-test\_cases.battery package
+Battery test case
 ===========================
 
 Subpackages
@@ -11,14 +11,6 @@ Subpackages
 
 Submodules
 ----------
-
-test\_cases.battery.data\_analysis module
------------------------------------------
-
-.. automodule:: test_cases.battery.data_analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 test\_cases.battery.event\_handlers module
 ------------------------------------------
@@ -92,10 +84,3 @@ test\_cases.battery.voltdump2 module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: test_cases.battery
-   :members:
-   :undoc-members:
-   :show-inheritance:

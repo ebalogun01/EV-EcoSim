@@ -1,4 +1,4 @@
-Charging simulator
+charging\_sim package
 =====================
 
 Submodules

@@ -1,13 +1,17 @@
-"""This file is mainly used to run scenarios in parallel (if enough CPUs) or sequentially,
- without having to modify and rerun the simulation each time.
- Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates"""
+"""
+**Overview**
+
+This file is mainly used to run scenarios in parallel (if enough CPUs) or sequentially,
+without having to modify and rerun the simulation each time.
+Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates.
+"""
 
 # import charging_sim
 import sys
 sys.path.append('../../../EV50_cosimulation/charging_sim')
 import multiprocessing as mp
 import ast
-from utils import month_days
+from charging_sim.utils import month_days
 
 
 # GET STATION CONFIGURATIONS
@@ -37,7 +41,7 @@ min_SOCs = [0.1, 0.2, 0.3]
 max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
 
 
-def make_scenarios():
+def make_scenarios_old():
     """
     Creates the list of scenarios (dicts) that are used to run the simulations.
     """
@@ -49,6 +53,64 @@ def make_scenarios():
                         'L2_cap': L2_station_cap, 'dcfc_cap': dcfc_station_cap, 'month_str': month_str}
             scenarios_list.append(scenario)
             idx += 1
+    return scenarios_list
+
+
+def load_input_config():
+    """
+    Loads the configuration file for the simulation and returns a dict
+
+    :return:
+    """
+    import json
+    with open('configs/config.json', 'r') as f:
+        config = json.load(f)
+    return config
+
+
+def make_scenarios():
+    """
+    This is used to make the list of scenarios (dicts) that are used to run the simulations.
+    No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
+    settings and inputs.
+
+    :return: List of scenario dicts.
+    """
+    scenarios_list = []
+    voltage_idx, idx = 0, 0
+    # Seems like we don't get list[int] for voltages
+    for Er in energy_ratings:
+        for c_rate in max_c_rates:
+            scenario = {
+                'index': idx,
+                'oneshot': True,
+                'start_month': start_month,
+                'opt_solver': 'GUROBI',
+                'battery': {
+                    'pack_energy_cap': Er,
+                    'max_c_rate': c_rate,
+                    'pack_max_voltage': inputs['battery']['pack_max_voltage'][voltage_idx]
+                },
+                'charging_station': {
+                    'dcfc_power_cap': dcfc_station_cap
+                },
+                'solar': {
+                    'start_month': month,
+                    'efficiency': solar_config["efficiency"],
+                    'rating': solar_config["rating"],
+                    'data_path': solar_config["data"]
+                },
+                'load': {
+                    'data_path': inputs['load']['data']
+                },
+                'elec_prices': {
+                    'start_month': month,
+                    'data_path': inputs['elec_prices']['data']
+                }
+            }
+            scenarios_list.append(scenario)
+            idx += 1
+        voltage_idx += 1
     return scenarios_list
 
 

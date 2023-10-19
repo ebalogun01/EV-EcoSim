@@ -1,9 +1,6 @@
 Feeder population
 ==========================
 
-Submodules
-----------
-
 feeder\_population.feeder\_population module
 --------------------------------------------
 

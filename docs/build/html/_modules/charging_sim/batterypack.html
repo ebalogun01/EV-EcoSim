@@ -39,9 +39,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction/welcome.html">Introduction</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
@@ -71,11 +76,10 @@
              
   <h1>Source code for charging_sim.batterypack</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains the program for the battery pack class.</span>
-
-<span class="sd">**Usage**\n</span>
-<span class="sd">Proper usage is done by the :module:orchestrator.py module.</span>
-
+<span class="sd">**Overview**\n</span>
+<span class="sd">Module for the battery pack class. This module contains the class that loads the battery pack data and structure used</span>
+<span class="sd">for simulation. The battery pack is composed of individual cells, which are connected in series and parallel to</span>
+<span class="sd">achieve the desired voltage and capacity.\n</span>
 
 <span class="sd">**Example usage**::</span>
 
@@ -86,12 +90,11 @@
 <span class="sd">Then the battery can be instantiated as follows::</span>
 
 <span class="sd"> for params_key in params_list:</span>
-<span class="sd">     # This loads the actual battery parameters from the file in which those parameters are stored, prior to</span>
+<span class="sd">    # This loads the actual battery parameters from the file in which those parameters are stored, prior to</span>
 <span class="sd">    # instantiating Battery().</span>
 <span class="sd">    battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])</span>
 <span class="sd">    # Instantiate the battery using its constructor.</span>
-<span class="sd">    buffer_battery = Battery(config=battery_config, controller=controller)</span>
-
+<span class="sd">    buffer_battery = Battery(config=battery_config, controller=controller) # controller is the controller for battery</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
@@ -559,83 +562,83 @@
         <span class="k">return</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<span class="c1">#   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)</span>
-<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.batterypack.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is used to test the battery class module to ensure desired behavior is respected.</span>
-<span class="sd">    Saves relevant plots for visual inspection at the end of the simulated test&quot;&quot;&quot;</span>
-    <span class="c1"># TODO: include error checking assertion points later</span>
-    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="n">path_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="n">path_prefix</span><span class="p">[:</span> <span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)</span>
-    <span class="n">path_prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="n">battery_config_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path_prefix</span><span class="si">}</span><span class="s1">/charging_sim/configs/battery.json&#39;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">battery_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">battery_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">params_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">battery_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;params_&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">params_key</span> <span class="ow">in</span> <span class="n">params_list</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;testing load battery params: &quot;</span><span class="p">,</span> <span class="n">params_key</span><span class="p">)</span>
-        <span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="n">battery_config</span><span class="p">[</span><span class="n">params_key</span><span class="p">])</span>
-    <span class="c1"># do the OCV maps as well</span>
-    <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_voltage&quot;</span><span class="p">])[</span>
-                                        <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># ascending order</span>
-    <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;OCV_map_SOC&quot;</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># ascending order</span>
-
-    <span class="n">buffer_battery</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">battery_config</span><span class="p">)</span>
-    <span class="n">buffer_battery</span><span class="o">.</span><span class="n">battery_setup</span><span class="p">()</span>
-    <span class="n">buffer_battery</span><span class="o">.</span><span class="n">load_pack_props</span><span class="p">()</span>
-    <span class="n">buffer_battery</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">buffer_battery</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
-
-    <span class="c1"># test dynamics here</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span>  <span class="c1"># discharging first</span>
-    <span class="n">voltages</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">currents</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="mi">50</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># charging (Amperes)</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
-        <span class="n">buffer_battery</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">currents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">plot_tables</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">)</span>
-    <span class="c1"># ax2.plot(currents, color=&#39;k&#39;, label=&#39;current&#39;)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">plot_tables</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;adjusted current&#39;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage (V)&#39;</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Current (A)&#39;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;battery_test_plot&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">SOC_list</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;SOC_battery_test&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time step&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Current (Amperes)&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">currents</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer_battery</span><span class="o">.</span><span class="n">voltages</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;currents_battery_test&quot;</span><span class="p">)</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">test</span><span class="p">()</span>
+<span class="c1"># #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)</span>
+<span class="c1"># def test():</span>
+<span class="c1">#     &quot;&quot;&quot;This is used to test the battery class module to ensure desired behavior is respected.</span>
+<span class="c1">#     Saves relevant plots for visual inspection at the end of the simulated test&quot;&quot;&quot;</span>
+<span class="c1">#     # TODO: include error checking assertion points later</span>
+<span class="c1">#     path_prefix = os.getcwd()</span>
+<span class="c1">#     path_prefix = (path_prefix[: path_prefix.index(&#39;EV50_cosimulation&#39;)] + &#39;EV50_cosimulation&#39;)</span>
+<span class="c1">#     path_prefix.replace(&#39;\\&#39;, &#39;/&#39;)</span>
+<span class="c1">#     battery_config_path = f&#39;{path_prefix}/charging_sim/configs/battery.json&#39;</span>
+<span class="c1">#     with open(battery_config_path, &quot;r&quot;) as f:</span>
+<span class="c1">#         battery_config = json.load(f)</span>
+<span class="c1">#     params_list = [key for key in battery_config.keys() if &quot;params_&quot; in key]</span>
+<span class="c1">#     for params_key in params_list:</span>
+<span class="c1">#         print(&quot;testing load battery params: &quot;, params_key)</span>
+<span class="c1">#         battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])</span>
+<span class="c1">#     # do the OCV maps as well</span>
+<span class="c1">#     battery_config[&quot;OCV_map_voltage&quot;] = np.loadtxt(path_prefix + battery_config[&quot;OCV_map_voltage&quot;])[</span>
+<span class="c1">#                                         ::-1]  # ascending order</span>
+<span class="c1">#     battery_config[&quot;OCV_map_SOC&quot;] = np.loadtxt(path_prefix + battery_config[&quot;OCV_map_SOC&quot;])[::-1]  # ascending order</span>
+<span class="c1">#</span>
+<span class="c1">#     buffer_battery = Battery(config=battery_config)</span>
+<span class="c1">#     buffer_battery.battery_setup()</span>
+<span class="c1">#     buffer_battery.load_pack_props()</span>
+<span class="c1">#     buffer_battery.id, buffer_battery.node = 0, 0</span>
+<span class="c1">#</span>
+<span class="c1">#     # test dynamics here</span>
+<span class="c1">#     c = -20  # discharging first</span>
+<span class="c1">#     voltages = []</span>
+<span class="c1">#     currents = []</span>
+<span class="c1">#     for _ in range(5):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#     c = 10</span>
+<span class="c1">#     for _ in range(100):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#     c = -10</span>
+<span class="c1">#     for _ in range(2):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#     c = 0</span>
+<span class="c1">#     for _ in range(200):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#     c = 50</span>
+<span class="c1">#     for _ in range(5):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#     c = 0  # charging (Amperes)</span>
+<span class="c1">#     for _ in range(200):</span>
+<span class="c1">#         buffer_battery.dynamics(c)</span>
+<span class="c1">#         currents.append(c)</span>
+<span class="c1">#</span>
+<span class="c1">#     fig, ax1 = plt.subplots()</span>
+<span class="c1">#     ax2 = ax1.twinx()</span>
+<span class="c1">#     ax1.plot_tables(buffer_battery.voltages, label=&#39;voltage&#39;)</span>
+<span class="c1">#     # ax2.plot(currents, color=&#39;k&#39;, label=&#39;current&#39;)</span>
+<span class="c1">#     ax2.plot_tables(buffer_battery.currents, color=&#39;r&#39;, ls=&#39;--&#39;, label=&#39;adjusted current&#39;)</span>
+<span class="c1">#     ax1.set_xlabel(&#39;Time step&#39;)</span>
+<span class="c1">#     ax1.set_ylabel(&#39;Voltage (V)&#39;)</span>
+<span class="c1">#     ax2.set_ylabel(&#39;Current (A)&#39;)</span>
+<span class="c1">#     ax1.legend()</span>
+<span class="c1">#     plt.legend()</span>
+<span class="c1">#     plt.savefig(&quot;battery_test_plot&quot;)</span>
+<span class="c1">#     plt.close()</span>
+<span class="c1">#     plt.plot(buffer_battery.SOC_list)</span>
+<span class="c1">#     plt.savefig(&quot;SOC_battery_test&quot;)</span>
+<span class="c1">#     plt.close()</span>
+<span class="c1">#     plt.plot(buffer_battery.currents)</span>
+<span class="c1">#     plt.xlabel(&#39;Time step&#39;)</span>
+<span class="c1">#     plt.ylabel(&#39;Current (Amperes)&#39;)</span>
+<span class="c1">#     print(len(buffer_battery.currents), len(buffer_battery.voltages))</span>
+<span class="c1">#     plt.savefig(&quot;currents_battery_test&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     test()</span>
 </pre></div>
 
            </div>
@@ -645,7 +648,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

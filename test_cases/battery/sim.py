@@ -1,4 +1,5 @@
 """This file simulates the transformer thermal state by propagating it forward at each time step """
+
 import numpy as np
 import gblvar
 import sys

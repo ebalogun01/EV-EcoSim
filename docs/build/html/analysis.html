@@ -19,7 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="test_cases.battery.feeder_population package" href="test_cases.battery.feeder_population.html" /> 
+    <link rel="next" title="Battery System Identification" href="batt_sys_identification.html" />
+    <link rel="prev" title="Packages" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,21 +48,20 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Post-simulation analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-analysis.cost_analysis">cost_analysis module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#load-post-opt-costs-module">load_post_opt_costs module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#plot-results-module">plot_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-analysis">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-analysis.cost_analysis">analysis.cost_analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-analysis.load_post_opt_costs">analysis.load_post_opt_costs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-analysis.plot_results">analysis.plot_results module</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
 </ul>
 </li>
 </ul>
@@ -92,11 +92,8 @@
              
   <section id="post-simulation-analysis">
 <h1>Post-simulation analysis<a class="headerlink" href="#post-simulation-analysis" title="Permalink to this heading"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
-</section>
 <section id="module-analysis.cost_analysis">
-<span id="cost-analysis-module"></span><h2>cost_analysis module<a class="headerlink" href="#module-analysis.cost_analysis" title="Permalink to this heading"></a></h2>
+<span id="analysis-cost-analysis-module"></span><h2>analysis.cost_analysis module<a class="headerlink" href="#module-analysis.cost_analysis" title="Permalink to this heading"></a></h2>
 <p>This module contains the CostEstimator Class, which estimates the cost of the different grid and DER components
 from the simulation. This is used for the post-simulation cost calculations</p>
 <dl class="py class">
@@ -258,16 +255,118 @@ used for the charging station design problem.</p>
 </dd></dl>
 
 </section>
-<section id="load-post-opt-costs-module">
-<h2>load_post_opt_costs module<a class="headerlink" href="#load-post-opt-costs-module" title="Permalink to this heading"></a></h2>
+<section id="module-analysis.load_post_opt_costs">
+<span id="analysis-load-post-opt-costs-module"></span><h2>analysis.load_post_opt_costs module<a class="headerlink" href="#module-analysis.load_post_opt_costs" title="Permalink to this heading"></a></h2>
+<p><strong>Overview</strong></p>
+<p>This module calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
+respective files and folders.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.load_post_opt_costs.collate_results">
+<span class="sig-prename descclassname"><span class="pre">analysis.load_post_opt_costs.</span></span><span class="sig-name descname"><span class="pre">collate_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oneshot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load_post_opt_costs.html#collate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load_post_opt_costs.collate_results" title="Permalink to this definition"></a></dt>
+<dd><p>Collates the results for each scenario and saves them in a result matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>month</strong> – Month for which the results are being collated</p></li>
+<li><p><strong>solar</strong> (<em>bool</em>) – Boolean to decide if to include LCOE of solar.</p></li>
+<li><p><strong>trans</strong> (<em>bool</em>) – Boolean to decide if transformer aging matrix will be included.</p></li>
+<li><p><strong>oneshot</strong> (<em>bool</em>) – Boolean to tell the function if the results were obtained from oneshot or mpc simulation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.load_post_opt_costs.plot_stacked_bar">
+<span class="sig-prename descclassname"><span class="pre">analysis.load_post_opt_costs.</span></span><span class="sig-name descname"><span class="pre">plot_stacked_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elec_costs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batt_costs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_costs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load_post_opt_costs.html#plot_stacked_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load_post_opt_costs.plot_stacked_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a stacked bar to visualize the portion of overall LCOE each cost component contributes to the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>elec_costs</strong> – Dataframe of electricity costs.</p></li>
+<li><p><strong>batt_costs</strong> – Dataframe of battery levelized costs.</p></li>
+<li><p><strong>solar_costs</strong> – Dataframe of levelized solar costs.</p></li>
+<li><p><strong>save_plot_path</strong> (<em>str</em>) – String to path for which results are saved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.load_post_opt_costs.plot_tables">
+<span class="sig-prename descclassname"><span class="pre">analysis.load_post_opt_costs.</span></span><span class="sig-name descname"><span class="pre">plot_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batt_dtable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elec_cost_dtable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_cost_dtable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batt_aging_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_cost_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_plots_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load_post_opt_costs.html#plot_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load_post_opt_costs.plot_tables" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the tables into a visualized results matrix and plots a stacked bar chart.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batt_dtable</strong> – Data table for battery costs.</p></li>
+<li><p><strong>elec_cost_dtable</strong> – Dataframe for electricity costs.</p></li>
+<li><p><strong>trans_cost_dtable</strong> – Dataframe for transformer costs.</p></li>
+<li><p><strong>batt_aging_table</strong> – Dataframe for battery aging costs.</p></li>
+<li><p><strong>solar_cost_table</strong> – Dataframe for solar cost (LCOE).</p></li>
+<li><p><strong>save_plots_folder</strong> – Directory in which plots are saved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.load_post_opt_costs.run">
+<span class="sig-prename descclassname"><span class="pre">analysis.load_post_opt_costs.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load_post_opt_costs.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load_post_opt_costs.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.load_post_opt_costs.run_results">
+<span class="sig-prename descclassname"><span class="pre">analysis.load_post_opt_costs.</span></span><span class="sig-name descname"><span class="pre">run_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">days_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batt_cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elec_cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oneshot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load_post_opt_costs.html#run_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load_post_opt_costs.run_results" title="Permalink to this definition"></a></dt>
+<dd><p>Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>case_dir</strong> (<em>str</em>) – Directory for a given case/scenario.</p></li>
+<li><p><strong>days_count</strong> (<em>int</em>) – Number of days to calculate (usually 30 for now).</p></li>
+<li><p><strong>batt_cost</strong> (<em>bool</em>) – Boolean to decide if battery cost is calculated.</p></li>
+<li><p><strong>elec_cost</strong> (<em>bool</em>) – Boolean to decide if electricity cost is calculated.</p></li>
+<li><p><strong>trans_cost</strong> (<em>bool</em>) – Boolean to decide if transformer cost is calculated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="plot-results-module">
-<h2>plot_results module<a class="headerlink" href="#plot-results-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-analysis">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-analysis" title="Permalink to this heading"></a></h2>
-<p>This module runs the post-simulation cost calculations for DER assets and transformer aging.
-This module also estimates the voltage violations within the distribution network.</p>
+<section id="module-analysis.plot_results">
+<span id="analysis-plot-results-module"></span><h2>analysis.plot_results module<a class="headerlink" href="#module-analysis.plot_results" title="Permalink to this heading"></a></h2>
+<p><strong>Overview</strong></p>
+<p>This module is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
+voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
+<code class="docutils literal notranslate"><span class="pre">SIMULATION_FOLDER</span></code> variable which is the string of the path where the powerflow simulation output voltages at each node
+exist.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis.plot_results.run">
+<span class="sig-prename descclassname"><span class="pre">analysis.plot_results.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/plot_results.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.plot_results.run" title="Permalink to this definition"></a></dt>
+<dd><p>This function is used to parse the voltages from the power-simulation to calculate the percentage
+voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
+SIMULATION_FOLDER variable which is the string of the path where the powerflow simulation output voltages at each
+node exist. The function will iterate through all the folders in the SIMULATION_FOLDER and generate the plots for
+each folder. The plots will be saved in the same folder as the voltages.csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -275,7 +374,8 @@ This module also estimates the voltage violations within the distribution networ
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-left" title="test_cases.battery.feeder_population package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="batt_sys_identification.html" class="btn btn-neutral float-right" title="Battery System Identification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,7 +1,8 @@
+"""This script is used post simulation to parse the voltages into cleaner voltages.csv"""
+
 from voltdump2 import parse_voltages
 
 
-"""This script is used post simulation to parse the voltages into cleaner voltages.csv"""
 month = 'January'
 start_idx = 20
 end_idx = 21

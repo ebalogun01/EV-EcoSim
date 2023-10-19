@@ -1,9 +1,8 @@
 """
-This module contains the program for the battery pack class.
-
-**Usage**\n
-Proper usage is done by the :module:orchestrator.py module.
-
+**Overview**\n
+Module for the battery pack class. This module contains the class that loads the battery pack data and structure used
+for simulation. The battery pack is composed of individual cells, which are connected in series and parallel to
+achieve the desired voltage and capacity.\n
 
 **Example usage**::
 
@@ -14,12 +13,11 @@ Proper usage is done by the :module:orchestrator.py module.
 Then the battery can be instantiated as follows::
 
  for params_key in params_list:
-     # This loads the actual battery parameters from the file in which those parameters are stored, prior to
+    # This loads the actual battery parameters from the file in which those parameters are stored, prior to
     # instantiating Battery().
     battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])
     # Instantiate the battery using its constructor.
-    buffer_battery = Battery(config=battery_config, controller=controller)
-
+    buffer_battery = Battery(config=battery_config, controller=controller) # controller is the controller for battery
 """
 
 import json
@@ -487,80 +485,80 @@ class Battery:
         return NotImplementedError
 
 
-#   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
-def test():
-    """This is used to test the battery class module to ensure desired behavior is respected.
-    Saves relevant plots for visual inspection at the end of the simulated test"""
-    # TODO: include error checking assertion points later
-    path_prefix = os.getcwd()
-    path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
-    path_prefix.replace('\\', '/')
-    battery_config_path = f'{path_prefix}/charging_sim/configs/battery.json'
-    with open(battery_config_path, "r") as f:
-        battery_config = json.load(f)
-    params_list = [key for key in battery_config.keys() if "params_" in key]
-    for params_key in params_list:
-        print("testing load battery params: ", params_key)
-        battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])
-    # do the OCV maps as well
-    battery_config["OCV_map_voltage"] = np.loadtxt(path_prefix + battery_config["OCV_map_voltage"])[
-                                        ::-1]  # ascending order
-    battery_config["OCV_map_SOC"] = np.loadtxt(path_prefix + battery_config["OCV_map_SOC"])[::-1]  # ascending order
-
-    buffer_battery = Battery(config=battery_config)
-    buffer_battery.battery_setup()
-    buffer_battery.load_pack_props()
-    buffer_battery.id, buffer_battery.node = 0, 0
-
-    # test dynamics here
-    c = -20  # discharging first
-    voltages = []
-    currents = []
-    for _ in range(5):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-    c = 10
-    for _ in range(100):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-    c = -10
-    for _ in range(2):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-    c = 0
-    for _ in range(200):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-    c = 50
-    for _ in range(5):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-    c = 0  # charging (Amperes)
-    for _ in range(200):
-        buffer_battery.dynamics(c)
-        currents.append(c)
-
-    fig, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
-    ax1.plot_tables(buffer_battery.voltages, label='voltage')
-    # ax2.plot(currents, color='k', label='current')
-    ax2.plot_tables(buffer_battery.currents, color='r', ls='--', label='adjusted current')
-    ax1.set_xlabel('Time step')
-    ax1.set_ylabel('Voltage (V)')
-    ax2.set_ylabel('Current (A)')
-    ax1.legend()
-    plt.legend()
-    plt.savefig("battery_test_plot")
-    plt.close()
-    plt.plot(buffer_battery.SOC_list)
-    plt.savefig("SOC_battery_test")
-    plt.close()
-    plt.plot(buffer_battery.currents)
-    plt.xlabel('Time step')
-    plt.ylabel('Current (Amperes)')
-    print(len(buffer_battery.currents), len(buffer_battery.voltages))
-    plt.savefig("currents_battery_test")
-
-
-if __name__ == "__main__":
-    test()
+# #   TEST THE BATTERY CODE HERE (code below is to sanity-check the battery dynamics)
+# def test():
+#     """This is used to test the battery class module to ensure desired behavior is respected.
+#     Saves relevant plots for visual inspection at the end of the simulated test"""
+#     # TODO: include error checking assertion points later
+#     path_prefix = os.getcwd()
+#     path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
+#     path_prefix.replace('\\', '/')
+#     battery_config_path = f'{path_prefix}/charging_sim/configs/battery.json'
+#     with open(battery_config_path, "r") as f:
+#         battery_config = json.load(f)
+#     params_list = [key for key in battery_config.keys() if "params_" in key]
+#     for params_key in params_list:
+#         print("testing load battery params: ", params_key)
+#         battery_config[params_key] = np.loadtxt(path_prefix + battery_config[params_key])
+#     # do the OCV maps as well
+#     battery_config["OCV_map_voltage"] = np.loadtxt(path_prefix + battery_config["OCV_map_voltage"])[
+#                                         ::-1]  # ascending order
+#     battery_config["OCV_map_SOC"] = np.loadtxt(path_prefix + battery_config["OCV_map_SOC"])[::-1]  # ascending order
+#
+#     buffer_battery = Battery(config=battery_config)
+#     buffer_battery.battery_setup()
+#     buffer_battery.load_pack_props()
+#     buffer_battery.id, buffer_battery.node = 0, 0
+#
+#     # test dynamics here
+#     c = -20  # discharging first
+#     voltages = []
+#     currents = []
+#     for _ in range(5):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#     c = 10
+#     for _ in range(100):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#     c = -10
+#     for _ in range(2):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#     c = 0
+#     for _ in range(200):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#     c = 50
+#     for _ in range(5):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#     c = 0  # charging (Amperes)
+#     for _ in range(200):
+#         buffer_battery.dynamics(c)
+#         currents.append(c)
+#
+#     fig, ax1 = plt.subplots()
+#     ax2 = ax1.twinx()
+#     ax1.plot_tables(buffer_battery.voltages, label='voltage')
+#     # ax2.plot(currents, color='k', label='current')
+#     ax2.plot_tables(buffer_battery.currents, color='r', ls='--', label='adjusted current')
+#     ax1.set_xlabel('Time step')
+#     ax1.set_ylabel('Voltage (V)')
+#     ax2.set_ylabel('Current (A)')
+#     ax1.legend()
+#     plt.legend()
+#     plt.savefig("battery_test_plot")
+#     plt.close()
+#     plt.plot(buffer_battery.SOC_list)
+#     plt.savefig("SOC_battery_test")
+#     plt.close()
+#     plt.plot(buffer_battery.currents)
+#     plt.xlabel('Time step')
+#     plt.ylabel('Current (Amperes)')
+#     print(len(buffer_battery.currents), len(buffer_battery.voltages))
+#     plt.savefig("currents_battery_test")
+#
+#
+# if __name__ == "__main__":
+#     test()

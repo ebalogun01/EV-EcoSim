@@ -1,7 +1,9 @@
 """
+**Overview**
 This module contains the class that loads the electricity price data and structure used for sampling prices during
 simulation.
 
+**Details**\n
 Based on the prices.json config file, this module will load the desired price TOU rate file that will be used in
 optimization problem. The default is the PGE_BEV2_S rate file, which is valid for California, however users can load
 their own TOU rate file. The prices are loaded into a numpy array and can be sampled from during simulation.

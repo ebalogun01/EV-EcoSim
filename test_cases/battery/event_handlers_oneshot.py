@@ -1,7 +1,9 @@
 """
+**Overview**
+
 Module for offline (non-MPC) mode. Very similar program with event_handlers.py. This file is the main power-horse for
-the EV-Ecosim. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
-EV-Ecosim.
+the `EV-Ecosim`. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
+`EV-Ecosim`.
 
 This module imports all simulated objects and their children, which is then run in the co-simulation environment.
 This file is only used when offline battery optimization is done, after which a user wants to simulate the effects on
@@ -11,7 +13,7 @@ the grid (without any state feedback).
 import os
 import sys
 import numpy as np
-import gridlabd
+# import gridlabd
 import sim
 import time
 import gblvar

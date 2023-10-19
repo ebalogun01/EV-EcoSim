@@ -27,6 +27,7 @@ ev50
 test_cases/**.txt/
 test_cases/**.csv/
 test_files
+dev_tests
 mosek
 .idea
 **.idea/

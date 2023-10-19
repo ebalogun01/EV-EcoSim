@@ -12,14 +12,6 @@ Subpackages
 Submodules
 ----------
 
-test\_cases.battery.data\_analysis module
------------------------------------------
-
-.. automodule:: test_cases.battery.data_analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 test\_cases.battery.event\_handlers module
 ------------------------------------------
 

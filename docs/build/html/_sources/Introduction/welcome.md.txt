@@ -1,4 +1,6 @@
-## Background
+## Motivation
+
+### Background
 The electrification of transportation is a key component of the decarbonization of the energy sector. 
 The inevitable growth in EV demand is expected to increase the demand for electricity, which will require the 
 expansion of the electricity grid, while leveraging new and existing technology in clever ways. Coordination and control
@@ -20,5 +22,3 @@ guarantee that the charging station will not exceed a certain power threshold, s
 the installment of the charging unit without the need for an upgrade. In fact, the utility and EVSE operator can come 
 to an agreement where the EVSE operator can provide grid services to the utility, such as peak shaving, voltage regulation,
 etc. This is the future of the electricity grid, and *EV-Ecosim* can help make this a reality.
-
-![baseload_data_proto.png](..%2Freadme%2Fdoc_images%2Fbaseload_data_proto.png)

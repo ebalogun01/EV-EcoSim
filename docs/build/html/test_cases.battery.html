@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>test_cases.battery package &mdash; EV-Ecosim 1.0.0 documentation</title>
+  <title>Battery test case &mdash; EV-Ecosim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="test_cases.battery.feeder_population package" href="test_cases.battery.feeder_population.html" />
-    <link rel="prev" title="test_cases.base_case package" href="test_cases.base_case.html" /> 
+    <link rel="next" title="Battery feeder population" href="test_cases.battery.feeder_population.html" />
+    <link rel="prev" title="Base test case" href="test_cases.base_case.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,22 +48,22 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="test_cases.html">Test cases</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html">test_cases.base_case package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">test_cases.battery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html">Base test case</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Battery test case</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="test_cases.html#module-test_cases">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -84,7 +84,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
           <li class="breadcrumb-item"><a href="test_cases.html">Test cases</a></li>
-      <li class="breadcrumb-item active">test_cases.battery package</li>
+      <li class="breadcrumb-item active">Battery test case</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,18 +93,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="test-cases-battery-package">
-<h1>test_cases.battery package<a class="headerlink" href="#test-cases-battery-package" title="Permalink to this heading"></a></h1>
+  <section id="battery-test-case">
+<h1>Battery test case<a class="headerlink" href="#battery-test-case" title="Permalink to this heading"></a></h1>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="test_cases.battery.feeder_population.html">test_cases.battery.feeder_population package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-module">test_cases.battery.feeder_population.feeder_population module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_cases.battery.feeder_population.html">Battery feeder population</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.feeder_population">test_cases.battery.feeder_population.feeder_population module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-old-module">test_cases.battery.feeder_population.feeder_population_old module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.glm_mod_functions">test_cases.battery.feeder_population.glm_mod_functions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -112,9 +110,6 @@
 </section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
-</section>
-<section id="test-cases-battery-data-analysis-module">
-<h2>test_cases.battery.data_analysis module<a class="headerlink" href="#test-cases-battery-data-analysis-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="test-cases-battery-event-handlers-module">
 <h2>test_cases.battery.event_handlers module<a class="headerlink" href="#test-cases-battery-event-handlers-module" title="Permalink to this heading"></a></h2>
@@ -143,17 +138,14 @@
 <section id="test-cases-battery-voltdump2-module">
 <h2>test_cases.battery.voltdump2 module<a class="headerlink" href="#test-cases-battery-voltdump2-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-test_cases.battery">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-test_cases.battery" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="test_cases.base_case.html" class="btn btn-neutral float-left" title="test_cases.base_case package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-right" title="test_cases.battery.feeder_population package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="test_cases.base_case.html" class="btn btn-neutral float-left" title="Base test case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-right" title="Battery feeder population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

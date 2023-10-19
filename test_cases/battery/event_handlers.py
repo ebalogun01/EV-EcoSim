@@ -1,12 +1,13 @@
 """
-This module is the main power-horse for the EV-Ecosim. It includes the modules that allow GridLabD to interact
-with all the custom-built modules developed in EV-Ecosim. This file imports all simulated objects and their children,
+**Overview**
+This module is the main power-horse for the `EV-Ecosim`. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in `EV-Ecosim`. This file imports all simulated objects and their children,
 which is then run in the co-simulation environment.
 """
 
 import os
 import numpy as np
-import gridlabd
+# import gridlabd
 import sim
 import time
 import gblvar

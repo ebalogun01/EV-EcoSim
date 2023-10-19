@@ -181,7 +181,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
         No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
         settings and inputs.
 
-        :return list scenarios_list: List of scenario dicts.
+        :return: List of scenario dicts.
         """
         scenarios_list = []
         voltage_idx, idx = 0, 0

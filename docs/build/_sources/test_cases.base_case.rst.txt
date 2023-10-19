@@ -1,6 +1,13 @@
 test\_cases.base\_case package
 ==============================
 
+Module contents
+---------------
+
+.. automodule:: test_cases.base_case
+   :members:
+   :undoc-members:
+   :show-inheritance
 Submodules
 ----------
 
@@ -52,10 +59,4 @@ test\_cases.base\_case.voltdump2 module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: test_cases.base_case
-   :members:
-   :undoc-members:
-   :show-inheritance:
+:

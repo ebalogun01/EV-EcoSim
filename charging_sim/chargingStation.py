@@ -1,6 +1,7 @@
 """
 Hosts the Charging Station class.
 """
+
 from utils import num_steps
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,7 +26,7 @@ class ChargingStation:
         self.storage = storage
         self.capacity = config["L2_power_cap"] or config["dcfc_power_cap"]
         self.solar = solar
-        self.power_factor = 1.0
+        self.power_factor = config["power_factor"]
         self.status = status
         self.loads = [0]
         self.total_load = [0]
@@ -41,10 +42,16 @@ class ChargingStation:
         self.pge_blocks = [0]  # this is used with the new pge rate schedule
 
     def is_charging(self):
+        """
+        Checks if the unit is charging.
+
+        :return: Boolean value indicating if the unit is charging.
+        """
         return self.power > self.auxiliary_power
 
     def update_load(self, net_grid_load, ev_load):
-        """Updates the charging station loads, including DER assets. MPC mode.
+        """
+        Updates the charging station loads, including DER assets. MPC mode.
 
         :param net_grid_load: Net load charging station pulls from the grid.
         :param ev_load: Electric Vehicle charging demand.
@@ -60,7 +67,8 @@ class ChargingStation:
         self.storage.pred_power += self.controller.battery_power.value[0, 0],
 
     def update_load_oneshot(self, net_grid_load, ev_load):
-        """Updates the charging station loads, including DER assets. Offline mode (Non-MPC).
+        """
+        Updates the charging station loads, including DER assets. Offline mode (Non-MPC).
 
         :param net_grid_load: Net load charging station pulls from the grid.
         :param ev_load: Electric Vehicle charging demand.
@@ -76,13 +84,20 @@ class ChargingStation:
         self.storage.pred_power.extend(self.controller.battery_power.value.flatten().tolist())
 
     def is_EV_arrived(self):
+        """
+        Checks if an EV has arrived at the charging station.
+
+        :return: Boolean value indicating if an EV has arrived at the charging station.
+        """
         if self.current_load > 0:
             print("EV is currently at Station ", self.id)
             return True
+        return False
 
     def update_status(self):
         """
         Updates the current status of the EV charging station.
+
         :return: None.
         """
         if round(self.power[0], 2) > 0:
@@ -111,6 +126,7 @@ class ChargingStation:
 
     def save_sim_data(self, save_prefix: str):
         """
+        Saves all relevant simulation data to csv files.
 
         :param save_prefix: Path string to save the data from simulation.
         :return: None.
