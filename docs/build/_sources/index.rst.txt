@@ -4,28 +4,29 @@
    contain the root `toctree` directive.
 
 =====================================
-Welcome to EV-Ecosim 1.0.0 documentation!
+Welcome to *EV-Ecosim* 1.0.0 documentation!
 =====================================
-EV-Ecosim is a python-based multi-timescale grid-aware python-based co-simulation platform for modeling and simulation
-of electric vehicle (EV) charging stations integrated with Distributed Energy Resources (DERs), such as solar and
-battery systems. This platform interfaces with GridLAB-D, a 3-phase unbalanced power flow solver, to capture the impacts
-of EV (Fast) Charging Stations on power distribution networks.
+
+.. image:: ../../doc_images/sim_control_diagram.png
+    :width: 100%
+    :align: center
+    :alt: EV-Ecosim Simulation Framework
+--------------------------------
+
+--------------------------------
+What is *EV-Ecosim*?
+--------------------------------
+EV-Ecosim is a python-based multi-timescale grid-aware co-simulation platform for modeling, control, optimization,
+and simulation of electric vehicle (EV) charging stations. The charging infrastructure developed within this platform is
+integrated with Distributed Energy Resources (DERs), such as solar and battery systems. This platform interfaces with
+GridLAB-D, a 3-phase unbalanced power flow solver, to capture the impacts of EV (Fast) Charging Stations on power
+distribution networks.
 
 Links
 --------
 - `Preprint <https://doi.org/10.36227/techrxiv.23596725.v2>`_
 - `Repository <https://github.com/ebalogun01/EV50_cosimulation/>`_
 -  Web-tool (coming soon!)
-
-.. image:: ../../doc_images/sim_frame.png
-    :width: 150%
-    :length: 150%
-    :caption: EV-Ecosim Simulation Framework
-    :align: center
-    :alt: EV-Ecosim Simulation Framework
-
-We have made a web-tool version available for public use <include link>. More sophisticated users can download the
-source code and run the platform locally.
 
 .. toctree::
    :hidden:
@@ -35,10 +36,10 @@ source code and run the platform locally.
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Tutorials:
 
-   Tutorial<tutorials>
+   Tutorial<tutorials/tutorial.html>
 
 .. toctree::
    :hidden:

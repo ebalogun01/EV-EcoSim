@@ -20,9 +20,9 @@ sys.path.append('../../EV50_cosimulation/analysis')
 
 # sys.path.append('../../EV50_cosimulation/docs/source/doc_images')
 
-project = 'EV-Ecosim'
+project = 'EV-EcoSim'
 copyright = '2023, Emmanuel Balogun'
-author = 'Emmanuel Balogun'
+author = 'Emmanuel O. Balogun'
 release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------

@@ -1,4 +1,4 @@
-test\_cases.base\_case package
+Base test case
 ==============================
 
 Module contents

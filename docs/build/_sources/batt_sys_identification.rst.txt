@@ -1,8 +1,5 @@
-batt\_sys\_identification package
+Battery System Identification
 =================================
-
-Submodules
-----------
 
 batt\_sys\_identification.battery\_identification module
 --------------------------------------------------------
@@ -12,10 +9,3 @@ batt\_sys\_identification.battery\_identification module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: batt_sys_identification
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,4 +1,4 @@
-test\_cases.battery package
+Battery test case
 ===========================
 
 Subpackages
@@ -84,10 +84,3 @@ test\_cases.battery.voltdump2 module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: test_cases.battery
-   :members:
-   :undoc-members:
-   :show-inheritance:

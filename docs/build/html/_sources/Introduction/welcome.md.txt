@@ -17,8 +17,8 @@ the desired location. The utility would then need to perform a grid study to det
 desired location. This process can take months to complete sometimes. Eventually the utility might decide that a new 
 power transformer is needed to support the new charging station (let's not even get into transformer supply-chain 
 issues. However, with co-located DERs, such as solar PV and battery storage, the utility and EVSE operator
-might be able to avoid upgrading the transformer. This is where *EV-Ecosim* comes in. Imagine if the EVSE operator can 
+might be able to avoid upgrading the transformer. This is where *EV-EcoSim* comes in. Imagine if the EVSE operator can 
 guarantee that the charging station will not exceed a certain power threshold, say 100 kW. Then,the utility can approve
 the installment of the charging unit without the need for an upgrade. In fact, the utility and EVSE operator can come 
 to an agreement where the EVSE operator can provide grid services to the utility, such as peak shaving, voltage regulation,
-etc. This is the future of the electricity grid, and *EV-Ecosim* can help make this a reality.
+etc. This is the future of the electricity grid, and *EV-EcoSim* can help make this a reality.

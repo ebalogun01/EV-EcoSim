@@ -4,7 +4,7 @@ A grid-aware co-simulation platform for the design and optimization of electric 
 [Link to preprint](https://doi.org/10.36227/techrxiv.23596725.v2)
 
 
-<img src="doc_images/sim_control_diagram.png">
+<img src="doc_images/sim_frame.png">
 
 ### Author
 Emmanuel Balogun: [ebalogun@stanford.edu](ebalogun@stanford.edu)

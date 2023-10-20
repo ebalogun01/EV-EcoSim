@@ -1,8 +1,5 @@
-charging\_sim package
+Charging Simulator
 =====================
-
-Submodules
-----------
 
 charging\_sim.battery module
 ----------------------------
