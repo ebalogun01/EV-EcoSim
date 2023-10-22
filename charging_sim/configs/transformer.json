@@ -1,0 +1,20 @@
+{
+  "notes": "resolution is in minutes..contains details for each transformer object that is simulated. Please add more props below with generic names",
+  "resolution": 15,
+  "type": "oil",
+  "ambient-temp": 20,
+  "top-oil-temp": 25,
+  "power": 0,
+  "dt": 10,
+  "m": 0.8,
+  "n": 0.9,
+  "hot-spot-temp": 25,
+  "rated_power": 100,
+  "initial_Top_oil_temp": 25,
+  "initial_Winding_temp": 25,
+  "initial_Oil_level": 100,
+  "initial_hot_spot_temp": 25,
+  "rating": 100,
+  "life": 10,
+  "life-notes": "life is in years..this should be deleted when done"
+}
