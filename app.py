@@ -1,5 +1,5 @@
 """
-Runs the application from front-end to back-end.
+Runs the EV-EcoSim application. This is the main file that is run to start the application.
 """
 import sys
 
