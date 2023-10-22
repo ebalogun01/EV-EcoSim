@@ -119,13 +119,16 @@ def on_precommit(t):
 
     # get transformer ratings and possibly other properties if first timestep
     if gblvar.it == 0:
+        """
+        This is where the transformers get initially instantiated. Done only once.
+        """
         gblvar.trans_rated_s = []
         gblvar.trans_loading_percent = []
         for i in range(len(gblvar.trans_list)):
             name = gblvar.trans_list[i]
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
             trans_config_name = data['configuration']
-            data = gridlabd.get_object(trans_config_name)
+            data = gridlabd.get_object(trans_config_name)   # todo: This will be needed to initialize the transformer objects.
             gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
         gblvar.trans_rated_s_np = np.array(gblvar.trans_rated_s).reshape(1, -1)
 
@@ -134,7 +137,7 @@ def on_precommit(t):
     for i in range(len(gblvar.trans_list)):
         name = gblvar.trans_list[i]
         data = gridlabd.get_object(name)
-        trans_power_str = data['power_in']
+        trans_power_str = data['power_in']  # This gets us the power flowing through the transformer at the current time step.
         # print(trans_power_str)
         pmag, pdeg = get_trans_power(trans_power_str)
         gblvar.trans_power.append(pmag / 1000)  # in units kVA
@@ -147,6 +150,7 @@ def on_precommit(t):
     ####################### SIMULATE ##################################
 
     # propagate transformer state
+    """This will now be done by running through all the transformer objects and calling its thermal_dynamics method"""
     sim.sim_transformer(temperature_data=temperature_data)
     # sim.sim_transformer()
 

@@ -1,8 +1,0 @@
-{
-  "notes": "resolution is in minutes..contains details for each transformer object that is simulated. Please add more props below with generic names",
-  "resolution": 15,
-  "type": "oil or dry",
-  "rating": 100,
-  "life": 10,
-  "life-notes": "life is in years..this should be deleted when done"
-}

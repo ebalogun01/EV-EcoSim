@@ -75,8 +75,8 @@ trans_Ta = 20.0  # ambient temperature[C] {SLIGHTLY HIGHER THAN JUNE AVERAGE IN 
 trans_R = 5.0   # ratio of copper loss to iron loss at rated load
 trans_tau_o = 2 * 60 * 60.0 # top oil time constant in seconds
 trans_tau_h = 6 * 60.0  # hotspot time constant in seconds
-trans_n = 0.9   # how did we get these numbers ?
-trans_m = 0.8   # how did we get these numbers ?
+trans_n = 0.9   # Depends on transformer cooling mode (forced vs. natural convection). Typical values.
+trans_m = 0.8   # Depends on transformer cooling mode (forced vs. natural convection). Typical values.
 trans_delta_theta_hs_rated = 28.0   # NEED TO DECIDE HOW IMPORTANT THESE WILL BE
 trans_delta_theta_oil_rated = 36.0  # todo: double-verify
 
