@@ -12,8 +12,9 @@ class OilTypeTransformer:
         simulated in 10 seconds increment).
         Nonlinear model from Swift et. Al (2001).
 
-        :param temperature_data: Ambient temperature data for a given region.
         :param config: Configuration file for transformer parameters.
+        :param global_clock: Global clock object. Helps to keep track of time for different objects.
+        :param temperature_data: Ambient temperature data for a given region.
         """
         self.temperature_data = temperature_data  # This is used for time-varying ambient temperature.
         self.To = config['top-oil-temp']  # Top oil temperature in degrees Celsius. Initial.
