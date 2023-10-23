@@ -1,21 +1,8 @@
 """
 Module for the transformer class. This module contains classes for is used to simulate the thermal dynamics of a transformer."""
 
-import numpy as np
 import sys
-import json
-
 sys.path.append('../..')
-
-
-def to_seconds(time):
-    """
-    Convert time to seconds.
-
-    :param time: Time in minutes.
-    :return: Time in seconds.
-    """
-    return time * 60
 
 
 class OilTypeTransformer:
@@ -41,6 +28,7 @@ class OilTypeTransformer:
         self.To_list = []  # Top oil temperature states.
         self.Th_list = []  # Hot-spot temperature states.
         self.Ta_list = []  # Ambient temperature states.
+        self.steps = []  # Time steps.
 
         self._R = config['R']  # Ratio of copper loss to iron loss at rated load.
         self._rated_s = config['rated-power']
@@ -93,17 +81,18 @@ class OilTypeTransformer:
         self.To_list += self.To,
         self.Th_list += self.Th,
 
+    def plot_states(self):
+        """
+        Plot the transformer thermal states.
 
-def test():
-    """Write a test that loads the transformer config and tests the transformer class."""
+        :return: None.
+        """
+        import matplotlib.pyplot as plt
+        plt.plot(self.To_list, label='Top oil temperature')
+        plt.plot(self.Th_list, label='Hot-spot temperature')
+        plt.plot(self.Ta_list, label='Ambient temperature')
+        plt.ylabel('Temperature (C)')
+        plt.legend()
+        plt.show()
 
-    # Load the JSON config file.
-    with open('transformer_config.json', 'r') as f:
-        config = json.load(f)
-
-    # Create a transformer object.
-    transformer = Transformer(config=config)
-
-    # Run the transformer simulation.
-    transformer.thermal_dynamics()
 
