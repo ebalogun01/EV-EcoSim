@@ -21,7 +21,8 @@ def init_glmptype():
     tz_file_name = "tzinfo.txt"
     # FIND LOCATION OF tzinfo.txt file
     # for root,dirs, files in os.walk(r'/usr/local/src/gridlabd/gldcore/'):
-    for root, dirs, files in os.walk(r'/usr/local/share/gridlabd/'):
+    # for root, dirs, files in os.walk(r'/usr/local/share/gridlabd/'):    # BUG
+    for root, dirs, files in os.walk(os.environ['GLD_ETC']):
         for name in files:
             if name == tz_file_name:
                 tz_file = os.path.abspath(os.path.join(root, name))

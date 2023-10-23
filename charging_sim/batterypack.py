@@ -463,6 +463,7 @@ class Battery:
         self.iR2 = np.exp(-dt / (self.R2 * self.C2)) * self.iR2 + (1 - np.exp(-dt / (self.R2 * self.C2))) * current
         self.voltage = self.OCV + current * self.Ro + self.iR1 * self.R1 + self.iR2 * self.R2
         self.power = self.voltage * self.current / 1000  # kw
+        print("Voltage: ", self.voltage)
         if append:
             self.currents += current,
             self.true_power += self.power,

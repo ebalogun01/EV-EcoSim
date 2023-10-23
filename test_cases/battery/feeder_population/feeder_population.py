@@ -25,14 +25,14 @@ are files that are read in to run the EV-Ecosim environment.
 
 """
 
-# import glm_mod_functions
-# import os
-# import pandas
-# import datetime
-# import numpy as np
-# import ast
-# import pickle
-# import random
+import glm_mod_functions
+import os
+import pandas
+import datetime
+import numpy as np
+import ast
+import pickle
+import random
 
 
 # TODO: check all capacitor banks on and voltage
@@ -514,7 +514,7 @@ def run():
                 glm_house_dict[key_index] = {'name': 'tn_' + str(k),
                                              'nominal_voltage': f'{L2_voltage}.00',
                                              'phases': str(load_phases[i]) + "S",
-                                             'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
+                                             'constant_power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                                  '').replace(
                                                  ')',
                                                  '')}  # +3 is an ad-hoc way to make base case run normally
@@ -523,11 +523,11 @@ def run():
                 glm_house_dict[key_index] = {'name': 'tn_' + str(k),
                                              'nominal_voltage': '120.00',
                                              'phases': str(load_phases[i]) + "S",
-                                             'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
+                                             'constant_power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                                  '').replace(
                                                  ')',
                                                  '')}  # +3 is an ad-hoc way to make base case run normally
-            obj_type[key_index] = {'object': 'triplex_node'}
+            obj_type[key_index] = {'object': 'triplex_load'}
             key_index = key_index + 1
             # TODO: reduced the above based on num transformers to ensure that things run normally.
 

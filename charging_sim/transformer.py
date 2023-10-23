@@ -20,6 +20,7 @@ class OilTypeTransformer:
         self.To = config['top-oil-temp']  # Top oil temperature in degrees Celsius. Initial.
         self.Th = config['hot-spot-temp']  # Hotspot temperature in degrees Celsius. Initial.
         self.Ta = config['ambient-temp']  # Ambient temperature in degrees Celsius. Default.
+        self.name = config['name']  # Name of the transformer.
 
         self.int_method = config['integration-method']  # Integration method ['euler' or 'RK4'].
         self.dt = config['dt']   # Timestep in seconds.
@@ -29,10 +30,11 @@ class OilTypeTransformer:
         self.To_list = []  # Top oil temperature states.
         self.Th_list = []  # Hot-spot temperature states.
         self.Ta_list = []  # Ambient temperature states.
+        self.loading_percents = []  # Loading percent states.
         self.steps = []  # Time steps.
 
         self._R = config['R']  # Ratio of copper loss to iron loss at rated load.
-        self._rated_s = config['rated-power']
+        self._rated_s = config['rated-power']   # Rated power in kVA.
         self._delta_theta_oil_rated = config['delta_theta_oil_rated']
         self._delta_theta_hs_rated = config['delta_theta_hs_rated']
 
@@ -81,6 +83,7 @@ class OilTypeTransformer:
         self.Ta_list += self.Ta,
         self.To_list += self.To,
         self.Th_list += self.Th,
+        self.loading_percents += (power / self._rated_s)*100,
 
     def plot_states(self):
         """

@@ -8,10 +8,11 @@ Currently, user defines the battery Capacities (Wh) they want to compare and the
 
 # import charging_sim
 import sys
+import numpy as np
 sys.path.append('../../../EV50_cosimulation/charging_sim')
 import multiprocessing as mp
 import ast
-from charging_sim.utils import month_days
+from utils import month_days
 
 
 # GET STATION CONFIGURATIONS
@@ -56,6 +57,19 @@ def make_scenarios_old():
     return scenarios_list
 
 
+def make_month_str(month_int: int):
+    """
+    Makes a month string from the month integer. Adds 0 if the month is less than 10.
+
+    :param month_int: 1 - January, 2 - February, etc.
+    :return: String of the month.
+    """
+    if month_int >= 10:
+        return str(month_int)
+    else:
+        return f'0{str(month_int)}'
+
+
 def load_input_config():
     """
     Loads the configuration file for the simulation and returns a dict
@@ -63,7 +77,7 @@ def load_input_config():
     :return:
     """
     import json
-    with open('configs/config.json', 'r') as f:
+    with open('../../../EV50_cosimulation/user_input.json', 'r') as f:
         config = json.load(f)
     return config
 
@@ -76,6 +90,90 @@ def make_scenarios():
 
     :return: List of scenario dicts.
     """
+    inputs = load_input_config()
+    # Preload.
+    station_config = open('feeder_population/config.txt', 'r')
+    param_dict = ast.literal_eval(station_config.read())
+    station_config.close()
+    start_time = param_dict['starttime'][:6] + make_month_str(inputs['month']) + param_dict['starttime'][8:]
+    end_time = param_dict['endtime'][:6] + make_month_str(inputs['month']) + param_dict['endtime'][8:]
+
+    charging_station_config = inputs["charging_station"]
+    battery_config = inputs["battery"]
+    solar_config = inputs["solar"]
+    DAY_MINUTES = 1440
+    OPT_TIME_RES = 15  # minutes
+    NUM_DAYS = inputs["num_days"]  # determines optimization horizon
+    NUM_STEPS = NUM_DAYS * DAY_MINUTES // OPT_TIME_RES  # number of steps to initialize variables for opt
+    print("basic configs done...")
+
+    # Modify configs based on user inputs.
+    # Modify the config file in feeder population based on the user inputs.
+    # Append to list of capacities as the user adds more scenarios. Limit the max user scenarios that can be added.
+
+    # Modify param dict.
+    param_dict['starttime'] = f'{start_time}'
+    param_dict['endtime'] = f'{end_time}'
+
+    print(charging_station_config)
+    # Control user inputs for charging stations.
+    if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
+        raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
+
+    # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
+    print(charging_station_config)
+
+    if charging_station_config['num_dcfc_stalls_per_node']:
+        param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
+        if charging_station_config["dcfc_charging_stall_base_rating"]:
+            param_dict[
+                'dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
+
+    if charging_station_config['num_l2_stalls_per_node']:
+        param_dict['num_l2_stalls_per_node'] = charging_station_config['num_l2_stalls_per_node']
+        if charging_station_config["l2_power_cap"]:
+            param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
+
+    # Obtaining the charging station capacities.
+    dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict[
+        'num_dcfc_stalls_per_node']
+    L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict[
+        'num_l2_stalls_per_node']
+    month = int(str(param_dict['starttime']).split('-')[1])
+    # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+    month_str = list(month_days.keys())[month - 1]
+
+    # Save the new param_dict to the config file.
+    station_config = open('feeder_population/config.txt', 'w')
+    station_config.writelines(', \n'.join(str(param_dict).split(',')))
+    station_config.close()
+
+    # Load DCFC locations txt file.
+    print('...loading charging bus nodes')
+    dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
+    if type(dcfc_nodes) is not list:
+        dcfc_nodes = [dcfc_nodes]
+    dcfc_dicts_list = []
+    for node in dcfc_nodes:
+        dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
+
+    L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2
+    if type(L2_charging_nodes) is not list:
+        L2_charging_nodes = [L2_charging_nodes]
+    l2_dicts_list = []
+    for node in L2_charging_nodes:
+        l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
+    num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
+    # Needs to come in as input initially & should be initialized prior from the feeder population.
+
+    #   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.
+    #   (Does not work currently)
+
+    # Battery scenarios.
+    energy_ratings = battery_config["pack_energy_cap"]  # kWh
+    max_c_rates = battery_config["max_c_rate"]
+
+    # New code starts here.
     scenarios_list = []
     voltage_idx, idx = 0, 0
     # Seems like we don't get list[int] for voltages
@@ -83,8 +181,9 @@ def make_scenarios():
         for c_rate in max_c_rates:
             scenario = {
                 'index': idx,
-                'oneshot': True,
+                'oneshot': False,
                 'start_month': start_month,
+                'month_str': month_str,
                 'opt_solver': 'GUROBI',
                 'battery': {
                     'pack_energy_cap': Er,
