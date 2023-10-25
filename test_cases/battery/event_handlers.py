@@ -41,7 +41,7 @@ if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
 l2_dicts_list = []
 for node in L2_charging_nodes:
-    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['charging_station']['L2_cap'], "node": node},
+    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['charging_station']['L2_power_cap'], "node": node},
 
 gblvar.scenario['L2_nodes'] = L2_charging_nodes
 gblvar.scenario['dcfc_nodes'] = dcfc_nodes
@@ -85,14 +85,15 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    gblvar.node_list = find("class=node")
-    gblvar.load_list = find("class=load")
-    gblvar.sim_file_path = save_folder_prefix
-    gblvar.tn_list = find("class=triplex_node")
-    gblvar.trans_list = find("class=transformer")
-    gblvar.transconfig_list = find("class=transformer_configuration")
+    # gblvar.node_list = find("class=node") # Never used currently, so commented out.
+    # gblvar.load_list = find("class=load")
+    # gblvar.sim_file_path = save_folder_prefix
+    # gblvar.tn_list = find("class=triplex_node")
+    # gblvar.trans_list = find("class=transformer") # Get all transformers.
+    gblvar.trans_list = find_subset_trans("class=transformer")  # Only get transformers connected to EV charging.
+    # gblvar.transconfig_list = find("class=transformer_configuration")
 
-    # NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
+    # NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION - use makefile to do this.
     EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     if not os.path.isdir(save_folder_prefix):
@@ -128,7 +129,6 @@ def on_precommit(t):
     elif global_clock.it > 1:
         gblvar.vm = np.concatenate((gblvar.vm, vm_array.reshape(1, -1)), axis=0)
         gblvar.vp = np.concatenate((gblvar.vp, vp_array.reshape(1, -1)), axis=0)
-    # print(vm_array[-1])
 
     # get transformer ratings and possibly other properties if first timestep
     if global_clock.it == 0:
@@ -150,6 +150,7 @@ def on_precommit(t):
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
+    #   Here we simulate the thermal dynamics of all transformers, however we can speed up by only simulated a subset
     for i in range(len(gblvar.trans_list)):
         name = gblvar.trans_list[i]
         data = gridlabd.get_object(name)
@@ -184,6 +185,7 @@ def on_precommit(t):
         total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
+            # This works because L2 Charging Nodes are modelled with existing triplex nodes.
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             total_node_load += charger.get_current_load() * 1000  # for L2 (converting to Watts)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
@@ -244,7 +246,28 @@ def find(criteria: str):
             if "name" in item.keys():
                 result.append(item["name"])
             else:
-                result.append(f'{item["class"]}:{item["id"]}')
+                result.append(f'{item["class"]}:{item["id"]}')  # Not sure I understand this line.
+    return result
+
+
+def find_subset_trans(criteria: str):
+    """
+    Finds and returns objects in gridlabd that satisfy certain criteria. This function only gets transformers
+    for which are connected to EV charging, to save compute time.
+
+    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :return: list of objects that satisfy the criteria.
+    """
+    finder = criteria.split("=")
+    if len(finder) < 2:
+        raise IOError("find(criteria='key=value'): criteria syntax error")
+    objects = gridlabd.get("objects")
+    result = []
+    for name in objects:
+        item = gridlabd.get_object(name)
+        if finder[0] in item and item[finder[0]] == finder[1]:
+            if "name" in item.keys() and ("dcfc" in item["name"] or "L2" in item["name"]):
+                result.append(item["name"])
     return result
 
 
@@ -267,7 +290,6 @@ def save_transformer_states():
             trans_Th = np.hstack((trans_Th, np.array(trans_map[trans_name].Th_list).reshape(-1, 1)))
             trans_To = np.hstack((trans_To, np.array(trans_map[trans_name].To_list).reshape(-1, 1)))
             trans_loading = np.hstack((trans_loading, np.array(trans_map[trans_name].loading_percents).reshape(-1, 1)))
-    print(trans_Th.shape)
     # return
     pd.DataFrame(data=trans_Th, columns=relevant_trans_keys).to_csv(
         f'{save_folder_prefix}/trans_Th.csv', index=False)

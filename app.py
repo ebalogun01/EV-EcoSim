@@ -1,6 +1,10 @@
 """
 Runs the EV-EcoSim application. This is the main file that is run to start the application.
+This module runs the optimization offline without the power system or battery state feedback for each time-step.
+This is done to save time. Once this is done, one can study the effects on the power system. Power system states are
+propagated post optimization to fully characterize what would have occurred if in-situ optimization was done.
 """
+
 import sys
 
 sys.path.append('./charging_sim')
@@ -11,9 +15,6 @@ import numpy as np
 import json
 import ast
 from charging_sim.utils import month_days
-
-
-# if running app and uploading data, the system must load the different classes with the right temp datasets.
 
 
 def create_temp_configs():

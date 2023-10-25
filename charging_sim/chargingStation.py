@@ -8,10 +8,15 @@ import matplotlib.pyplot as plt
 
 
 class ChargingStation:
-    """The charging station class produces a load with a power factor parameter that determines its reactive
+    """
+    The charging station class produces a load with a power factor parameter that determines its reactive
     load contribution, if any. It also retains all information of all power injection at its grid node/bus.
     It is initialized with its location, capacity, etc. This class ingests the battery, solar and controller modules
     to which it is assigned.
+
+    A `ChargingStation` can have multiple charging stalls/ports, which contribute to its total capacity. The
+    `ChargingStation` class is responsible for managing the charging of all EVs connected to it. It is also
+    responsible for managing the charging of the battery and solar assets connected to it.
 
     :param object storage: Storage object assigned to the charging station.
     :param dict config:
@@ -24,7 +29,7 @@ class ChargingStation:
         self.id = self.config["locator_index"]
         self.loc = config["location"]
         self.storage = storage
-        self.capacity = config["L2_power_cap"] or config["dcfc_power_cap"]
+        self.capacity = config["L2_power_cap"] or config["dcfc_power_cap"]  # One of them is always 0.
         self.solar = solar
         self.power_factor = config["power_factor"]
         self.status = status

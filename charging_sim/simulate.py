@@ -43,9 +43,9 @@ def create_results_folder():
 
     :return:
     """
-    if os.path.isdir('analysis/results'):
+    if os.path.isdir('../analysis/results'):
         return
-    os.mkdir('analysis/results')
+    os.mkdir('../analysis/results')
 
 
 def load_default_input():
@@ -54,7 +54,7 @@ def load_default_input():
 
     :return:
     """
-    with open('default_user_input.json', "r") as f:
+    with open('../default_user_input.json', "r") as f:
         user_input = json.load(f)
     validate_options(user_input)  # todo: Finish implementing this part later.
     return user_input
@@ -128,6 +128,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
     print(charging_station_config)
 
+    # Updating param_dict with user inputs information.
     if charging_station_config['num_dcfc_stalls_per_node']:
         param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
         if charging_station_config["dcfc_charging_stall_base_rating"]:
@@ -153,7 +154,8 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     station_config.writelines(', \n'.join(str(param_dict).split(',')))
     station_config.close()
 
-    # Load DCFC locations txt file.
+    # Load DCFC and L2 Charging locations txt file.
+    # Todo: make this work for multiple stations with different capacities. It currently only works for one station.
     print('...loading charging bus nodes')
     dcfc_nodes = np.loadtxt('test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
     if type(dcfc_nodes) is not list:
@@ -180,7 +182,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
     def make_scenarios():
         """
-        This is used to make the list of scenarios (dicts) that are used to run the simulations.
+        Make the list of scenarios (dicts) that are used to run the simulations.
         No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
         settings and inputs.
 
@@ -188,7 +190,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
         """
         scenarios_list = []
         voltage_idx, idx = 0, 0
-        # Seems like we don't get list[int] for voltages
+
         for Er in energy_ratings:
             for c_rate in max_c_rates:
                 scenario = {

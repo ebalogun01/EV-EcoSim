@@ -1,5 +1,5 @@
 """
-Module for the transformer class. This module contains classes for is used to simulate the thermal dynamics of a transformer."""
+Module for the transformer class. This module contains classes for simulating the thermal dynamics of transformers."""
 
 import sys
 sys.path.append('../..')
