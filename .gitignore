@@ -26,8 +26,6 @@ ev50
 **.dummy2.player
 test_cases/**.txt/
 test_cases/**.csv/
-test_files
-dev_tests
 mosek
 .idea
 **.idea/
