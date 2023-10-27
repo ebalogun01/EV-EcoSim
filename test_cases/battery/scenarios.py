@@ -15,46 +15,10 @@ import ast
 from utils import month_days
 
 
-# GET STATION CONFIGURATIONS
-station_config = open('feeder_population/config.txt', 'r')
-param_dict = station_config.read()
-station_config.close()
-param_dict = ast.literal_eval(param_dict)
-L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
-dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
-start_month = int(str(param_dict['starttime']).split('-')[1])
-month_str = list(month_days.keys())[start_month-1]
-
 # RUN TYPE
 sequential_run = False
 parallel_run = False
 single_run = True
-
-# BATTERY SCENARIOS
-num_vars = 6
-min_power = 0
-max_power = 0
-power_ratings = []  # this should be redundant for max_c_rate
-# month = 6
-energy_ratings = [5e4, 10e4, 20e4, 40e4, 80e4]
-max_c_rates = [0.1, 0.2, 0.5, 1, 2]
-min_SOCs = [0.1, 0.2, 0.3]
-max_SOCs = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
-
-
-def make_scenarios_old():
-    """
-    Creates the list of scenarios (dicts) that are used to run the simulations.
-    """
-    scenarios_list = []
-    idx = 0
-    for Er in energy_ratings:
-        for c_rate in max_c_rates:
-            scenario = {'pack_energy_cap': Er, 'max_c_rate': c_rate, 'index': idx, 'start_month': start_month,
-                        'L2_cap': L2_station_cap, 'dcfc_cap': dcfc_station_cap, 'month_str': month_str}
-            scenarios_list.append(scenario)
-            idx += 1
-    return scenarios_list
 
 
 def make_month_str(month_int: int):
@@ -182,7 +146,7 @@ def make_scenarios():
             scenario = {
                 'index': idx,
                 'oneshot': False,
-                'start_month': start_month,
+                'start_month': month,
                 'month_str': month_str,
                 'opt_solver': 'GUROBI',
                 'battery': {
