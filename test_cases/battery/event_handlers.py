@@ -186,6 +186,7 @@ def on_precommit(t):
         # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             # This works because L2 Charging Nodes are modelled with existing triplex nodes.
+            # We do not give L@
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             total_node_load += charger.get_current_load() * 1000  # for L2 (converting to Watts)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))

@@ -99,7 +99,6 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
     param_dict = ast.literal_eval(station_config.read())
     station_config.close()
-    print(type(param_dict))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
 
@@ -120,13 +119,11 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     param_dict['starttime'] = f'{start_time}'
     param_dict['endtime'] = f'{end_time}'
 
-    print(charging_station_config)
     # Control user inputs for charging stations.
     if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
         raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
 
     # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
-    print(charging_station_config)
 
     # Updating param_dict with user inputs information.
     if charging_station_config['num_dcfc_stalls_per_node']:
@@ -157,14 +154,14 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     # Load DCFC and L2 Charging locations txt file.
     # Todo: make this work for multiple stations with different capacities. It currently only works for one station.
     print('...loading charging bus nodes')
-    dcfc_nodes = np.loadtxt('test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
+    dcfc_nodes = np.loadtxt('../test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
     if type(dcfc_nodes) is not list:
         dcfc_nodes = [dcfc_nodes]
     dcfc_dicts_list = []
     for node in dcfc_nodes:
         dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
 
-    L2_charging_nodes = np.loadtxt('test_cases/battery/L2charging_bus.txt', dtype=str).tolist()  # this is for L2
+    L2_charging_nodes = np.loadtxt('../test_cases/battery/L2charging_bus.txt', dtype=str).tolist()  # this is for L2
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
     l2_dicts_list = []
@@ -258,7 +255,6 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
         scenarios_list = make_scenarios()
         scenarios = [scenarios_list[idx] for idx in idx_list]
         for scenario in scenarios:
-            print(scenario)
             scenario["L2_nodes"] = L2_charging_nodes
             scenario["dcfc_nodes"] = dcfc_nodes
             if dcfc_dicts_list:

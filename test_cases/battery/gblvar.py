@@ -20,14 +20,6 @@ charging_sim_path_append = False
 #   simulation file path
 sim_file_path = ''
 
-# temperature data
-# month = 1   # todo: think of how to load in the month here
-# s = pd.read_csv('solar_data/SolarData_SanJose_2018-30min.csv', index_col='date')
-# cols = ['Month', 'Day', 'Hour', 'Temperature']
-# temps_data = pd.read_csv(temperature_data_path)[cols]
-# temps_data = temps_data[temps_data["Month"] == month]['Temperature']   # for one month
-
-
 # iteration number
 it = 0
 
