@@ -50,7 +50,7 @@ def make_scenarios():
     """
     This is used to make the list of scenarios (dicts) that are used to run the simulations.
     No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
-    settings and inputs.
+    settings and inputs. Please change JSON file directly for multiple scenarios.
 
     :return: List of scenario dicts.
     """
