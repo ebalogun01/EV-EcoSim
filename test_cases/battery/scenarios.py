@@ -146,7 +146,7 @@ def make_scenarios():
             scenario = {
                 'index': idx,
                 'oneshot': False,
-                'start_month': start_month,
+                'start_month': month,
                 'month_str': month_str,
                 'opt_solver': 'GUROBI',
                 'battery': {
