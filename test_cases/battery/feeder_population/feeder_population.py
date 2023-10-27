@@ -25,22 +25,15 @@ are files that are read in to run the EV-Ecosim environment.
 
 """
 
-# import glm_mod_functions
-# import os
-# import pandas
-# import datetime
-# import numpy as np
-# import ast
-# import pickle
-# import random
+import glm_mod_functions
+import os
+import pandas
+import datetime
+import numpy as np
+import ast
+import pickle
+import random
 
-
-# TODO: check all capacitor banks on and voltage
-#  regulators
-# all the caps are set to manual and they should be automatic
-# Check if the nominal voltages are correct for the regulator dead bands
-# what is most normal for simulating the 123 network
-#
 
 # read config file
 def run():
@@ -326,11 +319,9 @@ def run():
     obj_type[key_index] = {'object': 'triplex_line_configuration'}
     key_index = key_index + 1
 
-    # TODO: model two cases for this work. One with 120/240 V and one with
-    # TODO: find the source for these
-    #  House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of
-    #  the spot-load so a future task will be to automate this.
-    #  For now, the code doesn't break because the voltages are the same everywhere
+    #   TODO: House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of
+    #    the spot-load so a future task will be to automate this.
+    #    For now, the code doesn't break because the voltages are the same everywhere
 
     glm_house_dict[key_index] = {'name': 'house_transformer',
                                  'connect_type': 'SINGLE_PHASE_CENTER_TAPPED',
@@ -347,8 +338,8 @@ def run():
 
     ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION STARTS HERE ####
 
-    # Fast charging station transformer configuration
-    # find only meters with ABC phases (3-phase) for DCFC connection
+    # Fast charging station transformer configuration.
+    # Find only meters with ABC phases (3-phase) for DCFC connection.
     standard_rating = True  # use standard transformer ratings, not arbitrary
     glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                             'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
@@ -423,8 +414,6 @@ def run():
     os.chdir(test_case_dir)
     np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # this stores all the nodes in which there is dcfc
 
-    # todo: level 2 is 208/240 V so need to reflect that as well (done)
-
     ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 
     ######### L2 STARTS HERE ###########
@@ -489,7 +478,7 @@ def run():
                     L2_trans_power_rating_kVA * 1000)))  # np.floor because of higher kVA leads to no transformers and causes downstream errors
         else:
             num_transformers = int((abs(spot_load_list[i]) / (
-                    20 * 1000)))  # need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20
+                    20 * 1000)))  # todo: 20 was used here because of the tranformer rating is 20
         num_transformers_list.append(num_transformers)
         for j in range(num_transformers):  # number of transformers per bus
             # Triplex node
@@ -514,7 +503,7 @@ def run():
                 glm_house_dict[key_index] = {'name': 'tn_' + str(k),
                                              'nominal_voltage': f'{L2_voltage}.00',
                                              'phases': str(load_phases[i]) + "S",
-                                             'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
+                                             'constant_power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                                  '').replace(
                                                  ')',
                                                  '')}  # +3 is an ad-hoc way to make base case run normally
@@ -523,11 +512,11 @@ def run():
                 glm_house_dict[key_index] = {'name': 'tn_' + str(k),
                                              'nominal_voltage': '120.00',
                                              'phases': str(load_phases[i]) + "S",
-                                             'power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
+                                             'constant_power_12': str(spot_load_list[i] / (num_transformers + 3)).replace('(',
                                                                                                                  '').replace(
                                                  ')',
                                                  '')}  # +3 is an ad-hoc way to make base case run normally
-            obj_type[key_index] = {'object': 'triplex_node'}
+            obj_type[key_index] = {'object': 'triplex_load'}
             key_index = key_index + 1
             # TODO: reduced the above based on num transformers to ensure that things run normally.
 
@@ -567,3 +556,10 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+# TODO: check all capacitor banks on and voltage - Done
+#  regulators
+# all the caps are set to manual and they should be automatic
+# Check if the nominal voltages are correct for the regulator dead bands
+# what is most normal for simulating the 123 network
+#

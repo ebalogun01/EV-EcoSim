@@ -140,7 +140,7 @@ class ChargingSim:
         """
         Creates the charging station objects within the power network (MPC mode).
 
-        :param list power_nodes: List of buses/nodes which can host charging stations.
+        :param list power_nodes: List of buses/nodes which can host charging stations. It is a list of dicts.
         :return: None
         """
         loc_list = power_nodes
@@ -154,7 +154,6 @@ class ChargingSim:
             self.charging_config['L2'] = loc_list[i]['L2']
             self.charging_config['DCFC'] = loc_list[i]['DCFC']
             charging_station = ChargingStation(battery, self.charging_config, controller, solar=solar)
-            print(loc_list)
             self.charging_sites[loc_list[i]['node']] = charging_station
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
@@ -179,7 +178,6 @@ class ChargingSim:
             self.charging_config['L2'] = loc_list[i]['L2']
             self.charging_config['DCFC'] = loc_list[i]['DCFC']
             charging_station = ChargingStation(battery, self.charging_config, controller, solar=solar)
-            print(loc_list)
             self.charging_sites[loc_list[i]['node']] = charging_station
         self.stations_list = list(self.charging_sites.values())
         self.charging_locs = list(self.charging_sites.keys())
@@ -272,13 +270,12 @@ class ChargingSim:
     def setup(self, power_nodes_list, scenario=None):
         """
         This is done pre-simulation to ensure all scenarios are updated accordingly.
+        This method takes in a list of dicts with the following keys: 'node', 'L2', 'DCFC'.
 
-        :param list power_nodes_list: List of buses for which EVSE/Charging Station exists.
+        :param list power_nodes_list: List of buses dictionaries for which EVSE/Charging Station exists.
         :param scenario: Contains specifications for the scenario, such as battery capacity, c-rate, solar, etc.
         :return: None.
         """
-        # changing power nodes list to dict to distinguish L2 for DCFC
-        """This is used to set up charging station locations and simulations"""
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
         self.update_scenario(scenario)  # scenarios for study
         self.scenario = scenario

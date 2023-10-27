@@ -7,13 +7,15 @@ which is then run in the co-simulation environment.
 
 import os
 import numpy as np
-# import gridlabd
+import gridlabd
 import sim
 import time
 import gblvar
 import json
 import pandas as pd
 from charging_sim.orchestrator import ChargingSim
+from charging_sim.transformer import OilTypeTransformer
+from charging_sim.clock import Clock
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -25,31 +27,32 @@ save_folder_prefix = f'{gblvar.scenario["month_str"]}{gblvar.scenario["index"]}/
 solver_options = ['GUROBI', 'MOSEK', 'ECOS']
 gblvar.scenario['opt_solver'] = solver_options[0]
 
-
 # lood DCFC locations txt file
 print('...loading charging bus nodes')
-dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()     # this is for DC FAST charging
+dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()  # this is for DC FAST charging
 if type(dcfc_nodes) is not list:
     dcfc_nodes = [dcfc_nodes]
 dcfc_dicts_list = []
 for node in dcfc_nodes:
-    dcfc_dicts_list += {"DCFC": gblvar.scenario['dcfc_cap'], "L2": 0, "node": node},
+    dcfc_dicts_list += {"DCFC": gblvar.scenario['charging_station']['dcfc_power_cap'], "L2": 0, "node": node},
 
-L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()    # this is for L2 charging
+L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2 charging
 if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
 l2_dicts_list = []
 for node in L2_charging_nodes:
-    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['L2_cap'], "node": node},
+    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['charging_station']['L2_power_cap'], "node": node},
 
 gblvar.scenario['L2_nodes'] = L2_charging_nodes
 gblvar.scenario['dcfc_nodes'] = dcfc_nodes
-num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
+num_charging_nodes = len(dcfc_nodes) + len(
+    L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 #####
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
-simulation_month = gblvar.scenario['start_month'] # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+simulation_month = gblvar.scenario[
+    'start_month']  # Months are indexed starting from 1.
 temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
@@ -57,8 +60,18 @@ global tic, toc  # used to time simulation
 tic = time.time()
 #####
 
+# Load the clock from its JSON file and instantiate the global clock object (from charging_sim, NOT GridLAB-D).
+with open('../../charging_sim/configs/clock.json') as f:
+    clock_config = json.load(f)
+global_clock = Clock(clock_config)
+
 # Initialize Charging Simulation
 EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month=simulation_month)
+
+# Load the transformer configuration prototype JSON file.
+with open('../../charging_sim/configs/transformer.json') as f:
+    transformer_config = json.load(f)
+trans_map = {}  # Dictionary of transformer objects.
 
 
 def on_init(t):
@@ -72,19 +85,20 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    gblvar.node_list = find("class=node")
-    gblvar.load_list = find("class=load")
-    gblvar.sim_file_path = save_folder_prefix
-    gblvar.tn_list = find("class=triplex_node")
-    gblvar.trans_list = find("class=transformer")
-    gblvar.transconfig_list = find("class=transformer_configuration")
+    # gblvar.node_list = find("class=node") # Never used currently, so commented out.
+    # gblvar.load_list = find("class=load")
+    # gblvar.sim_file_path = save_folder_prefix
+    # gblvar.tn_list = find("class=triplex_node")
+    # gblvar.trans_list = find("class=transformer") # Get all transformers.
+    gblvar.trans_list = find_subset_trans("class=transformer")  # Only get transformers connected to EV charging.
+    # gblvar.transconfig_list = find("class=transformer_configuration")
 
-    # NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION
+    # NEED TO INCLUDE A PRE-LAYER FOR FEEDER POPULATION FOR A GIVEN SIMULATION - use makefile to do this.
     EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=gblvar.scenario)
     print("Making results directory at: ", save_folder_prefix)
     if not os.path.isdir(save_folder_prefix):
         os.mkdir(save_folder_prefix)
-    np.savetxt(f'{save_folder_prefix}voltdump.txt', np.array([save_folder_prefix]),fmt="%s")
+    np.savetxt(f'{save_folder_prefix}voltdump.txt', np.array([save_folder_prefix]), fmt="%s")
     return True
 
 
@@ -103,56 +117,47 @@ def on_precommit(t):
     vm_array, vp_array = get_voltage()
 
     # get nominal voltages if first timestep
-    if gblvar.it == 0:
+    if global_clock.it == 0:
         gblvar.nom_vmag = vm_array
 
     # initialize voltage vector
-    if gblvar.it == 1:
+    if global_clock.it == 1:
         gblvar.vm = vm_array.reshape(1, -1)
         gblvar.vp = vp_array.reshape(1, -1)
 
     # concatenate new voltage vector onto voltage history
-    elif gblvar.it > 1:
+    elif global_clock.it > 1:
         gblvar.vm = np.concatenate((gblvar.vm, vm_array.reshape(1, -1)), axis=0)
         gblvar.vp = np.concatenate((gblvar.vp, vp_array.reshape(1, -1)), axis=0)
-    # print(vm_array[-1])
 
     # get transformer ratings and possibly other properties if first timestep
-    if gblvar.it == 0:
+    if global_clock.it == 0:
         """
         This is where the transformers get initially instantiated. Done only once.
         """
-        gblvar.trans_rated_s = []
         gblvar.trans_loading_percent = []
         for i in range(len(gblvar.trans_list)):
-            name = gblvar.trans_list[i]
+            name = gblvar.trans_list[i]  # Gets one transformer from this list of transformers.
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
             trans_config_name = data['configuration']
-            data = gridlabd.get_object(trans_config_name)   # todo: This will be needed to initialize the transformer objects.
-            gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-        gblvar.trans_rated_s_np = np.array(gblvar.trans_rated_s).reshape(1, -1)
+            data = gridlabd.get_object(trans_config_name)
+            power_rating = float(data['power_rating'].split(' ')[0])
+            transformer_config['name'] = name
+            transformer_config['rated-power'] = power_rating
+            trans = OilTypeTransformer(transformer_config, global_clock=global_clock,
+                                       temperature_data=temperature_data)
+            trans_map[name] = trans  # Add the transformer to the transformer map.
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
+    #   Here we simulate the thermal dynamics of all transformers, however we can speed up by only simulated a subset
     for i in range(len(gblvar.trans_list)):
         name = gblvar.trans_list[i]
         data = gridlabd.get_object(name)
         trans_power_str = data['power_in']  # This gets us the power flowing through the transformer at the current time step.
-        # print(trans_power_str)
         pmag, pdeg = get_trans_power(trans_power_str)
-        gblvar.trans_power.append(pmag / 1000)  # in units kVA
-    if gblvar.it == 0:
-        gblvar.trans_loading_percent = np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np
-    else:
-        gblvar.trans_loading_percent = np.vstack((gblvar.trans_loading_percent,
-                                                  np.array(gblvar.trans_power).reshape(1, -1) / gblvar.trans_rated_s_np))   # done
-
-    ####################### SIMULATE ##################################
-
-    # propagate transformer state
-    """This will now be done by running through all the transformer objects and calling its thermal_dynamics method"""
-    sim.sim_transformer(temperature_data=temperature_data)
-    # sim.sim_transformer()
+        trans_power_kVA = pmag / 1000  # in units kVA
+        trans_map[name].thermal_dynamics(trans_power_kVA)  # Propagate the transformer state forward.
 
 
     ################################# CALCULATE POWER INJECTIONS FOR GRIDLABD ##########################################
@@ -161,10 +166,10 @@ def on_precommit(t):
     name_list_base_power = list(gblvar.p_df.columns)
     set_power_vec = np.zeros((len(name_list_base_power),), dtype=complex)
     for i in range(len(name_list_base_power)):
-        set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][gblvar.it] + gblvar.q_df[name_list_base_power[i]][
-            gblvar.it] * 1j
+        set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][global_clock.it] + gblvar.q_df[name_list_base_power[i]][
+            global_clock.it] * 1j
 
-    if gblvar.it % EV_charging_sim.resolution == 0:
+    if global_clock.it % EV_charging_sim.resolution == 0:
         # Only step when controller time matches pf..based on resolution.
         # This ensures allows for varied resolution for ev-charging vs pf solver"""
         num_steps = 1
@@ -172,16 +177,18 @@ def on_precommit(t):
 
     ################################## SEND TO GRIDLABD ################################################
 
-    # set base_power properties for this timestep, i.e. existing loads, home base loads, buildings, etc.
+    # Set base_power properties for this timestep, i.e. existing loads, home base loads, buildings, etc.
     # TODO: get regular L2 charging sharing transformer with existing loads
-    prop = 'power_12'
+    prop = 'constant_power_12'
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
         # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
+            # This works because L2 Charging Nodes are modelled with existing triplex nodes.
+            # We do not give L@
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
-            total_node_load += charger.get_current_load()*1000  # for L2 (converting to Watts)
+            total_node_load += charger.get_current_load() * 1000  # for L2 (converting to Watts)
         gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
 
     # set fast charging power properties for this timestep
@@ -190,13 +197,14 @@ def on_precommit(t):
     prop_3 = 'constant_power_C'
     for name in dcfc_nodes:
         charger = EV_charging_sim.get_charger_obj_by_loc(name)
-        total_node_load_watts = charger.get_current_load()*1000  # converting to watts
+        total_node_load_watts = charger.get_current_load() * 1000  # converting to watts
         gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
         gridlabd.set_value(name, prop_2, str(total_node_load_watts / 3))
         gridlabd.set_value(name, prop_3, str(total_node_load_watts / 3))
 
     # increment timestep
     gblvar.it = gblvar.it + 1
+    global_clock.update()
     return True
 
 
@@ -213,15 +221,10 @@ def on_term(t):
     EV_charging_sim.load_results_summary(save_folder_prefix)
     # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
     # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
-    np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)    # nominal voltage magnitude (use in analysis)
-    pd.DataFrame(data=gblvar.trans_Th, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_Th.csv',
-                                                                         index=False)
-    pd.DataFrame(data=gblvar.trans_To, columns=gblvar.trans_list).to_csv(f'{save_folder_prefix}/trans_To.csv',
-                                                                         index=False)
-    pd.DataFrame(data=gblvar.trans_loading_percent, columns=gblvar.trans_list).\
-        to_csv(f'{save_folder_prefix}/trans_loading_percent.csv', index=False)  # included saving transformer loading percentages
+    np.savetxt(f'{save_folder_prefix}nom_vmag.txt', gblvar.nom_vmag)  # nominal voltage magnitude (use in analysis)
+    save_transformer_states()
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
-        json.dump(gblvar.scenario, outfile)
+        json.dump(gblvar.scenario, outfile, indent=1)
     print("Total run time: ", (time.time() - tic) / 60, "minutes")
     return True
 
@@ -244,8 +247,57 @@ def find(criteria: str):
             if "name" in item.keys():
                 result.append(item["name"])
             else:
-                result.append(f'{item["class"]}:{item["id"]}')
+                result.append(f'{item["class"]}:{item["id"]}')  # Not sure I understand this line.
     return result
+
+
+def find_subset_trans(criteria: str):
+    """
+    Finds and returns objects in gridlabd that satisfy certain criteria. This function only gets transformers
+    for which are connected to EV charging, to save compute time.
+
+    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :return: list of objects that satisfy the criteria.
+    """
+    finder = criteria.split("=")
+    if len(finder) < 2:
+        raise IOError("find(criteria='key=value'): criteria syntax error")
+    objects = gridlabd.get("objects")
+    result = []
+    for name in objects:
+        item = gridlabd.get_object(name)
+        if finder[0] in item and item[finder[0]] == finder[1]:
+            if "name" in item.keys() and ("dcfc" in item["name"] or "L2" in item["name"]):
+                result.append(item["name"])
+    return result
+
+
+def save_transformer_states():
+    """
+    Saves the relevant transformer states to a CSV file.
+
+    :return:
+    """
+    first = True
+    relevant_trans_keys = [key for key in trans_map.keys() if 'dcfc' in key]
+    for trans_name in relevant_trans_keys:
+        if first:
+            trans_map[trans_name].plot_states()
+            trans_Th = np.array(trans_map[trans_name].Th_list).reshape(-1, 1)
+            trans_To = np.array(trans_map[trans_name].To_list).reshape(-1, 1)
+            trans_loading = np.array(trans_map[trans_name].loading_percents).reshape(-1, 1)
+            first = False
+        else:
+            trans_Th = np.hstack((trans_Th, np.array(trans_map[trans_name].Th_list).reshape(-1, 1)))
+            trans_To = np.hstack((trans_To, np.array(trans_map[trans_name].To_list).reshape(-1, 1)))
+            trans_loading = np.hstack((trans_loading, np.array(trans_map[trans_name].loading_percents).reshape(-1, 1)))
+    # return
+    pd.DataFrame(data=trans_Th, columns=relevant_trans_keys).to_csv(
+        f'{save_folder_prefix}/trans_Th.csv', index=False)
+    pd.DataFrame(data=trans_To, columns=relevant_trans_keys).to_csv(
+        f'{save_folder_prefix}/trans_To.csv', index=False)
+    pd.DataFrame(data=trans_loading, columns=relevant_trans_keys).to_csv(
+        f'{save_folder_prefix}/trans_loading_percent.csv', index=False)
 
 
 def get_voltage():
@@ -334,4 +386,3 @@ def get_trans_power(trans_power_str):
         pdeg = np.rad2deg(np.angle(float(strtemp[1]) + float(strtemp[2]) * 1j))
 
     return pmag, pdeg
-
