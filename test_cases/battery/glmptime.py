@@ -1,4 +1,4 @@
-"""TODO: Include module description here."""
+"""Functions used by voltdump2.py for timestamp parsing"""
 
 import os
 import re
