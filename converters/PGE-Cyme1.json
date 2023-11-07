@@ -1,6 +1,6 @@
 {
-  "DefaultDir": "./converters/in",
-  "OutDir": "./converters/out/Swan_Island/dss",
+  "DefaultDir": "../converters/in",
+  "OutDir": "../converters/out/Swan_Island/dss",
   "xmlfilename": "Swan Island",
   "RootName": "Swan Island",
   "SubName": "Swan Island_1",
