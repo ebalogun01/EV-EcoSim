@@ -24,6 +24,7 @@ class CostEstimator:
 
     :param num_days: The number of days for which the calculation is run.
     """
+
     def __init__(self, num_days):
         """
         Constructor method.
@@ -43,7 +44,8 @@ class CostEstimator:
         self.trans_cost_per_kVA = None  # create a non-linear cost curve for these prices (I sense batteries are the same)
         self.trans_normal_life = 180000  # hours
         self.resolution = 15
-        self.TOU_rates = np.loadtxt('../elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[:96 * self.num_days]  # change this to referenced property
+        self.TOU_rates = np.loadtxt('../elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[
+                         :96 * self.num_days]  # change this to referenced property
         # todo: cannot find good source for 2400/240V transformer prices
 
     def calculate_battery_cost(self, result_dir):
@@ -65,7 +67,7 @@ class CostEstimator:
                 if 'battery' in path_lst and 'plot.png' not in path_lst:
                     battery_LOL = 1 - pd.read_csv(file)['SOH'].to_numpy()[-1]
                     avg_daily_energy_thruput = np.abs(pd.read_csv(file)['power_kW'].to_numpy()[1:]).sum() \
-                                                  * self.resolution / 60 * 1 / self.num_days
+                                               * self.resolution / 60 * 1 / self.num_days
                     expected_life_days = 0.2 / (battery_LOL / self.num_days)
                     expected_energy_thruput_over_lifetime = avg_daily_energy_thruput * expected_life_days
                     capital_loss_to_aging = (battery_LOL / 0.2 * capital_cost)
@@ -78,21 +80,28 @@ class CostEstimator:
                                                                  "battery_total_cost": self.battery_cost,
                                                                  "total_cost_per_day": self.battery_cost / expected_life_days,
                                                                  'lcoe': self.battery_cost / expected_energy_thruput_over_lifetime,
-                                                                 'lcoe_aging': capital_loss_to_aging /expected_energy_thruput_over_lifetime
+                                                                 'lcoe_aging': capital_loss_to_aging / expected_energy_thruput_over_lifetime
                                                                  }
         with open("postopt_cost_batt.json", 'w') as config_file_path:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
 
-    def calculate_cable_cost(self, length, voltage="HV", cores = 3, core_girth = 25):
+    def calculate_cable_cost(self, length, underground=True, voltage="HV", cores=3, core_girth=25):
         """
         Values are pulled from the DACE Price booklet
         Ref: https://www.dacepricebooklet.com/table-costs/high-and-low-voltage-underground-electrical-power-cables-0
         """
-        cost_per_m = 28.6 # TODO table lookup
+        cost_per_m = 28.6  # TODO table lookup
         return length * cost_per_m
 
+    def calculate_transformer_cost(self, capacity):
+        """
+        Values are pulled from the DACE Price booklet
+        Ref: https://www.dacepricebooklet.com/table-costs/standard-transformers-10-kv-400-v-oil-cooled-0
+        """
+        cost= 5000  # TODO table lookup
+        return cost
     def calculate_solar_cost(self):
         """
         Values are pulled from the NREL solar cost calculator.
@@ -125,7 +134,7 @@ class CostEstimator:
                     net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)['station_solar_load_ev'].to_numpy()[
                                                                   1:] + pd.read_csv(file)['battery_power'].to_numpy()[
                                                                         1:]
-                    total_energy = total_grid_load.sum() * self.resolution/60
+                    total_energy = total_grid_load.sum() * self.resolution / 60
                     max_load = total_grid_load.max()
                     average_load = total_grid_load.mean()
                     self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f'{file.split(".")[0]}_',
@@ -136,7 +145,8 @@ class CostEstimator:
                         block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy()[1])
                     subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
                     penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)
-                    TOU_cost = np.sum(self.TOU_rates[0:net_grid_load.shape[0]] * net_grid_load) * self.resolution / 60  # ($)
+                    TOU_cost = np.sum(
+                        self.TOU_rates[0:net_grid_load.shape[0]] * net_grid_load) * self.resolution / 60  # ($)
                     electricity_cost = TOU_cost + penalty_cost + subscription_cost
                     result_dict[f'charging_station_sim_{path_lst[3]}'] = {"TOU_cost": TOU_cost,
                                                                           "subscription_cost": subscription_cost,
@@ -145,7 +155,7 @@ class CostEstimator:
                                                                           "cost_per_day": electricity_cost / self.num_days,
                                                                           "max_load": max_load,
                                                                           "avg_load": average_load,
-                                                                          "cost_per_kWh": electricity_cost/total_energy}
+                                                                          "cost_per_kWh": electricity_cost / total_energy}
                 elif 'battery' in path_lst and 'plot.png' not in path_lst:
                     power = pd.read_csv(file)['power_kW'].to_numpy()[1:]
                     power_pred = pd.read_csv(file)['pred_power_kW'].to_numpy()[1:]
