@@ -1,0 +1,66 @@
+new wiredata.OH_UNK_UNK rac=0.63660 gmrac=0.20220 diam=0.51890 normamps=2000.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_DEFAULT rac=0.18827 gmrac=0.50840 diam=1.34110 normamps=480.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_2GA_ACSR rac=1.00525 gmrac=0.29080 diam=0.80260 normamps=167.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_556KCM_ACSR rac=0.11290 gmrac=0.95400 diam=2.35460 normamps=652.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_336KCM_ACSR rac=0.18616 gmrac=0.74370 diam=1.82880 normamps=477.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_336KCM_AAC rac=0.18964 gmrac=0.64010 diam=1.69160 normamps=464.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_4-0GA_AAC rac=0.30087 gmrac=0.48160 diam=1.32590 normamps=346.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_4GA_CU rac=0.94424 gmrac=0.20220 diam=0.51890 normamps=156.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_2-0GA_CU rac=0.30236 gmrac=0.38130 diam=1.05080 normamps=329.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_556KCM_AAC rac=0.11526 gmrac=0.82300 diam=2.17420 normamps=633.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_4-0GA_ACSR rac=0.34238 gmrac=0.51920 diam=1.43000 normamps=326.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_6GA_CU rac=1.50185 gmrac=0.16030 diam=0.41150 normamps=117.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_HOT_LINE_TAP rac=0.18827 gmrac=0.20220 diam=0.51890 normamps=2000.0 runits=km radunits=cm gmrunits=cm
+new wiredata.OH_795KCM_AAC rac=0.08146 gmrac=0.99970 diam=2.60600 normamps=790.0 runits=km radunits=cm gmrunits=cm
+
+new linespacing.OH_DEFAULT nconds=4 nphases=3 x=[-1.09728 0.0 1.09728 0.21336] h=[11.0338 11.43 11.0338 8.6868] units=m
+new linespacing.OH_UNKNOWN nconds=4 nphases=3 x=[-1.09728 0.0 1.09728 0.21336] h=[11.03376 11.43 11.03376 8.6868] units=m
+new linespacing.OH_DEFAULT21 nconds=2 nphases=1 x=[0.0 0.2] h=[11.4 8.7] units=m
+new linespacing.OH_UNKNOWN21 nconds=2 nphases=1 x=[0.0 0.2] h=[11.4 8.7] units=m
+new linespacing.OH_DEFAULT32 nconds=3 nphases=2 x=[-1.1 1.1 0.2] h=[11.0 11.0 8.7] units=m
+new linespacing.OH_UNKNOWN32 nconds=3 nphases=2 x=[-1.1 1.1 0.2] h=[11.0 11.0 8.7] units=m
+new linespacing.OH_DEFAULT11 nconds=1 nphases=1 x=[0.0] h=[11.4] units=m
+new linespacing.OH_UNKNOWN11 nconds=1 nphases=1 x=[0.0] h=[11.4] units=m
+new linespacing.OH_DEFAULT22 nconds=2 nphases=2 x=[-1.1 1.1] h=[11.0 11.0] units=m
+new linespacing.OH_UNKNOWN22 nconds=2 nphases=2 x=[-1.1 1.1] h=[11.0 11.0] units=m
+
+
+
+
+// new xfmrcode.DEFAULT phases=1 windings=2 kva=1000.0 kvs=[24.9 12.47] conns=[wye wye] xhl=5.97022 %loadloss=0.59702 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.150_KVA_1P_UNK phases=1 windings=2 kva=150.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.62635 %loadloss=1.62635 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.100_KVA_1P_120-208V phases=1 windings=2 kva=100.0 kvs=[12.47 0.208] conns=[wye wye] xhl=1.62635 %loadloss=1.62635 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.500_KVA_1P_277V phases=1 windings=2 kva=500.0 kvs=[12.47 0.48] conns=[wye wye] xhl=2.35467 %loadloss=2.35467 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.100_KVA_1P_120-240V phases=1 windings=2 kva=100.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.62635 %loadloss=1.62635 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.25-0_KVA_1P_277V phases=1 windings=2 kva=25.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.23744 %loadloss=1.23744 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.200_KVA_1P_UNK phases=1 windings=2 kva=200.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.25-0_KVA_1P_120-208V phases=1 windings=2 kva=25.0 kvs=[12.47 0.208] conns=[wye wye] xhl=1.23744 %loadloss=1.23744 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.10_KVA_1P_120-240V phases=1 windings=2 kva=10.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.16673 %loadloss=1.16673 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.333-3_KVA_1P_277-480V phases=1 windings=2 kva=333.0 kvs=[12.47 0.48] conns=[wye wye] xhl=2.35467 %loadloss=2.35467 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.833-3_KVA_1P_277-480V phases=1 windings=2 kva=833.0 kvs=[12.47 0.48] conns=[wye wye] xhl=4.06586 %loadloss=4.06586 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.SWNI_WR2_10842 phases=3 windings=2 kva=16800.0 kvs=[120.0 13.2] conns=[delta wye] xhl=8.39190 %loadloss=0.36881 %imag=0.11333 %noloadloss=0.05667
+// new xfmrcode.50_KVA_1P_277-480V phases=1 windings=2 kva=50.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.166-7_KVA_1P_120-208V phases=1 windings=2 kva=167.0 kvs=[12.47 0.208] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.250_KVA_1P_277V phases=1 windings=2 kva=250.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.500_KVA_1P_UNK phases=1 windings=2 kva=500.0 kvs=[12.47 0.48] conns=[wye wye] xhl=2.35467 %loadloss=2.35467 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.25-0_KVA_1P_120-240V phases=1 windings=2 kva=25.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.23744 %loadloss=1.23744 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.167-0_KVA_1P_277V phases=1 windings=2 kva=167.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.SWNI_WR1_10483 phases=3 windings=2 kva=15000.0 kvs=[126.7 13.2] conns=[delta wye] xhl=7.62255 %loadloss=0.51608 %imag=0.20133 %noloadloss=0.10067
+// new xfmrcode.666-7_KVA_1P_277-480V phases=1 windings=2 kva=666.0 kvs=[12.47 0.48] conns=[wye wye] xhl=4.06586 %loadloss=4.06586 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.75-0_KVA_1P_120-208V phases=1 windings=2 kva=75.0 kvs=[12.47 0.208] conns=[wye wye] xhl=1.55563 %loadloss=1.55563 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.15-0_KVA_1P_120-240V phases=1 windings=2 kva=15.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.16673 %loadloss=1.16673 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.50_KVA_1P_120-208V phases=1 windings=2 kva=50.0 kvs=[12.47 0.208] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.37-5_KVA_1P_120-208V phases=1 windings=2 kva=37.5 kvs=[12.47 0.208] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.166-7_KVA_1P_277-480V phases=1 windings=2 kva=166.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.250_KVA_1P_277-480V phases=1 windings=2 kva=250.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.75-0_KVA_1P_120-240V phases=1 windings=2 kva=75.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.55563 %loadloss=1.55563 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.250_KVA_1P_UNK phases=1 windings=2 kva=250.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.25-0_KVA_1P_277-480V phases=1 windings=2 kva=25.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.23744 %loadloss=1.23744 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.75-0_KVA_1P_277-480V phases=1 windings=2 kva=75.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.55563 %loadloss=1.55563 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.166-7_KVA_1P_UNK phases=1 windings=2 kva=166.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.97990 %loadloss=1.97990 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.50_KVA_1P_120-240V phases=1 windings=2 kva=50.0 kvs=[12.47 0.24] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.50_KVA_1P_277V phases=1 windings=2 kva=50.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.100_KVA_1P_277-480V phases=1 windings=2 kva=100.0 kvs=[12.47 0.48] conns=[wye wye] xhl=1.62635 %loadloss=1.62635 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.500_KVA_1P_277-480V phases=1 windings=2 kva=500.0 kvs=[12.47 0.48] conns=[wye wye] xhl=2.35467 %loadloss=2.35467 %imag=0.00000 %noloadloss=0.00000
+// new xfmrcode.37-5_KVA_1P_277-480V phases=1 windings=2 kva=37.5 kvs=[12.47 0.48] conns=[wye wye] xhl=1.41421 %loadloss=1.41421 %imag=0.00000 %noloadloss=0.00000
+
