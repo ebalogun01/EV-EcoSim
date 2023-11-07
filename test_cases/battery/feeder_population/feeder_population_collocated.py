@@ -23,7 +23,7 @@ are files that are read in to run the EV-Ecosim environment.
 `dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation \n
 `L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation \n
 
-This will be used for the centralized DER.
+Settings for collocated vs. centralized storage are included in this branch.
 
 """
 
@@ -35,7 +35,6 @@ import numpy as np
 import ast
 import pickle
 import random
-import json
 
 
 # read config file
@@ -348,7 +347,6 @@ def run():
     glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                             'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
     num_fast_charging_nodes = param_dict['num_dcfc_nodes']
-    num_charging_stations_per_node = param_dict['num_charging_stations_per_node']
     num_charging_stalls_per_station = param_dict['num_dcfc_stalls_per_station']  # int
     charging_stall_base_rating = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0])  # kW
     trans_standard_ratings = np.array(
@@ -389,79 +387,36 @@ def run():
 
     fast_charging_bus_list = []
     # getting the 3-phase meters (nodes) that were stored in the charging_bus_subset_list
-    feeder_node_dict = {}
-    der_load_dict = {}
     for meter_dict in charging_bus_subset_list:
-        # secondary_charging_nodes = []   # This is a list of secondary charging nodes in the current 'meter_dict' feeder.
-        feeder_node_dict[meter_dict['name'][1:-1]] = []
-        for i in range(num_charging_stations_per_node):
-            # Load objects for DC fast charging stations.
-            glm_house_dict[key_index] = {'name': 'dcfc_load_' + str(k),
-                                         'load_class': 'C',
-                                         'nominal_voltage': str(DCFC_voltage),
-                                         'phases': 'ABCN',
-                                         # this phase is currently...
-                                         # ...hard-coded because we know we want to only connect to 3-phase connection
-                                         'constant_power_A': '0.0+0.0j',
-                                         'constant_power_B': '0.0+0.0j',
-                                         'constant_power_C': '0.0+0.0j'}  # the powers get populated in simulation
+        # load object
+        glm_house_dict[key_index] = {'name': 'dcfc_load_' + str(k),
+                                     'load_class': 'C',
+                                     'nominal_voltage': str(DCFC_voltage),
+                                     'phases': 'ABCN',
+                                     # this phase is currently...
+                                     # ...hard-coded because we know we want to only connect to 3-phase connection
+                                     'constant_power_A': '0.0+0.0j',
+                                     'constant_power_B': '0.0+0.0j',
+                                     'constant_power_C': '0.0+0.0j'}  # the powers get populated in simulation
 
-            # need to check the phase of the load object to determine how to choose the transformer phase
+        # need to check the phase of the load object to determine how to choose the transformer phase
 
-            obj_type[key_index] = {'object': 'load'}
-            key_index += 1
+        obj_type[key_index] = {'object': 'load'}
+        key_index = key_index + 1
 
-            #   Transformer (DCFC transformer) setup.
-            glm_house_dict[key_index] = {'name': 'dcfc_trans_' + str(k),
-                                         'phases': meter_dict['phases'],
-                                         'from': meter_dict['name'],
-                                         'to': 'dcfc_load_' + str(k),
-                                         'configuration': 'dcfc_transformer'}
-            fast_charging_bus_list.append('dcfc_load_' + str(k))
-            obj_type[key_index] = {'object': 'transformer'}
-            feeder_node_dict[meter_dict['name'][1:-1]].append(f'dcfc_load_{k}')
-            key_index += 1
-
-            # Centralized DER setup.
-            glm_house_dict[key_index] = {'name': 'DER_load_' + str(k),
-                                         'load_class': 'C',
-                                         'nominal_voltage': str(np.unique(np.array(nominal_voltage))[0]),
-                                         'phases': 'ABCN',
-                                         # this phase is currently...
-                                         # ...hard-coded because we know we want to only connect to 3-phase connection
-                                         'constant_power_A': '0.0+0.0j',
-                                         'constant_power_B': '0.0+0.0j',
-                                         'constant_power_C': '0.0+0.0j'}  # the powers get populated in simulation
-            # need to check the phase of the load object to determine how to choose the transformer phase
-            der_load_dict[meter_dict['name'][1:-1]] = f'DER_load_{k}'
-            obj_type[key_index] = {'object': 'load'}
-            key_index += 1
-
-            # Underground line for centralized DER connection setup.
-            glm_house_dict[key_index] = {'name': f'ugl_{meter_dict["name"][1:-1]}_DER{k}',
-                                         'phases': 'ABC',
-                                         'from': meter_dict['name'],
-                                         'to': f'DER_load_{k}',
-                                         'length': '100',
-                                         'configuration': 'ug_line_config_12_ABC'
-            }
-            obj_type[key_index] = {'object': 'underground_line'}
-            key_index += 1
-
-            k += 1
-
-
-    # todo: If centralized, also save the primary node_name.
+        #   Transformer (DCFC transformer) setup.
+        glm_house_dict[key_index] = {'name': 'dcfc_trans_' + str(k),
+                                     'phases': meter_dict['phases'],
+                                     'from': meter_dict['name'],
+                                     'to': 'dcfc_load_' + str(k),
+                                     'configuration': 'dcfc_transformer'}
+        fast_charging_bus_list.append('dcfc_load_' + str(k))
+        obj_type[key_index] = {'object': 'transformer'}
+        key_index = key_index + 1
+        k = k + 1
 
     os.chdir(test_case_dir)
     np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # Store all the nodes in which there is DCFC.
-    np.savetxt('central_DER_bus.txt', charging_bus_subset_list, fmt="%s")
-    # Save JSON for the feeder node_name dictionary.
-    with open('der_load_dict.json', 'w') as fp:     # Maps the meter objects to the DER load objects
-        json.dump(der_load_dict, fp, indent=1)  # This will save the nodes tree structure for centralized DER.
-
-    with open('feeder_node_dict.json', 'w') as fp:
-        json.dump(feeder_node_dict, fp, indent=1)   # This will save the nodes tree structure for centralized DER.
 
     ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 

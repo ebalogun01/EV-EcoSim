@@ -49,7 +49,7 @@ class OilTypeTransformer:
         self._m = config['m']
         self._n = config['n']
 
-    def thermal_dynamics(self, power):
+    def thermal_dynamics(self, power: float):
         """
         Propagate transformer state from previous timestep to current timestep (currently it is a minute resolution data
         simulated in 10 seconds increment).

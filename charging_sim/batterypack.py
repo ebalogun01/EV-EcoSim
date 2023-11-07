@@ -42,7 +42,7 @@ class Battery:
         * Ambient temperature (Celsius).
 
     :param battery_type: Type of battery (inconsequential to current dynamics).
-    :param node: The node/bus in the distribution network in which the battery resides.
+    :param node: The node_name/bus in the distribution network in which the battery resides.
     :param config: Battery configuration file containing the main attributes of the battery.
     :param controller: Controller for the battery.
     :returns: Battery object.
@@ -508,7 +508,7 @@ class Battery:
 #     buffer_battery = Battery(config=battery_config)
 #     buffer_battery.battery_setup()
 #     buffer_battery.load_pack_props()
-#     buffer_battery.id, buffer_battery.node = 0, 0
+#     buffer_battery.id, buffer_battery.node_name = 0, 0
 #
 #     # test dynamics here
 #     c = -20  # discharging first

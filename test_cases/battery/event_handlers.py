@@ -8,14 +8,13 @@ which is then run in the co-simulation environment.
 import os
 import numpy as np
 import gridlabd
-import sim
 import time
 import gblvar
 import json
 import pandas as pd
-from charging_sim.orchestrator import ChargingSim
-from charging_sim.transformer import OilTypeTransformer
-from charging_sim.clock import Clock
+from orchestrator import ChargingSim
+from transformer import OilTypeTransformer
+from clock import Clock
 
 # get the desired path prefix
 path_prefix = os.getcwd()
@@ -30,25 +29,34 @@ gblvar.scenario['opt_solver'] = solver_options[0]
 # lood DCFC locations txt file
 print('...loading charging bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()  # this is for DC FAST charging
+
+central_der = True # toggle for central vs. decentralized storage
+if central_der:
+    with open('feeder_node_dict.json') as f:
+        central_der_nodes_dict = json.load(f)   # Primary to secondary node_name dictionary for tracking all the DERs.
+    with open('der_load_dict.json') as f:
+        central_der_load_dict = json.load(f)
+    central_der_nodes = list(central_der_nodes_dict.keys())  # List of all the primary nodes with DERs.
+
 if type(dcfc_nodes) is not list:
     dcfc_nodes = [dcfc_nodes]
 dcfc_dicts_list = []
 for node in dcfc_nodes:
-    dcfc_dicts_list += {"DCFC": gblvar.scenario['charging_station']['dcfc_power_cap'], "L2": 0, "node": node},
+    dcfc_dicts_list += {"DCFC": gblvar.scenario['charging_station']['dcfc_power_cap'], "L2": 0, "node_name": node},
 
 L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2 charging
 if type(L2_charging_nodes) is not list:
     L2_charging_nodes = [L2_charging_nodes]
 l2_dicts_list = []
 for node in L2_charging_nodes:
-    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['charging_station']['L2_power_cap'], "node": node},
+    l2_dicts_list += {"DCFC": 0, "L2": gblvar.scenario['charging_station']['L2_power_cap'], "node_name": node},
 
 gblvar.scenario['L2_nodes'] = L2_charging_nodes
 gblvar.scenario['dcfc_nodes'] = dcfc_nodes
 num_charging_nodes = len(dcfc_nodes) + len(
     L2_charging_nodes)  # needs to come in as input initially & should be initialized prior from the feeder population
-central_storage = False  # toggle for central vs. decentralized storage
-#####
+
+
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = gblvar.scenario[
@@ -66,7 +74,11 @@ with open('../../charging_sim/configs/clock.json') as f:
 global_clock = Clock(clock_config)
 
 # Initialize Charging Simulation
-EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month=simulation_month)
+if central_der:
+    EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month=simulation_month,
+                                  centralized=central_der, central_der_dict=central_der_nodes_dict)
+else:
+    EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, month=simulation_month)
 
 # Load the transformer configuration prototype JSON file.
 with open('../../charging_sim/configs/transformer.json') as f:
@@ -85,7 +97,7 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    # gblvar.node_list = find("class=node") # Never used currently, so commented out.
+    # gblvar.node_list = find("class=node_name") # Never used currently, so commented out.
     # gblvar.load_list = find("class=load")
     # gblvar.sim_file_path = save_folder_prefix
     # gblvar.tn_list = find("class=triplex_node")
@@ -107,7 +119,7 @@ def on_precommit(t):
     This runs the simulation, propagating all the states of the necessary physical objects and the grid.
 
     :param t: Arbitrary placeholder.
-    :return: True
+    :return bool: True
     """
     # get clock from GridLAB-D
     clock = gridlabd.get_global("clock")
@@ -164,16 +176,20 @@ def on_precommit(t):
 
     # calculate base_power and pf quantities to set for this timestep
     name_list_base_power = list(gblvar.p_df.columns)
-    set_power_vec = np.zeros((len(name_list_base_power),), dtype=complex)
-    for i in range(len(name_list_base_power)):
-        set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][global_clock.it] + gblvar.q_df[name_list_base_power[i]][
-            global_clock.it] * 1j
+    # set_power_vec = np.zeros((len(name_list_base_power),), dtype=complex)
+    # for i in range(len(name_list_base_power)):
+    #     # todo: is this part necessary? Seems like a bottleneck.
+    #     set_power_vec[i] = gblvar.p_df[name_list_base_power[i]][global_clock.it] + gblvar.q_df[name_list_base_power[i]][
+    #         global_clock.it] * 1j
 
     if global_clock.it % EV_charging_sim.resolution == 0:
         # Only step when controller time matches pf..based on resolution.
         # This ensures allows for varied resolution for ev-charging vs pf solver"""
         num_steps = 1
-        EV_charging_sim.step(num_steps)
+        if central_der:
+            EV_charging_sim.step_centralized(num_steps)
+        else:
+            EV_charging_sim.step(num_steps)
 
     ################################## SEND TO GRIDLABD ################################################
 
@@ -183,13 +199,15 @@ def on_precommit(t):
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
-        # if ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
+        # if ev node_name is power node_name, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             # This works because L2 Charging Nodes are modelled with existing triplex nodes.
-            # We do not give L@
+            # We do not give L2 a separate transformer.
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             total_node_load += charger.get_current_load() * 1000  # for L2 (converting to Watts)
-        gridlabd.set_value(name, prop, str(set_power_vec[i] + total_node_load).replace('(', '').replace(')', ''))
+        base_power = gblvar.p_df[name_list_base_power[i]][global_clock.it] + gblvar.q_df[name_list_base_power[i]][
+            global_clock.it] * 1j
+        gridlabd.set_value(name, prop, str(base_power + total_node_load))
 
     # set fast charging power properties for this timestep
     prop_1 = 'constant_power_A'
@@ -201,6 +219,18 @@ def on_precommit(t):
         gridlabd.set_value(name, prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
         gridlabd.set_value(name, prop_2, str(total_node_load_watts / 3))
         gridlabd.set_value(name, prop_3, str(total_node_load_watts / 3))
+
+    # Centralized storage discharge/charge compensation (Might need to include inverter/transformer for voltage drop)
+    if central_der:
+        prop_1 = 'constant_power_A'
+        prop_2 = 'constant_power_B'
+        prop_3 = 'constant_power_C'
+        for name in central_der_nodes:
+            central_der_node = EV_charging_sim.central_node_dict[name]
+            total_node_load_watts = central_der_node.get_current_load() * 1000  # converting to watts
+            gridlabd.set_value(central_der_load_dict[name], prop_1, str(total_node_load_watts / 3))  # balancing dcfc load between 3-phase
+            gridlabd.set_value(central_der_load_dict[name], prop_2, str(total_node_load_watts / 3))
+            gridlabd.set_value(central_der_load_dict[name], prop_3, str(total_node_load_watts / 3))
 
     # increment timestep
     gblvar.it = gblvar.it + 1
@@ -231,9 +261,9 @@ def on_term(t):
 
 def find(criteria: str):
     """
-    Finds and returns objects in gridlabd that satisfy certain criteria.
+    Finds and returns objects in GridLAB-D that satisfy certain criteria.
 
-    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :param str criteria: the criterion for returning gridlabd objects e.g. node_name, load, etc.
     :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")
@@ -256,7 +286,7 @@ def find_subset_trans(criteria: str):
     Finds and returns objects in gridlabd that satisfy certain criteria. This function only gets transformers
     for which are connected to EV charging, to save compute time.
 
-    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :param str criteria: the criterion for returning gridlabd objects e.g. node_name, load, etc.
     :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")
@@ -354,7 +384,7 @@ def get_voltage():
 
 def get_trans_power(trans_power_str):
     """
-    Obtains power at transformer as a string and processes it into a float.
+    Obtains power (in kVA) at transformer as a string and processes it into a float.
 
     :param trans_power_str: Transformer power as a string.
     :return pmag: Power magnitude.

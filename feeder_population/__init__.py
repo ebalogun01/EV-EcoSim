@@ -18,7 +18,7 @@ are files that are read in to run the EV-Ecosim environment.
 
 
 **Output file description**\n
-`real_power.csv` - Real power; this is residential real load timeseries file per node/bus \n
-`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node/bus.\n
+`real_power.csv` - Real power; this is residential real load timeseries file per node_name/bus \n
+`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node_name/bus.\n
 `XXXX.glm` - GridLabD model files. These are usually the synthetic feeders.
 """

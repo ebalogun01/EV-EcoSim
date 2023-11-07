@@ -61,7 +61,7 @@ for root, dirs, files, in os.walk('', topdown=True):
 
 os.chdir(current_dir)  # switch back into current directory
 print("done loading loads.")
-# make a list of nodes and a list of the corresponding net_loads for that node
+# make a list of nodes and a list of the corresponding net_loads for that node_name
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = gblvar.scenario['start_month']  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
@@ -83,7 +83,7 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    gblvar.node_list = find("class=node")
+    gblvar.node_list = find("class=node_name")
     gblvar.load_list = find("class=load")
     gblvar.sim_file_path = save_folder_prefix
     gblvar.tn_list = find("class=triplex_node")
@@ -174,7 +174,7 @@ def on_precommit(t):
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
-        # If ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
+        # If ev node_name is power node_name, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             node_index = L2_charging_nodes.index(name)
             total_node_load = l2_net_loads[node_index][gblvar.it // control_res] * 1000  # for L2
@@ -227,7 +227,7 @@ def find(criteria):
     """
     Finds and returns objects in gridlabd that satisfy certain criteria.
 
-    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :param str criteria: the criterion for returning gridlabd objects e.g. node_name, load, etc.
     :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")

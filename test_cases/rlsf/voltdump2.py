@@ -40,7 +40,7 @@ with open('volt_dump.csv', 'r') as dumpfile:
 				Cr=float(row[5])
 				Ci=float(row[6])
 				if not node+"_Ar" in nodes :
-					#nodes.extend([node+"_A",node+"_B",node+"_C"])
+					#nodes.extend([node_name+"_A",node_name+"_B",node_name+"_C"])
 					nodes.extend([node+"_Ar",node+"_Ai",node+"_Br",node+"_Bi",node+"_Cr",node+"_Ci"])
 				#data[timestamp].extend([A,B,C])
 				data[timestamp].extend([Ar,Ai,Br,Bi,Cr,Ci])

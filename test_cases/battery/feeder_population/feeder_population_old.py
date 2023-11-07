@@ -99,7 +99,7 @@ for i in obj_type_base.keys():
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
                 prop_voltage.append('voltage_C')
 
-        elif 'node' in obj_type_base[i]['object']:
+        elif 'node_name' in obj_type_base[i]['object']:
             if 'A' in glm_dict_base[i]['phases']:
                 # print(glm_dict_base[i]['phases'])
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
@@ -285,7 +285,7 @@ glm_house_dict[key_index] = {'name': 'triplex_line_config',
 obj_type[key_index] = {'object': 'triplex_line_configuration'}
 key_index = key_index + 1
 
-#   House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of the spot-load
+#   House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node_name of the spot-load
 #   , so a future task will be to automate this. For now, the code doesn't break because the voltages are the same everywhere
 glm_house_dict[key_index] = {'name': 'house_transformer',
                              'connect_type': 'SINGLE_PHASE_CENTER_TAPPED',
@@ -384,7 +384,7 @@ for i in range(len(bus_list)):
     num_transformers = int(np.floor(abs(spot_load_list[i]) / (20 * 1000)))  # assumes 20 homes per transformer
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
-        # Triplex node
+        # Triplex node_name
         num_houses = int(np.floor(20 * 0.85) * safety_factor / admd)  # admd is the max power. 0.85 is the worst pf
         real_power_trans = np.sum(
             data_use_mat[:, np.random.choice(np.arange(data_use_mat.shape[1]), size=(num_houses,))], axis=1)

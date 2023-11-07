@@ -19,9 +19,12 @@ are files that are read in to run the EV-Ecosim environment.
 
 |
 **Output file description**\n
-`real_power.csv` - Real power; this is residential real load timeseries file per node/bus \n
-`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node/bus.\n
+`real_power.csv` - Real power; this is residential real load timeseries file per node_name/bus \n
+`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node_name/bus.\n
 `XXXX.glm` - GridLabD model files. These are usually the synthetic feeders.
+
+|
+Settings for collocated vs. centralized charging stations are included in this branch.
 """
 
 import glm_mod_functions
@@ -122,7 +125,7 @@ for i in obj_type_base.keys():
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
                 prop_voltage.append('voltage_C')
 
-        elif 'node' in obj_type_base[i]['object']:
+        elif 'node_name' in obj_type_base[i]['object']:
             if 'A' in glm_dict_base[i]['phases']:
                 # print(glm_dict_base[i]['phases'])
                 bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
@@ -156,7 +159,7 @@ for i in rec_del_index:
     del glm_dict_base[i]
     del obj_type_base[i]
 
-# add dummy player class (this allows running multiple time-steps)
+# Add dummy player class (this allows running multiple time- in GridLAB-D)
 key_index = max(glm_dict_base.keys()) + 1
 obj_type_base[key_index] = {'class': 'dummy'}
 glm_dict_base[key_index] = {'double': 'value'}
@@ -326,7 +329,7 @@ for i in range(len(bus_list)):
                 20 * 1000)))  # is this 20kVA based on the defined rating? change this from hard-coded?
     num_transformers_list.append(num_transformers)
     for j in range(num_transformers):
-        # Triplex node
+        # Triplex node_name
         num_houses = int(np.floor(20 * 0.85) * safety_factor / admd)
         real_power_trans = np.sum(
             data_use_mat[:, np.random.choice(np.arange(data_use_mat.shape[1]), size=(num_houses,))], axis=1)

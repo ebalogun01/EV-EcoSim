@@ -5,13 +5,12 @@ This file is mainly used to run scenarios in parallel (if enough CPUs) or sequen
 without having to modify and rerun the simulation each time.
 Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates.
 """
-
-# import charging_sim
+import os
 import sys
 import numpy as np
-sys.path.append('../../../EV50_cosimulation/charging_sim')
 import multiprocessing as mp
 import ast
+sys.path.append('../../charging_sim')
 from utils import month_days
 
 
@@ -79,30 +78,30 @@ def make_scenarios():
     param_dict['starttime'] = f'{start_time}'
     param_dict['endtime'] = f'{end_time}'
 
-    print(charging_station_config)
+    # print(charging_station_config)
     # Control user inputs for charging stations.
-    if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
+    if charging_station_config["num_l2_stalls_per_station"] and charging_station_config["num_dcfc_stalls_per_station"]:
         raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
 
     # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
-    print(charging_station_config)
+    # print(charging_station_config)
 
-    if charging_station_config['num_dcfc_stalls_per_node']:
-        param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
+    if charging_station_config['num_dcfc_stalls_per_station']:
+        param_dict['num_dcfc_stalls_per_station'] = charging_station_config['num_dcfc_stalls_per_station']
         if charging_station_config["dcfc_charging_stall_base_rating"]:
             param_dict[
                 'dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
 
-    if charging_station_config['num_l2_stalls_per_node']:
-        param_dict['num_l2_stalls_per_node'] = charging_station_config['num_l2_stalls_per_node']
+    if charging_station_config['num_l2_stalls_per_station']:
+        param_dict['num_l2_stalls_per_station'] = charging_station_config['num_l2_stalls_per_station']
         if charging_station_config["l2_power_cap"]:
             param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
     # Obtaining the charging station capacities.
     dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict[
-        'num_dcfc_stalls_per_node']
+        'num_dcfc_stalls_per_station']
     L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict[
-        'num_l2_stalls_per_node']
+        'num_l2_stalls_per_station']
     month = int(str(param_dict['starttime']).split('-')[1])
     # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
     month_str = list(month_days.keys())[month - 1]
@@ -119,14 +118,15 @@ def make_scenarios():
         dcfc_nodes = [dcfc_nodes]
     dcfc_dicts_list = []
     for node in dcfc_nodes:
-        dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
+        dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node_name": node},
 
+    print('YESSS', os.getcwd())
     L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
     l2_dicts_list = []
     for node in L2_charging_nodes:
-        l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
+        l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node_name": node},
     num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
     # Needs to come in as input initially & should be initialized prior from the feeder population.
 

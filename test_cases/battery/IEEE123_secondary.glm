@@ -33,7 +33,7 @@ object transformer_configuration {
 	install_type PADMOUNT;
 	primary_voltage 2401.7771;
 	secondary_voltage 480 V;
-	power_rating 75.0;
+	power_rating 300.0;
 	resistance 0.00600;
 	reactance 0.00400;
 }
@@ -50,10 +50,29 @@ object load {
 
 object transformer {
 	name dcfc_trans_0;
-	phases "ABCD";
-	from "meter_65";
+	phases "ABCN";
+	from "meter_77";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_0;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_77_DER0;
+	phases ABC;
+	from "meter_77";
+	to DER_load_0;
+	length 100;
+	configuration ug_line_config_12_ABC;
 }
 
 object transformer_configuration {
