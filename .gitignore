@@ -30,3 +30,7 @@ mosek
 .idea
 **.idea/
 
+#whitelist
+!converters/*.json
+!converters/*.dss
+
