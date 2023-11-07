@@ -85,6 +85,14 @@ class CostEstimator:
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
 
+    def calculate_cable_cost(self, length, voltage="HV", cores = 3, core_girth = 25):
+        """
+        Values are pulled from the DACE Price booklet
+        Ref: https://www.dacepricebooklet.com/table-costs/high-and-low-voltage-underground-electrical-power-cables-0
+        """
+        cost_per_m = 28.6 # TODO table lookup
+        return length * cost_per_m
+
     def calculate_solar_cost(self):
         """
         Values are pulled from the NREL solar cost calculator.
