@@ -31,6 +31,6 @@ mosek
 **.idea/
 
 #whitelist
-!converters/*.json
-!converters/*.dss
+!converters/**.json
+!converters/**.dss
 
