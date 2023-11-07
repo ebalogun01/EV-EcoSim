@@ -1,0 +1,7 @@
+
+// At minimum, this file needs to create the new circuit for OpenDSS.
+// You may also add transmission lines, substation switchgear, substation regulator, 
+//  energy meter, or other components before the feeder backbone is included.
+// This file is not over-written if you run the converter again.
+// Placeholder source:
+new circuit.Swan Island bus1=??? basekv=13.200 pu=1 ang=0 r1=0 x1=0.001 r0=0 x0=0.001
