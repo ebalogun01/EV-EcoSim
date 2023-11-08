@@ -209,7 +209,7 @@ def on_precommit(t):
             global_clock.it] * 1j
         gridlabd.set_value(name, prop, str(base_power + total_node_load))
 
-    # set fast charging power properties for this timestep
+    # Set fast charging power properties for this timestep.
     prop_1 = 'constant_power_A'
     prop_2 = 'constant_power_B'
     prop_3 = 'constant_power_C'
@@ -221,6 +221,7 @@ def on_precommit(t):
         gridlabd.set_value(name, prop_3, str(total_node_load_watts / 3))
 
     # Centralized storage discharge/charge compensation (Might need to include inverter/transformer for voltage drop)
+    # Currently assuming perfect inverter with 3-phase connection.
     if central_der:
         prop_1 = 'constant_power_A'
         prop_2 = 'constant_power_B'
@@ -246,8 +247,6 @@ def on_term(t):
     :param t: Default placeholder (do not change).
     :return: True.
     """
-    import voltdump2
-    voltdump2.parse_voltages(save_folder_prefix)
     EV_charging_sim.load_results_summary(save_folder_prefix)
     # np.savetxt(f'{save_folder_prefix}volt_mag.txt', gblvar.vm)
     # np.savetxt(f'{save_folder_prefix}volt_phase.txt', gblvar.vp)
@@ -255,6 +254,9 @@ def on_term(t):
     save_transformer_states()
     with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
         json.dump(gblvar.scenario, outfile, indent=1)
+
+    import voltdump2
+    voltdump2.parse_voltages(save_folder_prefix)
     print("Total run time: ", (time.time() - tic) / 60, "minutes")
     return True
 

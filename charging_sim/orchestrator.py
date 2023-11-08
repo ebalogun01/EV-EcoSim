@@ -180,7 +180,6 @@ class ChargingSim:
         """
         Creates charging stations for centralized DER shared within a distribution node_name.
 
-        :param primary_nodes_list:
         :param charging_nodes_list:
         :return:
         """
@@ -192,10 +191,9 @@ class ChargingSim:
             self.controller_config['opt_solver'] = self.scenario['opt_solver']  # set the optimization solver
             controller = control.MPC(self.controller_config, storage=battery,
                                      solar=solar)  # need to change this to load based on the users controller python file?
-
-            node_index += 1
-            bus_node_object = Node(name=node_name, storage=battery, solar=solar, controller=controller)
+            bus_node_object = Node(node_name, node_index, storage=battery, solar=solar, controller=controller)
             self.central_node_dict[node_name] = bus_node_object  # Populate the dictionary of node_name objects with the node_name object.
+            node_index += 1
 
         for i in range(len(charging_nodes_list)):
             self.charging_config['locator_index'], self.charging_config['location'] = i, charging_nodes_list[i]['node_name']
@@ -521,12 +519,17 @@ class ChargingSim:
         :param boolean plot: Decides if some results are plotted or not.
         :return: None.
         """
-        # TODO: selecting option for desired statistics
-        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        for charging_station in self.stations_list:
-            charging_station.save_sim_data(save_path_prefix)
-        for battery in self.battery_objects:
-            battery.save_sim_data(save_path_prefix)
+        if self.centralized:
+            for power_node in self.central_der_dict.keys():
+                node = self.central_node_dict[power_node]
+                node.save_sim_data(save_path_prefix)
+            for battery in self.battery_objects:
+                battery.save_sim_data(save_path_prefix)
+        else:
+            for charging_station in self.stations_list:
+                charging_station.save_sim_data(save_path_prefix)
+            for battery in self.battery_objects:
+                battery.save_sim_data(save_path_prefix)
 
         # SOME ADDITIONAL PLOTS BELOW
         if plot:

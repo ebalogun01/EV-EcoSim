@@ -15,9 +15,9 @@ from utils import month_days
 
 
 # RUN TYPE
-sequential_run = False
+sequential_run = True
 parallel_run = False
-single_run = True
+single_run = False
 
 
 def make_month_str(month_int: int):
@@ -120,7 +120,6 @@ def make_scenarios():
     for node in dcfc_nodes:
         dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node_name": node},
 
-    print('YESSS', os.getcwd())
     L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
