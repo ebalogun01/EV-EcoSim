@@ -99,9 +99,31 @@ class CostEstimator:
         """
         Values are pulled from the DACE Price booklet
         Ref: https://www.dacepricebooklet.com/table-costs/standard-transformers-10-kv-400-v-oil-cooled-0
-        """
-        cost= 5000  # TODO table lookup
+
+        Oil cooled transformers for indoor installation. Installed and connected. Capacity: 10 kV to 400 V.
+
+        Included:
+            conservator;
+            gas relay or nitrogen blanket.
+
+        Excluded:
+            architectural facilities;
+            discounts;
+            cable work.
+
+        :param capacity: Capacity in kVA
+        :return: Assumed transformer cost in USD."""
+
+        costs = pd.read_csv("analysis/configs/transformer_costs.csv")
+        cost = costs.at[0]['Price from']
+        for index, row in costs.iterrows():
+            if capacity <= row['Capacity']:
+                break
+            cost = row['Price from']
+            print(row['Price from'])
+        cost = cost * 1.1  # adjustment from EUR to USD
         return cost
+
     def calculate_solar_cost(self):
         """
         Values are pulled from the NREL solar cost calculator.
