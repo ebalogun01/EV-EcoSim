@@ -1,9 +1,6 @@
 import json
 import numpy as np
-from numpy.polynomial.polynomial import polyfit  # different than np.polyfit
-from utils import num_steps
-import matplotlib.pyplot as plt
-import os
+from numpy.polynomial.polynomial import polyfit  # different from np.polyfit
 import pandas as pd
 
 
@@ -11,6 +8,17 @@ class Inverter:
     """
     Inverter based on the Sandia Inverter Model: https://pvpmc.sandia.gov/modeling-steps/dc-to-ac-conversion/sandia-inverter-model/
     Member functions adapted based on:
+
+    Member methods adapted from William F. Holmgren, Clifford W. Hansen, and Mark A. Mikofski. “pvlib python: a python
+    package for modeling solar energy systems.” Journal of Open Source Software, 3(29), 884, (2018).
+    https://doi.org/10.21105/joss.00884
+
+    This module contains methods for inverter modeling and for fitting inverter models to data.
+
+    Inverter models calculate AC power output from DC input. Model parameters should be passed as a single dict.
+
+    Functions for estimating parameters for inverter models should follow the naming pattern 'fit_<model name>',
+    e.g., fit_sandia.
 
     References:
     [1] A. Driesse, "Beyond the Curves: Modeling the Electrical Efficiency of Photovoltaic Inverters", 33rd IEEE
@@ -38,22 +46,6 @@ class Inverter:
 
         # TODO Load inverter config file
         self.start = config["start_time"]
-
-    """
-    Adapted from William F. Holmgren, Clifford W. Hansen, and Mark A. Mikofski. “pvlib python: a python package 
-    for modeling solar energy systems.” Journal of Open Source Software, 3(29), 884, (2018). 
-    https://doi.org/10.21105/joss.00884
-    
-    This module contains functions for inverter modeling and for fitting inverter
-    models to data.
-    
-    Inverter models calculate AC power output from DC input. Model parameters
-    should be passed as a single dict.
-    
-    Functions for estimating parameters for inverter models should follow the
-    naming pattern 'fit_<model name>', e.g., fit_sandia.
-    
-    """
 
     def _sandia_eff(self, v_dc, p_dc, inverter):
         """
@@ -206,64 +198,14 @@ class Inverter:
 
     def adr(self, v_dc, p_dc, inverter, vtol=0.10):
         """
-        Convert DC power and voltage to AC power for an inverter with multiple MPPT inputs.
+        Converts DC power and voltage to AC power using Anton Driesse's grid-connected inverter efficiency model.
 
-        Uses Sandia's Grid-Connected PV Inverter model [1]_ extended to inverters with multiple, unbalanced inputs
-        as described in [2]_.
+        Determines the AC power output of an inverter given the DC voltage and DC power. Output AC power is bounded
+        above by the parameter ``Pacmax``, to represent inverter "clipping". AC power is bounded below by ``-Pnt``
+        (negative when power is consumed rather than produced) which represents self-consumption. `power_ac` is not
+        adjusted for maximum power point tracking (MPPT) voltage windows or maximum current limits of the inverter.
 
-        References
-        ----------
-        .. [1] D. King, S. Gonzalez, G. Galbraith, W. Boyson, "Performance Model
-           for Grid-Connected Photovoltaic Inverters", SAND2007-5036, Sandia
-           National Laboratories.
-        .. [2] C. Hansen, J. Johnson, R. Darbali-Zamora, N. Gurule. "Modeling
-           Efficiency Of Inverters With Multiple Inputs", 49th IEEE Photovoltaic
-           Specialist Conference, Philadelphia, PA, USA. June 2022.
-
-        :param v_dc: tuple, list or array of numeric DC voltage on each MPPT input of the inverter. If type is array,
-        must be 2d with axis 0 being the MPPT inputs. [V]
-        :param p_dc: tuple, list or array of numeric DC power on each MPPT input of the inverter. If type is array, must
-        be 2d with axis 0 being the MPPT inputs. [W]
-        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
-        :return: power_ac: AC power output for the inverter. [W]
-        """
-        r'''
-        Converts DC power and voltage to AC power using Anton Driesse's
-        grid-connected inverter efficiency model.
-
-        Parameters
-        ----------
-        v_dc : numeric
-            DC voltage input to the inverter, should be >= 0. [V]
-
-        p_dc : numeric
-            DC power input to the inverter, should be >= 0. [W]
-
-        inverter : dict-like
-            Defines parameters for the inverter model in [1]_.  See Notes for
-            required model parameters. A parameter database is provided with pvlib
-            and may be read using :py:func:`pvlib.pvsystem.retrieve_sam`.
-
-        vtol : numeric, default 0.1
-            Fraction of DC voltage that determines how far the efficiency model is
-            extrapolated beyond the inverter's normal input voltage operating
-            range. 0.0 <= vtol <= 1.0. [unitless]
-
-        Returns
-        -------
-        power_ac : numeric
-            AC power output. [W]
-
-        Notes
-        -----
-        Determines the AC power output of an inverter given the DC voltage and DC
-        power. Output AC power is bounded above by the parameter ``Pacmax``, to
-        represent inverter "clipping". AC power is bounded below by ``-Pnt``
-        (negative when power is consumed rather than produced) which represents
-        self-consumption. `power_ac` is not adjusted for maximum power point
-        tracking (MPPT) voltage windows or maximum current limits of the inverter.
-
-        Required model parameters are:
+        Required model parameters are: TODO revise
 
         ================ ==========================================================
         Column           Description
@@ -291,8 +233,8 @@ class Inverter:
         ================ ==========================================================
 
         AC power output is set to NaN where the input DC voltage exceeds a limit
-        M = max(Vmax, Vdcmax, MPPTHi) x (1 + vtol), and where the input DC voltage
-        is less than a limit m = max(Vmin, MPPTLow) x (1 - vtol)
+        M = max(Vmax, Vdcmax, MPPTHi) x (1 + vtol),
+        and where the input DC voltage is less than a limit m = max(Vmin, MPPTLow) x (1 - vtol)
 
         References
         ----------
@@ -300,11 +242,13 @@ class Inverter:
            of Photovoltaic Inverters", 33rd IEEE Photovoltaic Specialist
            Conference (PVSC), June 2008
 
-        See also
-        --------
-        pvlib.inverter.sandia
-        pvlib.pvsystem.retrieve_sam
-        '''
+        :param v_dc: DC voltage input to the inverter, should be >= 0. [V]
+        :param p_dc: DC power input to the inverter, should be >= 0. [W]
+        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
+        :param vtol: Fraction of DC voltage that determines how far the efficiency model is extrapolated beyond the
+        inverter's normal input voltage operating range. 0.0 <= vtol <= 1.0. [unitless]
+        :return: power_ac: AC power output for the inverter. [W]
+        """
 
         p_nom = inverter['Pnom']
         v_nom = inverter['Vnom']
@@ -357,7 +301,7 @@ class Inverter:
         return power_ac
 
     def pvwatts(self, pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
-        r"""
+        """
         NREL's PVWatts inverter model.
 
         The PVWatts inverter model [1]_ calculates inverter efficiency :math:`\eta`
@@ -376,25 +320,6 @@ class Inverter:
 
             P_{ac} = \min(\eta P_{dc}, P_{ac0})
 
-        Parameters
-        ----------
-        pdc : numeric
-            DC power. Same unit as ``pdc0``.
-        pdc0: numeric
-            DC input limit of the inverter.  Same unit as ``pdc``.
-        eta_inv_nom: numeric, default 0.96
-            Nominal inverter efficiency. [unitless]
-        eta_inv_ref: numeric, default 0.9637
-            Reference inverter efficiency. PVWatts defines it to be 0.9637
-            and is included here for flexibility. [unitless]
-
-        Returns
-        -------
-        power_ac: numeric
-            AC power.  Same unit as ``pdc0``.
-
-        Notes
-        -----
         When sourcing ``pdc`` from pvlib functions
         (e.g. :py:func:`pvlib.pvsystem.pvwatts_dc`) their DC power output is in W,
         and ``pdc0`` should have the same unit (W).
@@ -405,14 +330,18 @@ class Inverter:
         :py:func:`pvlib.pvsystem.pvwatts_dc` refers to the DC power of the modules
         at reference conditions.
 
-        See Also
-        --------
-        pvlib.inverter.pvwatts_multi
-
         References
         ----------
-        .. [1] A. P. Dobos, "PVWatts Version 5 Manual,"
-           http://pvwatts.nrel.gov/downloads/pvwattsv5.pdf (2014).
+        .. [1] A. P. Dobos, "PVWatts Version 5 Manual," http://pvwatts.nrel.gov/downloads/pvwattsv5.pdf (2014).
+
+        :param pdc: DC power. Same unit as ``pdc0``.
+        :param pdc0: DC input limit of the inverter.  Same unit as ``pdc``.
+        be 2d with axis 0 being the MPPT inputs. [W]
+        :param eta_inv_nom: Nominal inverter efficiency. [unitless] default 0.96
+        :param eta_inv_ref: Reference inverter efficiency. PVWatts defines it to be 0.9637 and is included here for
+        flexibility. [unitless]
+        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
+        :return: power_ac: AC power. Same unit as ``pdc0``.
         """
 
         pac0 = eta_inv_nom * pdc0
@@ -435,78 +364,43 @@ class Inverter:
         return power_ac
 
     def pvwatts_multi(self, pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
-        r"""
+        """
         Extend NREL's PVWatts inverter model for multiple MPP inputs.
 
         DC input power is summed over MPP inputs to obtain the DC power
         input to the PVWatts inverter model. See :py:func:`pvlib.inverter.pvwatts`
         for details.
 
-        Parameters
+        References
         ----------
-        pdc : tuple, list or array of numeric
-            DC power on each MPPT input of the inverter. If type is array, must
-            be 2d with axis 0 being the MPPT inputs. Same unit as ``pdc0``.
-        pdc0: numeric
-            Total DC power limit of the inverter.  Same unit as ``pdc``.
-        eta_inv_nom: numeric, default 0.96
-            Nominal inverter efficiency. [unitless]
-        eta_inv_ref: numeric, default 0.9637
-            Reference inverter efficiency. PVWatts defines it to be 0.9637
-            and is included here for flexibility. [unitless]
+        .. [1] D. King, S. Gonzalez, G. Galbraith, W. Boyson, "Performance Model
+           for Grid-Connected Photovoltaic Inverters", SAND2007-5036, Sandia
+           National Laboratories.
+        .. [2] C. Hansen, J. Johnson, R. Darbali-Zamora, N. Gurule. "Modeling
+           Efficiency Of Inverters With Multiple Inputs", 49th IEEE Photovoltaic
+           Specialist Conference, Philadelphia, PA, USA. June 2022.
 
-        Returns
-        -------
-        power_ac: numeric
-            AC power.  Same unit as ``pdc0``.
-
-        See Also
-        --------
-        pvlib.inverter.pvwatts
+        :param pdc: tuple, list or array of numeric DC power on each MPPT input of the inverter. If type is array, must
+        be 2d with axis 0 being the MPPT inputs. Same unit as ``pdc0``.
+        :param pdc0: numeric, total DC power limit of the inverter.  Same unit as ``pdc``.
+        be 2d with axis 0 being the MPPT inputs. [W]
+        :param eta_inv_nom: Nominal inverter efficiency. [unitless] default 0.96
+        :param eta_inv_ref: Reference inverter efficiency. PVWatts defines it to be 0.9637 and is included here for
+        flexibility. [unitless]
+        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
+        :return: power_ac: AC power. Same unit as ``pdc0``.
         """
         return self.pvwatts(sum(pdc), pdc0, eta_inv_nom, eta_inv_ref)
 
     def fit_sandia(self, ac_power, dc_power, dc_voltage, dc_voltage_level, p_ac_0, p_nt):
-        r'''
+        """
         Determine parameters for the Sandia inverter model.
 
-        Parameters
-        ----------
-        ac_power : array_like
-            AC power output at each data point [W].
-        dc_power : array_like
-            DC power input at each data point [W].
-        dc_voltage : array_like
-            DC input voltage at each data point [V].
-        dc_voltage_level : array_like
-            DC input voltage level at each data point. Values must be 'Vmin',
-            'Vnom' or 'Vmax'.
-        p_ac_0 : float
-            Rated AC power of the inverter [W].
-        p_nt : float
-            Night tare, i.e., power consumed while inverter is not delivering
-            AC power. [W]
-
-        Returns
-        -------
-        dict
-            A set of parameters for the Sandia inverter model [1]_. See
-            :py:func:`pvlib.inverter.sandia` for a description of keys and values.
-
-        See Also
-        --------
-        pvlib.inverter.sandia
-
-        Notes
-        -----
-        The fitting procedure to estimate parameters is described at [2]_.
-        A data point is a pair of values (dc_power, ac_power). Typically, inverter
-        performance is measured or described at three DC input voltage levels,
-        denoted 'Vmin', 'Vnom' and 'Vmax' and at each level, inverter efficiency
-        is determined at various output power levels. For example,
-        the CEC inverter test protocol [3]_ specifies measurement of input DC
-        power that delivers AC output power of 0.1, 0.2, 0.3, 0.5, 0.75 and 1.0 of
-        the inverter's AC power rating.
+        The fitting procedure to estimate parameters is described at [2]_. A data point is a pair of values (dc_power,
+        ac_power). Typically, inverter performance is measured or described at three DC input voltage levels, denoted
+        'Vmin', 'Vnom' and 'Vmax' and at each level, inverter efficiency is determined at various output power levels.
+        For example, the CEC inverter test protocol [3]_ specifies measurement of input DC power that delivers AC output
+        power of 0.1, 0.2, 0.3, 0.5, 0.75 and 1.0 of the inverter's AC power rating.
 
         References
         ----------
@@ -518,7 +412,16 @@ class Inverter:
         .. [3] W. Bower, et al., "Performance Test Protocol for Evaluating
            Inverters Used in Grid-Connected Photovoltaic Systems", available at
            https://www.energy.ca.gov/sites/default/files/2020-06/2004-11-22_Sandia_Test_Protocol_ada.pdf
-        '''  # noqa: E501
+
+        :param ac_power: array_like, AC power output at each data point [W].
+        :param dc_power: array_like, DC power input at each data point [W].
+        :param dc_voltage: array_like, DC input voltage at each data point [V].
+        :param dc_voltage_level: array_like, DC input voltage level at each data point. Values must be 'Vmin', 'Vnom'
+        or 'Vmax'.
+        :param p_ac_0: float, Rated AC power of the inverter [W].
+        :param p_nt: float, Night tare, i.e., power consumed while inverter is not delivering AC power. [W]
+        :return: dict, A set of parameters for the Sandia inverter model [1]_. See self.sandia for a description of keys
+        """
 
         voltage_levels = ['Vmin', 'Vnom', 'Vmax']
 
@@ -533,7 +436,8 @@ class Inverter:
 
         # empty dataframe to contain intermediate variables
         coeffs = pd.DataFrame(index=voltage_levels,
-                              columns=['a', 'b', 'c', 'p_dc', 'p_s0'], data=np.nan)
+                              columns=['a', 'b', 'c', 'p_dc', 'p_s0'],
+                              data=np.nan)
 
         def solve_quad(a, b, c):
             return (-b + (b ** 2 - 4 * a * c) ** .5) / (2 * a)
