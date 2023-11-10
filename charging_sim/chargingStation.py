@@ -44,7 +44,8 @@ class ChargingStation:
         self.cooling_pump = {}  # properties of the charging station cooling pump
         # COOLING LOAD SHOULD BE A FUNCTION OF CURRENT
         self.controller = controller
-        self.pge_blocks = [0]  # this is used with the new pge rate schedule
+        self.pge_blocks = [0]  # this is used with the new pge rate schedule.
+        # Todo: robustify to other rate schedules.
 
     def is_charging(self):
         """
