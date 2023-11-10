@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+import pytest
 
 # Defaults.
 PLOT_FONT_SIZE = 16
@@ -95,7 +96,7 @@ class CostEstimator:
         cost_per_m = 28.6  # TODO table lookup
         return length * cost_per_m
 
-    def calculate_transformer_cost(self, capacity):
+    def calculate_transformer_cost(self, capacity, eur=False):
         """
         Values are pulled from the DACE Price booklet
         Ref: https://www.dacepricebooklet.com/table-costs/standard-transformers-10-kv-400-v-oil-cooled-0
@@ -112,17 +113,19 @@ class CostEstimator:
             cable work.
 
         :param capacity: Capacity in kVA
+        :param eur: units requested in euros? Defaults to False and converts to USD.
         :return: Assumed transformer cost in USD."""
 
-        costs = pd.read_csv("analysis/configs/transformer_costs.csv")
-        cost = costs.at[0]['Price from']
+        costs = pd.read_csv("configs/transformer-prices.csv")
+        cost = 5000
         for index, row in costs.iterrows():
-            if capacity <= row['Capacity']:
+            if capacity < row['Capacity in kVA']:
                 break
             cost = row['Price from']
-            print(row['Price from'])
-        cost = cost * 1.1  # adjustment from EUR to USD
-        return cost
+
+        if eur == False:
+            cost = cost * 1.1  # adjustment from EUR to USD
+        return int(cost)
 
     def calculate_solar_cost(self):
         """
@@ -192,10 +195,6 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
-
-    def transformer_cost(self):
-        """Cannot find good resource data for this yet."""
-        return NotImplementedError
 
     @staticmethod
     def plot_loads(total_load, net_load, prefix=None, labels: list = None):
@@ -364,3 +363,10 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
+
+class TestCostEstimator:
+    # TODO make dynamically load config file
+    @pytest.mark.parametrize("cap,expected", [(100,5500), (1600,16500), (4000,27500)])
+    def test_calculate_transformer_cost(self,cap, expected):
+        costEst = CostEstimator(1)
+        assert costEst.calculate_transformer_cost(cap) == expected
