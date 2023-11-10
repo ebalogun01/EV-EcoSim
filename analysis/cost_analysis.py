@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+
 import pytest
 
 # Defaults.
@@ -88,13 +89,63 @@ class CostEstimator:
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
 
-    def calculate_cable_cost(self, length, underground=True, voltage="HV", cores=3, core_girth=25):
+    def calculate_cable_cost(self, length, metric=True, underground=True, voltage="HV", cores=3, core_girth=250,
+                             eur=False):
         """
-        Values are pulled from the DACE Price booklet
+        Default table values are pulled from the DACE Price booklet
         Ref: https://www.dacepricebooklet.com/table-costs/high-and-low-voltage-underground-electrical-power-cables-0
+
+        Options considered:
+            High voltage cable VG-YLK - 10 kV - Cu.
+            Low voltage braided cable, YMvKas 750 V - Cu.
+            3- or 4-core.
+
+        Included:
+            supply and install cable in the ground.
+        Excluded:
+            excavation and paving.
+
+        :param length: length of cable
+        :param metric: metric or imperial units, metric is default, imperial in feet
+        :param underground: underground or overhead cable, underground is default
+        :param voltage: HV or LV, HV is default
+        :param cores: number of cores, 3 is default
+        :param core_girth: core girth in mm2, 250 is default
+        :param eur: units requested in euros? Defaults to False and converts to USD.
+        :return: Assumed transformer cost in USD.
         """
-        cost_per_m = 28.6  # TODO table lookup
-        return length * cost_per_m
+
+        if not underground:
+            raise NotImplementedError("Overhead cable cost not implemented yet.")
+
+        if not metric:
+            length = length / 0.3048  # adjustment from feet to m
+
+        # Find suitable cost per meter
+        costs = pd.read_csv("configs/cable-prices.csv")
+        # Filter relevant voltage part of input table
+        if voltage == "HV":
+            costs = costs.loc[costs['Cable type'] == 'High Voltage cable']
+        else:
+            costs = costs.loc[costs['Cable type'] == 'Low Voltage cable']
+
+        # Filter relevant cores part of input table
+        costs = costs.loc[costs['Number of cores'] == cores]
+
+        # Find cost per meter for given girth
+        cost_per_m = costs.at[0, 'Cost per m']
+        for index, row in costs.iterrows():
+            if core_girth < row['Core in mm2']:
+                break
+            cost_per_m = row['Cost per m']
+
+        # Calculate cost
+        cost = length * cost_per_m
+
+        if not eur:
+            cost = cost * 1.1  # adjustment from EUR to USD
+
+        return int(cost)
 
     def calculate_transformer_cost(self, capacity, eur=False):
         """
@@ -114,16 +165,17 @@ class CostEstimator:
 
         :param capacity: Capacity in kVA
         :param eur: units requested in euros? Defaults to False and converts to USD.
-        :return: Assumed transformer cost in USD."""
+        :return: Assumed transformer cost in USD.
+        """
 
         costs = pd.read_csv("configs/transformer-prices.csv")
-        cost = 5000
+        cost = costs.at[0, 'Price from']
         for index, row in costs.iterrows():
             if capacity < row['Capacity in kVA']:
                 break
             cost = row['Price from']
 
-        if eur == False:
+        if not eur:
             cost = cost * 1.1  # adjustment from EUR to USD
         return int(cost)
 
@@ -364,9 +416,17 @@ class CostEstimator:
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
 
+
 class TestCostEstimator:
     # TODO make dynamically load config file
-    @pytest.mark.parametrize("cap,expected", [(100,5500), (1600,16500), (4000,27500)])
-    def test_calculate_transformer_cost(self,cap, expected):
+    @pytest.mark.parametrize("cap,expected", [(100, 5500), (1600, 16500), (4000, 27500)])
+    def test_calculate_transformer_cost(self, cap, expected):
         costEst = CostEstimator(1)
         assert costEst.calculate_transformer_cost(cap) == expected
+
+    @pytest.mark.parametrize("length, metric, underground, voltage, cores, core_girth, eur, expected",
+                             [(10, True, True, "HV", 3, 250, False, 31460),
+                              (10, True, True, "HV", 3, 250, True, 28600)])
+    def test_calculate_cable_cost(self, length, metric, underground, voltage, cores, core_girth, eur, expected):
+        costEst = CostEstimator(1)
+        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth, eur) == expected
