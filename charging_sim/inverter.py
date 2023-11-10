@@ -39,7 +39,6 @@ class Inverter:
         # TODO Load inverter config file
         self.start = config["start_time"]
 
-
     """
     Adapted from William F. Holmgren, Clifford W. Hansen, and Mark A. Mikofski. “pvlib python: a python package 
     for modeling solar energy systems.” Journal of Open Source Software, 3(29), 884, (2018). 
@@ -56,10 +55,15 @@ class Inverter:
     
     """
 
-    def _sandia_eff(v_dc, p_dc, inverter):
-        r'''
+    def _sandia_eff(self, v_dc, p_dc, inverter):
+        """
         Calculate the inverter AC power without clipping
-        '''
+
+        :param v_dc: DC voltage input to the inverter. [V]
+        :param p_dc: DC power input to the inverter. [W]
+        :param inverter: Defines parameters for the inverter model TODO deprecate
+        :return: power_ac; AC power with applied limits
+        """
         Paco = inverter['Paco']
         Pdco = inverter['Pdco']
         Vdco = inverter['Vdco']
@@ -75,10 +79,17 @@ class Inverter:
 
         return (Paco / (A - B) - C * (A - B)) * (p_dc - B) + C * (p_dc - B) ** 2
 
-    def _sandia_limits(power_ac, p_dc, Paco, Pnt, Pso):
-        r'''
-        Applies minimum and maximum power limits to `power_ac`
-        '''
+    def _sandia_limits(self, power_ac, p_dc, Paco, Pnt, Pso):
+        """Applies minimum and maximum power limits to `power_ac`
+
+        :param power_ac: AC power
+        :param p_dc: DC power
+        :param Paco: xx
+        :param Pnt: xx
+        :param Pso: xx
+        :return: power_ac: AC power with applied limits
+        """
+
         power_ac = np.minimum(Paco, power_ac)
         min_ac_power = -1.0 * abs(Pnt)
         below_limit = p_dc < Pso
@@ -89,29 +100,8 @@ class Inverter:
                 power_ac = min_ac_power
         return power_ac
 
-    def sandia(v_dc, p_dc, inverter):
-        r'''
-        Convert DC power and voltage to AC power using Sandia's
-        Grid-Connected PV Inverter model.
-
-        Parameters
-        ----------
-        v_dc : numeric
-            DC voltage input to the inverter. [V]
-
-        p_dc : numeric
-            DC power input to the inverter. [W]
-
-        inverter : dict-like
-            Defines parameters for the inverter model in [1]_.
-
-        Returns
-        -------
-        power_ac : numeric
-            AC power output. [W]
-
-        Notes
-        -----
+    def sandia(self, v_dc, p_dc, inverter):
+        """Convert DC power and voltage to AC power using Sandia's Grid-Connected PV Inverter model [1].
 
         Determines the AC power output of an inverter given the DC voltage and DC
         power. Output AC power is bounded above by the parameter ``Paco``, to
@@ -150,32 +140,33 @@ class Inverter:
         is provided with pvlib and may be read  using
         :py:func:`pvlib.pvsystem.retrieve_sam`.
 
-        References
-        ----------
-        .. [1] D. King, S. Gonzalez, G. Galbraith, W. Boyson, "Performance Model
-           for Grid-Connected Photovoltaic Inverters", SAND2007-5036, Sandia
-           National Laboratories.
-
+        References:
+        .. [1] William F. Holmgren, Clifford W. Hansen, and Mark A. Mikofski. “pvlib python: a python package for
+           modeling solar energy systems.” Journal of Open Source Software, 3(29), 884, (2018).
+           https://doi.org/10.21105/joss.00884
         .. [2] System Advisor Model web page. https://sam.nrel.gov.
+        .. [3] D. King, S. Gonzalez, G. Galbraith, W. Boyson, "Performance Model for Grid-Connected Photovoltaic
+           Inverters", SAND2007-5036, Sandia National Laboratories.
 
-        See also
-        --------
-        pvlib.pvsystem.retrieve_sam
-        '''
+        :param v_dc: DC voltage input to the inverter. [V]
+        :param p_dc: DC power input to the inverter. [W]
+        :param inverter: Defines parameters for the inverter model in [3] TODO deprecate
+        :return: power_ac: AC power output. [W]
+        """
 
         Paco = inverter['Paco']
         Pnt = inverter['Pnt']
         Pso = inverter['Pso']
 
-        power_ac = _sandia_eff(v_dc, p_dc, inverter)
-        power_ac = _sandia_limits(power_ac, p_dc, Paco, Pnt, Pso)
+        power_ac = self._sandia_eff(v_dc, p_dc, inverter)
+        power_ac = self._sandia_limits(power_ac, p_dc, Paco, Pnt, Pso)
 
         if isinstance(p_dc, pd.Series):
             power_ac = pd.Series(power_ac, index=p_dc.index)
 
         return power_ac
 
-    def sandia_multi(v_dc, p_dc, inverter):
+    def sandia_multi(self, v_dc, p_dc, inverter):
         r'''
         Convert DC power and voltage to AC power for an inverter with multiple
         MPPT inputs.
@@ -231,12 +222,12 @@ class Inverter:
         power_ac = 0. * power_dc
 
         for vdc, pdc in zip(v_dc, p_dc):
-            power_ac += pdc / power_dc * _sandia_eff(vdc, power_dc, inverter)
+            power_ac += pdc / power_dc * self._sandia_eff(vdc, power_dc, inverter)
 
-        return _sandia_limits(power_ac, power_dc, inverter['Paco'],
-                              inverter['Pnt'], inverter['Pso'])
+        return self._sandia_limits(power_ac, power_dc, inverter['Paco'],
+                                   inverter['Pnt'], inverter['Pso'])
 
-    def adr(v_dc, p_dc, inverter, vtol=0.10):
+    def adr(self, v_dc, p_dc, inverter, vtol=0.10):
         r'''
         Converts DC power and voltage to AC power using Anton Driesse's
         grid-connected inverter efficiency model.
@@ -366,7 +357,7 @@ class Inverter:
 
         return power_ac
 
-    def pvwatts(pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
+    def pvwatts(self, pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
         r"""
         NREL's PVWatts inverter model.
 
@@ -444,7 +435,7 @@ class Inverter:
 
         return power_ac
 
-    def pvwatts_multi(pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
+    def pvwatts_multi(self, pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637):
         r"""
         Extend NREL's PVWatts inverter model for multiple MPP inputs.
 
@@ -474,9 +465,9 @@ class Inverter:
         --------
         pvlib.inverter.pvwatts
         """
-        return pvwatts(sum(pdc), pdc0, eta_inv_nom, eta_inv_ref)
+        return self.pvwatts(sum(pdc), pdc0, eta_inv_nom, eta_inv_ref)
 
-    def fit_sandia(ac_power, dc_power, dc_voltage, dc_voltage_level, p_ac_0, p_nt):
+    def fit_sandia(self, ac_power, dc_power, dc_voltage, dc_voltage_level, p_ac_0, p_nt):
         r'''
         Determine parameters for the Sandia inverter model.
 
