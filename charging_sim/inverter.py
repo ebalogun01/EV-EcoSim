@@ -80,13 +80,15 @@ class Inverter:
         return (Paco / (A - B) - C * (A - B)) * (p_dc - B) + C * (p_dc - B) ** 2
 
     def _sandia_limits(self, power_ac, p_dc, Paco, Pnt, Pso):
-        """Applies minimum and maximum power limits to `power_ac`
+        """
+        Applies minimum and maximum power limits to `power_ac`
 
         :param power_ac: AC power
         :param p_dc: DC power
-        :param Paco: xx
-        :param Pnt: xx
-        :param Pso: xx
+        :param Paco: AC power rating of the inverter. [W]
+        :param Pnt: AC power consumed by the inverter at night (night tare). [W]
+        :param Pso:  DC power required to start the inversion process, or self-consumption by inverter, strongly
+        influences inverter efficiency at low power levels. [W]
         :return: power_ac: AC power with applied limits
         """
 
@@ -101,7 +103,8 @@ class Inverter:
         return power_ac
 
     def sandia(self, v_dc, p_dc, inverter):
-        """Convert DC power and voltage to AC power using Sandia's Grid-Connected PV Inverter model [1].
+        """
+        Convert DC power and voltage to AC power using Sandia's Grid-Connected PV Inverter model [1].
 
         Determines the AC power output of an inverter given the DC voltage and DC
         power. Output AC power is bounded above by the parameter ``Paco``, to
@@ -111,7 +114,7 @@ class Inverter:
         maximum power point tracking (MPPT) voltage windows or maximum current
         limits of the inverter.
 
-        Required model parameters are:
+        Required model parameters are: TODO revise
 
         ======   ============================================================
         Column   Description
@@ -167,40 +170,11 @@ class Inverter:
         return power_ac
 
     def sandia_multi(self, v_dc, p_dc, inverter):
-        r'''
-        Convert DC power and voltage to AC power for an inverter with multiple
-        MPPT inputs.
+        """
+        Convert DC power and voltage to AC power for an inverter with multiple MPPT inputs.
 
-        Uses Sandia's Grid-Connected PV Inverter model [1]_. Extension of [1]_
-        to inverters with multiple, unbalanced inputs as described in [2]_.
-
-        Parameters
-        ----------
-        v_dc : tuple, list or array of numeric
-            DC voltage on each MPPT input of the inverter. If type is array, must
-            be 2d with axis 0 being the MPPT inputs. [V]
-
-        p_dc : tuple, list or array of numeric
-            DC power on each MPPT input of the inverter. If type is array, must
-            be 2d with axis 0 being the MPPT inputs. [W]
-
-        inverter : dict-like
-            Defines parameters for the inverter model in [1]_.
-
-        Returns
-        -------
-        power_ac : numeric
-            AC power output for the inverter. [W]
-
-        Raises
-        ------
-        ValueError
-            If v_dc and p_dc have different lengths.
-
-        Notes
-        -----
-        See :py:func:`pvlib.inverter.sandia` for definition of the parameters in
-        `inverter`.
+        Uses Sandia's Grid-Connected PV Inverter model [1]_ extended to inverters with multiple, unbalanced inputs
+        as described in [2]_.
 
         References
         ----------
@@ -211,10 +185,13 @@ class Inverter:
            Efficiency Of Inverters With Multiple Inputs", 49th IEEE Photovoltaic
            Specialist Conference, Philadelphia, PA, USA. June 2022.
 
-        See also
-        --------
-        pvlib.inverter.sandia
-        '''
+        :param v_dc: tuple, list or array of numeric DC voltage on each MPPT input of the inverter. If type is array,
+        must be 2d with axis 0 being the MPPT inputs. [V]
+        :param p_dc: tuple, list or array of numeric DC power on each MPPT input of the inverter. If type is array, must
+        be 2d with axis 0 being the MPPT inputs. [W]
+        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
+        :return: power_ac: AC power output for the inverter. [W]
+        """
 
         if len(p_dc) != len(v_dc):
             raise ValueError('p_dc and v_dc have different lengths')
@@ -228,6 +205,28 @@ class Inverter:
                                    inverter['Pnt'], inverter['Pso'])
 
     def adr(self, v_dc, p_dc, inverter, vtol=0.10):
+        """
+        Convert DC power and voltage to AC power for an inverter with multiple MPPT inputs.
+
+        Uses Sandia's Grid-Connected PV Inverter model [1]_ extended to inverters with multiple, unbalanced inputs
+        as described in [2]_.
+
+        References
+        ----------
+        .. [1] D. King, S. Gonzalez, G. Galbraith, W. Boyson, "Performance Model
+           for Grid-Connected Photovoltaic Inverters", SAND2007-5036, Sandia
+           National Laboratories.
+        .. [2] C. Hansen, J. Johnson, R. Darbali-Zamora, N. Gurule. "Modeling
+           Efficiency Of Inverters With Multiple Inputs", 49th IEEE Photovoltaic
+           Specialist Conference, Philadelphia, PA, USA. June 2022.
+
+        :param v_dc: tuple, list or array of numeric DC voltage on each MPPT input of the inverter. If type is array,
+        must be 2d with axis 0 being the MPPT inputs. [V]
+        :param p_dc: tuple, list or array of numeric DC power on each MPPT input of the inverter. If type is array, must
+        be 2d with axis 0 being the MPPT inputs. [W]
+        :param inverter: Defines parameters for the inverter model in [1] TODO deprecate
+        :return: power_ac: AC power output for the inverter. [W]
+        """
         r'''
         Converts DC power and voltage to AC power using Anton Driesse's
         grid-connected inverter efficiency model.
