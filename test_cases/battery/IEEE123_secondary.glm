@@ -51,7 +51,7 @@ object load {
 object transformer {
 	name dcfc_trans_0;
 	phases "ABCN";
-	from "meter_42";
+	from "meter_1";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
 }
@@ -67,9 +67,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_42_DER0;
+	name ugl_meter_1_DER0;
 	phases ABC;
-	from "meter_42";
+	from "meter_1";
 	to DER_load_0;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -88,7 +88,7 @@ object load {
 object transformer {
 	name dcfc_trans_1;
 	phases "ABCN";
-	from "meter_42";
+	from "meter_1";
 	to dcfc_load_1;
 	configuration dcfc_transformer;
 }
@@ -104,9 +104,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_42_DER1;
+	name ugl_meter_1_DER1;
 	phases ABC;
-	from "meter_42";
+	from "meter_1";
 	to DER_load_1;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -125,7 +125,7 @@ object load {
 object transformer {
 	name dcfc_trans_2;
 	phases "ABCN";
-	from "meter_42";
+	from "meter_1";
 	to dcfc_load_2;
 	configuration dcfc_transformer;
 }
@@ -141,9 +141,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_42_DER2;
+	name ugl_meter_1_DER2;
 	phases ABC;
-	from "meter_42";
+	from "meter_1";
 	to DER_load_2;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -162,7 +162,7 @@ object load {
 object transformer {
 	name dcfc_trans_3;
 	phases "ABCN";
-	from "meter_42";
+	from "meter_1";
 	to dcfc_load_3;
 	configuration dcfc_transformer;
 }
@@ -178,9 +178,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_42_DER3;
+	name ugl_meter_1_DER3;
 	phases ABC;
-	from "meter_42";
+	from "meter_1";
 	to DER_load_3;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -199,7 +199,7 @@ object load {
 object transformer {
 	name dcfc_trans_4;
 	phases "ABCN";
-	from "meter_42";
+	from "meter_1";
 	to dcfc_load_4;
 	configuration dcfc_transformer;
 }
@@ -215,9 +215,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_42_DER4;
+	name ugl_meter_1_DER4;
 	phases ABC;
-	from "meter_42";
+	from "meter_1";
 	to DER_load_4;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -235,8 +235,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_5;
-	phases "ABCN";
-	from "meter_50";
+	phases "ABC";
+	from "meter_64";
 	to dcfc_load_5;
 	configuration dcfc_transformer;
 }
@@ -252,9 +252,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_50_DER5;
+	name ugl_meter_64_DER5;
 	phases ABC;
-	from "meter_50";
+	from "meter_64";
 	to DER_load_5;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -272,8 +272,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_6;
-	phases "ABCN";
-	from "meter_50";
+	phases "ABC";
+	from "meter_64";
 	to dcfc_load_6;
 	configuration dcfc_transformer;
 }
@@ -289,9 +289,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_50_DER6;
+	name ugl_meter_64_DER6;
 	phases ABC;
-	from "meter_50";
+	from "meter_64";
 	to DER_load_6;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -309,8 +309,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_7;
-	phases "ABCN";
-	from "meter_50";
+	phases "ABC";
+	from "meter_64";
 	to dcfc_load_7;
 	configuration dcfc_transformer;
 }
@@ -326,9 +326,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_50_DER7;
+	name ugl_meter_64_DER7;
 	phases ABC;
-	from "meter_50";
+	from "meter_64";
 	to DER_load_7;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -346,8 +346,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_8;
-	phases "ABCN";
-	from "meter_50";
+	phases "ABC";
+	from "meter_64";
 	to dcfc_load_8;
 	configuration dcfc_transformer;
 }
@@ -363,9 +363,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_50_DER8;
+	name ugl_meter_64_DER8;
 	phases ABC;
-	from "meter_50";
+	from "meter_64";
 	to DER_load_8;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -383,8 +383,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_9;
-	phases "ABCN";
-	from "meter_50";
+	phases "ABC";
+	from "meter_64";
 	to dcfc_load_9;
 	configuration dcfc_transformer;
 }
@@ -400,9 +400,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_50_DER9;
+	name ugl_meter_64_DER9;
 	phases ABC;
-	from "meter_50";
+	from "meter_64";
 	to DER_load_9;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -420,8 +420,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_10;
-	phases "ABCN";
-	from "meter_60";
+	phases "ABC";
+	from "meter_63";
 	to dcfc_load_10;
 	configuration dcfc_transformer;
 }
@@ -437,9 +437,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_60_DER10;
+	name ugl_meter_63_DER10;
 	phases ABC;
-	from "meter_60";
+	from "meter_63";
 	to DER_load_10;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -457,8 +457,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_11;
-	phases "ABCN";
-	from "meter_60";
+	phases "ABC";
+	from "meter_63";
 	to dcfc_load_11;
 	configuration dcfc_transformer;
 }
@@ -474,9 +474,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_60_DER11;
+	name ugl_meter_63_DER11;
 	phases ABC;
-	from "meter_60";
+	from "meter_63";
 	to DER_load_11;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -494,8 +494,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_12;
-	phases "ABCN";
-	from "meter_60";
+	phases "ABC";
+	from "meter_63";
 	to dcfc_load_12;
 	configuration dcfc_transformer;
 }
@@ -511,9 +511,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_60_DER12;
+	name ugl_meter_63_DER12;
 	phases ABC;
-	from "meter_60";
+	from "meter_63";
 	to DER_load_12;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -531,8 +531,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_13;
-	phases "ABCN";
-	from "meter_60";
+	phases "ABC";
+	from "meter_63";
 	to dcfc_load_13;
 	configuration dcfc_transformer;
 }
@@ -548,9 +548,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_60_DER13;
+	name ugl_meter_63_DER13;
 	phases ABC;
-	from "meter_60";
+	from "meter_63";
 	to DER_load_13;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -568,8 +568,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_14;
-	phases "ABCN";
-	from "meter_60";
+	phases "ABC";
+	from "meter_63";
 	to dcfc_load_14;
 	configuration dcfc_transformer;
 }
@@ -585,9 +585,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_60_DER14;
+	name ugl_meter_63_DER14;
 	phases ABC;
-	from "meter_60";
+	from "meter_63";
 	to DER_load_14;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -606,7 +606,7 @@ object load {
 object transformer {
 	name dcfc_trans_15;
 	phases "ABCN";
-	from "meter_30";
+	from "meter_53";
 	to dcfc_load_15;
 	configuration dcfc_transformer;
 }
@@ -622,9 +622,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_30_DER15;
+	name ugl_meter_53_DER15;
 	phases ABC;
-	from "meter_30";
+	from "meter_53";
 	to DER_load_15;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -643,7 +643,7 @@ object load {
 object transformer {
 	name dcfc_trans_16;
 	phases "ABCN";
-	from "meter_30";
+	from "meter_53";
 	to dcfc_load_16;
 	configuration dcfc_transformer;
 }
@@ -659,9 +659,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_30_DER16;
+	name ugl_meter_53_DER16;
 	phases ABC;
-	from "meter_30";
+	from "meter_53";
 	to DER_load_16;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -680,7 +680,7 @@ object load {
 object transformer {
 	name dcfc_trans_17;
 	phases "ABCN";
-	from "meter_30";
+	from "meter_53";
 	to dcfc_load_17;
 	configuration dcfc_transformer;
 }
@@ -696,9 +696,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_30_DER17;
+	name ugl_meter_53_DER17;
 	phases ABC;
-	from "meter_30";
+	from "meter_53";
 	to DER_load_17;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -717,7 +717,7 @@ object load {
 object transformer {
 	name dcfc_trans_18;
 	phases "ABCN";
-	from "meter_30";
+	from "meter_53";
 	to dcfc_load_18;
 	configuration dcfc_transformer;
 }
@@ -733,9 +733,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_30_DER18;
+	name ugl_meter_53_DER18;
 	phases ABC;
-	from "meter_30";
+	from "meter_53";
 	to DER_load_18;
 	length 100;
 	configuration ug_line_config_12_ABC;
@@ -754,7 +754,7 @@ object load {
 object transformer {
 	name dcfc_trans_19;
 	phases "ABCN";
-	from "meter_30";
+	from "meter_53";
 	to dcfc_load_19;
 	configuration dcfc_transformer;
 }
@@ -770,9 +770,9 @@ object load {
 }
 
 object underground_line {
-	name ugl_meter_30_DER19;
+	name ugl_meter_53_DER19;
 	phases ABC;
-	from "meter_30";
+	from "meter_53";
 	to DER_load_19;
 	length 100;
 	configuration ug_line_config_12_ABC;

@@ -30,7 +30,7 @@ gblvar.scenario['opt_solver'] = solver_options[0]
 print('...loading charging bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()  # this is for DC FAST charging
 
-central_der = True # toggle for central vs. decentralized storage
+central_der = True  # Toggle for central vs. decentralized storage.
 if central_der:
     with open('feeder_node_dict.json') as f:
         central_der_nodes_dict = json.load(f)   # Primary to secondary node_name dictionary for tracking all the DERs.
@@ -40,9 +40,8 @@ if central_der:
 
 if type(dcfc_nodes) is not list:
     dcfc_nodes = [dcfc_nodes]
-dcfc_dicts_list = []
-for node in dcfc_nodes:
-    dcfc_dicts_list += {"DCFC": gblvar.scenario['charging_station']['dcfc_power_cap'], "L2": 0, "node_name": node},
+dcfc_dicts_list = [{"DCFC": gblvar.scenario['charging_station']['dcfc_power_cap'], "L2": 0, "node_name": node}
+                   for node in dcfc_nodes]
 
 L2_charging_nodes = np.loadtxt('L2charging_bus.txt', dtype=str).tolist()  # this is for L2 charging
 if type(L2_charging_nodes) is not list:
