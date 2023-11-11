@@ -147,7 +147,7 @@ class CostEstimator:
         if not eur:
             cost = cost * 1.1  # adjustment from EUR to USD
 
-        return int(cost)
+        return cost
 
     def calculate_transformer_cost(self, capacity, eur=False):
         """
@@ -179,7 +179,7 @@ class CostEstimator:
 
         if not eur:
             cost = cost * 1.1  # adjustment from EUR to USD
-        return int(cost)
+        return cost
 
     def calculate_solar_cost(self):
         """
@@ -424,16 +424,17 @@ class TestCostEstimator:
     @pytest.mark.parametrize("cap,expected", [(100, 5500), (1600, 16500), (4000, 27500)])
     def test_calculate_transformer_cost(self, cap, expected):
         costEst = CostEstimator(1)
-        assert costEst.calculate_transformer_cost(cap) == expected
+        assert costEst.calculate_transformer_cost(cap) == pytest.approx(expected)
 
     @pytest.mark.parametrize("length, metric, underground, voltage, cores, core_girth, eur, expected",
                              [(10, True, True, "HV", 3, 25, False, 314.6),
                               (10, True, True, "HV", 3, 25, True, 286),
                               (10, True, True, "HV", 3, 120, True, 710),
-                              (10, True, True, "HV", 3, 200, True, 710),
+                              (10, True, True, "HV", 3, 200, True, 890),
                               (10, True, True, "LV", 3, 120, True, 843),
-                              (10, True, True, "LV", 4, 1200, True, 1070),
+                              (10, True, True, "LV", 4, 120, True, 1070),
+                              (10, True, True, "LV", 4, 1200, True, 2070),
                               ])
     def test_calculate_cable_cost(self, length, metric, underground, voltage, cores, core_girth, eur, expected):
         costEst = CostEstimator(1)
-        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth, eur) == expected
+        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth, eur) == pytest.approx(expected)
