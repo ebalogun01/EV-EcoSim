@@ -149,7 +149,7 @@ class CostEstimator:
 
         return cost
 
-    def calculate_transformer_cost(self, capacity, eur=False):
+    def calculate_transformer_cost(self, capacity, type="oil", eur=False):
         """
         Values are pulled from the DACE Price booklet
         Ref: https://www.dacepricebooklet.com/table-costs/standard-transformers-10-kv-400-v-oil-cooled-0
@@ -159,6 +159,7 @@ class CostEstimator:
         Included:
             conservator;
             gas relay or nitrogen blanket.
+            temperature monitoring.
 
         Excluded:
             architectural facilities;
@@ -171,6 +172,18 @@ class CostEstimator:
         """
 
         costs = pd.read_csv("configs/transformer-prices.csv")
+
+        # Filter relevant transformer type of input table
+        if type == "oil":
+            costs = costs.loc[costs['Type'] == 'Oil cooled']
+        elif type == "dry":
+            costs = costs.loc[costs['Type'] == 'Cast resin dry']
+        else:
+            raise ValueError("Transformer type must be either oil or dry.")
+
+        costs.reset_index(drop=True, inplace=True)
+
+        # Find cost for given capacity
         cost = costs.at[0, 'Price from']
         for index, row in costs.iterrows():
             if capacity < row['Capacity in kVA']:
@@ -421,10 +434,16 @@ class CostEstimator:
 
 class TestCostEstimator:
     # TODO make dynamically load config file
-    @pytest.mark.parametrize("cap,expected", [(100, 5500), (1600, 16500), (4000, 27500)])
-    def test_calculate_transformer_cost(self, cap, expected):
+    @pytest.mark.parametrize("cap, type, eur, expected", [(100, "oil", False, 5500),
+                                                          (1600, "oil", False, 16500),
+                                                          (4000, "oil", False, 27500),
+                                                          (4000, "oil", True, 25000),
+                                                          (100, "dry", True, 5000),
+                                                          (4000, "dry", True, 17000),
+                                                          ])
+    def test_calculate_transformer_cost(self, cap, type, eur, expected):
         costEst = CostEstimator(1)
-        assert costEst.calculate_transformer_cost(cap) == pytest.approx(expected)
+        assert costEst.calculate_transformer_cost(cap, type, eur) == pytest.approx(expected)
 
     @pytest.mark.parametrize("length, metric, underground, voltage, cores, core_girth, eur, expected",
                              [(10, True, True, "HV", 3, 25, False, 314.6),
@@ -437,4 +456,5 @@ class TestCostEstimator:
                               ])
     def test_calculate_cable_cost(self, length, metric, underground, voltage, cores, core_girth, eur, expected):
         costEst = CostEstimator(1)
-        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth, eur) == pytest.approx(expected)
+        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth,
+                                            eur) == pytest.approx(expected)
