@@ -126,11 +126,13 @@ class CostEstimator:
         # Filter relevant voltage part of input table
         if voltage == "HV":
             costs = costs.loc[costs['Cable type'] == 'High Voltage cable']
-        else:
+        elif voltage == "LV":
             costs = costs.loc[costs['Cable type'] == 'Low Voltage cable']
+        else:
+            raise ValueError("Voltage must be either HV or LV.")
 
         # Filter relevant cores part of input table
-        costs = costs.loc[costs['Number of cores'] == cores]
+        costs = costs.loc[costs['Number of cores'] == cores].reset_index(drop=True)
 
         # Find cost per meter for given girth
         cost_per_m = costs.at[0, 'Cost per m']
@@ -425,8 +427,13 @@ class TestCostEstimator:
         assert costEst.calculate_transformer_cost(cap) == expected
 
     @pytest.mark.parametrize("length, metric, underground, voltage, cores, core_girth, eur, expected",
-                             [(10, True, True, "HV", 3, 250, False, 31460),
-                              (10, True, True, "HV", 3, 250, True, 28600)])
+                             [(10, True, True, "HV", 3, 25, False, 314.6),
+                              (10, True, True, "HV", 3, 25, True, 286),
+                              (10, True, True, "HV", 3, 120, True, 710),
+                              (10, True, True, "HV", 3, 200, True, 710),
+                              (10, True, True, "LV", 3, 120, True, 843),
+                              (10, True, True, "LV", 4, 1200, True, 1070),
+                              ])
     def test_calculate_cable_cost(self, length, metric, underground, voltage, cores, core_girth, eur, expected):
         costEst = CostEstimator(1)
         assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth, eur) == expected
