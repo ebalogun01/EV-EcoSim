@@ -3,7 +3,7 @@ import numpy as np
 from numpy.polynomial.polynomial import polyfit  # different from np.polyfit
 import pandas as pd
 
-
+# TODO refactor naming conventions
 class Inverter:
     """
     Inverter based on the Sandia Inverter Model: https://pvpmc.sandia.gov/modeling-steps/dc-to-ac-conversion/sandia-inverter-model/
@@ -34,7 +34,7 @@ class Inverter:
 
     :param node: The node/bus in the distribution network in which the battery resides.
     :param self.config: Inverter configuration file containing the main attributes of the battery.
-    :param controller: Controller for the inverter.
+    :param controller: Controller for the inverter. #TODO add
     :returns: Inverter object.
     """
 
@@ -47,23 +47,52 @@ class Inverter:
         # TODO Load inverter config file
         self.start = config["start_time"]
 
-    def _sandia_eff(self, v_dc, p_dc, inverter):
+        # TODO Update inverter config file
+        # Characteristics of the inverter in the Sandia model
+        self.Paco = config[]  # AC power rating of the inverter. [W]
+        self.Pdco = 0  # DC power input that results in Paco output at reference voltage Vdco. [W]
+        self.Vdco = 0  # DC voltage at which the AC power rating is achieved with Pdco power input. [V]
+
+        self.Pso = 0  # DC power required to start the inversion process, or self-consumption by inverter, strongly
+        # influences inverter efficiency at low power levels. [W]
+        self.Pnt = 0  # AC power consumed by the inverter at night (night tare). [W]
+
+        self.Vdcmax = 0  # Maximum voltage supplied from DC array. [V]
+        self.Vdcmin = 0  # Minimum voltage supplied from DC array. [V]
+        self.MPPTHi = 0  # Maximum DC voltage for MPPT range. [V]
+        self.MPPTLow = 0  # Minimum DC voltage for MPPT range. [V]
+
+        self.Pacmax = 0  # Maximum AC output power, used to clip the output power if needed. [W]
+        self.Pnom = 0
+        self.Vnom = 0
+        self.Vmax = 0
+        self.Vmin = 0
+
+        self.ADRCoefficients = 0
+
+        self.C0 = 0  # Parameter defining the curvature (parabolic) of the relationship between AC power and DC power
+        # at the reference operating condition. [1/W]
+        self.C1 = 0  # Empirical coefficient allowing ``Pdco`` to vary linearly with DC voltage input. [1/V]
+        self.C2 = 0  # Empirical coefficient allowing ``Pso`` to vary linearly with DC voltage input. [1/V]
+        self.C3 = 0  # Empirical coefficient allowing ``C0`` to vary linearly with DC voltage input. [1/V]
+
+
+    def _sandia_eff(self, v_dc, p_dc):
         """
         Calculate the inverter AC power without clipping
 
         :param v_dc: DC voltage input to the inverter. [V]
         :param p_dc: DC power input to the inverter. [W]
-        :param inverter: Defines parameters for the inverter model TODO deprecate
         :return: power_ac; AC power with applied limits
         """
-        Paco = inverter['Paco']
-        Pdco = inverter['Pdco']
-        Vdco = inverter['Vdco']
-        C0 = inverter['C0']
-        C1 = inverter['C1']
-        C2 = inverter['C2']
-        C3 = inverter['C3']
-        Pso = inverter['Pso']
+        Paco = self.Paco
+        Pdco = self.Pdco
+        Vdco = self.Vdco
+        C0 = self.C0
+        C1 = self.C1
+        C2 = self.C2
+        C3 = self.C3
+        Pso = self.Pso
 
         A = Pdco * (1 + C1 * (v_dc - Vdco))
         B = Pso * (1 + C2 * (v_dc - Vdco))
@@ -94,7 +123,7 @@ class Inverter:
                 power_ac = min_ac_power
         return power_ac
 
-    def sandia(self, v_dc, p_dc, inverter):
+    def sandia(self, v_dc, p_dc):
         """
         Convert DC power and voltage to AC power using Sandia's Grid-Connected PV Inverter model [1].
 
@@ -145,15 +174,14 @@ class Inverter:
 
         :param v_dc: DC voltage input to the inverter. [V]
         :param p_dc: DC power input to the inverter. [W]
-        :param inverter: Defines parameters for the inverter model in [3] TODO deprecate
         :return: power_ac: AC power output. [W]
         """
 
-        Paco = inverter['Paco']
-        Pnt = inverter['Pnt']
-        Pso = inverter['Pso']
+        Paco = self.Paco
+        Pnt = self.Pnt
+        Pso = self.Pso
 
-        power_ac = self._sandia_eff(v_dc, p_dc, inverter)
+        power_ac = self._sandia_eff(v_dc, p_dc)
         power_ac = self._sandia_limits(power_ac, p_dc, Paco, Pnt, Pso)
 
         if isinstance(p_dc, pd.Series):
@@ -161,7 +189,7 @@ class Inverter:
 
         return power_ac
 
-    def sandia_multi(self, v_dc, p_dc, inverter):
+    def sandia_multi(self, v_dc, p_dc):
         """
         Convert DC power and voltage to AC power for an inverter with multiple MPPT inputs.
 
@@ -191,10 +219,10 @@ class Inverter:
         power_ac = 0. * power_dc
 
         for vdc, pdc in zip(v_dc, p_dc):
-            power_ac += pdc / power_dc * self._sandia_eff(vdc, power_dc, inverter)
+            power_ac += pdc / power_dc * self._sandia_eff(vdc, power_dc)
 
-        return self._sandia_limits(power_ac, power_dc, inverter['Paco'],
-                                   inverter['Pnt'], inverter['Pso'])
+        return self._sandia_limits(power_ac, power_dc, self['Paco'],
+                                   self.Pnt, self.Pso)
 
     def adr(self, v_dc, p_dc, inverter, vtol=0.10):
         """
@@ -250,16 +278,16 @@ class Inverter:
         :return: power_ac: AC power output for the inverter. [W]
         """
 
-        p_nom = inverter['Pnom']
-        v_nom = inverter['Vnom']
-        pac_max = inverter['Pacmax']
-        p_nt = inverter['Pnt']
-        ce_list = inverter['ADRCoefficients']
-        v_max = inverter['Vmax']
-        v_min = inverter['Vmin']
-        vdc_max = inverter['Vdcmax']
-        mppt_hi = inverter['MPPTHi']
-        mppt_low = inverter['MPPTLow']
+        p_nom = self.Pnom
+        v_nom = self.Vnom
+        pac_max = self.Pacmax
+        p_nt = self.Pnt
+        ce_list = self.ADRCoefficients
+        v_max = self.Vmax
+        v_min = self.Vmin
+        vdc_max = self.Vdcmax
+        mppt_hi = self.MPPTHi
+        mppt_low = self.MPPTLow
 
         v_lim_upper = float(np.nanmax([v_max, vdc_max, mppt_hi]) * (1 + vtol))
         v_lim_lower = float(np.nanmax([v_min, mppt_low]) * (1 - vtol))
