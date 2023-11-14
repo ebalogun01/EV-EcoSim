@@ -15,5 +15,5 @@
   "CYMESectionUnit": "m",
   "CYMELineCodeUnit": "km",
   "DSSSectionUnit": "mi",
-  "OwnerIDs": ["101L1","101L2","101L3","101L4","101L5","101L6","101L7","101L8"]
+  "OwnerIDs": ["101L1","101L2"]
 }
