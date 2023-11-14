@@ -45,10 +45,10 @@ class Inverter:
         self.To = 273.15 + 23  # ambient temperature
         self.T = self.To  # initialize at atmposheric temperature
 
-        # TODO Load inverter config file
+        # Load inverter config file
+        # TODO Update inverter config file to include better default parameters
         self.start = config["start_time"]
 
-        # TODO Update inverter config file
         # Characteristics of the inverter in the Sandia model
         self.Paco = config["Paco"]  # AC power rating of the inverter. [W]
         self.Pdco = config["Pdco"]  # DC power input that results in Paco output at reference voltage Vdco. [W]
