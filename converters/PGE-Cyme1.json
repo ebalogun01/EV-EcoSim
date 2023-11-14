@@ -1,4 +1,5 @@
 {
+  "_Comment": "CYME->DSS conversion parameters: 115kV on substation, secondary 12.47kV, 480V secondary",
   "DefaultDir": "../converters/in",
   "OutDir": "../converters/out/Swan_Island/dss",
   "xmlfilename": "Swan Island",
@@ -6,14 +7,26 @@
   "SubName": "Swan Island_1",
   "LoadScale": 1.0,
   "LoadModel": 1,
-  "DefaultBaseVoltage": 13.2,
-  "BaseVoltages": [46.0, 13.2, 4.16, 0.208],
-  "CoordXmin": 900000000.0,
-  "CoordXmax": 930000000.0,
-  "CoordYmin": 570000000.0,
-  "CoordYmax": 590000000.0,
-  "CYMESectionUnit": "m",
-  "CYMELineCodeUnit": "km",
+  "DefaultBaseVoltage": 115,
+  "BaseVoltages": [
+    115,
+    12.47,
+    0.480,
+    0.240,
+    0.208
+  ],
+  "CoordXmin": 0.0,
+  "CoordXmax": 990000000.0,
+  "CoordYmin": 0.0,
+  "CoordYmax": 990000000.0,
+  "CYMESectionUnit": "mi",
+  "CYMELineCodeUnit": "mi",
   "DSSSectionUnit": "mi",
-  "OwnerIDs": ["101L1","101L2"]
+  "OwnerIDs": [
+    "SWAN ISLAND-BASIN",
+    "SWAN ISLAND-DOLPHIN",
+    "SWAN ISLAND-FREIGHTLINER",
+    "SWAN ISLAND-GOING",
+    "SWAN ISLAND-SHIPYARD"
+  ]
 }
