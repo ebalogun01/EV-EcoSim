@@ -3,6 +3,7 @@ import numpy as np
 from numpy.polynomial.polynomial import polyfit  # different from np.polyfit
 import pandas as pd
 
+
 # TODO refactor naming conventions
 class Inverter:
     """
@@ -49,33 +50,39 @@ class Inverter:
 
         # TODO Update inverter config file
         # Characteristics of the inverter in the Sandia model
-        self.Paco = config[]  # AC power rating of the inverter. [W]
-        self.Pdco = 0  # DC power input that results in Paco output at reference voltage Vdco. [W]
-        self.Vdco = 0  # DC voltage at which the AC power rating is achieved with Pdco power input. [V]
+        self.Paco = config["Paco"]  # AC power rating of the inverter. [W]
+        self.Pdco = config["Pdco"]  # DC power input that results in Paco output at reference voltage Vdco. [W]
+        self.Vdco = config["Vdco"]  # DC voltage at which the AC power rating is achieved with Pdco power input. [V]
 
-        self.Pso = 0  # DC power required to start the inversion process, or self-consumption by inverter, strongly
+        self.Pso = config[
+            "Pso"]  # DC power required to start the inversion process, or self-consumption by inverter, strongly
         # influences inverter efficiency at low power levels. [W]
-        self.Pnt = 0  # AC power consumed by the inverter at night (night tare). [W]
+        self.Pnt = config["Pnt"]  # AC power consumed by the inverter at night (night tare). [W]
+        self.Vdcmax = config["Vdcmax"]  # Maximum voltage supplied from DC array. [V]
+        self.Vdcmin = config["Vdcmin"]  # Minimum voltage supplied from DC array. [V]
+        self.MPPTHi = config["MPPTHi"]  # Maximum DC voltage for MPPT range. [V]
+        self.MPPTLow = config["MPPTLow"]  # Minimum DC voltage for MPPT range. [V]
 
-        self.Vdcmax = 0  # Maximum voltage supplied from DC array. [V]
-        self.Vdcmin = 0  # Minimum voltage supplied from DC array. [V]
-        self.MPPTHi = 0  # Maximum DC voltage for MPPT range. [V]
-        self.MPPTLow = 0  # Minimum DC voltage for MPPT range. [V]
+        self.Pacmax = config["Pacmax"]  # Maximum AC output power, used to clip the output power if needed. [W]
+        self.Pnom = config[
+            "Pnom"]  # Nominal DC power, typically the DC power needed to produce maximum AC power output. [W]
+        self.Vnom = config[
+            "Vnom"]  # Nominal DC input voltage. Typically the level at which the highest efficiency is achieved. [V]
+        self.Vmax = config["Vmax"]  # Maximum DC input voltage. [V]
+        self.Vmin = config["Vmin"]  # Minimum DC input voltage. [V]
 
-        self.Pacmax = 0  # Maximum AC output power, used to clip the output power if needed. [W]
-        self.Pnom = 0
-        self.Vnom = 0
-        self.Vmax = 0
-        self.Vmin = 0
+        self.ADRCoefficients = config[
+            "ADRCoefficients"]  # A list of 9 coefficients that capture the influence of input voltage and power on
+        # inverter losses, and thereby efficiency. Corresponds to terms from [1]_ (in order): :math: `b_{0,0}, b_{1,0},
+        # b_{2,0}, b_{0,1}, b_{1,1}, b_{2,1}, b_{0,2}, b_{1,2},  b_{2,2}`. See [1]_ for the use of each coefficient and
+        # its associated unit.
 
-        self.ADRCoefficients = 0
-
-        self.C0 = 0  # Parameter defining the curvature (parabolic) of the relationship between AC power and DC power
-        # at the reference operating condition. [1/W]
-        self.C1 = 0  # Empirical coefficient allowing ``Pdco`` to vary linearly with DC voltage input. [1/V]
-        self.C2 = 0  # Empirical coefficient allowing ``Pso`` to vary linearly with DC voltage input. [1/V]
-        self.C3 = 0  # Empirical coefficient allowing ``C0`` to vary linearly with DC voltage input. [1/V]
-
+        self.C0 = config[
+            "C0"]  # Parameter defining the curvature (parabolic) of the relationship between AC power and DC power at
+        # the reference operating condition. [1/W]
+        self.C1 = config["C1"]  # Empirical coefficient allowing ``Pdco`` to vary linearly with DC voltage input. [1/V]
+        self.C2 = config["C2"]  # Empirical coefficient allowing ``Pso`` to vary linearly with DC voltage input. [1/V]
+        self.C3 = config["C3"]  # Empirical coefficient allowing ``C0`` to vary linearly with DC voltage input. [1/V]
 
     def _sandia_eff(self, v_dc, p_dc):
         """

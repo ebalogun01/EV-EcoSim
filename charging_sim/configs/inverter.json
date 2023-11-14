@@ -1,5 +1,30 @@
 {
   "start_time": 0,
   "collocated": true,
-  "notes": "NA"
+  "notes": "NA",
+
+  "Paco": 0,
+  "Pdco": 0,
+  "Vdco": 0,
+
+  "Pso": 0,
+  "Pnt": 0,
+
+  "Vdcmax": 0,
+  "Vdcmin": 0,
+  "MPPTHi": 0,
+  "MPPTLow": 0,
+
+  "Pacmax": 0,
+  "Pnom": 0,
+  "Vnom": 0,
+  "Vmax": 0,
+  "Vmin": 0,
+
+  "ADRCoefficients": 0,
+
+  "C0": 0,
+  "C1": 0,
+  "C2": 0,
+  "C3": 0
 }
