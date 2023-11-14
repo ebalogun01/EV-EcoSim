@@ -1,30 +1,37 @@
 {
+  "_comment": "This is a sample inverter configuration file based on the AE6.0 277V inverter: https://www.energysage.com/solar-inverters/ae-solar-energy/3417/ae60/",
+  "name": "AE Solar Energy: AE6.0 [277V]",
+
   "start_time": 0,
   "collocated": true,
   "notes": "NA",
 
-  "Paco": 0,
-  "Pdco": 0,
-  "Vdco": 0,
+  "Vac": 277,
+  "Pso": 36.197575,
+  "Paco": 6000,
+  "Pdco": 6158.746094,
+  "Vdco": 360,
 
-  "Pso": 0,
-  "Pnt": 0,
+  "C0": -1.987818e-06,
+  "C1": -0.000026,
+  "C2": -0.001253,
+  "C3": 0.000210,
 
-  "Vdcmax": 0,
-  "Vdcmin": 0,
-  "MPPTHi": 0,
-  "MPPTLow": 0,
+  "Pnt": 1.800000,
 
-  "Pacmax": 0,
-  "Pnom": 0,
+  "Vdcmax": 450,
+  "Idcmax": 17.107628,
+  "MpptLow": 100,
+  "MPPTHi": 450,
+
+  "CEC_Date": "n/a",
+  "CEC_Type": "Utility Interactive",
+
+  "Pacmax": 6000,
+  "Pnom": 6000,
   "Vnom": 0,
   "Vmax": 0,
   "Vmin": 0,
 
   "ADRCoefficients": 0,
-
-  "C0": 0,
-  "C1": 0,
-  "C2": 0,
-  "C3": 0
 }

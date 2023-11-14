@@ -7,8 +7,8 @@ import pandas as pd
 # TODO refactor naming conventions
 class Inverter:
     """
-    Inverter based on the Sandia Inverter Model: https://pvpmc.sandia.gov/modeling-steps/dc-to-ac-conversion/sandia-inverter-model/
-    Member functions adapted based on:
+    Inverter based on the Sandia Inverter Model:
+    https://pvpmc.sandia.gov/modeling-steps/dc-to-ac-conversion/sandia-inverter-model/
 
     Member methods adapted from William F. Holmgren, Clifford W. Hansen, and Mark A. Mikofski. “pvlib python: a python
     package for modeling solar energy systems.” Journal of Open Source Software, 3(29), 884, (2018).
@@ -231,7 +231,7 @@ class Inverter:
         return self._sandia_limits(power_ac, power_dc, self.Paco,
                                    self.Pnt, self.Pso)
 
-    def adr(self, v_dc, p_dc, inverter, vtol=0.10):
+    def adr(self, v_dc, p_dc, vtol=0.10):
         """
         Converts DC power and voltage to AC power using Anton Driesse's grid-connected inverter efficiency model.
 
