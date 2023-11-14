@@ -5,7 +5,8 @@ from dash_iconify import DashIconify
 import plotly.express as px
 from graphs import *
 import pandas as pd
-from constants import TEXT, MONTH_DROPDOWN
+from constants import TEXT, MONTH_DROPDOWN, PRESET
+from config import Config
 
 
 def make_input_section_label(grid_row, grid_column, icon, text, tooltip_text=None):
@@ -733,7 +734,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input3',
@@ -742,7 +743,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input4',
@@ -751,7 +752,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='energy-cap-input5',
@@ -760,7 +761,7 @@ def create_settings_container():
                                             'margin-left': '8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                 ]
                             )
@@ -864,7 +865,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input3',
@@ -873,7 +874,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input4',
@@ -882,7 +883,7 @@ def create_settings_container():
                                             'margin': '0 8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                     dcc.Input(
                                         id='max-voltage-input5',
@@ -891,7 +892,7 @@ def create_settings_container():
                                             'margin-left': '8px',
                                             'width': '100%',
                                         },
-                                        value = ''
+                                        value=''
                                     ),
                                 ]
                             )
@@ -1185,12 +1186,16 @@ def create_tutorial_page():
     return tutorial_page
 
 
-def create_output_page():
+def create_output_page(sim_run: Config = None):
     """
     Output page component creation
 
     :return: Output page component
     """
+    if sim_run is None:
+        sim_run_name = "dummy"
+    else:
+        sim_run_name = "M"+str(sim_run.month)+str(sim_run.num_days)+"days"+str(sim_run.sim_mode)
     output_page = html.Div(
         id="output-page",
         style={
@@ -1212,7 +1217,7 @@ def create_output_page():
                                 html.H5(
                                     style={'display': 'inline'},
                                     className="page-title",
-                                    children=["For input: xxxxxx"]
+                                    children=["For input:" + sim_run_name]
                                 ),
                             ),
                         ],
@@ -1229,9 +1234,9 @@ def create_output_page():
                 },
                 children=[
                     # TODO add scenarios and scenario comparison
-                    create_price_section(),
-                    create_charging_section(),
-                    create_battery_section()
+                    create_price_section(sim_run),
+                    create_charging_section(sim_run),
+                    create_battery_section(sim_run)
                 ]
             ),
         ]
@@ -1239,7 +1244,7 @@ def create_output_page():
     return output_page
 
 
-def create_price_section():
+def create_price_section(sim_run: Config = None):
     """
     Price sectioncomponent creation
 
@@ -1275,7 +1280,7 @@ def create_price_section():
     # TODO connect to chargingsim/config/solar.json
     solar_data = [0.08 for i in range(len(elec_data))]
     solar_data = pd.DataFrame(solar_data)
-    solar_data['c'] = [0.1,0.2,0.5,1.0,2.0]
+    solar_data['c'] = [0.1, 0.2, 0.5, 1.0, 2.0]
     solar_data['50.0'] = 0.08
     solar_data = solar_data.drop(solar_data.columns[0], axis=1)
 
@@ -1360,7 +1365,7 @@ def create_price_section():
     return price_section
 
 
-def create_charging_section():
+def create_charging_section(sim_run: Config = None):
     """
     Charging section component creation
 
@@ -1420,7 +1425,7 @@ def create_charging_section():
     return charging_section
 
 
-def create_battery_section():
+def create_battery_section(sim_run: Config = None):
     """
     Battery section component creation
 
@@ -1636,8 +1641,8 @@ def create_graph_element(data=None, graph_type='bar', color=None, x='c', y='50.0
             visible=False,
             children=html.Div(className="graph-container",
                               children=create_heatmap(data,
-                                                         x=x,
-                                                         y=y)
+                                                      x=x,
+                                                      y=y)
                               ),
             mb=10,
         )
