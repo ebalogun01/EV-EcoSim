@@ -228,7 +228,7 @@ class Inverter:
         for vdc, pdc in zip(v_dc, p_dc):
             power_ac += pdc / power_dc * self._sandia_eff(vdc, power_dc)
 
-        return self._sandia_limits(power_ac, power_dc, self['Paco'],
+        return self._sandia_limits(power_ac, power_dc, self.Paco,
                                    self.Pnt, self.Pso)
 
     def adr(self, v_dc, p_dc, inverter, vtol=0.10):
