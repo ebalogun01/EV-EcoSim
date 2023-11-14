@@ -56,6 +56,9 @@ import json
 class Config:
     # Class initialization with default values
     def __init__(self):
+        # Folder to save results to
+        self.folder = None
+        # Sim setup
         self.sim_mode = "offline"
         self.feeder_pop = False
         self.only_batt_sys = False

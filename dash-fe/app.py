@@ -614,11 +614,23 @@ def run_simulation(
 
     :return: Style object for the run simulation button (Only used because Dash requires that callbacks have an output)
     """
+
+    path_prefix = os.getcwd()
+    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
+    path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
+    param_dict = ast.literal_eval(station_config.read())
+    month = int(str(param_dict['starttime']).split('-')[1])
+    # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
+    month_str = list(month_days.keys())[month - 1]
+
+
     # either use preset, or user_input depending on which is selected
     user_input = Config()
     if preset_class == "setup-button selected tooltip":
         user_input = preset
     elif custom_settings_class == "setup-button selected tooltip":
+        user_input.folder= f'{results_folder_path}/oneshot_{month_str}{str(0)}/' #TODO fix scenario number
         if oneshot_class == "setup-button selected":
             user_input.sim_mode = "offline"
         elif mpc_rhc_class == "setup-button selected":

@@ -1195,52 +1195,52 @@ def create_output_page(sim_run: Config = None):
     if sim_run is None:
         sim_run_name = "dummy"
     else:
-        sim_run_name = "M"+str(sim_run.month)+str(sim_run.num_days)+"days"+str(sim_run.sim_mode)
+        sim_run_name = sim_run.folder + ", M" + str(sim_run.month) + ", " + str(sim_run.num_days) + "days"
     output_page = html.Div(
-        id="output-page",
-        style={
-            'display': 'none',
-        },
-        children=[
-            # Page title
-            html.Div(
-                style={'position': 'relative'},
-                children=[
-                    html.Div(
-                        [
-                            html.H2(
-                                style={'display': 'inline'},
-                                className="page-title",
-                                children=["EV-Ecosim output"]
-                            ),
-                            html.P(
-                                html.H5(
+            id="output-page",
+            style={
+                'display': 'none',
+            },
+            children=[
+                # Page title
+                html.Div(
+                    style={'position': 'relative'},
+                    children=[
+                        html.Div(
+                            [
+                                html.H2(
                                     style={'display': 'inline'},
                                     className="page-title",
-                                    children=["For input:" + sim_run_name]
+                                    children=["EV-Ecosim output"]
                                 ),
-                            ),
-                        ],
-                    ),
+                                html.P(
+                                    html.H5(
+                                        style={'display': 'inline'},
+                                        className="page-title",
+                                        children=["For input:" + sim_run_name]
+                                    ),
+                                ),
+                            ],
+                        ),
 
-                ]
-            ),
+                    ]
+                ),
 
-            # Page content
-            html.Div(
-                className="content-tile",
-                style={
-                    'grid-template': 'auto / auto'
-                },
-                children=[
-                    # TODO add scenarios and scenario comparison
-                    create_price_section(sim_run),
-                    create_charging_section(sim_run),
-                    create_battery_section(sim_run)
-                ]
-            ),
-        ]
-    )
+                # Page content
+                html.Div(
+                    className="content-tile",
+                    style={
+                        'grid-template': 'auto / auto'
+                    },
+                    children=[
+                        # TODO add scenarios and scenario comparison
+                        create_price_section(sim_run),
+                        create_charging_section(sim_run),
+                        create_battery_section(sim_run)
+                    ]
+                ),
+            ]
+        )
     return output_page
 
 
@@ -1251,6 +1251,9 @@ def create_price_section(sim_run: Config = None):
     :return: Price section component
     """
     ## == PRICE SECTION ==
+
+    if sim_run is not None:
+        raise NotImplementedError("Missing generated data") # TODO fix
 
     ## LCOE
     lcoe_data = pd.read_csv('data/dummy/costs-June-oneshot-collated-results/Total_June_costs_per_day.csv')
@@ -1374,8 +1377,13 @@ def create_charging_section(sim_run: Config = None):
     ## == CHARGING STATION SECTION ==
 
     ## Charging station data setup
-    charging_station_data = pd.read_csv(
-        'data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    if sim_run is None:
+        charging_station_data = pd.read_csv(
+            'data/dummy/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+    else:
+        charging_station_data = pd.read_csv(
+            sim_run.folder + '/battery-transformers-June15-oneshot/charging_station_sim_0_dcfc_load_0.csv')
+
     ## Net grid load
     ngl_data = charging_station_data.filter(['station_net_grid_load_kW'], axis="columns")
     ## Total load
@@ -1434,7 +1442,10 @@ def create_battery_section(sim_run: Config = None):
     ## == BATTERY SECTION ==
 
     ## Battery data setup
-    battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
+    if sim_run is None:
+        battery_data = pd.read_csv('data/dummy/battery-transformers-June15-oneshot/battery_sim_0_dcfc_load_0.csv')
+    else:
+        battery_data = pd.read_csv(sim_run.folder + '/battery_sim_0_dcfc_load_0.csv')
 
     ## State of charge (SOC)
     soc_data = battery_data.filter(['SOC'], axis="columns")

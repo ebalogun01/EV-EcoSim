@@ -41,6 +41,7 @@
   "month": 7
  },
  "feeder_pop": false,
+ "folder": null,
  "load": {
   "data": null
  },
