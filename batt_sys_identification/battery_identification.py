@@ -131,6 +131,7 @@ class BatteryParams:
 
         :return list gene_space_range: List of dicts providing the range for each gene.
         """
+        # todo: Include option to change the bounds for the parameters.
         lb2 = [-0.1, -0.1, -5, 0.0001, 100, 0.0004, 4000]
         ub2 = [0.1, 0.1, 0, 0.02, 10000, 0.01, 10000]
 
@@ -206,7 +207,7 @@ class BatteryParams:
         print(f"Fitness value of the best solution = {solution_fitness}")
         return solution
 
-    def run_sys_identification(self, cell_name=0, diagn=0, use_initial_pop=True, quadratic_bias=True):
+    def run_sys_identification(self, cell_name=0, diagn=0, use_initial_pop=True, quadratic_bias=True, save=True):
         """
         Runs the GA for system identification.
 
@@ -273,6 +274,45 @@ class BatteryParams:
         self.data['ocv_corr'] = self.ocv
         self.data.to_csv('../batt_sys_identification/input_data_with_ocv_corr_voltage.csv')
         #    Adds corrected ocv as field and writes the input data
+
+    def _calculate_error(self, save=True, cell_name=0, diagn=0, trial=0):
+        """
+        Calculates the error between the model and the training data.
+
+        :param x: Vector of parameters.
+
+        :return: Error.
+        """
+        x = self.params
+        V_data = self.voltage
+        A_Ro = x[0]
+        B_Ro = x[1]
+        C_Ro = x[2]
+        R1 = x[3]
+        C1 = x[4]
+        R2 = x[5]
+        C2 = x[6]
+        dt = 1
+
+        Ro = B_Ro * np.exp(C_Ro * self.soc) + A_Ro * np.exp(self.soc)
+        I_t = -self.current
+        I_R1 = np.zeros((I_t.shape[0],))
+        I_R2 = np.zeros((I_t.shape[0],))
+
+        for j in range(1, len(I_R1)):
+            I_R1[j] = np.round(np.exp(-dt / (R1 * C1)) * I_R1[j - 1] + (1 - np.exp(-dt / (R1 * C1))) * I_t[j - 1], 10)
+            I_R2[j] = np.round(np.exp(-dt / (R2 * C2)) * I_R2[j - 1] + (1 - np.exp(-dt / (R2 * C2))) * I_t[j - 1], 10)
+        V_t = self.ocv - np.multiply(I_t, Ro) - np.multiply(I_R1, R1) - np.multiply(I_R2, R2)
+        assert V_t.shape == self.voltage.shape
+        data_len = V_data.shape[0]
+        MAPE = (np.sum(np.abs(V_t - V_data) / V_data)) / data_len
+        MSE = np.sqrt(np.sum(np.square(V_t - V_data)) / data_len)
+        max_APE = (np.max(np.abs(V_t - V_data) / V_data))
+        if save:
+            np.savetxt('../batt_sys_identification/{}_MAPE_{}_{}.csv'.format(trial, cell_name, diagn), MAPE, delimiter=',')
+            np.savetxt('../batt_sys_identification/{}_MSE_{}_{}.csv'.format(trial, cell_name, diagn), MSE, delimiter=',')
+            np.savetxt('../batt_sys_identification/{}_max_APE_{}_{}.csv'.format(trial, cell_name, diagn), max_APE, delimiter=',')
+        return MSE, MAPE*100, max_APE*100
 
     def _validate_params(self):
         """
@@ -387,8 +427,8 @@ class BatteryParams:
 
         :return:
         """
-        voltage = self.get_uncorrected_voltages()
-        # todo: complete later
+        # voltage = self.get_uncorrected_voltages()
+        return NotImplementedError("Method has not been implemented yet!")
 
     def run_pre_checks(self):
         """
