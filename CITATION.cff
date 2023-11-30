@@ -7,12 +7,6 @@ authors:
 - family-names: "Buechler"
   given-names: "Elizabeth"
   orcid: "https://orcid.org/0000-0000-0000-0000"
-- family-names: "Bhela"
-  given-names: "Siddarth"
-- family-names: "Onori"
-  given-names: "Simona"
-- family-names: "Rajagopal"
-  given-names: "Ram"
 title: "EV-EcoSim: A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure"
 version: 1.0.0
 // doi: 10.5281/zenodo.1234
