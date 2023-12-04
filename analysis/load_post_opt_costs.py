@@ -258,6 +258,7 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
 
 
 def run():
+    print(USR_INPUT_DICT['month']-1)
     desired_month = MONTHS_LIST[USR_INPUT_DICT['month']-1]
     print('Running analysis for month: ', desired_month)
     oneshot = True

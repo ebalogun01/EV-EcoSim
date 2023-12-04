@@ -10,6 +10,7 @@ import json
 from charging_sim.utils import month_days
 import ast
 
+
 # if running app and uploading data, the system must load the different classes with the right temp datasets.
 
 
@@ -40,6 +41,7 @@ def create_results_folder():
     if os.path.isdir('../analysis/results'):
         return
     os.mkdir('../analysis/results')
+
 
 def load_default_input():
     """
@@ -81,7 +83,7 @@ def make_month_str(month_int: int):
 
 def simulate(user_inputs):
     # Updating the user inputs based on frontend inputs.
-    create_results_folder()     # Make a results folder if it does not exist.
+    create_results_folder()  # Make a results folder if it does not exist.
 
     path_prefix = os.getcwd()
     # Change below to name of the repo.
@@ -92,10 +94,12 @@ def simulate(user_inputs):
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
     param_dict = ast.literal_eval(station_config.read())
     station_config.close()
-    print(type(param_dict))
     start_time = param_dict['starttime'][:6] + make_month_str(user_inputs['month']) + param_dict['starttime'][8:]
     end_time = param_dict['endtime'][:6] + make_month_str(user_inputs['month']) + param_dict['endtime'][8:]
+    print("Start time: ", start_time)
+    print("End time: ", end_time)
 
+    month = user_inputs['month']
     charging_station_config = user_inputs["charging_station"]
     battery_config = user_inputs["battery"]
     solar_config = user_inputs["solar"]
@@ -112,6 +116,7 @@ def simulate(user_inputs):
     # Modify param dict.
     param_dict['starttime'] = f'{start_time}'
     param_dict['endtime'] = f'{end_time}'
+    param_dict['num_dcfc_nodes'] = charging_station_config['num_dcfc_nodes']
 
     print(charging_station_config)
     # Control user inputs for charging stations.
@@ -124,7 +129,8 @@ def simulate(user_inputs):
     if charging_station_config['num_dcfc_stalls_per_node']:
         param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
         if charging_station_config["dcfc_charging_stall_base_rating"]:
-            param_dict['dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
+            param_dict[
+                'dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
 
     if charging_station_config['num_l2_stalls_per_node']:
         param_dict['num_l2_stalls_per_node'] = charging_station_config['num_l2_stalls_per_node']
@@ -132,8 +138,10 @@ def simulate(user_inputs):
             param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
     # Obtaining the charging station capacities.
-    dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict['num_dcfc_stalls_per_node']
-    L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict['num_l2_stalls_per_node']
+    dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict[
+        'num_dcfc_stalls_per_node']
+    L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict[
+        'num_l2_stalls_per_node']
     month = int(str(param_dict['starttime']).split('-')[1])
     # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
     month_str = list(month_days.keys())[month - 1]
@@ -145,7 +153,7 @@ def simulate(user_inputs):
 
     # Load DCFC locations txt file.
     print('...loading charging bus nodes')
-    dcfc_nodes = np.loadtxt('../test_cases/battery/dcfc_bus.txt', dtype=str).tolist()  # This is for DC FAST charging.
+    dcfc_nodes = np.loadtxt('../test_cases/battery/dcfc_bus.txt', dtype=str).tolist()[:charging_station_config['num_dcfc_nodes']]  # This is for DC FAST charging.
     if type(dcfc_nodes) is not list:
         dcfc_nodes = [dcfc_nodes]
     dcfc_dicts_list = []
@@ -159,7 +167,7 @@ def simulate(user_inputs):
     for node in L2_charging_nodes:
         l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
     num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
-    # Needs to come in as input initially & should be initialized prior from the feeder population.
+    # TODO: Needs to come in as input initially & should be initialized prior from the feeder population.
 
     #   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.
     #   (Does not work currently)
@@ -246,6 +254,7 @@ def simulate(user_inputs):
         print('making scenarios')
         scenarios_list = make_scenarios()
         scenarios = [scenarios_list[idx] for idx in idx_list]
+        print("Length of scenarios is: ", len(scenarios))
         for scenario in scenarios:
             print(scenario)
             scenario["L2_nodes"] = L2_charging_nodes
@@ -259,8 +268,7 @@ def simulate(user_inputs):
     if sequential_run:
         print("Running scenarios sequentially...")
         run_scenarios_sequential()
-        print("Simulation complete!")
+        # print("Simulation complete!")
         return html.Div(['For post-simulation analysis, hit the post-sim analysis button.'])
 
     return
-

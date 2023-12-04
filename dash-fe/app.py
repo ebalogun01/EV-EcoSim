@@ -12,12 +12,10 @@ import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from components import create_home_page, create_tutorial_page, create_output_page
 from config import Config
-from sim_run import SimRun
 from constants import PRESET as preset
 from run_simulation import *
 import base64
 import io
-from analysis import load_post_opt_costs as post_opt_module
 import time
 
 #   Create Dash app
@@ -621,7 +619,7 @@ def run_simulation(
 
 
     # either use preset, or user_input depending on which is selected
-    user_input = Config()
+    user_input = preset
     if preset_class == "setup-button selected tooltip":
         user_input = preset
     elif custom_settings_class == "setup-button selected tooltip":
@@ -676,10 +674,9 @@ def run_simulation(
     print(user_input_dict)
     # user_input_dict = user_input    # Already a default Dict.
 
-    sim_run = SimRun(user_input_dict)
-
     # Save input as json
-    sim_run.save_config_to_json()
+    with open('input/sim_run_settings.json', 'w') as settings_json:
+        json.dump(user_input_dict, settings_json, indent=1)
 
     # Connect to backend here - pass user_input.get_config_json()
     print('Simulation start...')
@@ -735,6 +732,8 @@ def run_post_opt_analysis(run_post_opt_analysis_n_clicks):
     if not os.path.isdir('../analysis/results'):
         raise FileNotFoundError('result/ folder does not exist, please run simulation first!')
 
+    # Pass in the user input json file (No need for now)
+    from analysis import load_post_opt_costs as post_opt_module
     post_opt_module.run()   # Runs the post-optimization cost module.
     print("Run Post Sim Analysis done!")
     return {'grid-row': '2'}
