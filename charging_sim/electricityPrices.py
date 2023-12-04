@@ -44,8 +44,9 @@ class PriceLoader:
         self.config = config
         self.data = pd.read_csv(path_prefix + self.config["data_path"])
         self.data_np = self.data.to_numpy()
-        self.month_start_idx = {1: 0, 2: 31, 3: 59, 4: 90, 5: 120, 6: 151, 7: 181, 8: 243, 9: 273, 10: 304, 11: 334,
-                                12: 365}
+        print("Data shape: ", self.data_np.shape)
+        self.month_start_idx = {1: 0, 2: 31, 3: 59, 4: 90, 5: 120, 6: 151, 7: 181, 8: 212, 9: 243, 10: 273, 11: 304,
+                                12: 334}
         self.month = -100  # Default value.
 
     def get_prices(self, start_idx, num_steps, month=7):
