@@ -4,7 +4,7 @@ import sys
 sys.path.append('../charging_sim')
 sys.path.append('../analysis')
 
-import plotly.express as px
+# import plotly.express as px
 import dash
 import pandas as pd
 from dash import dcc, html, ctx, Input, Output, State, no_update
@@ -16,7 +16,6 @@ from sim_run import SimRun
 from constants import PRESET as preset
 from run_simulation import *
 import base64
-import datetime
 import io
 from analysis import load_post_opt_costs as post_opt_module
 import time
@@ -584,7 +583,7 @@ def run_simulation(
         l2_rating,
         num_dcfc_stalls,
         num_l2_stalls,
-        transformer_capactiy,
+        transformer_capacity,
         max_c_rate_1,
         max_c_rate_2,
         max_c_rate_3,
@@ -614,13 +613,9 @@ def run_simulation(
 
     :return: Style object for the run simulation button (Only used because Dash requires that callbacks have an output)
     """
-
     path_prefix = os.getcwd()
     results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
-    path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-    station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
-    param_dict = ast.literal_eval(station_config.read())
-    month = int(str(param_dict['starttime']).split('-')[1])
+    month = int(month)
     # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
     month_str = list(month_days.keys())[month - 1]
 
@@ -630,7 +625,7 @@ def run_simulation(
     if preset_class == "setup-button selected tooltip":
         user_input = preset
     elif custom_settings_class == "setup-button selected tooltip":
-        user_input.folder= f'{results_folder_path}/oneshot_{month_str}{str(0)}/' #TODO fix scenario number
+        user_input.folder = f'{results_folder_path}/oneshot_{month_str}{str(0)}/' #TODO fix scenario number
         if oneshot_class == "setup-button selected":
             user_input.sim_mode = "offline"
         elif mpc_rhc_class == "setup-button selected":
@@ -638,47 +633,47 @@ def run_simulation(
         elif battery_system_class == "setup-button selected":
             user_input.sim_mode = "battery"
             user_input.only_batt_sys = True  # I think?
-        if battery_system_class == "setup-button selected":
-            # user_input.battery["data"] = battery_filename
             return {'grid-row': '2'}
-        else:
-            user_input.ambient_data = temperature_filename
-            user_input.load["data"] = load_filename
-            user_input.solar["data"] = solar_filename
-            user_input.solar["efficiency"] = float(solar_efficiency)
-            user_input.solar["rating"] = float(solar_capacity)
-            user_input.month = int(month)
-            # No provision for year
-            user_input.num_days = int(num_days)
-            user_input.elec_prices["data"] = price_filename
-            user_input.charging_station["dcfc_charging_stall_base_rating"] = dcfc_rating + "_kW"
-            user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
-            user_input.charging_station["num_dcfc_stalls_per_node"] = int(num_dcfc_stalls)
-            user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
-            user_input.charging_station["commercial_building_trans"] = float(
-                transformer_capactiy)  # is this the correct property? Yes -Emmanuel
 
-            # Decomposed this code block.
-            max_c_rate = aggregate_user_battery_inputs(max_c_rate_1, max_c_rate_2, max_c_rate_3, max_c_rate_4,
-                                                       max_c_rate_5)
-            energy_cap = aggregate_user_battery_inputs(energy_cap_1, energy_cap_2, energy_cap_3, energy_cap_4,
-                                                       energy_cap_5)
-            max_ah = aggregate_user_battery_inputs(max_ah_1, max_ah_2, max_ah_3, max_ah_4, max_ah_5)
-            max_voltage = aggregate_user_battery_inputs(max_voltage_1, max_voltage_2, max_voltage_3, max_voltage_4,
-                                                        max_voltage_5)
+        user_input.ambient_data = temperature_filename
+        user_input.load["data"] = load_filename
+        user_input.solar["data"] = solar_filename
+        user_input.solar["efficiency"] = float(solar_efficiency)
+        user_input.solar["rating"] = float(solar_capacity)
+        user_input.month = int(month)
+        # No provision for year
+        user_input.num_days = int(num_days)
+        user_input.elec_prices["data"] = price_filename
+        user_input.charging_station["dcfc_charging_stall_base_rating"] = dcfc_rating + "_kW"
+        user_input.charging_station["l2_charging_stall_base_rating"] = l2_rating + "_kW"
+        user_input.charging_station["num_dcfc_stalls_per_node"] = int(num_dcfc_stalls)
+        user_input.charging_station["num_l2_stalls_per_node"] = int(num_l2_stalls)
+        user_input.charging_station["commercial_building_trans"] = float(
+            transformer_capacity)  # is this the correct property? Yes -Emmanuel
 
-            user_input.battery["max_c_rate"] = max_c_rate
-            user_input.battery["pack_energy_cap"] = energy_cap
-            user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
-            user_input.battery["pack_max_voltage"] = max_voltage
-            user_input.battery["power_factor"] = float(power_factor)
-            # Nothing for capacity
-            if mpc_rhc_class == "setup-button selected":
-                user_input.feeder_pop = True
-                # Nothing for feeder pop data
+        # Decomposed this code block.
+        max_c_rate = aggregate_user_battery_inputs(max_c_rate_1, max_c_rate_2, max_c_rate_3, max_c_rate_4,
+                                                   max_c_rate_5)
+        energy_cap = aggregate_user_battery_inputs(energy_cap_1, energy_cap_2, energy_cap_3, energy_cap_4,
+                                                   energy_cap_5)
+        max_ah = aggregate_user_battery_inputs(max_ah_1, max_ah_2, max_ah_3, max_ah_4, max_ah_5)
+        max_voltage = aggregate_user_battery_inputs(max_voltage_1, max_voltage_2, max_voltage_3, max_voltage_4,
+                                                    max_voltage_5)
+
+        user_input.battery["max_c_rate"] = max_c_rate
+        user_input.battery["pack_energy_cap"] = energy_cap
+        user_input.battery["pack_max_Ah"] = max_ah  # Would make an exhaustive list later
+        user_input.battery["pack_max_voltage"] = max_voltage
+        user_input.battery["power_factor"] = float(power_factor)
+        # Nothing for capacity
+        if mpc_rhc_class == "setup-button selected":
+            user_input.feeder_pop = True
+            # Nothing for feeder pop data
 
     # Get json from config
+    print(user_input.month)
     user_input_dict = user_input.get_config_json()
+    print(user_input_dict)
     # user_input_dict = user_input    # Already a default Dict.
 
     sim_run = SimRun(user_input_dict)
@@ -688,8 +683,8 @@ def run_simulation(
 
     # Connect to backend here - pass user_input.get_config_json()
     print('Simulation start...')
-    print(type(user_input_dict))
-    print(user_input_dict)
+    # print(type(user_input_dict))
+    # print(user_input_dict)
     simulate(user_input_dict)
     print("Simulation complete!")
     return {'grid-row': '2'}
@@ -890,6 +885,7 @@ def populate_max_ah_input5(energy_cap, voltage):
         return ''
     else:
         return float(energy_cap) / float(voltage)
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8050)

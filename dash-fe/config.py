@@ -105,7 +105,7 @@ class Config:
     # Prints JSON for debug purposes
     def __str__(self):
         """
-        magic function to convert class to string for example when printing
+        Default print object output for class
 
         :return: Config JSON dictionary for printing
         """
@@ -122,7 +122,6 @@ class Config:
         data = {}
 
         # Assign proper values for each attribute in class
-        # I made this a loop over all attributes and am very proud of myself
         for attribute in [a for a in dir(self) if not a.startswith('__') and not callable(getattr(self, a))]:
             data[attribute] = getattr(self, attribute)
 
