@@ -201,6 +201,7 @@ class ChargingSim:
         :param int month: Month to be simulated.
         :return: None.
         """
+        print("TESTTT", month)
         configs_path = f'{self.path_prefix}/charging_sim/configs'
         current_working_dir = os.getcwd()
         self.price_loader = PriceLoader(self.prices_config, path_prefix=self.path_prefix)

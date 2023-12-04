@@ -69,7 +69,10 @@ class PriceLoader:
         :return: None.
         """
         if self.month != month:
-            self.data_np = self.data.to_numpy()[self.month_start_idx[month] * 96:self.month_start_idx[month + 1] * 96]
+            if month < 12:
+                self.data_np = self.data.to_numpy()[self.month_start_idx[month] * 96:self.month_start_idx[month + 1] * 96]
+            else:
+                self.data_np = self.data.to_numpy()[self.month_start_idx[month] * 96:]
 
     def downscale(self, input_res, output_res):
         """
