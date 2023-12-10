@@ -29,4 +29,8 @@ test_cases/**.csv/
 mosek
 .idea
 **.idea/
+.vscode
+**.vscode/
+**.git
+.github
 
