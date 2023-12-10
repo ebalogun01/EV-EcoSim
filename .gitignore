@@ -30,5 +30,7 @@ mosek
 .idea
 **.idea/
 .vscode
+**.vscode/
+**.git
 .github
 

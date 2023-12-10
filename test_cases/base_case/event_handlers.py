@@ -45,7 +45,7 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    gblvar.node_list = find("class=node")
+    gblvar.node_list = find("class=node_name")
     gblvar.load_list = find("class=load")
     gblvar.tn_list = find("class=triplex_node")
     gblvar.trans_list = find("class=transformer")
@@ -143,7 +143,7 @@ def on_precommit(t):
         # here
         name = name_list_base_power[i]
         node_ev_load = 0
-        # if ev node is power node, add ev_charging power to the set value for power vec.
+        # if ev node_name is power node_name, add ev_charging power to the set value for power vec.
         if name in charging_nodes:
             charger = EV_charging_sim.get_charger_obj_by_loc(name)
             node_ev_load += charger.get_current_load()
@@ -187,7 +187,7 @@ def find(criteria):
     """
     Finds and returns objects in gridlabd that satisfy certain criteria.
 
-    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :param str criteria: the criterion for returning gridlabd objects e.g. node_name, load, etc.
     :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")

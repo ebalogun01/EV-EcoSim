@@ -43,7 +43,7 @@ def parse_voltages(path_prefix):
                     Cr = float(row[5])
                     Ci = float(row[6])
                     if f"{node}_Ar" not in nodes:
-                        # nodes.extend([node+"_A",node+"_B",node+"_C"])
+                        # nodes.extend([node_name+"_A",node_name+"_B",node_name+"_C"])
                         nodes.extend(
                             [
                                 f"{node}_Ar",

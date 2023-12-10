@@ -18,8 +18,8 @@ are files that are read in to run the EV-Ecosim environment.
 
 
 **Output file description**\n
-`real_power.csv` - Real power; this is residential real load timeseries file per node/bus
-`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node/bus
+`real_power.csv` - Real power; this is residential real load timeseries file per node_name/bus
+`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node_name/bus
 `dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation
 `L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation.
 

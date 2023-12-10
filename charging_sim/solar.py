@@ -31,13 +31,6 @@ class Solar:
     """
 
     def __init__(self, config, path_prefix=None, controller=None, num_steps=None):
-        """
-
-        :param config:
-        :param path_prefix:
-        :param controller:
-        :param num_steps:
-        """
         self.path_prefix = path_prefix + '/'
         self.config = config
         cols = ['Month', 'Day', 'Hour', 'GHI', 'Temperature']
@@ -93,7 +86,6 @@ class Solar:
         temp_data = np.zeros((self.solar_vec.shape[0]*num_repetitions, self.solar_vec.shape[1]))
         start_idx = 0
         for datapoint in self.solar_vec:
-            # print(datapoint)
             temp_data[start_idx:start_idx + num_repetitions] = datapoint
             start_idx += num_repetitions
         self.data = pd.DataFrame(data=temp_data, columns=self.cols)
@@ -105,6 +97,7 @@ class Solar:
         return self.data_np * self.efficiency * self.area / 1000    # this is in kW
 
     def get_constraints(self):
+        assert self.power is not None
         self.constraints = [self.battery_power + self.ev_power + self.grid_power == self.power]
         return self.constraints
 

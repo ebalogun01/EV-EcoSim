@@ -7,7 +7,7 @@ def on_init(t):
 
     #get object lists from GridLAB-D
     gridlabd.output("timestamp,x")
-    gblvar.node_list=find("class=node")
+    gblvar.node_list=find("class=node_name")
     gblvar.load_list=find("class=load")
     gblvar.tn_list=find("class=triplex_node")
     gblvar.trans_list=find("class=transformer")

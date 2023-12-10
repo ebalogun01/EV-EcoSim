@@ -162,7 +162,7 @@ class CostEstimator:
         """
         Creates plots overlaying load and net loads for post-simulation visualization.
 
-        :param total_load: Overall EV load demand at node, can include building load if controllable.
+        :param total_load: Overall EV load demand at node_name, can include building load if controllable.
         :param net_load: total_load minus DER buffer.
         :param prefix: Plot file label prefix.
         :param labels: Legend labels for each plotted curve.

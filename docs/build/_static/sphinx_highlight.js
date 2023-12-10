@@ -4,7 +4,7 @@
 const SPHINX_HIGHLIGHT_ENABLED = true
 
 /**
- * highlight a given string on a node by wrapping it in
+ * highlight a given string on a node_name by wrapping it in
  * span elements with the given class name.
  */
 const _highlight = (node, addItems, text, className) => {
@@ -38,7 +38,7 @@ const _highlight = (node, addItems, text, className) => {
         )
       );
       node.nodeValue = val.substr(0, pos);
-      /* There may be more occurrences of search term in this node. So call this
+      /* There may be more occurrences of search term in this node_name. So call this
        * function recursively on the remaining fragment.
        */
       _highlight(rest, addItems, text, className);

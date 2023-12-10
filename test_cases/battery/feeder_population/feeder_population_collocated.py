@@ -18,10 +18,12 @@ are files that are read in to run the EV-Ecosim environment.
 
 
 **Output file description**\n
-`real_power.csv` - Real power; this is residential real load timeseries file per node/bus
-`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node/bus
-`dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation
-`L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation.
+`real_power.csv` - Real power; this is residential real load timeseries file per node_name/bus \n
+`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node_name/bus \n
+`dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation \n
+`L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation \n
+
+Settings for collocated vs. centralized storage are included in this branch.
 
 """
 
@@ -38,7 +40,7 @@ import random
 # read config file
 def run():
     """
-    This function runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
+    Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
     `IEEE123.glm`), and modifies that file by including secondary distribution, home loads, and EV Charging station and
     transformers.
 
@@ -135,7 +137,7 @@ def run():
                     bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
                     prop_voltage.append('voltage_C')
 
-            elif 'node' in obj_type_base[i]['object']:
+            elif 'node_name' in obj_type_base[i]['object']:
                 if 'A' in glm_dict_base[i]['phases']:
                     # print(glm_dict_base[i]['phases'])
                     bus_list_voltage.append(glm_dict_base[i]['name'].rstrip('"').lstrip('"'))
@@ -284,7 +286,8 @@ def run():
     data_use_mat = np.asarray(data_use_filt[data_use_filt.columns[6:-1]]) * 1000
     agg_power = np.mean(data_use_mat, axis=1)
     admd = np.max(agg_power)
-    admd = 3  # After diversity maximum demand
+    print(f'Estimated admd from data is {admd}')
+    admd = 3  # After diversity maximum demand.
 
     # % generate glm for homes
 
@@ -319,7 +322,7 @@ def run():
     obj_type[key_index] = {'object': 'triplex_line_configuration'}
     key_index = key_index + 1
 
-    #   TODO: House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of
+    #   TODO: House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node_name of
     #    the spot-load so a future task will be to automate this.
     #    For now, the code doesn't break because the voltages are the same everywhere
 
@@ -344,18 +347,18 @@ def run():
     glm_subset_dict_dcfc = {key: subdict for key, subdict in glm_dict_base.items() if
                             'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
     num_fast_charging_nodes = param_dict['num_dcfc_nodes']
-    num_charging_stalls_per_node = param_dict['num_dcfc_stalls_per_node']  # int
+    num_charging_stalls_per_station = param_dict['num_dcfc_stalls_per_station']  # int
     charging_stall_base_rating = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0])  # kW
     trans_standard_ratings = np.array(
         [3, 6, 9, 15, 30, 37.5, 45, 75, 112.5, 150, 225, 300])  # units in kVA # TODO: get references for these
     DCFC_voltage = param_dict['dcfc_voltage']  # volts (480 volts is the most common DCFC transformer Secondary now)
-    DCFC_trans_power_rating_kW = charging_stall_base_rating * 1  # kw base rating X number of stalls will oversize it for load
+    DCFC_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_station  # kw base rating X number of stalls will oversize it for load
     load_pf = 0.95  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
     DCFC_trans_power_rating_kVA = DCFC_trans_power_rating_kW / load_pf
     proximal_std_rating = trans_standard_ratings[
         np.argmin(np.abs(trans_standard_ratings - DCFC_trans_power_rating_kVA))]  # find the closest transformer rating
     if standard_rating:
-        DCFC_trans_power_rating_kVA = proximal_std_rating
+        DCFC_trans_power_rating_kVA = proximal_std_rating   # If using standard transformer sizes.
     charging_bus_subset_list = random.sample(list(glm_subset_dict_dcfc.values()), num_fast_charging_nodes)
 
     #   TODO: verify these or get more configs
@@ -376,6 +379,7 @@ def run():
     ##########
     fast_charging = True
     if fast_charging:
+        # TODO:
         # Not implemented yet, but we want to automate the creation of dedicated transformers if scenario is fast-charging
         pass
 
@@ -389,8 +393,8 @@ def run():
                                      'load_class': 'C',
                                      'nominal_voltage': str(DCFC_voltage),
                                      'phases': 'ABCN',
-                                     # this phase is currently
-                                     # hard-coded because we know we want to only connect to 3-phase connection
+                                     # this phase is currently...
+                                     # ...hard-coded because we know we want to only connect to 3-phase connection
                                      'constant_power_A': '0.0+0.0j',
                                      'constant_power_B': '0.0+0.0j',
                                      'constant_power_C': '0.0+0.0j'}  # the powers get populated in simulation
@@ -400,7 +404,7 @@ def run():
         obj_type[key_index] = {'object': 'load'}
         key_index = key_index + 1
 
-        #   Transformer (DCFC transformer)
+        #   Transformer (DCFC transformer) setup.
         glm_house_dict[key_index] = {'name': 'dcfc_trans_' + str(k),
                                      'phases': meter_dict['phases'],
                                      'from': meter_dict['name'],
@@ -412,21 +416,21 @@ def run():
         k = k + 1
 
     os.chdir(test_case_dir)
-    np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # this stores all the nodes in which there is dcfc
+    np.savetxt('dcfc_bus.txt', fast_charging_bus_list, fmt="%s")  # Store all the nodes in which there is DCFC.
 
     ####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####
 
-    ######### L2 STARTS HERE ###########
+    ######### L2 SETUP STARTS HERE ###########
     #   This is the transformer configuration that is inherited for L2 208-240V
-    standard_rating = True
+    standard_rating = True  # TODO: include this in the config.txt options.
     glm_subset_dict_L2 = {key: subdict for key, subdict in glm_dict_base.items() if
                           'name' in subdict.keys() and 'meter' in subdict['name'] and 'ABC' in subdict['phases']}
     num_L2_charging_nodes = param_dict['num_l2_nodes']
-    num_charging_stalls_per_node = param_dict['num_l2_stalls_per_node']  # make param later
+    num_charging_stalls_per_station = param_dict['num_l2_stalls_per_station']  # make param later
     charging_stall_base_rating = float(
         param_dict['l2_charging_stall_base_rating'].split('_')[0])  # kW (make param later)
     L2_voltage = param_dict['l2_voltage']  # Volts (usually 208 - 240V)
-    L2_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_node  # kw
+    L2_trans_power_rating_kW = charging_stall_base_rating * num_charging_stalls_per_station  # kw
     load_pf = 0.95  # this can be >= and many EVSE can have pf close to 1. In initial simulation, they will be unity
     L2_trans_power_rating_kVA = L2_trans_power_rating_kW / load_pf
     proximal_std_rating = trans_standard_ratings[
@@ -453,7 +457,7 @@ def run():
     ######### L2 ENDS (initial trans config ends) HERE ###########
 
     num_transformers_list = []
-    fraction_commercial_sec_node = 0.3
+    fraction_commercial_sec_node = 0.3  # Fraction of nodes to be assigned. Changeable.
     # CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD
     spot_load_magnitude = [abs(spot_load_list[i]) / 1000 for i in range(len(spot_load_list))]
     commercial_load_indices = []
@@ -465,7 +469,7 @@ def run():
                                                  max(int(fraction_commercial_sec_node * len(commercial_load_indices)),
                                                      1))
 
-    # select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)
+    # select (sample) triplex node_name that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)
     L2_charging_node_options = []
 
     k = 0
@@ -481,7 +485,7 @@ def run():
                     20 * 1000)))  # todo: 20 was used here because of the tranformer rating is 20
         num_transformers_list.append(num_transformers)
         for j in range(num_transformers):  # number of transformers per bus
-            # Triplex node
+            # Triplex node_name
             if commercial_load:
                 # todo: is there a way to initially set loading?
                 num_houses = int((L2_trans_power_rating_kVA * pf_min) * safety_factor / admd)

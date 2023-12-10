@@ -3,7 +3,6 @@
 import numpy as np
 import gblvar
 import sys
-sys.path.append('../..')
 
 
 def sim_transformer(temperature_data=None):

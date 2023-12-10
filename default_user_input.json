@@ -1,5 +1,6 @@
 {
     "sim_mode": "offline",
+    "central": false,
     "feeder_pop": false,
     "only_batt_sys": false,
     "ambient_data": null,
@@ -31,8 +32,8 @@
         "l2_charging_stall_base_rating": "11.5_kW",
         "num_dcfc_nodes": 1,
         "num_l2_nodes": 0,
-        "num_dcfc_stalls_per_node": 5,
-        "num_l2_stalls_per_node": 0,
+        "num_dcfc_stalls_per_station": 5,
+        "num_l2_stalls_per_station": 0,
         "commercial_building_trans": 75
     },
     "load": {
