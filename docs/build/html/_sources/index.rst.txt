@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 =====================================
-Welcome to *EV-EcoSim* 1.0.0 documentation!
+Welcome to EV-EcoSim 1.0.0 documentation!
 =====================================
 
 .. image:: ../../doc_images/sim_control_diagram.png
@@ -14,7 +14,7 @@ Welcome to *EV-EcoSim* 1.0.0 documentation!
 --------------------------------
 
 --------------------------------
-What is *EV-EcoSim*?
+What is EV-EcoSim?
 --------------------------------
 *EV-EcoSim* is a python-based multi-timescale grid-aware co-simulation platform for modeling, control, optimization,
 and simulation of electric vehicle (EV) charging stations. The charging infrastructure developed within this platform is
