@@ -24,8 +24,8 @@ distribution networks.
 
 Links
 --------
-- `Preprint <https://doi.org/10.36227/techrxiv.23596725.v2>`_
-- `Repository <https://github.com/ebalogun01/EV50_cosimulation/>`_
+- `Publication <https://doi.org/10.1109/TSG.2023.3339374>`_
+- `Repository <https://github.com/ebalogun01/EV-EcoSim/>`_
 -  Web-tool (coming soon!)
 
 .. toctree::
