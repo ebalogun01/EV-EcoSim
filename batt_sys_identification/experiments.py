@@ -49,7 +49,7 @@ def create_ro_plot():
     """
     Creates Ro vs. SoC plot for the paper.
 
-    :return: None
+    :return: None.
     """
     data_path = 'batt_iden_test_data_W8_1.csv'
     batt_data = pd.read_csv(data_path)
