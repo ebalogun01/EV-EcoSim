@@ -5,6 +5,20 @@ within the simulation.
 
 
 class Clock:
+    """
+    This class defines the clock for the simulation. It allows ease of temporal understanding of different timescales.
+
+    :param config: Configuration dictionary.
+    :type config: dict
+
+    Derived attributes:
+        pf_dt: Powerflow timestep in seconds. \n
+        trans_dt: Transformer timestep in seconds. \n
+        battery_dt: Battery timestep in seconds. \n
+        dt: Clock timestep in seconds. \n
+        it: Iteration number (usually starts at 0). \n
+
+    """
     def __init__(self, config):
         self.pf_dt = config['powerflow-timestep']  # Powerflow timestep in seconds.
         self.trans_dt = config['transformer-timestep']  # Transformer timestep in seconds.

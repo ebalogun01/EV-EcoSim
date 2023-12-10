@@ -177,9 +177,8 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
     def make_scenarios():
         """
-        This is used to make the list of scenarios (dicts) that are used to run the simulations.
-        No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
-        settings and inputs.
+        Function to make the list of scenarios (dicts) that are used to run the simulations. Each scenario is fully
+        specified by a dict. The dict produced is used by the orchestrator to run the simulation.
 
         :return: List of scenario dicts.
         """

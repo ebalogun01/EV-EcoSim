@@ -210,8 +210,8 @@ def run_scenarios_sequential():
     """
     start_idx = 0
     end_idx = 10
-    idx_list = list(range(start_idx, end_idx, 1))
     scenarios_list = make_scenarios()
+    idx_list = list(range(start_idx, min(len(scenarios_list), end_idx), 1))
     scenarios = [scenarios_list[idx] for idx in idx_list]
     for scenario in scenarios:
         process = mp.get_context('spawn').Process(target=run, args=(scenario,))

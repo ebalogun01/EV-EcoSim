@@ -4,8 +4,24 @@ import json
 
 class Node:
     """
-    Node object class for defining relevant node_name for co-simulation. It helps organize centralized DER assets within
-    their respective grid locations
+    Node object class for defining relevant `node_name` for co-simulation. It helps organize centralized DER assets
+    within their respective grid locations. This is only used for centralized DER simulations and it is not used
+    for collocated EVSE and DER simulations.
+
+    For example, within the centralized simulation, if there are multiple secondary feeders connected to a single primary
+    feeder, then the primary feeder would be a `node_name` and the secondary feeders would be children of that
+    `node_name`. Thus, when power injections at each time step are calculated through optimization, the controller and
+    orchestrator knows the load at each child node, which is then aggregated to control the DER assets at the parent
+    node.
+
+    :param name: Name of the node_name.
+    :param idx: Index of the node_name.
+    :param storage: Storage object.
+    :param solar: Solar object.
+    :param controller: Controller object.
+    :param children: List of children nodes.
+    :param parent: Parent node.
+
     """
     def __init__(self, name, idx, storage, solar, controller=None, others=None, children=None, parent=None):
         self.name = name

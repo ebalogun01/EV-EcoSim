@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battery test case &mdash; EV-EcoSim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Battery feeder population" href="test_cases.battery.feeder_population.html" />
+    <link rel="prev" title="Base test case" href="test_cases.base_case.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            EV-EcoSim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="Introduction/welcome.html">Introduction</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="test_cases.html">Test cases</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html">Base test case</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Battery test case</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">EV-EcoSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
+          <li class="breadcrumb-item"><a href="test_cases.html">Test cases</a></li>
+      <li class="breadcrumb-item active">Battery test case</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="battery-test-case">
+<h1>Battery test case<a class="headerlink" href="#battery-test-case" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_cases.battery.feeder_population.html">Battery feeder population</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-module">test_cases.battery.feeder_population.feeder_population module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-old-module">test_cases.battery.feeder_population.feeder_population_old module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.glm_mod_functions">test_cases.battery.feeder_population.glm_mod_functions module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-event-handlers-module">
+<h2>test_cases.battery.event_handlers module<a class="headerlink" href="#test-cases-battery-event-handlers-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-event-handlers-oneshot-module">
+<h2>test_cases.battery.event_handlers_oneshot module<a class="headerlink" href="#test-cases-battery-event-handlers-oneshot-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-gblvar-module">
+<h2>test_cases.battery.gblvar module<a class="headerlink" href="#test-cases-battery-gblvar-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-glmptime-module">
+<h2>test_cases.battery.glmptime module<a class="headerlink" href="#test-cases-battery-glmptime-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-master-sim-module">
+<h2>test_cases.battery.master_sim module<a class="headerlink" href="#test-cases-battery-master-sim-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-parse-voltages-module">
+<h2>test_cases.battery.parse_voltages module<a class="headerlink" href="#test-cases-battery-parse-voltages-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-test_cases.battery.scenarios">
+<span id="test-cases-battery-scenarios-module"></span><h2>test_cases.battery.scenarios module<a class="headerlink" href="#module-test_cases.battery.scenarios" title="Permalink to this heading"></a></h2>
+<p><strong>Overview</strong></p>
+<p>This file is mainly used to run scenarios in parallel (if enough CPUs) or sequentially,
+without having to modify and rerun the simulation each time.
+Currently, user defines the battery Capacities (Wh) they want to compare and the maximum allowable battery C-rates.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.load_input_config">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">load_input_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.load_input_config" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the configuration file for the simulation and returns a dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.make_month_str">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">make_month_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">month_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.make_month_str" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a month string from the month integer. Adds 0 if the month is less than 10.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>month_int</strong> – 1 - January, 2 - February, etc.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String of the month.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.make_scenarios">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">make_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.make_scenarios" title="Permalink to this definition"></a></dt>
+<dd><p>This is used to make the list of scenarios (dicts) that are used to run the simulations.
+No inputs. However, it uses preloaded global functions from a <cite>config.txt</cite> file based on the user
+settings and inputs. Please change JSON file directly for multiple scenarios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of scenario dicts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.run">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.run" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a given scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>dict</em>) – Scenario dictionary containing inputs a user would like to run.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.run_scenario_single">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">run_scenario_single</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.run_scenario_single" title="Permalink to this definition"></a></dt>
+<dd><p>Runs only one scenario from a user specified configuration file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.run_scenarios_parallel">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">run_scenarios_parallel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.run_scenarios_parallel" title="Permalink to this definition"></a></dt>
+<dd><p>This runs c-rate-energy scenarios in parallel, using the multicore processor of the PC.
+User should have enough cores and RAM, as if not enough, can lead to entire process freezing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.scenarios.run_scenarios_sequential">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.scenarios.</span></span><span class="sig-name descname"><span class="pre">run_scenarios_sequential</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.scenarios.run_scenarios_sequential" title="Permalink to this definition"></a></dt>
+<dd><p>Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
+which is a combination of all the capacities and c-rates.</p>
+</dd></dl>
+
+</section>
+<section id="test-cases-battery-sim-module">
+<h2>test_cases.battery.sim module<a class="headerlink" href="#test-cases-battery-sim-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="test-cases-battery-voltdump2-module">
+<h2>test_cases.battery.voltdump2 module<a class="headerlink" href="#test-cases-battery-voltdump2-module" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="test_cases.base_case.html" class="btn btn-neutral float-left" title="Base test case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-right" title="Battery feeder population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
