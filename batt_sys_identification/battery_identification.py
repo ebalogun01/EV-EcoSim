@@ -473,9 +473,6 @@ class BatteryParams:
         return NotImplementedError("Method has not been implemented yet!")
 
 
-
-
-
 if __name__ == '__main__':
     # These are for testing purposes only.
     # create_error_boxplots()
@@ -502,5 +499,5 @@ if __name__ == '__main__':
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)
     # Toggle initial population on or off. Set to ``False`` to toggle off.
-    module.run_sys_identification(use_initial_pop=True)
+    module.run_sys_identification(use_initial_pop=False)
     module.plot_correction_scheme_comparison()
