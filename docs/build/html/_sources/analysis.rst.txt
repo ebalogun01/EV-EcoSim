@@ -1,5 +1,8 @@
-Post-simulation analysis
+Post-simulation Analysis
 ================
+
+Submodules
+----------
 
 analysis.cost\_analysis module
 ------------------------------
@@ -25,3 +28,10 @@ analysis.plot\_results module
    :undoc-members:
    :show-inheritance:
 
+Module contents
+---------------
+
+.. automodule:: analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:

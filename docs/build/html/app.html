@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App module &mdash; EV-EcoSim 1.0.0 documentation</title>
+  <title>app module &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -68,7 +68,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">App module</li>
+      <li class="breadcrumb-item active">app module</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -78,8 +78,11 @@
            <div itemprop="articleBody">
              
   <section id="module-app">
-<span id="app-module"></span><h1>App module<a class="headerlink" href="#module-app" title="Permalink to this heading"></a></h1>
-<p>Runs the EV-EcoSim application. This is the main file that is run to start the application.</p>
+<span id="app-module"></span><h1>app module<a class="headerlink" href="#module-app" title="Permalink to this heading"></a></h1>
+<p>Runs the EV-EcoSim application. This is the main file that is run to start the application.
+This module runs the optimization offline without the power system or battery state feedback for each time-step.
+This is done to save time. Once this is done, one can study the effects on the power system. Power system states are
+propagated post optimization to fully characterize what would have occurred if in-situ optimization was done.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.change_run_date">
 <span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">change_run_date</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.change_run_date" title="Permalink to this definition"></a></dt>

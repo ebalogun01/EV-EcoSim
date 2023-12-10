@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feeder population &mdash; EV-EcoSim 1.0.0 documentation</title>
+  <title>Feeder Population &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -54,10 +54,12 @@
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Feeder population</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Feeder Population</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-feeder_population">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#feeder-population-feeder-population-module">feeder_population.feeder_population module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-feeder_population.glm_mod_functions">feeder_population.glm_mod_functions module</a></li>
 </ul>
@@ -83,7 +85,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
-      <li class="breadcrumb-item active">Feeder population</li>
+      <li class="breadcrumb-item active">Feeder Population</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,7 +95,29 @@
            <div itemprop="articleBody">
              
   <section id="feeder-population">
-<h1>Feeder population<a class="headerlink" href="#feeder-population" title="Permalink to this heading"></a></h1>
+<h1>Feeder Population<a class="headerlink" href="#feeder-population" title="Permalink to this heading"></a></h1>
+<section id="module-feeder_population">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-feeder_population" title="Permalink to this heading"></a></h2>
+<p><strong>Introduction</strong></p>
+<p>This is the feeder population module for the base test case. This file performs the pre-simulation step for
+running EV-Ecosim.</p>
+<p>It takes in a base Gridlab-D Model (GLM) file (for example, <cite>IEEE123.glm</cite>), and modifies that file by including
+secondary distribution, home loads, and EV Charging station and transformers.</p>
+<p>Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and
+&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the
+simulation. These files are saved in the ‘test_case_dir’ field specified in config.txt.</p>
+<p><strong>Input file description</strong></p>
+<p>Config <cite>config.txt</cite>: configuration file describing the pre-simulation parameters.
+This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
+are files that are read in to run the EV-Ecosim environment.</p>
+<p><strong>Output file description</strong></p>
+<p><cite>real_power.csv</cite> - Real power; this is residential real load timeseries file per node_name/bus</p>
+<p><cite>reactive_power.csv</cite> - Reactive power; this is residential reactive load timeseries file per node_name/bus.</p>
+<p><cite>XXXX.glm</cite> - GridLabD model files. These are usually the synthetic feeders.</p>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
 <section id="feeder-population-feeder-population-module">
 <h2>feeder_population.feeder_population module<a class="headerlink" href="#feeder-population-feeder-population-module" title="Permalink to this heading"></a></h2>
 </section>

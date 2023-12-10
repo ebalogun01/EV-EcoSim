@@ -1,6 +1,9 @@
 Charging Simulator
 =====================
 
+Submodules
+----------
+
 charging\_sim.battery module
 ----------------------------
 
@@ -49,6 +52,14 @@ charging\_sim.chargingStation module
    :undoc-members:
    :show-inheritance:
 
+charging\_sim.clock module
+--------------------------
+
+.. automodule:: charging_sim.clock
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 charging\_sim.controller module
 -------------------------------
 
@@ -61,6 +72,14 @@ charging\_sim.electricityPrices module
 --------------------------------------
 
 .. automodule:: charging_sim.electricityPrices
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+charging\_sim.node module
+-------------------------
+
+.. automodule:: charging_sim.node
    :members:
    :undoc-members:
    :show-inheritance:
@@ -93,6 +112,14 @@ charging\_sim.solar module
 --------------------------
 
 .. automodule:: charging_sim.solar
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+charging\_sim.transformer module
+--------------------------------
+
+.. automodule:: charging_sim.transformer
    :members:
    :undoc-members:
    :show-inheritance:

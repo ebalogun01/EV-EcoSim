@@ -1,7 +1,7 @@
-# EV-Ecosim platform
+# EV-EcoSim platform
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations. 
-[Link to preprint](https://doi.org/10.36227/techrxiv.23596725.v2)
+[Link to Publication](https://doi.org/10.1109/TSG.2023.3339374)
 
 
 <img src="doc_images/sim_frame.png">

@@ -1,6 +1,14 @@
 Test cases
 ===================
 
+Module contents
+---------------
+
+.. automodule:: test_cases
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 

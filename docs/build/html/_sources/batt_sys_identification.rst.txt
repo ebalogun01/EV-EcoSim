@@ -1,7 +1,10 @@
 Battery System Identification
 =================================
 
-batt\_sys\_identification.battery\_identification module
+Submodules
+----------
+
+battery\_identification module
 --------------------------------------------------------
 
 .. automodule:: batt_sys_identification.battery_identification
@@ -9,3 +12,18 @@ batt\_sys\_identification.battery\_identification module
    :undoc-members:
    :show-inheritance:
 
+experiments module
+--------------------------------------------
+
+.. automodule:: batt_sys_identification.experiments
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: batt_sys_identification
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Charging Simulator" href="charging_sim.html" />
-    <link rel="prev" title="Post-simulation analysis" href="analysis.html" /> 
+    <link rel="prev" title="Post-simulation Analysis" href="analysis.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,13 +54,16 @@
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Battery System Identification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-batt_sys_identification.battery_identification">batt_sys_identification.battery_identification module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-batt_sys_identification.battery_identification">battery_identification module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#experiments-module">experiments module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-batt_sys_identification">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Simulator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder Population</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
 </ul>
@@ -93,8 +96,11 @@
              
   <section id="battery-system-identification">
 <h1>Battery System Identification<a class="headerlink" href="#battery-system-identification" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
 <section id="module-batt_sys_identification.battery_identification">
-<span id="batt-sys-identification-battery-identification-module"></span><h2>batt_sys_identification.battery_identification module<a class="headerlink" href="#module-batt_sys_identification.battery_identification" title="Permalink to this heading"></a></h2>
+<span id="battery-identification-module"></span><h2>battery_identification module<a class="headerlink" href="#module-batt_sys_identification.battery_identification" title="Permalink to this heading"></a></h2>
 <p>This module hosts the Battery System Identification class used for fitting battery ECM model parameters from data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="batt_sys_identification.battery_identification.BatteryParams">
@@ -125,7 +131,7 @@ the web-tool.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="batt_sys_identification.battery_identification.BatteryParams.ga">
-<span class="sig-name descname"><span class="pre">ga</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_generations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parents_mating</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol_per_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adaptive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_selection_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_percent_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.3,</span> <span class="pre">0.1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.ga" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ga</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_generations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parents_mating</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol_per_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adaptive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_selection_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_percent_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.3,</span> <span class="pre">0.1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.ga" title="Permalink to this definition"></a></dt>
 <dd><p>Runs the genetic algorithm instance. Please see PyGAD official documentation for more explanation of
 fields/params.
 The default parameters have been selected to optimize accuracy and speed, however, any user may find a
@@ -185,7 +191,7 @@ combination of params that work better for a given set of battery data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="batt_sys_identification.battery_identification.BatteryParams.plot_Ro">
-<span class="sig-name descname"><span class="pre">plot_Ro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.plot_Ro" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_Ro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.plot_Ro" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the high frequency resistance (Ro) of the battery.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -207,7 +213,7 @@ combination of params that work better for a given set of battery data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction">
-<span class="sig-name descname"><span class="pre">run_ocv_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_quadratic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_ocv_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_quadratic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.run_ocv_correction" title="Permalink to this definition"></a></dt>
 <dd><p>Fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute. The open circuit
 voltage correction scheme can be quadratic or linear. The quadratic scheme was used in the original paper.</p>
 <dl class="field-list simple">
@@ -231,7 +237,7 @@ ensure no errors in data length.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="batt_sys_identification.battery_identification.BatteryParams.run_sys_identification">
-<span class="sig-name descname"><span class="pre">run_sys_identification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_initial_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quadratic_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_sys_identification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_initial_pop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quadratic_bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#batt_sys_identification.battery_identification.BatteryParams.run_sys_identification" title="Permalink to this definition"></a></dt>
 <dd><p>Runs the GA for system identification.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -254,13 +260,19 @@ ensure no errors in data length.</p>
 </dd></dl>
 
 </section>
+<section id="experiments-module">
+<h2>experiments module<a class="headerlink" href="#experiments-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-batt_sys_identification">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-batt_sys_identification" title="Permalink to this heading"></a></h2>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="analysis.html" class="btn btn-neutral float-left" title="Post-simulation analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Post-simulation Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="charging_sim.html" class="btn btn-neutral float-right" title="Charging Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

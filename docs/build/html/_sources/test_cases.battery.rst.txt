@@ -1,5 +1,14 @@
-Battery test case
+Battery Test Cases
 ===========================
+
+Module contents
+---------------
+
+.. automodule:: test_cases.battery
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Subpackages
 -----------
