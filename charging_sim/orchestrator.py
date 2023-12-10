@@ -17,8 +17,9 @@ MINUTES_IN_DAY = 1440
 
 class ChargingSim:
     """
-    This class organizes the simulation and controls the propagation of other objects' states in a time
-    sequential manner. It is in charge of orchestrating in both MPC or oneshot (offline) modes.
+    This is the main orchestrator for the simulation class. It organizes the simulation and controls the propagation of
+    other objects' states in a time sequential manner. It is in charge of orchestrating in both RHC/MPC or oneshot
+    (offline) modes.
 
     :param num_charging_sites: Number of charging nodes within the secondary distribution network.
     :param bool solar: If the charging sites have solar PV or not.
@@ -26,22 +27,18 @@ class ChargingSim:
     :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
     :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
     :param int month: The month for which the simulation is run.
+    :param int num_evs: Number of EVs to be simulated.
+    :param bool custom_ev_data: If custom EV data is to be used.
+    :param str custom_ev_data_path: Path to custom EV data.
+    :param bool custom_solar_data: If custom solar data is to be used.
+    :param str custom_solar_data_path: Path to custom solar data.
+    :param bool centralized: If the DER is centralized or not.
+    :param dict central_der_dict: Dictionary of DERs for centralized mode.
 
     """
-
     def __init__(self, num_charging_sites, solar=True, resolution=15, path_prefix=None, num_steps=None, month=6,
                  num_evs=1600, custom_ev_data=False, custom_ev_data_path=None, custom_solar_data=False,
                  custom_solar_data_path=None, centralized=False, central_der_dict: dict = None):
-        """
-        Initializes the ChargingSim class. Class constructor.
-
-        :param int num_charging_sites: Number of charging nodes within the secondary distribution network.
-        :param bool solar: If the charging sites have solar PV or not.
-        :param int resolution: Time resolution of the simulation.
-        :param str path_prefix: Path string that helps ensure simulation can access proper folders within OS file organization.
-        :param int num_steps: Number of steps per day. Default is 96 for 15 minute time resolution.
-        :param int month: The month for which the simulation is run.
-        """
         self.centralized = centralized
         self.controller_config = None
         self.num_evs = num_evs
@@ -136,7 +133,8 @@ class ChargingSim:
         :param idx: Battery identification index.
         :param str node_name: Name of node_name.
         :param controller: Controller assigned to the battery object.
-        :return: Battery object.
+
+        :return (object): Battery object.
         """
         buffer_battery = Battery(config=self.battery_config, controller=controller)
         buffer_battery.id, buffer_battery.node = idx, node_name
@@ -151,13 +149,9 @@ class ChargingSim:
         Creates the charging station objects within the power network (MPC mode).
 
         :param list power_nodes: List of buses/nodes which can host charging stations. It is a list of dicts.
+
         :return: None
         """
-        # todo: need to change mechanism for centralized. Assign battery system to multiple charging stations connected
-        #  to the same primary distribution feeder bus.
-        # include inverter params and find rough costs for that.
-        # get the list of nodes at which the DER connects to the primary feeder.
-
         loc_list = power_nodes
         for i in range(len(loc_list)):
             node_name = loc_list[i]['node_name']
@@ -169,7 +163,7 @@ class ChargingSim:
             self.charging_config['locator_index'], self.charging_config['location'] = i, node_name
             self.charging_config['L2'] = loc_list[i]['L2']
             self.charging_config['DCFC'] = loc_list[i]['DCFC']
-            self.charging_config['data_path'] = f'{self.path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'
+            self.charging_config['data_path'] = f'{self.path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'  # This can be changed if you have your own data.
             charging_station = ChargingStation(self.charging_config, controller=controller,
                                                storage=battery, solar=solar)
             self.charging_sites[node_name] = charging_station
@@ -178,10 +172,15 @@ class ChargingSim:
 
     def create_charging_stations_centralized(self, charging_nodes_list):
         """
-        Creates charging stations for centralized DER shared within a distribution node_name.
+        Creates charging stations for centralized DER shared within a distribution node_name. The centralized option is used
+        to study the value of centralization of DER within primary feeder nodes. For example if an EV Service Provider
+        owns a fleet of charging stations within a primary feeder node_name, then the DER can be centralized and shared
+        within that node to offset its power consumption.
 
-        :param charging_nodes_list:
-        :return:
+        :param list(dict) charging_nodes_list: List of charging node dicts necessary to configure simulation,
+         especially the node name and location to map charging station objects to the power network.
+
+        :return: None.
         """
         # todo: include inverter params and find rough costs for that.
         node_index = 0
@@ -236,9 +235,8 @@ class ChargingSim:
         """
         Initialize the battery aging object.
 
-        :return:
+        :return: None.
         """
-        # TODO: make the number of steps a passed in variable
         num_steps = 1
         self.aging_sim = BatteryAging(0, num_steps)
 
@@ -266,21 +264,9 @@ class ChargingSim:
                 json.dump(self.prices_config, config_file_path, indent=1)
             os.chdir(current_working_dir)
 
-    def initialize_solar_module(self):
-        """
-        Initializes the solar module if solar options is set to True.
-
-        :return:
-        """
-        if self.solar:
-            self.solar = Solar(self.solar_config, path_prefix=self.path_prefix, num_steps=self.num_steps)
-            print("Solar module loaded...")
-        else:
-            raise IOError('Cannot load solar module because flag is set to False!')
-
     def create_solar_object(self, idx, loc, controller=None):
         """
-        Creates a solar object using the solar class charging_sim.solar.
+        Creates a solar object using the solar class ``charging_sim.solar``.
 
         :param int idx: Solar object identifier.
         :param loc: Location of solar object within the grid.
@@ -320,10 +306,14 @@ class ChargingSim:
     def setup(self, power_nodes_list, scenario=None):
         """
         This is done pre-simulation to ensure all scenarios are updated accordingly.
-        This method takes in a list of dicts with the following keys: 'node_name', 'L2', 'DCFC'.
+        This method takes in a list of dicts with the following keys: `node_name`, `L2`, `DCFC`.
+        The setup accounts for the different modes of simulation. It also updates the scenario dict to match the
+        specifications of the given scenario.
 
         :param list power_nodes_list: List of buses dictionaries for which EVSE/Charging Station exists.
         :param scenario: Contains specifications for the scenario, such as battery capacity, c-rate, solar, etc.
+                        See example `user_input.json` file for full specifications.
+
         :return: None.
         """
         self.load_config()  # FIRST LOAD THE CONFIG ATTRIBUTES
@@ -333,14 +323,14 @@ class ChargingSim:
             if self.scenario['oneshot']:
                 # TODO: add centralized DER mode for oneshot.
                 print("One shot optimization loading...")
-                self.create_charging_stations_oneshot(power_nodes_list)     # this allows to load controller the right way
+                self.create_charging_stations_oneshot(power_nodes_list)
             else:
                 if self.centralized:
                     print("Centralized DER mode loading...")
                     self.create_charging_stations_centralized(power_nodes_list)
                 else:
                     print("Collocated DER mode loading...")
-                    self.create_charging_stations(power_nodes_list)  # this should always be first since it loads the config
+                    self.create_charging_stations(power_nodes_list)
             self.initialize_price_loader(self.prices_config["month"])
             self.initialize_aging_sim()  # Battery aging
 
@@ -398,7 +388,7 @@ class ChargingSim:
     def step(self, stepsize):
         """
         This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power
-        grid.
+        grid. This can easily be modified to include forecast errors and uncertainty.
 
         :param int stepsize: Number of steps to take.
         :return: None.
@@ -412,7 +402,6 @@ class ChargingSim:
             p = charging_station.controller.solar.get_power(self.time, self.num_steps)  # can set month for multi-month sim later
             buffer_battery = charging_station.storage
             self.control_start_index = stepsize * self.day_year_count
-            # todo: need to let each charging station have its own associated load profile, which can then be aggregated
             todays_load = charging_station.load_data[self.day_year_count*self.num_steps+self.time
                                          :self.num_steps*(self.day_year_count+1)+self.time] * 1 # this is where time comes in
             plt.plot(todays_load)
@@ -437,8 +426,8 @@ class ChargingSim:
 
     def multistep(self):
         """
-        This is used oneshot offline simulation for any given month. It is much faster than the MPC mode and it used to
-        propagate the states of all objects through the simulation horizon.
+        This is used oneshot offline simulation for any given month. It is much faster than the Receding Horizon Control
+        (RHC or MPC) mode and it used to propagate the states of all objects through the simulation horizon.
 
         This assumes perfect load foresight, doing daily propagation for Charging Station sequentially within the power
         grid.
@@ -466,7 +455,9 @@ class ChargingSim:
         """
         If mode is centralized DER (multiple charging stations connected to the same primary distribution feeder), then
         this method is used to propagate the states of all objects through the simulation horizon. The price vector is
-
+        the same for all charging stations, but the load vector is different for each charging station. Making the price
+        vector the same is reasonable because it is more likely that the primary feeder is the same for all charging
+        stations and would exist in the same utility tariff zone or territory.
 
         :param int stepsize: Number of steps to take.
         :return:
@@ -489,8 +480,6 @@ class ChargingSim:
 
             for loc in charging_stations_locs:
                 # Sum all the expected EV charging loads from all the charging stations.
-                # TODO (NOTE for research): value of aggregation can be realized in forecasting as well, because
-                #  aggregation can be useful for reducing uncertainty in load forecasting.
                 # Sum up the aggregate load.
                 charging_station = self.get_charger_obj_by_loc(loc)
                 todays_load += np.minimum(charging_station.capacity, charging_station.load_data[self.day_year_count *
@@ -514,6 +503,10 @@ class ChargingSim:
 
     def load_results_summary(self, save_path_prefix, plot=False):
         """
+        Saves the simulation results to a specified path. It also plots some results if specified. The results are
+        saved in a folder with the name of the simulation scenario. The results are saved in a .csv file. The results
+        include the following: load, solar, battery power, voltages, rate Block, battery SOC, battery calendar aging,
+        battery cycle aging, battery SOH, cycles etc.
 
         :param save_path_prefix: Includes prefix to desired path for saving results.
         :param boolean plot: Decides if some results are plotted or not.

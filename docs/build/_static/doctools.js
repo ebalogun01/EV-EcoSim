@@ -19,7 +19,7 @@ const _ready = (callback) => {
 };
 
 /**
- * highlight a given string on a node_name by wrapping it in
+ * highlight a given string on a node by wrapping it in
  * span elements with the given class name.
  */
 const _highlight = (node, addItems, text, className) => {

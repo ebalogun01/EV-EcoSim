@@ -53,6 +53,8 @@ class CostEstimator:
         :param result_dir: Directory in which to save the results dictionary.
         :return dict result_dict: Dictionary of results.
         """
+        # TODO: include results with only discharge
+
         current_dir = os.getcwd()
         os.chdir(result_dir)
         with open('scenario.json', "r") as f:
@@ -158,7 +160,8 @@ class CostEstimator:
         return NotImplementedError
 
     @staticmethod
-    def plot_loads(total_load, net_load, prefix=None, labels: list = None):
+    def plot_loads(total_load, net_load, prefix=None, labels: list = None, total_load_color='blue',
+                   net_load_color='orange'):
         """
         Creates plots overlaying load and net loads for post-simulation visualization.
 
@@ -166,6 +169,9 @@ class CostEstimator:
         :param net_load: total_load minus DER buffer.
         :param prefix: Plot file label prefix.
         :param labels: Legend labels for each plotted curve.
+        :param str total_load_color: Color to plot total load.
+        :param str net_load_color: Color to plot net load.
+
         :return: None.
         """
         plt.close('all')
@@ -180,8 +186,7 @@ class CostEstimator:
         lb = np.zeros(num_steps)
         alph = 0.3
         interp = True
-        total_load_color = 'blue'
-        net_load_color = 'orange'
+
         ax.plot(x_vals, total_load_plot, color=f'tab:{total_load_color}')
         ax.plot(x_vals, net_load_plot, color=f'tab:{net_load_color}')
         ax.fill_between(x_vals, lb, total_load_plot, color=f'tab:{total_load_color}',
@@ -203,7 +208,8 @@ class CostEstimator:
     @staticmethod
     def plot_soc(soc, soc_pred, prefix=None, labels: list = None):
         """
-        Plots the controller predicted and true state of charge of the battery system.
+        Plots the controller predicted and true state of charge of the battery system. This is used to compare the
+        controller anticipated state of charge with the true state of charge.
 
         :param soc: True state of charge.
         :param soc_pred: Controller predicted state of charge.
@@ -211,8 +217,10 @@ class CostEstimator:
         :param labels: Legend labels for each plotted curve.
         :return: None.
         """
-        error_abs_mean = np.mean(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)
-        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)
+        if prefix is None:
+            raise ValueError("Prefix must be specified. Please specify a prefix path for the plot file.")
+        error_abs_mean = np.mean(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)     # Note 1e-6 is added for numerical stability.
+        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)    # Note 1e-6 is added for numerical stability.
         np.savetxt('abs_percent_err_soc.csv', [error_abs_mean])
         np.savetxt('MAPE_soc.csv', [MAPE])
         plt.close('all')
@@ -238,7 +246,8 @@ class CostEstimator:
     @staticmethod
     def plot_power(power, power_pred, prefix=None, labels: list = None):
         """
-        Plots the controller predicted and true power of the battery system.
+        Plots the controller predicted and true power of the battery system. This is used to compare the
+        controller anticipated state of charge with the true state of charge.
 
         :param power: True power.
         :param power_pred: Controller predicted power.
