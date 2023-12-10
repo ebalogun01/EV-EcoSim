@@ -474,27 +474,6 @@ class BatteryParams:
 
 
 if __name__ == '__main__':
-    # These are for testing purposes only.
-    # create_error_boxplots()
-    # create_ro_plot()
-    import os
-    # import multiprocessing as mp
-    # # List all the csv files in current directory and let user choose one.
-    # # User uploaded data will be saved in the current directory as a temp_data.csv file.
-    # # data_path = os.path.join(os.getcwd(), 'temp_data.csv')
-    # data_paths = [
-    #     'batt_iden_test_data_W8_1.csv',
-    #     'batt_iden_test_data_W9_1.csv',
-    #     'batt_iden_test_data_W10_1.csv'
-    # ]
-    # use_cores_count = min(mp.cpu_count(), len(data_paths))
-    #
-    # with mp.get_context("spawn").Pool(use_cores_count) as pool:
-    #     print(f"Running {use_cores_count} parallel battery trial processes")
-    #     pool.map(run_trials_paper, data_paths)
-
-    # NUM_TRIALS = 10
-
     data_path = 'batt_sys_identification/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)

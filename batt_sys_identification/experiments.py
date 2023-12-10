@@ -1,3 +1,8 @@
+"""
+Scratch module for running experiments and creating plots for the paper. This module is not used in the main functionality
+of the package.
+"""
+
 from battery_identification import BatteryParams
 import pandas as pd
 import numpy as np
