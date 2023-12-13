@@ -53,7 +53,10 @@ class MPC:
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
-            self.pge_gamma = cp.Variable(1, integer=True)
+            if self.config['opt_solver'].lower() == 'gurobi':
+                self.pge_gamma = cp.Variable(1, integer=True)   # Only Gurobi is proven to be reliable with mixed-integers
+            else:
+                self.pge_gamma = cp.Variable(1, integer=False)
             self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
@@ -212,7 +215,10 @@ class Oneshot:
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
-            self.pge_gamma = cp.Variable(1, integer=True)
+            if self.config['opt_solver'].lower() == 'gurobi':
+                self.pge_gamma = cp.Variable(1, integer=True)  # Only Gurobi is proven to be reliable with mixed-integers
+            else:
+                self.pge_gamma = cp.Variable(1, integer=False)
             self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
