@@ -1,4 +1,6 @@
 import unittest
+import sys
+sys.path.append('../..')
 from charging_sim.transformer import OilTypeTransformer as Transformer
 from charging_sim.clock import Clock
 import pandas as pd
