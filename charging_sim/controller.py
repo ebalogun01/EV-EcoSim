@@ -14,7 +14,7 @@ import cvxpy as cp
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 path_prefix = os.getcwd()
-path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
+path_prefix = (path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim') # This needs to be fixed
 path_prefix.replace('\\', '/')
 OCV_SOC_linear_params = 0
 
