@@ -82,6 +82,13 @@ def make_month_str(month_int: int):
         return f'0{str(month_int)}'
 
 
+def get_repository_name():
+    """
+    Helps obtain the current directory which houses the repository currently in.
+
+    :return:
+    """
+
 # GET THE PATH PREFIX FOR SAVING THE INPUTS
 # user_inputs = load_default_input()
 

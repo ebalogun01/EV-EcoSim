@@ -88,10 +88,12 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
     # Updating the user inputs based on frontend inputs.
     create_results_folder()  # Make a results folder if it does not exist.
 
-    path_prefix = os.getcwd()
+    path_prefix = os.getcwd()   # TODO WORK ON THIS
+    # repo_name = path_prefix.split('\\')[-1]
+    # print("path_prefix is ", path_prefix)
+    # print(path_prefix.split('\\'))
     # Change below to name of the repo.
-    results_folder_path = path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim/analysis/results'
-    path_prefix = path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim'
+    results_folder_path = path_prefix + '/analysis/results'
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
