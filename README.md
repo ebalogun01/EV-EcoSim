@@ -1,5 +1,6 @@
 # EV-EcoSim
 [![Basic Module Tests](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml)
+
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
 Paper: https://doi.org/10.1109/TSG.2023.3339374 
 
@@ -11,10 +12,10 @@ Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
 ## Requirements
 
-GiSMo SLAC GridLAB-D installation (master branch): [here](https://github.com/arras-energy/gridlabd). 
+Arras-energy (SLAC) GridLAB-D installation (master branch): [here](https://github.com/arras-energy/gridlabd). 
 This GridLAB-D version is required for the python co-simulation functionality. 
 
-Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X) - Update this.
+Recommended use with GridLAB-D. See repository [here](https://github.com/arras-energy/gridlabd) for details.
 
 ## Folder descriptions
 
