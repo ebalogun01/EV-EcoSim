@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the accompanied paper and as below."
+message: "If you use this software, copy code or reference any code herein, you must cite the EV-EcoSim paper and as below."
 authors:
 - family-names: "Balogun"
   given-names: "Emmanuel"
