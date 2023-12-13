@@ -9,6 +9,6 @@ authors:
   orcid: "https://orcid.org/0000-0000-0000-0000"
 title: "EV-EcoSim: A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure"
 version: 1.0.0
-// doi: 10.5281/zenodo.1234
+// doi: doi.org/10.1109/TSG.2023.3339374
 date-released: 2023-11-30
 url: "https://github.com/ebalogun01/EV-EcoSim/"
