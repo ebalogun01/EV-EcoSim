@@ -1,5 +1,5 @@
 # EV-EcoSim
-![example branch parameter](https://github.com/github/docs/actions/workflows/module-tests.yml/badge.svg?branch=main)
+[![Basic Module Tests](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml)
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
 Paper: https://doi.org/10.1109/TSG.2023.3339374 
 
