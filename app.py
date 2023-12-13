@@ -221,7 +221,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
             voltage_idx += 1
         return scenarios_list
 
-    def run(scenario):
+    def run(scenario, testing=False):
         """
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
@@ -234,13 +234,16 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
         print('multistep')
+        if testing:
+            print("Basic testing passed!")
+            return True
         EV_charging_sim.multistep()
         print('multistep done')
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
             json.dump(scenario, outfile, indent=1)
 
-    def run_scenarios_sequential():
+    def run_scenarios_sequential(testing=False):
         """
         Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
         which is a combination of all the capacities and c-rates.
@@ -261,11 +264,12 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                 scenario["dcfc_caps"] = [station["DCFC"] for station in dcfc_dicts_list]
             if l2_dicts_list:
                 scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
-            run(scenario)
+            run(scenario, testing=testing)
 
     if sequential_run:
+        test = True     # toggle
         print("Running scenarios sequentially...")
-        run_scenarios_sequential()
+        run_scenarios_sequential(testing=test)
         print("Simulation complete!")
 
     return
