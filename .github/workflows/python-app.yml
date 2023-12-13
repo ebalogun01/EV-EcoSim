@@ -31,3 +31,4 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+      working-directory: test_files/dev_tests

@@ -1,6 +1,6 @@
 import unittest
 import sys
-sys.path.append('../../charging_sim')
+sys.path.append('../..')    # For Ubuntu compatibility.
 from charging_sim.transformer import OilTypeTransformer as Transformer
 from charging_sim.clock import Clock
 import pandas as pd
