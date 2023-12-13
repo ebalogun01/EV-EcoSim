@@ -90,8 +90,8 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
     path_prefix = os.getcwd()
     # Change below to name of the repo.
-    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
-    path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    results_folder_path = path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim/analysis/results'
+    path_prefix = path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim'
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
