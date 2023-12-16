@@ -13,9 +13,12 @@ Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 ## Requirements
 
 Arras-energy (SLAC) GridLAB-D installation (master branch): [here](https://github.com/arras-energy/gridlabd). 
-This GridLAB-D version is required for the python co-simulation functionality. 
+This GridLAB-D version is required for the python co-simulation functionality. Recommended use with GridLAB-D. See repository [here](https://github.com/arras-energy/gridlabd) for details.
 
-Recommended use with GridLAB-D. See repository [here](https://github.com/arras-energy/gridlabd) for details.
+Gurobi License (recommended). Free (educational) or commercial Gurobi Licenses can be obtained [here](https://www.gurobi.com/)
+
+MOSEK License (optional). Free (educational) or commercial MOSEK License can be obtained [here](https://www.mosek.com/products/academic-licenses/)
+
 
 ## Folder descriptions
 
@@ -36,7 +39,7 @@ case-sensitive. The data used in the original paper has a minute resolution, as 
 ### batt_sys_identification
 Battery system identification module. Hosts the class for generating battery system identification parameters
 from experimental data. This module leverages a genetic algorithm to optimize the battery model parameters. 
-The battery model is a 2nd order RC Equivalent circuit model (ECM). One can this module to generate custom NMC
+The battery model is a 2nd order RC Equivalent circuit model (ECM). One can use this module to generate custom NMC
 battery parameters by uploading experimental data to the `batt_sys_identification/data` folder and running the module.
 The module will generate a `.csv` file with the battery parameters in the `batt_sys_identification/params` folder.
 The data prototype is shown below. Note that column fields are case-sensitive.
@@ -104,13 +107,13 @@ primary or secondary distribution level.
 ### feeder_population
 Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data. 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
-`feeder_population/config.txt`. This module uses the 
-Requires residential load data not included in repo (limited access).
+`test_cases/{CASE_NAME}/feeder_population/config.txt`. Feeder population requires residential load data not included in repo (limited access) due to proprietary data rights. However, there are 
+free versions of Pecan Street data that may be replaced in the `base_load` folder; file should be named `data_use.csv`.
 
 
 
 ### solar_data
-Includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
+`solar_data` folder includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
 data for solar irradiance is from the National Solar Radiation Database (NSRDB) for the San Francisco Bay Area.
 The data prototype is from the National Renewable Energy Laboratory (NREL) and is shown below. Note that column fields
 are case-sensitive.
@@ -118,7 +121,7 @@ are case-sensitive.
 ![solar_data_proto.png](doc_images%2Fsolar_data_proto.png)
 
 Month labels are indexed from 1 to 12, inclusive; 1 - January, 12 - December. The original data is in hourly resolution.
-The *EV-Ecosim* data prototype is in 15 minute intervals by default, with irradiance oversampled 4 times from hourly 
+The *EV-EcoSim* data prototype is in 15 minute intervals by default, with irradiance oversampled 4 times from hourly 
 dataset. The GHI represents the "Global Horizontal Irradiance" in W/m^2, which is the total amount of shortwave radiation
 received from above by a surface horizontal to the ground. 
 

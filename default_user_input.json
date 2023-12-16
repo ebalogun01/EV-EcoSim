@@ -1,5 +1,6 @@
 {
     "sim_mode": "offline",
+    "opt_solver": "GUROBI",
     "central": false,
     "feeder_pop": false,
     "only_batt_sys": false,

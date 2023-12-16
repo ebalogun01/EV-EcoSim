@@ -6,11 +6,10 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import sys
-
 sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
-import multiprocessing as mp
+# import multiprocessing as mp
 import numpy as np
 import json
 import ast
@@ -31,6 +30,7 @@ def validate_options(front_input: dict):
 
     :return: None.
     """
+    # TODO: finish validation options.
     print("Validating user input options...")
     return None
 
@@ -84,7 +84,7 @@ def make_month_str(month_int: int):
 # user_inputs = load_default_input()
 
 
-def simulate(user_inputs, sequential_run=True, parallel_run=False):
+def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
     # Updating the user inputs based on frontend inputs.
     create_results_folder()  # Make a results folder if it does not exist.
 
@@ -193,7 +193,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                     'index': idx,
                     'oneshot': True,
                     'start_month': month,
-                    'opt_solver': 'GUROBI',
+                    'opt_solver': user_inputs['opt_solver'],
                     'battery': {
                         'pack_energy_cap': Er,
                         'max_c_rate': c_rate,
@@ -226,7 +226,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
         :param scenario: The scenario dictionary that would be run.
-        :return: None. Runs the `scenario`.
+        :return: None.
         """
         EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
         save_folder_prefix = f'{results_folder_path}/oneshot_{month_str}{str(scenario["index"])}/'
@@ -267,7 +267,6 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
             run(scenario, testing=testing)
 
     if sequential_run:
-        test = True     # toggle
         print("Running scenarios sequentially...")
         run_scenarios_sequential(testing=test)
         print("Simulation complete!")
@@ -276,5 +275,6 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
 
 if __name__ == '__main__':
+    test = True
     USER_INPUTS = load_default_input()
-    simulate(USER_INPUTS)
+    simulate(USER_INPUTS, test=test)
