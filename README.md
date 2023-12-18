@@ -9,6 +9,9 @@ Paper: https://doi.org/10.1109/TSG.2023.3339374
 ## Authors
 Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
+## Correspondence
+For any questions, related bugs, assistance or suggestions that cannot be made through a github pull request, please reach out to Emmanuel Balogun at ebalogun@stanford.edu.
+
 
 ## Requirements
 
