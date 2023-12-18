@@ -1,7 +1,7 @@
 """
 **Introduction**\n
 This is the feeder population module within the battery test case. This file performs the pre-simulation step for
-running EV-Ecosim.\n\n
+running EV-EcoSim.\n\n
 It takes in a base Gridlab-D Model (GLM) file (for example, `IEEE123.glm`), and modifies that file by including
 secondary distribution, home loads, and EV Charging station and transformers.
 
@@ -14,7 +14,7 @@ simulation. These files are saved in the 'test_case_dir' field specified in conf
 **Input file description** \n
 Config `config.txt`: configuration file describing the pre-simulation parameters.
 This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
-are files that are read in to run the EV-Ecosim environment.
+are files that are read in to run the EV-EcoSim environment.
 
 
 **Output file description**\n
@@ -47,10 +47,14 @@ def run():
 
     :return:
     """
-    path_prefix = os.getcwd()
+    path_prefix = str(os.getcwd())
     os.chdir(path_prefix)  # change directory
-    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-    path_prefix.replace('\\', '/')
+    # Splitting the path is different for Windows and Linux/MacOS. Need condition to deal with both OS file path styles.
+    if '\\' in path_prefix:
+        path_prefix = "/".join(
+            path_prefix.split('\\')[:-3])  # Gets absolute path to the root of the project to get the desired files.
+    else:
+        path_prefix = "/".join(path_prefix.split('/')[:-3])
 
     f = open('config.txt', 'r')
     param_dict = f.read()
@@ -263,9 +267,9 @@ def run():
 
     # % load residential load data
     os.chdir(load_data_dir)
-    data_use = pandas.read_csv('data_2015_use.csv')
+    data_use = pandas.read_csv('data_use.csv')  # TODO: Maybe improve this by allowing user specify file.
 
-    year = 2018
+    year = 2018     # Somewhat arbitrary. This is just to get the timestamp.
 
     timestamp_list = [[] for k in range(len(data_use.month))]
     for i in range(len(timestamp_list)):

@@ -1,7 +1,7 @@
 """
 **Overview**
-This module is the main power-horse for the `EV-Ecosim`. It includes the modules that allow GridLabD to interact
-with all the custom-built modules developed in `EV-Ecosim`. This file imports all simulated objects and their children,
+This module is the main power-horse for the `EV-EcoSim`. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in `EV-EcoSim`. This file imports all simulated objects and their children,
 which is then run in the co-simulation environment.
 """
 
