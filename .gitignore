@@ -34,3 +34,4 @@ mosek
 **.git
 .github
 base_load_data
+base_load_data/data_use.csv
