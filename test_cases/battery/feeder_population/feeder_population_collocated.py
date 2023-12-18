@@ -48,8 +48,7 @@ def run():
     """
     path_prefix = os.getcwd()
     os.chdir(path_prefix)  # change directory
-    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-    path_prefix.replace('\\', '/')
+    path_prefix = "\\".join(path_prefix.split('\\')[:-3])   # Gets absolute path to the root of the project to get the desired files.
 
     f = open('config.txt', 'r')
     param_dict = f.read()
@@ -262,9 +261,13 @@ def run():
 
     # % load residential load data
     os.chdir(load_data_dir)
-    data_use = pandas.read_csv('data_2015_use.csv')
-
-    year = 2018
+    # Check if current directory is empty
+    if len(os.listdir(os.getcwd())) == 0:
+        raise FileNotFoundError('No data files in directory: ', os.getcwd(), 'Please check the directory to '
+                                                                             'ensure data file exists.')
+        return
+    data_use = pandas.read_csv('data_use.csv')
+    year = 2018     # NOTE: Make sure the year matches your data year or else the timestamps will be wrong and may throw erros.
 
     timestamp_list = [[] for k in range(len(data_use.month))]
     for i in range(len(timestamp_list)):
