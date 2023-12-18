@@ -58,7 +58,7 @@ The image below shows the battery model error (MAPE) for the NMC battery model p
 genetic algorithm with a population of 10. 
 
 [//]: # (![battery_model_error_mape.png]&#40;doc_images%2Fbattery_model_error_mape.png&#41;)
-<img src="doc_images/battery_model_error_mape.png" width="200">
+<img src="doc_images/battery_model_error_mape.png" width="500">
 
 ### charging_sim
 
