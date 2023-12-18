@@ -270,7 +270,7 @@ def run():
     if len(os.listdir(os.getcwd())) == 0:
         raise FileNotFoundError('No data files in directory: ', os.getcwd(), 'Please check the directory to '
                                                                              'ensure data file exists.')
-    data_use = pandas.read_csv(base_load_file)
+    data_use = pandas.read_csv(base_load_file) # User can specify file within config.txt
 
     year = 2018     # NOTE: Make sure the year matches your data type (leap or not leap year) year or else the
 # timestamps will be wrong and may throw errors.
