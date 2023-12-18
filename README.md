@@ -36,11 +36,12 @@ transformers, charging stations.
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
 proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
 case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. A csv 
-file with the data prototype is also provided in `base_load_data/base_load_data_proto.csv`. The fields: month, day, and 
+file with the data prototype is also provided in `base_load_data/data_use.csv`. The fields: month, day, and 
 hour are indexed from 1. For example 1 - January, 12 - December. The fields: minute and second are indexed from 0. For
 example 0 - 59. The rest of the columns represented by numbers are anonymized building loads in kilo-watts (kW).
-For the paper, the `base_load_data` folder also included a `data_use.csv` file which is the actual data from Pecan Street, 
-but unfortunately cannot be shared due to proprietary data rights. However, there are free versions of Pecan Street data.
+For the paper, the `base_load_data/data_use.csv` contained the actual data from Pecan Street, 
+but unfortunately cannot be shared due to proprietary data rights. However, there are free versions of Pecan Street data
+that can be used within the plaform by simply replacing the csv file with the appropriate load data file.
 
 <img src="doc_images/baseload_data_proto.png" width="800" alt="Base load data prototype.">
 
@@ -123,7 +124,7 @@ primary or secondary distribution level.
 Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data. 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
 `test_cases/{CASE_NAME}/feeder_population/config.txt`. Feeder population requires residential load data not included in repo (limited access) due to proprietary data rights. However, there are 
-free versions of Pecan Street data that may be replaced in the `base_load` folder; file should be named `data_use.csv`.
+free versions of Pecan Street data that may be replaced in the `base_load_data` folder; file should be named `data_use.csv`.
 
 
 
