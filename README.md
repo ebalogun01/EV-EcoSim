@@ -53,6 +53,13 @@ in the data prototype above.
 Once the battery parameters are generated, they can be used in the `battery_data` folder and `configs/battery.json` can 
 be modified so the model runs using the new custom parameters.
 
+The image below shows the battery model error (MAPE) for the NMC battery model parameters generated from the module for 
+3 different sample cells over 10 different trials. The model is trained for only 40 generations (or iterations) of the 
+genetic algorithm with a population of 10. 
+
+[//]: # (![battery_model_error_mape.png]&#40;doc_images%2Fbattery_model_error_mape.png&#41;)
+<img src="doc_images/battery_model_error_mape.png" width="200">
+
 ### charging_sim
 
 This contains the `configs` folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:
