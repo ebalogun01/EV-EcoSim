@@ -269,10 +269,10 @@ def run():
     if len(os.listdir(os.getcwd())) == 0:
         raise FileNotFoundError('No data files in directory: ', os.getcwd(), 'Please check the directory to '
                                                                              'ensure data file exists.')
-        return
     data_use = pandas.read_csv('data_use.csv')
-    year = 2018     # NOTE: Make sure the year matches your data type (leap or not leap year) year or else the timestamps will be wrong and may throw erros.
 
+    year = 2018     # NOTE: Make sure the year matches your data type (leap or not leap year) year or else the
+# timestamps will be wrong and may throw errors.
     timestamp_list = [[] for k in range(len(data_use.month))]
     for i in range(len(timestamp_list)):
         timestamp_list[i] = datetime.datetime(year, data_use.month[i],
@@ -567,10 +567,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-# TODO: check all capacitor banks on and voltage - Done
-#  regulators
-# all the caps are set to manual and they should be automatic
-# Check if the nominal voltages are correct for the regulator dead bands
-# what is most normal for simulating the 123 network
-#

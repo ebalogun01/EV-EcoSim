@@ -51,7 +51,11 @@ object load {
 object transformer {
 	name dcfc_trans_0;
 	phases "ABCN";
+<<<<<<< HEAD
 	from "meter_7";
+=======
+	from "meter_77";
+>>>>>>> 10f1f1c825a83fcc22a44661bb9460e2ea035706
 	to dcfc_load_0;
 	configuration dcfc_transformer;
 }
@@ -88,7 +92,11 @@ object load {
 object transformer {
 	name dcfc_trans_1;
 	phases "ABCN";
+<<<<<<< HEAD
 	from "meter_7";
+=======
+	from "meter_98";
+>>>>>>> 10f1f1c825a83fcc22a44661bb9460e2ea035706
 	to dcfc_load_1;
 	configuration dcfc_transformer;
 }
@@ -125,7 +133,11 @@ object load {
 object transformer {
 	name dcfc_trans_2;
 	phases "ABCN";
+<<<<<<< HEAD
 	from "meter_7";
+=======
+	from "meter_82";
+>>>>>>> 10f1f1c825a83fcc22a44661bb9460e2ea035706
 	to dcfc_load_2;
 	configuration dcfc_transformer;
 }
@@ -162,7 +174,11 @@ object load {
 object transformer {
 	name dcfc_trans_3;
 	phases "ABCN";
+<<<<<<< HEAD
 	from "meter_7";
+=======
+	from "meter_79";
+>>>>>>> 10f1f1c825a83fcc22a44661bb9460e2ea035706
 	to dcfc_load_3;
 	configuration dcfc_transformer;
 }

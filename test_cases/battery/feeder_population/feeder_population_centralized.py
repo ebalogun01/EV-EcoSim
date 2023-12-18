@@ -267,6 +267,9 @@ def run():
 
     # % load residential load data
     os.chdir(load_data_dir)
+    if len(os.listdir(os.getcwd())) == 0:
+        raise FileNotFoundError('No data files in directory: ', os.getcwd(), 'Please check the directory to '
+                                                                             'ensure data file exists.')
     data_use = pandas.read_csv('data_use.csv')  # TODO: Maybe improve this by allowing user specify file.
 
     year = 2018     # Somewhat arbitrary. This is just to get the timestamp.
