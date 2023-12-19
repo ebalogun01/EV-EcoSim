@@ -71,7 +71,7 @@ genetic algorithm with a population of 10.
 
 ### charging_sim
 
-This contains the `configs` folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:
+This contains the `configs` folder which includes the configuration files for all the relevant modules. Hosts the implementation of the physical modules, including:
 
 `battery.py` - Battery cell module. 
 
