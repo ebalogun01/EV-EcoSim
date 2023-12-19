@@ -109,8 +109,7 @@ def write_base_glm(glm_dict,obj_type,globals_list,include_list,out_dir,file_name
     """
     os.chdir(out_dir)    
     glm_out = open(file_name,"w+")
-    
-    
+
     for i in range(len(globals_list)):
         glm_out.write(globals_list[i]+'\n\n')
         

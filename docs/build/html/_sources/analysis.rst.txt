@@ -1,6 +1,14 @@
 Post-simulation Analysis
 ================
 
+Module contents
+---------------
+
+.. automodule:: analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -28,10 +36,3 @@ analysis.plot\_results module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:

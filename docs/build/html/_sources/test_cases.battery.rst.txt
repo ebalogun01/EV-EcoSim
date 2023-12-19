@@ -1,4 +1,4 @@
-Battery Test Cases
+Battery test Case
 ===========================
 
 Module contents
@@ -8,7 +8,6 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Subpackages
 -----------
@@ -73,14 +72,6 @@ test\_cases.battery.scenarios module
 ------------------------------------
 
 .. automodule:: test_cases.battery.scenarios
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-test\_cases.battery.sim module
-------------------------------
-
-.. automodule:: test_cases.battery.sim
    :members:
    :undoc-members:
    :show-inheritance:

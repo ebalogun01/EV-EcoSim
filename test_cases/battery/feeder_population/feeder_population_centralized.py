@@ -24,9 +24,7 @@ are files that are read in to run the EV-EcoSim environment.
 `L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation \n
 
 This will be used for the centralized DER.
-
 """
-
 import glm_mod_functions
 import os
 import pandas
@@ -38,14 +36,13 @@ import random
 import json
 
 
-# read config file
-def run():
+def main():
     """
     Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
     `IEEE123.glm`), and modifies that file by including secondary distribution, home loads, and EV Charging station and
     transformers.
 
-    :return:
+    :return: None.
     """
     path_prefix = str(os.getcwd())
     os.chdir(path_prefix)  # change directory
@@ -612,11 +609,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
-
-# TODO: check all capacitor banks on and voltage - Done
-#  regulators
-# all the caps are set to manual and they should be automatic
-# Check if the nominal voltages are correct for the regulator dead bands
-# what is most normal for simulating the 123 network
-#
+    main()

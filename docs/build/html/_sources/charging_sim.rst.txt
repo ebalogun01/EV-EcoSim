@@ -1,136 +1,5 @@
-Charging Simulator
+Charging Sim
 =====================
-
-Submodules
-----------
-
-charging\_sim.battery module
-----------------------------
-
-.. automodule:: charging_sim.battery
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.batteryAgingSim module
-------------------------------------
-
-.. automodule:: charging_sim.batteryAgingSim
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.batterypack module
---------------------------------
-
-.. automodule:: charging_sim.batterypack
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.batterytest module
---------------------------------
-
-.. automodule:: charging_sim.batterytest
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.capacitor module
-------------------------------
-
-.. automodule:: charging_sim.capacitor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.chargingStation module
-------------------------------------
-
-.. automodule:: charging_sim.chargingStation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.clock module
---------------------------
-
-.. automodule:: charging_sim.clock
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.controller module
--------------------------------
-
-.. automodule:: charging_sim.controller
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.electricityPrices module
---------------------------------------
-
-.. automodule:: charging_sim.electricityPrices
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.node module
--------------------------
-
-.. automodule:: charging_sim.node
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.optimization module
----------------------------------
-
-.. automodule:: charging_sim.optimization
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.orchestrator module
----------------------------------
-
-.. automodule:: charging_sim.orchestrator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.simulate module
------------------------------
-
-.. automodule:: charging_sim.simulate
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.solar module
---------------------------
-
-.. automodule:: charging_sim.solar
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.transformer module
---------------------------------
-
-.. automodule:: charging_sim.transformer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-charging\_sim.utils module
---------------------------
-
-.. automodule:: charging_sim.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Module contents
 ---------------
@@ -139,3 +8,128 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+
+Submodules
+----------
+
+Battery module
+----------------------------
+
+.. automodule:: charging_sim.battery
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Battery Aging Sim module
+------------------------------------
+
+.. automodule:: charging_sim.batteryAgingSim
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Battery pack module
+--------------------------------
+
+.. automodule:: charging_sim.batterypack
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Capacitor module
+------------------------------
+
+.. automodule:: charging_sim.capacitor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Charging Station module
+------------------------------------
+
+.. automodule:: charging_sim.chargingStation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Clock module
+--------------------------
+
+.. automodule:: charging_sim.clock
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Controller module
+-------------------------------
+
+.. automodule:: charging_sim.controller
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Electricity prices module
+--------------------------------------
+
+.. automodule:: charging_sim.electricityPrices
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Node module
+-------------------------
+
+.. automodule:: charging_sim.node
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Optimization module
+---------------------------------
+
+.. automodule:: charging_sim.optimization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Orchestrator module
+---------------------------------
+
+.. automodule:: charging_sim.orchestrator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Simulate module
+-----------------------------
+
+.. automodule:: charging_sim.simulate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Solar module
+--------------------------
+
+.. automodule:: charging_sim.solar
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Transformer module
+--------------------------------
+
+.. automodule:: charging_sim.transformer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Utils
+--------------------------
+
+.. automodule:: charging_sim.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+

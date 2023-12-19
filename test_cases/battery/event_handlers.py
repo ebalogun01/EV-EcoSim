@@ -16,10 +16,15 @@ from orchestrator import ChargingSim
 from transformer import OilTypeTransformer
 from clock import Clock
 
-# get the desired path prefix
-path_prefix = os.getcwd()
-path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-path_prefix.replace('\\', '/')
+path_prefix = str(os.getcwd())
+os.chdir(path_prefix)  # change directory
+# Splitting the path is different for Windows and Linux/MacOS. Need condition to deal with both OS file path styles.
+if '\\' in path_prefix:
+    path_prefix = "/".join(
+        path_prefix.split('\\')[:-2])  # Gets absolute path to the root of the project to get the desired files.
+else:
+    path_prefix = "/".join(path_prefix.split('/')[:-2])
+
 save_folder_prefix = f'{gblvar.scenario["month_str"]}{gblvar.scenario["index"]}/'  # how can I permanently save this state?
 
 # SET OPTIMIZATION SOLVER
@@ -30,7 +35,7 @@ gblvar.scenario['opt_solver'] = solver_options[0]
 print('...loading charging bus nodes')
 dcfc_nodes = np.loadtxt('dcfc_bus.txt', dtype=str).tolist()  # this is for DC FAST charging
 
-central_der = False  # Toggle for central vs. decentralized storage.
+central_der = True  # Toggle for central vs. decentralized storage.
 if central_der:
     with open('feeder_node_dict.json') as f:
         central_der_nodes_dict = json.load(f)   # Primary to secondary node_name dictionary for tracking all the DERs.

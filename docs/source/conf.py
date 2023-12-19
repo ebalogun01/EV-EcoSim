@@ -8,15 +8,17 @@
 
 import os
 import sys
-import shutil
-
+# import shutil
 sys.path.insert(0, os.path.abspath("../.."))
 
-sys.path.append('../../EV50_cosimulation/charging_sim')
-
-sys.path.append('../../EV50_cosimulation')
-sys.path.append('../../EV50_cosimulation/test_cases')
-sys.path.append('../../EV50_cosimulation/analysis')
+# sys.path.append('../../EV-EcoSim')
+# sys.path.append('../../charging_sim')
+# sys.path.append('../../test_cases')
+sys.path.append('../../analysis')
+sys.path.append('../../test_cases/battery')
+sys.path.append('../../test_cases/base_case')
+sys.path.append('../../test_cases/battery/feeder_population')
+sys.path.append('../../test_cases/base_case/feeder_population')
 
 # sys.path.append('../../EV50_cosimulation/docs/source/doc_images')
 
@@ -36,7 +38,7 @@ extensions = ['sphinx.ext.todo',
 
 mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', 'DS_Store', 'batterytest']
+exclude_patterns = ['_build', 'Thumbs.db', 'DS_Store']
 
 
 

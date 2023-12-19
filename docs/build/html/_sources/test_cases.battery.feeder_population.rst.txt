@@ -1,14 +1,5 @@
-test\_cases.battery.feeder\_population package
+Battery test case feeder population
 ==============================================
-
-
-Module contents
----------------
-
-.. automodule:: test_cases.battery.feeder_population
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Submodules
 ----------
@@ -37,3 +28,10 @@ test\_cases.battery.feeder\_population.glm\_mod\_functions module
    :undoc-members:
    :show-inheritance:
 
+Module contents
+---------------
+
+.. automodule:: test_cases.battery.feeder_population
+   :members:
+   :undoc-members:
+   :show-inheritance:

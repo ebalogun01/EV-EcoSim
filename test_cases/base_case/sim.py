@@ -5,6 +5,7 @@ import gblvar
 import sys
 # sys.path.append('../..')
 
+# TODO: remove this file, it is not going to be required anymore.
 
 def sim_transformer(temperature_data=None):
     """

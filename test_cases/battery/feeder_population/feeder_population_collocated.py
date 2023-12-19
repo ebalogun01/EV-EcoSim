@@ -5,11 +5,9 @@ running EV-EcoSim.\n\n
 It takes in a base Gridlab-D Model (GLM) file (for example, `IEEE123.glm`), and modifies that file by including
 secondary distribution, home loads, and EV Charging station and transformers.
 
-
 Once this script is done running, it reads and writes new GLM as <initial_glm_name>_populated.glm and
 <initial_glm_name>_secondary.glm, and saves them within the test case folder. These saved files are used to run the
 simulation. These files are saved in the 'test_case_dir' field specified in config.txt.
-
 
 **Input file description** \n
 Config `config.txt`: configuration file describing the pre-simulation parameters.
@@ -22,9 +20,6 @@ are files that are read in to run the EV-EcoSim environment.
 `reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node_name/bus \n
 `dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation \n
 `L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation \n
-
-Settings for collocated vs. centralized storage are included in this branch.
-
 """
 
 import glm_mod_functions
@@ -37,14 +32,13 @@ import pickle
 import random
 
 
-# read config file
-def run():
+def main():
     """
     Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
     `IEEE123.glm`), and modifies that file by including secondary distribution, home loads, and EV Charging station and
     transformers.
 
-    :return:
+    :return: None.
     """
     path_prefix = str(os.getcwd())
     os.chdir(path_prefix)  # change directory
@@ -567,4 +561,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    main()

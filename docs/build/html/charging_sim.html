@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Charging Simulator &mdash; EV-EcoSim 1.0.0 documentation</title>
+  <title>Charging Sim &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Feeder Population" href="feeder_population.html" />
-    <link rel="prev" title="Battery System Identification" href="batt_sys_identification.html" /> 
+    <link rel="next" title="Battery System Identification" href="batt_sys_identification.html" />
+    <link rel="prev" title="Packages" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,32 +55,30 @@
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Charging Simulator</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.battery">charging_sim.battery module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.batteryAgingSim">charging_sim.batteryAgingSim module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.batterypack">charging_sim.batterypack module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#charging-sim-batterytest-module">charging_sim.batterytest module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.capacitor">charging_sim.capacitor module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.chargingStation">charging_sim.chargingStation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.clock">charging_sim.clock module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.controller">charging_sim.controller module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.electricityPrices">charging_sim.electricityPrices module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.node">charging_sim.node module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.optimization">charging_sim.optimization module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.orchestrator">charging_sim.orchestrator module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.simulate">charging_sim.simulate module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.solar">charging_sim.solar module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.transformer">charging_sim.transformer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.utils">charging_sim.utils module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Charging Sim</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-charging_sim">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.battery">Battery module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.batteryAgingSim">Battery Aging Sim module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.batterypack">Battery pack module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.capacitor">Capacitor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.chargingStation">Charging Station module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.clock">Clock module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.controller">Controller module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.electricityPrices">Electricity prices module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.node">Node module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.optimization">Optimization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.orchestrator">Orchestrator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.simulate">Simulate module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.solar">Solar module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.transformer">Transformer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-charging_sim.utils">Utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder Population</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html">App - runs the platform</a></li>
 </ul>
 </li>
 </ul>
@@ -100,7 +98,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
-      <li class="breadcrumb-item active">Charging Simulator</li>
+      <li class="breadcrumb-item active">Charging Sim</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -109,13 +107,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="charging-simulator">
-<h1>Charging Simulator<a class="headerlink" href="#charging-simulator" title="Permalink to this heading"></a></h1>
+  <section id="charging-sim">
+<h1>Charging Sim<a class="headerlink" href="#charging-sim" title="Permalink to this heading"></a></h1>
+<section id="module-charging_sim">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-charging_sim" title="Permalink to this heading"></a></h2>
+</section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-charging_sim.battery">
-<span id="charging-sim-battery-module"></span><h2>charging_sim.battery module<a class="headerlink" href="#module-charging_sim.battery" title="Permalink to this heading"></a></h2>
+<span id="battery-module"></span><h2>Battery module<a class="headerlink" href="#module-charging_sim.battery" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.battery.Battery">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.battery.</span></span><span class="sig-name descname"><span class="pre">Battery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#charging_sim.battery.Battery" title="Permalink to this definition"></a></dt>
@@ -397,7 +398,7 @@ optimization analyses.</p></li>
 
 </section>
 <section id="module-charging_sim.batteryAgingSim">
-<span id="charging-sim-batteryagingsim-module"></span><h2>charging_sim.batteryAgingSim module<a class="headerlink" href="#module-charging_sim.batteryAgingSim" title="Permalink to this heading"></a></h2>
+<span id="battery-aging-sim-module"></span><h2>Battery Aging Sim module<a class="headerlink" href="#module-charging_sim.batteryAgingSim" title="Permalink to this heading"></a></h2>
 <p>This module contains the BatteryAging class. The battery aging objects enact on the battery object and update the
 battery capacity and resistance at each simulation time-step.</p>
 <dl class="py class">
@@ -543,7 +544,7 @@ battery capacity and resistance at each simulation time-step.</p>
 
 </section>
 <section id="module-charging_sim.batterypack">
-<span id="charging-sim-batterypack-module"></span><h2>charging_sim.batterypack module<a class="headerlink" href="#module-charging_sim.batterypack" title="Permalink to this heading"></a></h2>
+<span id="battery-pack-module"></span><h2>Battery pack module<a class="headerlink" href="#module-charging_sim.batterypack" title="Permalink to this heading"></a></h2>
 <p><strong>Overview</strong></p>
 <p>Module for the battery pack class. This module contains the class that loads the battery pack data and structure used
 for simulation. The battery pack is composed of individual cells, which are connected in series and parallel to
@@ -874,11 +875,8 @@ Plots visualizations and save battery states desired by user.</p>
 </dd></dl>
 
 </section>
-<section id="charging-sim-batterytest-module">
-<h2>charging_sim.batterytest module<a class="headerlink" href="#charging-sim-batterytest-module" title="Permalink to this heading"></a></h2>
-</section>
 <section id="module-charging_sim.capacitor">
-<span id="charging-sim-capacitor-module"></span><h2>charging_sim.capacitor module<a class="headerlink" href="#module-charging_sim.capacitor" title="Permalink to this heading"></a></h2>
+<span id="capacitor-module"></span><h2>Capacitor module<a class="headerlink" href="#module-charging_sim.capacitor" title="Permalink to this heading"></a></h2>
 <p>This file hosts the class for capacitors. Future work</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.capacitor.Capacitor">
@@ -888,7 +886,7 @@ Plots visualizations and save battery states desired by user.</p>
 
 </section>
 <section id="module-charging_sim.chargingStation">
-<span id="charging-sim-chargingstation-module"></span><h2>charging_sim.chargingStation module<a class="headerlink" href="#module-charging_sim.chargingStation" title="Permalink to this heading"></a></h2>
+<span id="charging-station-module"></span><h2>Charging Station module<a class="headerlink" href="#module-charging_sim.chargingStation" title="Permalink to this heading"></a></h2>
 <p>Hosts the Charging Station class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.chargingStation.ChargingStation">
@@ -1193,7 +1191,7 @@ orchestrator.py. However now, new individual charging stations will load their o
 
 </section>
 <section id="module-charging_sim.clock">
-<span id="charging-sim-clock-module"></span><h2>charging_sim.clock module<a class="headerlink" href="#module-charging_sim.clock" title="Permalink to this heading"></a></h2>
+<span id="clock-module"></span><h2>Clock module<a class="headerlink" href="#module-charging_sim.clock" title="Permalink to this heading"></a></h2>
 <p>This module defines the clock class. This allows ease of temporal understanding of different timescales
 within the simulation.</p>
 <dl class="py class">
@@ -1230,7 +1228,7 @@ within the simulation.</p>
 
 </section>
 <section id="module-charging_sim.controller">
-<span id="charging-sim-controller-module"></span><h2>charging_sim.controller module<a class="headerlink" href="#module-charging_sim.controller" title="Permalink to this heading"></a></h2>
+<span id="controller-module"></span><h2>Controller module<a class="headerlink" href="#module-charging_sim.controller" title="Permalink to this heading"></a></h2>
 <p><strong>Overview</strong></p>
 <p>This file contains the controller classes used for DER optimization and control within EV-Ecosim</p>
 <dl class="py class">
@@ -1427,7 +1425,7 @@ This is non-MPC and cannot use state feedback in control simulation.</p>
 
 </section>
 <section id="module-charging_sim.electricityPrices">
-<span id="charging-sim-electricityprices-module"></span><h2>charging_sim.electricityPrices module<a class="headerlink" href="#module-charging_sim.electricityPrices" title="Permalink to this heading"></a></h2>
+<span id="electricity-prices-module"></span><h2>Electricity prices module<a class="headerlink" href="#module-charging_sim.electricityPrices" title="Permalink to this heading"></a></h2>
 <p><strong>Overview</strong>
 This module contains the class that loads the electricity price data and structure used for sampling prices during
 simulation.</p>
@@ -1505,7 +1503,7 @@ Typically only used once.</p>
 
 </section>
 <section id="module-charging_sim.node">
-<span id="charging-sim-node-module"></span><h2>charging_sim.node module<a class="headerlink" href="#module-charging_sim.node" title="Permalink to this heading"></a></h2>
+<span id="node-module"></span><h2>Node module<a class="headerlink" href="#module-charging_sim.node" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.node.Node">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">charging_sim.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">others</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#charging_sim.node.Node" title="Permalink to this definition"></a></dt>
@@ -1602,7 +1600,7 @@ node.</p>
 
 </section>
 <section id="module-charging_sim.optimization">
-<span id="charging-sim-optimization-module"></span><h2>charging_sim.optimization module<a class="headerlink" href="#module-charging_sim.optimization" title="Permalink to this heading"></a></h2>
+<span id="optimization-module"></span><h2>Optimization module<a class="headerlink" href="#module-charging_sim.optimization" title="Permalink to this heading"></a></h2>
 <p>Contains the Optimization class, which is used by controller to solve the optimization problem.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.optimization.Optimization">
@@ -1726,7 +1724,7 @@ node.</p>
 
 </section>
 <section id="module-charging_sim.orchestrator">
-<span id="charging-sim-orchestrator-module"></span><h2>charging_sim.orchestrator module<a class="headerlink" href="#module-charging_sim.orchestrator" title="Permalink to this heading"></a></h2>
+<span id="orchestrator-module"></span><h2>Orchestrator module<a class="headerlink" href="#module-charging_sim.orchestrator" title="Permalink to this heading"></a></h2>
 <p>This module hosts the <cite>ChargingSim</cite> class, in charge of orchestrating the entire simulation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.orchestrator.ChargingSim">
@@ -2053,7 +2051,7 @@ stations and would exist in the same utility tariff zone or territory.</p>
 
 </section>
 <section id="module-charging_sim.simulate">
-<span id="charging-sim-simulate-module"></span><h2>charging_sim.simulate module<a class="headerlink" href="#module-charging_sim.simulate" title="Permalink to this heading"></a></h2>
+<span id="simulate-module"></span><h2>Simulate module<a class="headerlink" href="#module-charging_sim.simulate" title="Permalink to this heading"></a></h2>
 <p>This module runs the optimization offline without the power system or battery state feedback for each time-step.
 This is done to save time. Once this is done, one can study the effects on the power system. Power system states are
 propagated post optimization to fully characterize what would have occurred if in-situ optimization was done.</p>
@@ -2083,6 +2081,17 @@ propagated post optimization to fully characterize what would have occurred if i
 <dt class="sig sig-object py" id="charging_sim.simulate.create_temp_configs">
 <span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">create_temp_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#charging_sim.simulate.create_temp_configs" title="Permalink to this definition"></a></dt>
 <dd><p>Creates temporary configuration files used by the simulator for running the app.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="charging_sim.simulate.get_repository_name">
+<span class="sig-prename descclassname"><span class="pre">charging_sim.simulate.</span></span><span class="sig-name descname"><span class="pre">get_repository_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#charging_sim.simulate.get_repository_name" title="Permalink to this definition"></a></dt>
+<dd><p>Helps obtain the current directory which houses the repository currently in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p>
@@ -2133,7 +2142,7 @@ propagated post optimization to fully characterize what would have occurred if i
 
 </section>
 <section id="module-charging_sim.solar">
-<span id="charging-sim-solar-module"></span><h2>charging_sim.solar module<a class="headerlink" href="#module-charging_sim.solar" title="Permalink to this heading"></a></h2>
+<span id="solar-module"></span><h2>Solar module<a class="headerlink" href="#module-charging_sim.solar" title="Permalink to this heading"></a></h2>
 <p>This module contains the Solar class. The solar class is used to simulate the solar power generation at a given site
 by sampling Global Horizontal Irradiance (GHI) data from the dataset of the desired location.</p>
 <dl class="py class">
@@ -2200,7 +2209,7 @@ the Global Horizontal Irradiance.</p>
 
 </section>
 <section id="module-charging_sim.transformer">
-<span id="charging-sim-transformer-module"></span><h2>charging_sim.transformer module<a class="headerlink" href="#module-charging_sim.transformer" title="Permalink to this heading"></a></h2>
+<span id="transformer-module"></span><h2>Transformer module<a class="headerlink" href="#module-charging_sim.transformer" title="Permalink to this heading"></a></h2>
 <p>Module for the transformer class. This module contains classes for simulating the thermal dynamics of transformers.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="charging_sim.transformer.OilTypeTransformer">
@@ -2234,7 +2243,7 @@ Nonlinear model from Swift et. Al (2001).</p>
 
 </section>
 <section id="module-charging_sim.utils">
-<span id="charging-sim-utils-module"></span><h2>charging_sim.utils module<a class="headerlink" href="#module-charging_sim.utils" title="Permalink to this heading"></a></h2>
+<span id="utils"></span><h2>Utils<a class="headerlink" href="#module-charging_sim.utils" title="Permalink to this heading"></a></h2>
 <p>Stores general configurations and general functions</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="charging_sim.utils.PGE_BEV2_S">
@@ -2271,17 +2280,14 @@ Nonlinear model from Swift et. Al (2001).</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-charging_sim">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-charging_sim" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="batt_sys_identification.html" class="btn btn-neutral float-left" title="Battery System Identification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="feeder_population.html" class="btn btn-neutral float-right" title="Feeder Population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="batt_sys_identification.html" class="btn btn-neutral float-right" title="Battery System Identification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
