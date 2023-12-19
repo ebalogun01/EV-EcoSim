@@ -275,6 +275,6 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
 
 
 if __name__ == '__main__':
-    test = True
+    test = False
     USER_INPUTS = load_default_input()
     simulate(USER_INPUTS, test=test)
