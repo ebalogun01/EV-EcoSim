@@ -225,6 +225,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
         """
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
+        :param testing:
         :param scenario: The scenario dictionary that would be run.
         :return: None.
         """
