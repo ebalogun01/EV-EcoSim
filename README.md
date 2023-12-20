@@ -11,10 +11,9 @@ Paper: https://doi.org/10.1109/TSG.2023.3339374
 Emmanuel Balogun (Project lead): ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
 ## Correspondence
-For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to project lead. .
+For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to project lead.
 
 ## Requirements
-
 Arras-energy (SLAC) GridLAB-D installation (master branch): [here](https://github.com/arras-energy/gridlabd). 
 This GridLAB-D version is required for the python co-simulation functionality. Recommended use with GridLAB-D. See repository [here](https://github.com/arras-energy/gridlabd) for details.
 
@@ -22,17 +21,14 @@ Gurobi License (recommended). Free (educational) or commercial Gurobi Licenses c
 
 MOSEK License (optional). Free (educational) or commercial MOSEK License can be obtained [here](https://www.mosek.com/products/academic-licenses/)
 
-
 ## Folder descriptions
 
 ### ambient_data
-
 Hosts ambient temperature data for capturing the effects of environmental conditions on subsystems, such as battery, 
 transformers, charging stations.
 
 
 ### base_load_data
-
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
 proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
 case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. A csv 
@@ -70,7 +66,6 @@ genetic algorithm with a population of 10.
 <img src="doc_images/battery_model_error_mape.png" width="500">
 
 ### charging_sim
-
 This contains the `configs` folder which includes the configuration files for all the relevant modules. Hosts the implementation of the physical modules, including:
 
 `battery.py` - Battery cell module. 
@@ -97,12 +92,9 @@ This contains the `configs` folder which includes the configuration files for al
 
 
 ### DLMODELS
-
 This includes legacy load forecasts models developed (not needed).
 
-
 ### elec_rates
-
 Includes .csv files for electricity Time-of-use (TOU) rates. The input data prototype for electricity rates
 is shown below. User must upload a normal full-year sized data (for 365 days) to avoid
 any errors.
@@ -119,14 +111,11 @@ Library of IEEE test feeders and PNNL taxonomy feeders for distribution systems 
 IEEE feeders have spot loads specified at primary distribution level. PNNL taxonomy feeders have spot loads specified at
 primary or secondary distribution level.
 
-
 ### feeder_population
 Scripts for populating base feeder models with time-varying loads and resources using the load data in base_load_data. 
 `feeder_population.py` generates the necessary files for a co-simulation run based on the parameters specified in 
 `test_cases/{CASE_NAME}/feeder_population/config.txt`. Feeder population requires residential load data not included in repo (limited access) due to proprietary data rights. However, there are 
 free versions of Pecan Street data that may be replaced in the `base_load_data` folder; file should be named `data_use.csv`.
-
-
 
 ### solar_data
 `solar_data` folder includes solar irradiance data for capturing the effects of environmental conditions on overall system cost. Default
@@ -152,10 +141,7 @@ received from above by a surface horizontal to the ground.
 
 `transformer` - base_case plus simulation of transformer thermal model for each transformer in GridLAB-D model (not used).
 
-
-
 ### analysis
-
 Scripts for plotting and analysis of co-simulation results. Includes post optimization and simulation cost 
 calculation modules and voltage impacts on the distribution grid.
 
@@ -169,7 +155,6 @@ respective files and folders. The module also generates plots for the cost analy
 
 `cost_analysis.py` - This module contains the `CostEstimator` class, which estimates the cost of the different grid and DER components
 from the simulation.
-
 
 ## How to run
 Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
