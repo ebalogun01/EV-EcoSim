@@ -1,32 +1,5 @@
-Post-simulation analysis
+Post-simulation Analysis
 ================
-
-Submodules
-----------
-
-cost\_analysis module
-------------------------------
-
-.. automodule:: analysis.cost_analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-load\_post\_opt\_costs module
---------------------------------------
-
-.. automodule:: analysis.load_post_opt_costs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-plot\_results module
------------------------------
-
-.. automodule:: analysis.plot_results
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Module contents
 ---------------
@@ -35,3 +8,31 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+
+Submodules
+----------
+
+analysis.cost\_analysis module
+------------------------------
+
+.. automodule:: analysis.cost_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+analysis.load\_post\_opt\_costs module
+--------------------------------------
+
+.. automodule:: analysis.load_post_opt_costs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+analysis.plot\_results module
+-----------------------------
+
+.. automodule:: analysis.plot_results
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

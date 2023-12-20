@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Background &mdash; EV-Ecosim 1.0.0 documentation</title>
+  <title>Motivation &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="EV-Ecosim platform" href="../readme/README.html" />
-    <link rel="prev" title="Welcome to EV-Ecosim 1.0.0 documentation!" href="../contents.html" /> 
+    <link rel="next" title="EV-EcoSim platform" href="../readme/README.html" />
+    <link rel="prev" title="Welcome to EV-EcoSim 1.0.0 documentation!" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,8 +31,8 @@
 
           
           
-          <a href="../contents.html" class="icon icon-home">
-            EV-Ecosim
+          <a href="../index.html" class="icon icon-home">
+            EV-EcoSim
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -44,6 +44,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bridging-the-disconnect-between-utilities-and-evse-providers">Bridging the disconnect between utilities and EVSE providers</a></li>
 </ul>
 </li>
@@ -51,7 +52,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../readme/README.html">Readme</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Packages</a></li>
 </ul>
@@ -62,15 +66,15 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../contents.html">EV-Ecosim</a>
+          <a href="../index.html">EV-EcoSim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Background</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Motivation</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -79,8 +83,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="background">
-<h1>Background<a class="headerlink" href="#background" title="Permalink to this heading"></a></h1>
+  <section id="motivation">
+<h1>Motivation<a class="headerlink" href="#motivation" title="Permalink to this heading"></a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this heading"></a></h2>
 <p>The electrification of transportation is a key component of the decarbonization of the energy sector.
 The inevitable growth in EV demand is expected to increase the demand for electricity, which will require the
 expansion of the electricity grid, while leveraging new and existing technology in clever ways. Coordination and control
@@ -88,6 +94,7 @@ of distributed energy resources (DERs) will be key to the successful integration
 electricity grid. Today, there is a fundamental disconnect between the utilities and electric vehicle supply equipment
 providers, which makes rapid deployment of EV charging infrastructure difficult. This work presents a co-simulation
 platform that can serve as a testbed for design and optimization of EV charging stations, with the power grid in mind.</p>
+</section>
 <section id="bridging-the-disconnect-between-utilities-and-evse-providers">
 <h2>Bridging the disconnect between utilities and EVSE providers<a class="headerlink" href="#bridging-the-disconnect-between-utilities-and-evse-providers" title="Permalink to this heading"></a></h2>
 <p>Say an EV charging operator (i.e., ChargePoint, Electrify America, etc.) wants to deploy a new charging station within
@@ -96,12 +103,11 @@ the desired location. The utility would then need to perform a grid study to det
 desired location. This process can take months to complete sometimes. Eventually the utility might decide that a new
 power transformer is needed to support the new charging station (let’s not even get into transformer supply-chain
 issues. However, with co-located DERs, such as solar PV and battery storage, the utility and EVSE operator
-might be able to avoid upgrading the transformer. This is where <em>EV-Ecosim</em> comes in. Imagine if the EVSE operator can
+might be able to avoid upgrading the transformer. This is where <em>EV-EcoSim</em> comes in. Imagine if the EVSE operator can
 guarantee that the charging station will not exceed a certain power threshold, say 100 kW. Then,the utility can approve
 the installment of the charging unit without the need for an upgrade. In fact, the utility and EVSE operator can come
 to an agreement where the EVSE operator can provide grid services to the utility, such as peak shaving, voltage regulation,
-etc. This is the future of the electricity grid, and <em>EV-Ecosim</em> can help make this a reality.</p>
-<p><img alt="baseload_data_proto.png" src="Introduction/..%2Freadme%2Fdoc_images%2Fbaseload_data_proto.png" /></p>
+etc. This is the future of the electricity grid, and <em>EV-EcoSim</em> can help make this a reality.</p>
 </section>
 </section>
 
@@ -109,8 +115,8 @@ etc. This is the future of the electricity grid, and <em>EV-Ecosim</em> can help
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../contents.html" class="btn btn-neutral float-left" title="Welcome to EV-Ecosim 1.0.0 documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../readme/README.html" class="btn btn-neutral float-right" title="EV-Ecosim platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to EV-EcoSim 1.0.0 documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../readme/README.html" class="btn btn-neutral float-right" title="EV-EcoSim platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

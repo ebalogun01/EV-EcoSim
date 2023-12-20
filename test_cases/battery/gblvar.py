@@ -20,14 +20,6 @@ charging_sim_path_append = False
 #   simulation file path
 sim_file_path = ''
 
-# temperature data
-# month = 1   # todo: think of how to load in the month here
-# s = pd.read_csv('solar_data/SolarData_SanJose_2018-30min.csv', index_col='date')
-# cols = ['Month', 'Day', 'Hour', 'Temperature']
-# temps_data = pd.read_csv(temperature_data_path)[cols]
-# temps_data = temps_data[temps_data["Month"] == month]['Temperature']   # for one month
-
-
 # iteration number
 it = 0
 
@@ -63,7 +55,6 @@ nom_vmag = None
 trans_dt = 10.0  # integration timestep [seconds]?
 trans_Ta = 20.0  # ambient temperature[C] {SLIGHTLY HIGHER THAN JUNE AVERAGE IN 2018}
 
-# TODO: find where all these transformer values were obtained from
 # Transformer has various cooling modes that determine m and n for transformer.
 
 # ONAF: Natural convection flow of oil through windings and radiators. Forced convection flow of air over radiators by
@@ -75,8 +66,8 @@ trans_Ta = 20.0  # ambient temperature[C] {SLIGHTLY HIGHER THAN JUNE AVERAGE IN 
 trans_R = 5.0   # ratio of copper loss to iron loss at rated load
 trans_tau_o = 2 * 60 * 60.0 # top oil time constant in seconds
 trans_tau_h = 6 * 60.0  # hotspot time constant in seconds
-trans_n = 0.9   # how did we get these numbers ?
-trans_m = 0.8   # how did we get these numbers ?
+trans_n = 0.9   # Depends on transformer cooling mode (forced vs. natural convection). Typical values.
+trans_m = 0.8   # Depends on transformer cooling mode (forced vs. natural convection). Typical values.
 trans_delta_theta_hs_rated = 28.0   # NEED TO DECIDE HOW IMPORTANT THESE WILL BE
 trans_delta_theta_oil_rated = 36.0  # todo: double-verify
 

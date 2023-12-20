@@ -8,11 +8,10 @@ def load_base_glm(base_file_dir,base_glm_file):
     """
     Loads base glm file into a dictionary structure.
 
-    :param base_file_dir:
-    :param base_glm_file:
-    :return:
+    :param base_file_dir: directory where base_glm_file is
+    :param base_glm_file: file name for the base glm model
+    :return: dictionary of gridlabd objects from base glm model, dictionary of object types associated with glm_dict, list of globals from base model, list of include statements from base model, list of script statements
     """
-    
     os.chdir(base_file_dir)
     f = open(base_glm_file, 'r')
     glm=f.readlines()
@@ -99,19 +98,18 @@ def load_base_glm(base_file_dir,base_glm_file):
 def write_base_glm(glm_dict,obj_type,globals_list,include_list,out_dir,file_name,sync_list):
     """
 
-    :param glm_dict:
-    :param obj_type:
-    :param globals_list:
-    :param include_list:
-    :param out_dir:
-    :param file_name:
-    :param sync_list:
-    :return:
+    :param glm_dict: dictionary of gridlabd objects
+    :param obj_type: dictionary of object types associated with glm_dict
+    :param globals_list: globals list for glm_dict model
+    :param include_list: list of include statements for glm file
+    :param out_dir: output directory for written file
+    :param file_name: file name of written glm file
+    :param sync_list: sync list to include in written glm file
+    :return: none
     """
     os.chdir(out_dir)    
     glm_out = open(file_name,"w+")
-    
-    
+
     for i in range(len(globals_list)):
         glm_out.write(globals_list[i]+'\n\n')
         
@@ -248,11 +246,11 @@ def replace_load_w_meter_old(glm_dict,match_str,rep_str,obj_type):
     """
     Replace load with meter in GLM dictionary.
 
-    :param glm_dict:
-    :param match_str:
-    :param rep_str:
-    :param obj_type:
-    :return:
+    :param glm_dict: dictionary of glm objects
+    :param match_str: str to replace
+    :param rep_str: str to replace it with 
+    :param obj_type: dictionary of object types
+    :return: the modified dictionary of glm objects
     """
     replace_prop_list=list()
     for i in glm_dict.keys():
@@ -276,11 +274,11 @@ def replace_load_w_meter(glm_dict,match_str,rep_str,obj_type):
     """
     Replace load with meter in GLM dictionary.
 
-    :param glm_dict:
-    :param match_str:
-    :param rep_str:
-    :param obj_type:
-    :return:
+    :param glm_dict: dictionary of glm objects
+    :param match_str: str to replace
+    :param rep_str: str to replace it with
+    :param obj_type: dictionary of object types
+    :return: the modified dictionary of glm objects
     """
     replace_prop_list=list()
     for i in glm_dict.keys():

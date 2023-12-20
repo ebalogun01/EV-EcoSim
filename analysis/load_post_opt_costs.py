@@ -1,5 +1,14 @@
-"""This module is calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
-respective files and folders."""
+"""
+**Overview**\n
+This module calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
+respective files and folders.
+\n
+
+**User Specifications**\n
+`USER_INPUT_PATH`: Path to the user_input.json file or any modified user input JSON which includes all the specified
+fields for the scenarios that have been simulated/run.
+\n
+"""
 
 import os
 import copy
@@ -10,9 +19,17 @@ from cost_analysis import CostEstimator
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
+from charging_sim.utils import MONTHS_LIST
 
-ENERGY_RATINGS = [5e4, 10e4, 20e4, 40e4, 80e4]
-MAX_C_RATES = [0.1, 0.2, 0.5, 1, 2]
+
+# Load the user_input dict state and other GLOBAL variables
+
+USR_INPUT_PATH = '../user_input.json'
+with open(USR_INPUT_PATH, "r") as f:
+    USR_INPUT_DICT = json.load(f)
+
+ENERGY_RATINGS = USR_INPUT_DICT['battery']['pack_energy_cap']
+MAX_C_RATES = USR_INPUT_DICT['battery']['max_c_rate']
 PLOT_FONT_SIZE = 16
 matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 
@@ -88,7 +105,7 @@ def plot_tables(batt_dtable=None, elec_cost_dtable=None, trans_cost_dtable=None,
             plt.savefig(f'{save_plots_folder}/batt_aging_{row[0]}kWh.png')
             plt.close()
 
-    plot_stacked_bar(elec_cost_dtable, batt_dtable, save_plots_folder, solar_costs=solar_cost_table)
+    plot_stacked_bar(elec_cost_dtable, batt_dtable, solar_costs=solar_cost_table, save_plot_path=save_plots_folder)
 
 
 def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""):
@@ -149,23 +166,24 @@ def plot_stacked_bar(elec_costs, batt_costs, solar_costs=None, save_plot_path=""
         plt.close('all')
 
 
-def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = True, trans_cost: bool = False):
+def run_results(case_dir, days_count, batt_cost: bool = True, elec_cost: bool = True, trans_cost: bool = False,
+                oneshot=False):
     """
     Uses the CostEstimator class to calculate the cost for each case and saves it into the case directory file.
 
-    :param case_dir: Directory for a given case/scenario.
-    :param days_count: Number of days to calculate (usually 30 for now).
+    :param str case_dir: Directory for a given case/scenario.
+    :param int days_count: Number of days to calculate (usually 30 for now).
     :param bool batt_cost: Boolean to decide if battery cost is calculated.
     :param bool elec_cost: Boolean to decide if electricity cost is calculated.
     :param bool trans_cost: Boolean to decide if transformer cost is calculated.
     :return: None.
     """
     estimator = CostEstimator(days_count)
-    #   calculated values are populated in their respective scenario directories
+    #   Calculated values are populated in their respective scenario directories.
     if batt_cost:
         estimator.calculate_battery_cost(case_dir)
     if elec_cost:
-        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_seperate_file=oneshot)
+        estimator.calculate_electricity_cost_PGEBEV2s(case_dir, PGE_separate_file=oneshot)
         # not to add option into this for easy toggling
     if trans_cost:
         estimator.calculate_trans_loss_of_life(case_dir)
@@ -186,9 +204,9 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         solar_lcoe = 0.067
     main_dir = os.getcwd()
     data_table = pd.DataFrame(
-        {energy_rating / 10.00: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
+        {energy_rating / 1000: np.zeros(len(MAX_C_RATES)).tolist() for energy_rating in ENERGY_RATINGS})
     data_table = data_table.set_index(pd.Index(MAX_C_RATES))
-    # now go through all files and update table results for both electricity cost and battery costs
+    # Now go through all files and update table results for both electricity cost and battery costs.
     battery_dtable = copy.deepcopy(data_table)
     batt_aging_dtable = copy.deepcopy(data_table)
     electricity_cost_dtable = copy.deepcopy(data_table)
@@ -202,8 +220,8 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         os.chdir(resul_dir)
         with open('scenario.json', "r") as f:
             scenario = json.load(f)
-            c_rate = scenario['max_c_rate']
-            energy = scenario['pack_energy_cap'] / 1000
+            c_rate = scenario['battery']['max_c_rate']
+            energy = scenario['battery']['pack_energy_cap'] / 1000
         with open('postopt_cost_batt.json', "r") as f:
             batt_costs = json.load(f)
             batt_total_cost = batt_costs['battery_sim_0']['lcoe']
@@ -211,7 +229,6 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
         with open('postopt_cost_charging.json', "r") as f:
             elec_costs = json.load(f)
             elec_total_cost = elec_costs['charging_station_sim_0']['cost_per_kWh']
-            print(elec_costs)
         avg_trans_lol = 0
         if trans:
             with open('postopt_trans_lol.json', "r") as f:
@@ -245,17 +262,23 @@ def collate_results(month, solar=True, trans=True, oneshot=False):
                 trans_cost_dtable=trans_dtable, solar_cost_table=solar_dtable, save_plots_folder=collated_dir)
 
 
-# RUN THIS FILE
-if __name__ == '__main__':
-    # desired_month = 'January'  # might change this to input
-    desired_month = input("Type in the month you want to run results, first letter UPPER CASE: ")
+def run():
+    desired_month = MONTHS_LIST[USR_INPUT_DICT['month']-1]
+    print('Running analysis for month: ', desired_month)
     oneshot = True
     include_trans = False
-    days = 30  # number of days
+    days = USR_INPUT_DICT['num_days']  # number of days
+    # Change directory to working directory for this file
+    os.chdir('../analysis')
     for i in range(0, len(ENERGY_RATINGS) * len(MAX_C_RATES)):
         if oneshot:
             result_dir = f'results/oneshot_{desired_month}{i}'
         else:
             result_dir = f'results/{desired_month}{i}'
-        run_results(result_dir, days, trans_cost=include_trans)
+        run_results(result_dir, days, trans_cost=include_trans, oneshot=oneshot)
     collate_results(desired_month, trans=include_trans, oneshot=oneshot)
+
+
+# RUN THIS FILE
+if __name__ == '__main__':
+    run()

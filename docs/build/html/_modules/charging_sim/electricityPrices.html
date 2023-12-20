@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -39,9 +39,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction/welcome.html">Introduction</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">EV50_cosimulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
         </div>
@@ -70,9 +76,11 @@
              
   <h1>Source code for charging_sim.electricityPrices</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Overview**</span>
 <span class="sd">This module contains the class that loads the electricity price data and structure used for sampling prices during</span>
 <span class="sd">simulation.</span>
 
+<span class="sd">**Details**\n</span>
 <span class="sd">Based on the prices.json config file, this module will load the desired price TOU rate file that will be used in</span>
 <span class="sd">optimization problem. The default is the PGE_BEV2_S rate file, which is valid for California, however users can load</span>
 <span class="sd">their own TOU rate file. The prices are loaded into a numpy array and can be sampled from during simulation.</span>
@@ -191,7 +199,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

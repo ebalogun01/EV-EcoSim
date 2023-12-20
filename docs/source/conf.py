@@ -8,26 +8,33 @@
 
 import os
 import sys
-import shutil
-
+# import shutil
 sys.path.insert(0, os.path.abspath("../.."))
-# sys.path.append('../../EV50_cosimulation/charging_sim')
-sys.path.append('../../EV50_cosimulation/docs/source/doc_images')
-# sys.path.append('../../EV50_cosimulation')
 
-project = 'EV-Ecosim'
+# sys.path.append('../../EV-EcoSim')
+# sys.path.append('../../charging_sim')
+# sys.path.append('../../test_cases')
+sys.path.append('../../analysis')
+sys.path.append('../../test_cases/battery')
+sys.path.append('../../test_cases/base_case')
+sys.path.append('../../test_cases/battery/feeder_population')
+sys.path.append('../../test_cases/base_case/feeder_population')
+
+# sys.path.append('../../EV50_cosimulation/docs/source/doc_images')
+
+project = 'EV-EcoSim'
 copyright = '2023, Emmanuel Balogun'
-author = 'Emmanuel Balogun'
+author = 'Emmanuel O. Balogun'
 release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.todo',
-              'sphinx.ext.viewcode',
               'sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
-              'recommonmark']
+              'recommonmark',
+              "sphinx.ext.autosectionlabel"]
 
 mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 templates_path = ['_templates']
@@ -37,7 +44,7 @@ exclude_patterns = ['_build', 'Thumbs.db', 'DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-master_doc = "contents"
+master_doc = "index"
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_show_sourcelink = False

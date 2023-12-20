@@ -1,5 +1,13 @@
-test\_cases.base\_case package
+Base test case
 ==============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   test_cases.base_case.feeder_population
 
 Submodules
 ----------

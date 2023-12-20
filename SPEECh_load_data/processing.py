@@ -19,7 +19,7 @@ num_days = 30
 num_evs = 3200
 path_prefix = f'IndividualSessionsOutputData_{num_evs}/total_load_profiles_'
 for day in range(num_days):
-    in_data = pd.read_csv(f'{path_prefix}{day}.csv').set_index(dt_idx)
+    in_data = pd.read_csv(f'{path_prefix}{day}.csv').set_index(dt_idx)  # Resampled from 1 min to 15 min with averaging
     if day == 0:
         out_data = in_data["Total"].resample('15T').mean().to_numpy()
     else:

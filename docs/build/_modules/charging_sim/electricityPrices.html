@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d563738"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -39,9 +39,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction/welcome.html">Introduction</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
@@ -71,9 +76,11 @@
              
   <h1>Source code for charging_sim.electricityPrices</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Overview**</span>
 <span class="sd">This module contains the class that loads the electricity price data and structure used for sampling prices during</span>
 <span class="sd">simulation.</span>
 
+<span class="sd">**Details**\n</span>
 <span class="sd">Based on the prices.json config file, this module will load the desired price TOU rate file that will be used in</span>
 <span class="sd">optimization problem. The default is the PGE_BEV2_S rate file, which is valid for California, however users can load</span>
 <span class="sd">their own TOU rate file. The prices are loaded into a numpy array and can be sampled from during simulation.</span>
@@ -93,9 +100,7 @@
 <span class="c1"># Off-peak: all other times</span>
 
 
-<div class="viewcode-block" id="PriceLoader">
-<a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader">[docs]</a>
-<span class="k">class</span> <span class="nc">PriceLoader</span><span class="p">:</span>
+<div class="viewcode-block" id="PriceLoader"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader">[docs]</a><span class="k">class</span> <span class="nc">PriceLoader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class pre-loads prices and is used to sample prices that are used for optimization of EVSE profits/costs</span>
 <span class="sd">    during charging simulation.</span>
 
@@ -122,9 +127,7 @@
                                 <span class="mi">12</span><span class="p">:</span> <span class="mi">365</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>  <span class="c1"># Default value.</span>
 
-<div class="viewcode-block" id="PriceLoader.get_prices">
-<a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.get_prices">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<div class="viewcode-block" id="PriceLoader.get_prices"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.get_prices">[docs]</a>    <span class="k">def</span> <span class="nf">get_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns time-of-use (TOU) rate prices from data. This assumes TOU rates do not change day-to-day.</span>
 
@@ -137,10 +140,7 @@
         <span class="n">price_vector</span> <span class="o">=</span> <span class="n">price_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">price_vector</span></div>
 
-
-<div class="viewcode-block" id="PriceLoader.set_month_data">
-<a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.set_month_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_month_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<div class="viewcode-block" id="PriceLoader.set_month_data"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.set_month_data">[docs]</a>    <span class="k">def</span> <span class="nf">set_month_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the month for which the prices will be obtained.</span>
 
@@ -150,10 +150,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="n">month</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">month_start_idx</span><span class="p">[</span><span class="n">month</span><span class="p">]</span> <span class="o">*</span> <span class="mi">96</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">month_start_idx</span><span class="p">[</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">96</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="PriceLoader.downscale">
-<a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.downscale">[docs]</a>
-    <span class="k">def</span> <span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_res</span><span class="p">,</span> <span class="n">output_res</span><span class="p">):</span>
+<div class="viewcode-block" id="PriceLoader.downscale"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.PriceLoader.downscale">[docs]</a>    <span class="k">def</span> <span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_res</span><span class="p">,</span> <span class="n">output_res</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Downscales the price data into a finer resolution, similar to the downscaling method in Pandas.</span>
 <span class="sd">        Typically only used once.</span>
@@ -174,14 +171,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">temp_data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_np</span> <span class="o">=</span> <span class="n">temp_data</span>
         <span class="c1"># IMPORTANT: Change the paths below to save new data.</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s2">&quot;/elec_rates/PGE_BEV2_S_annual_TOU_rate_</span><span class="si">{}</span><span class="s2">min.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_res</span><span class="p">),</span> <span class="n">temp_data</span><span class="p">)</span></div>
-</div>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s2">&quot;/elec_rates/PGE_BEV2_S_annual_TOU_rate_</span><span class="si">{}</span><span class="s2">min.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_res</span><span class="p">),</span> <span class="n">temp_data</span><span class="p">)</span></div></div>
 
 
-
-<div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.main">[docs]</a>
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.electricityPrices.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This is only run to generate new downscaled data or for testing.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">os</span>
     <span class="kn">import</span> <span class="nn">json</span>
@@ -195,7 +188,6 @@
     <span class="n">loader</span><span class="o">.</span><span class="n">downscale</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">],</span> <span class="n">desired_res</span><span class="p">)</span></div>
 
 
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
@@ -207,7 +199,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

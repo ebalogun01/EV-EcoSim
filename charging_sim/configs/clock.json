@@ -1,0 +1,9 @@
+{
+  "powerflow-timestep": 60,
+  "transformer-timestep": 10,
+  "battery-timestep": 900,
+  "clock-timestep": 1,
+  "solar-timestep": 900,
+  "optimization-timestep": 900,
+  "it": 0
+}

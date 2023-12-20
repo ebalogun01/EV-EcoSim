@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>test_cases.battery package &mdash; EV-Ecosim 1.0.0 documentation</title>
+  <title>Battery test Case &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="test_cases.battery.feeder_population package" href="test_cases.battery.feeder_population.html" />
-    <link rel="prev" title="test_cases.base_case package" href="test_cases.base_case.html" /> 
+    <link rel="next" title="Battery test case feeder population" href="test_cases.battery.feeder_population.html" />
+    <link rel="prev" title="Base case feeder population" href="test_cases.base_case.feeder_population.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,8 +31,8 @@
 
           
           
-          <a href="contents.html" class="icon icon-home">
-            EV-Ecosim
+          <a href="index.html" class="icon icon-home">
+            EV-EcoSim
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -48,22 +48,25 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="readme/README.html">Readme</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="feeder_population.html">Feeder population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Sim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging simulator</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="test_cases.html">Test cases</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="test_cases.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html">test_cases.base_case package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">test_cases.battery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="test_cases.base_case.html">Base test case</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Battery test Case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="test_cases.html#module-test_cases">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html">App - runs the platform</a></li>
 </ul>
 </li>
 </ul>
@@ -74,17 +77,17 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="contents.html">EV-Ecosim</a>
+          <a href="index.html">EV-EcoSim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
           <li class="breadcrumb-item"><a href="test_cases.html">Test cases</a></li>
-      <li class="breadcrumb-item active">test_cases.battery package</li>
+      <li class="breadcrumb-item active">Battery test Case</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,16 +96,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="test-cases-battery-package">
-<h1>test_cases.battery package<a class="headerlink" href="#test-cases-battery-package" title="Permalink to this heading"></a></h1>
+  <section id="battery-test-case">
+<h1>Battery test Case<a class="headerlink" href="#battery-test-case" title="Permalink to this heading"></a></h1>
+<section id="module-test_cases.battery">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-test_cases.battery" title="Permalink to this heading"></a></h2>
+</section>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="test_cases.battery.feeder_population.html">test_cases.battery.feeder_population package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="test_cases.battery.feeder_population.html">Battery test case feeder population</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-module">test_cases.battery.feeder_population.feeder_population module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#test-cases-battery-feeder-population-feeder-population-old-module">test_cases.battery.feeder_population.feeder_population_old module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.feeder_population_centralized">test_cases.battery.feeder_population.feeder_population_centralized module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.feeder_population_collocated">test_cases.battery.feeder_population.feeder_population_collocated module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population.glm_mod_functions">test_cases.battery.feeder_population.glm_mod_functions module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_cases.battery.feeder_population.html#module-test_cases.battery.feeder_population">Module contents</a></li>
 </ul>
@@ -113,14 +119,228 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="test-cases-battery-data-analysis-module">
-<h2>test_cases.battery.data_analysis module<a class="headerlink" href="#test-cases-battery-data-analysis-module" title="Permalink to this heading"></a></h2>
+<section id="module-test_cases.battery.event_handlers">
+<span id="test-cases-battery-event-handlers-module"></span><h2>test_cases.battery.event_handlers module<a class="headerlink" href="#module-test_cases.battery.event_handlers" title="Permalink to this heading"></a></h2>
+<p><strong>Overview</strong>
+This module is the main power-horse for the <cite>EV-EcoSim</cite>. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in <cite>EV-EcoSim</cite>. This file imports all simulated objects and their children,
+which is then run in the co-simulation environment.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.find">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.find" title="Permalink to this definition"></a></dt>
+<dd><p>Finds and returns objects in GridLAB-D that satisfy certain criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<em>str</em>) – the criterion for returning gridlabd objects e.g. node_name, load, etc.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of objects that satisfy the criteria.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.find_subset_trans">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">find_subset_trans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.find_subset_trans" title="Permalink to this definition"></a></dt>
+<dd><p>Finds and returns objects in gridlabd that satisfy certain criteria. This function only gets transformers
+for which are connected to EV charging, to save compute time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<em>str</em>) – the criterion for returning gridlabd objects e.g. node_name, load, etc.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of objects that satisfy the criteria.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.get_trans_power">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">get_trans_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_power_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.get_trans_power" title="Permalink to this definition"></a></dt>
+<dd><p>Obtains power (in kVA) at transformer as a string and processes it into a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trans_power_str</strong> – Transformer power as a string.</p>
+</dd>
+<dt class="field-even">Return pmag<span class="colon">:</span></dt>
+<dd class="field-even"><p>Power magnitude.</p>
+</dd>
+<dt class="field-odd">Return deg<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Angle between pmag (apparent power) and the real axis on the complex power plane.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.get_voltage">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">get_voltage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.get_voltage" title="Permalink to this definition"></a></dt>
+<dd><p>Obtains voltage string from GridLAB-D and processes it into float. GridLABD returns voltages in various
+formats, thus this processes the string voltages from the different formats into float. For more
+information on the formats, see the GridLabD powerflow user guide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Processed voltage magnitude and voltage phase arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray(float).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.on_init">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">on_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.on_init" title="Permalink to this definition"></a></dt>
+<dd><p>This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – arbitrary placeholder.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True - arbitrary value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.on_precommit">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">on_precommit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.on_precommit" title="Permalink to this definition"></a></dt>
+<dd><p>This runs the simulation, propagating all the states of the necessary physical objects and the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – Arbitrary placeholder.</p>
+</dd>
+<dt class="field-even">Return bool<span class="colon">:</span></dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.on_term">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">on_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.on_term" title="Permalink to this definition"></a></dt>
+<dd><p>Actions taken at the very end of the whole simulation, like saving data.
+Data not required can be commented out on the relevant line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – Default placeholder (do not change).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers.save_transformer_states">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers.</span></span><span class="sig-name descname"><span class="pre">save_transformer_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers.save_transformer_states" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the relevant transformer states to a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="test-cases-battery-event-handlers-module">
-<h2>test_cases.battery.event_handlers module<a class="headerlink" href="#test-cases-battery-event-handlers-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="test-cases-battery-event-handlers-oneshot-module">
-<h2>test_cases.battery.event_handlers_oneshot module<a class="headerlink" href="#test-cases-battery-event-handlers-oneshot-module" title="Permalink to this heading"></a></h2>
+<section id="module-test_cases.battery.event_handlers_oneshot">
+<span id="test-cases-battery-event-handlers-oneshot-module"></span><h2>test_cases.battery.event_handlers_oneshot module<a class="headerlink" href="#module-test_cases.battery.event_handlers_oneshot" title="Permalink to this heading"></a></h2>
+<p><strong>Overview</strong></p>
+<p>Module for offline (non-MPC) mode. Very similar program with event_handlers.py. This file is the main power-horse for
+the <cite>EV-EcoSim</cite>. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
+<cite>EV-EcoSim</cite>.</p>
+<p>This module imports all simulated objects and their children, which is then run in the co-simulation environment.
+This file is only used when offline battery optimization is done, after which a user wants to simulate the effects on
+the grid (without any state feedback).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.find">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.find" title="Permalink to this definition"></a></dt>
+<dd><p>Finds and returns objects in gridlabd that satisfy certain criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<em>str</em>) – the criterion for returning gridlabd objects e.g. node_name, load, etc.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of objects that satisfy the criteria.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.get_trans_power">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">get_trans_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trans_power_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.get_trans_power" title="Permalink to this definition"></a></dt>
+<dd><p>Obtains power at transformer as a string and processes it into a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trans_power_str</strong> – Transformer power as a string.</p>
+</dd>
+<dt class="field-even">Return pmag<span class="colon">:</span></dt>
+<dd class="field-even"><p>Power magnitude.</p>
+</dd>
+<dt class="field-odd">Return deg<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Angle between pmag (apparent power) and the real axis on the complex power plane.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.get_voltage">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">get_voltage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.get_voltage" title="Permalink to this definition"></a></dt>
+<dd><p>Obtains voltage string from GridLAB-D and processes it into float. GridLABD returns voltages in various
+formats, thus this processes the string voltages from the different formats into float. For more
+information on the formats, see the GridLabD powerflow user guide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Processed voltage magnitude and voltage phase arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray(float).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.on_init">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">on_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.on_init" title="Permalink to this definition"></a></dt>
+<dd><p>This defines the actions to take at very beginning of simulation, like getting objects and properties from gridlabd.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – arbitrary placeholder.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True - arbitrary value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.on_precommit">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">on_precommit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.on_precommit" title="Permalink to this definition"></a></dt>
+<dd><p>This runs the simulation, propagating all the states of the necessary physical objects and the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – Arbitrary placeholder.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_cases.battery.event_handlers_oneshot.on_term">
+<span class="sig-prename descclassname"><span class="pre">test_cases.battery.event_handlers_oneshot.</span></span><span class="sig-name descname"><span class="pre">on_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.event_handlers_oneshot.on_term" title="Permalink to this definition"></a></dt>
+<dd><p>Actions taken at the very end of the whole simulation, like saving data.
+Data not required can be commented out on the relevant line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> – Default placeholder (do not change).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="test-cases-battery-gblvar-module">
 <h2>test_cases.battery.gblvar module<a class="headerlink" href="#test-cases-battery-gblvar-module" title="Permalink to this heading"></a></h2>
@@ -137,14 +357,8 @@
 <section id="test-cases-battery-scenarios-module">
 <h2>test_cases.battery.scenarios module<a class="headerlink" href="#test-cases-battery-scenarios-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="test-cases-battery-sim-module">
-<h2>test_cases.battery.sim module<a class="headerlink" href="#test-cases-battery-sim-module" title="Permalink to this heading"></a></h2>
-</section>
 <section id="test-cases-battery-voltdump2-module">
 <h2>test_cases.battery.voltdump2 module<a class="headerlink" href="#test-cases-battery-voltdump2-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-test_cases.battery">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-test_cases.battery" title="Permalink to this heading"></a></h2>
 </section>
 </section>
 
@@ -152,8 +366,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="test_cases.base_case.html" class="btn btn-neutral float-left" title="test_cases.base_case package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-right" title="test_cases.battery.feeder_population package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="test_cases.base_case.feeder_population.html" class="btn btn-neutral float-left" title="Base case feeder population" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test_cases.battery.feeder_population.html" class="btn btn-neutral float-right" title="Battery test case feeder population" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

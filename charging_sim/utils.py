@@ -1,4 +1,5 @@
-"""Maybe stores general configurations and general functions"""
+"""Stores general configurations and general functions"""
+
 import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +11,9 @@ num_homes = 1
 num_steps = int(day_minutes / resolution)  # number of time intervals in a day = 96
 month_days = {"January": 31, "February": 28, "March": 31, "April": 30, "May": 31, "June": 30, "July": 31,
               "August": 31, "September": 30, "October": 30, "November": 30, "December": 31}
+
+MONTHS_LIST = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+               "November", "December"]
 
 objectives = {'Transformer Aging': [0, 0, 1],
               "Electricity Cost": [1, 0, 0],
@@ -74,6 +78,7 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
 
 
 def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power=True, max_power_pen=1000):
+    # print(energy_prices_TOU, 'TOUU')
     """This will need to use a heuristic and take the average conservative estimate for gamma"""
     net_grid_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
     TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_grid_load)) * controller.resolution/60     # ($)
@@ -90,9 +95,16 @@ def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power
     return subscription_cost + penalty_cost + TOU_cost + smoothness_pen * smoothness_alpha
 
 
-def build_objective(mode, electricity_cost, battery_degradation_cost, transformer_cost=0):
+def build_objective(mode, electricity_cost, battery_degradation_cost, emissions_cost=0, transformer_cost=0):
     """Builds the objective function that we will minimize."""
     lambdas = objectives[mode]
+    if emissions_cost:
+        return cp.sum(
+            electricity_cost * lambdas[0]
+            + battery_degradation_cost * lambdas[1]
+            + emissions_cost * lambdas[2]
+            + transformer_cost * lambdas[3]
+        )
     return cp.sum(
         electricity_cost * lambdas[0]
         + battery_degradation_cost * lambdas[1]

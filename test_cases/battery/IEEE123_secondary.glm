@@ -33,7 +33,7 @@ object transformer_configuration {
 	install_type PADMOUNT;
 	primary_voltage 2401.7771;
 	secondary_voltage 480 V;
-	power_rating 75.0;
+	power_rating 300.0;
 	resistance 0.00600;
 	reactance 0.00400;
 }
@@ -50,9 +50,63 @@ object load {
 
 object transformer {
 	name dcfc_trans_0;
-	phases "ABCN";
-	from "meter_99";
+	phases "ABCD";
+	from "meter_35";
 	to dcfc_load_0;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_1;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_1;
+	phases "ABCN";
+	from "meter_51";
+	to dcfc_load_1;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_2;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_2;
+	phases "ABCN";
+	from "meter_48";
+	to dcfc_load_2;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name dcfc_load_3;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_3;
+	phases "ABCD";
+	from "meter_65";
+	to dcfc_load_3;
 	configuration dcfc_transformer;
 }
 
@@ -68,11 +122,11 @@ object transformer_configuration {
 	shunt_impedance 339.610+336.934j;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_0;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -83,11 +137,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_1;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -98,11 +152,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_2;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -113,11 +167,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_3;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -128,11 +182,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_4;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -143,11 +197,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_5;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -158,11 +212,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_6;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -173,11 +227,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_7;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -188,11 +242,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_8;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -203,11 +257,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_9;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -218,11 +272,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_10;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -233,11 +287,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_11;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -248,11 +302,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_12;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -263,11 +317,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_13;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -278,11 +332,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_14;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -293,11 +347,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_15;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -308,11 +362,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_16;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -323,11 +377,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_17;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -338,11 +392,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_18;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -353,11 +407,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_19;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -368,11 +422,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_20;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -383,11 +437,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_21;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -398,11 +452,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_22;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -413,11 +467,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_23;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -428,11 +482,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_24;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -443,11 +497,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_25;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -458,11 +512,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_26;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -473,11 +527,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_27;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -488,11 +542,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_28;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -503,11 +557,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_29;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -518,11 +572,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_30;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -533,11 +587,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_31;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -548,11 +602,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_32;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -563,11 +617,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_33;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -578,11 +632,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_34;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -593,11 +647,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_35;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -608,11 +662,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_36;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -623,11 +677,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_37;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -638,11 +692,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_38;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -653,11 +707,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_39;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -668,11 +722,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_40;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -683,11 +737,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_41;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -698,11 +752,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_42;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -713,11 +767,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_43;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -728,11 +782,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_44;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -743,11 +797,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_45;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -758,11 +812,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_46;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -773,11 +827,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_47;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -788,11 +842,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_48;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -803,11 +857,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_49;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -818,11 +872,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_50;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -833,11 +887,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_51;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -848,11 +902,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_52;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -863,11 +917,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_53;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -878,11 +932,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_54;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -893,11 +947,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_55;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -908,11 +962,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_56;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -923,11 +977,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_57;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -938,11 +992,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_58;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -953,11 +1007,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_59;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -968,11 +1022,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_60;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -983,11 +1037,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_61;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -998,11 +1052,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_62;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1013,11 +1067,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_63;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1028,11 +1082,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_64;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1043,11 +1097,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_65;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1058,11 +1112,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_66;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1073,11 +1127,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_67;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1088,11 +1142,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_68;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1103,11 +1157,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_69;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1118,11 +1172,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_70;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1133,11 +1187,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_71;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1148,11 +1202,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_72;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1163,11 +1217,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_73;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1178,11 +1232,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_74;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 7000+4000j;
+	constant_power_12 7000+4000j;
 }
 
 object transformer {
@@ -1193,11 +1247,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_75;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 7000+4000j;
+	constant_power_12 7000+4000j;
 }
 
 object transformer {
@@ -1208,11 +1262,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_76;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1223,11 +1277,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_77;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1238,11 +1292,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_78;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1253,11 +1307,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_79;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1268,11 +1322,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_80;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1283,11 +1337,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_81;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1298,11 +1352,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_82;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1313,11 +1367,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_83;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1328,11 +1382,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_84;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1343,11 +1397,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_85;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1358,11 +1412,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_86;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1373,11 +1427,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_87;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1388,11 +1442,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_88;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1403,11 +1457,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_89;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1418,11 +1472,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_90;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1433,11 +1487,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_91;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1448,11 +1502,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_92;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1463,11 +1517,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_93;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1478,11 +1532,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_94;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1493,11 +1547,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_95;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1508,11 +1562,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_96;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1523,11 +1577,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_97;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1538,11 +1592,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_98;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1553,11 +1607,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_99;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 7000+5000j;
+	constant_power_12 7000+5000j;
 }
 
 object transformer {
@@ -1568,11 +1622,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_100;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1583,11 +1637,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_101;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1598,11 +1652,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_102;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1613,11 +1667,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_103;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1628,11 +1682,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_104;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1643,11 +1697,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_105;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1658,11 +1712,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_106;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1673,11 +1727,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_107;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10714.285714285714+5000j;
+	constant_power_12 10714.285714285714+5000j;
 }
 
 object transformer {
@@ -1688,11 +1742,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_108;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1703,11 +1757,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_109;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1718,11 +1772,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_110;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1733,11 +1787,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_111;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -1748,11 +1802,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_112;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1763,11 +1817,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_113;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1778,11 +1832,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_114;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1793,11 +1847,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_115;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1808,11 +1862,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_116;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1823,11 +1877,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_117;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1838,11 +1892,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_118;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1853,11 +1907,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_119;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -1868,11 +1922,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_120;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1883,11 +1937,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_121;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1898,11 +1952,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_122;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1913,11 +1967,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_123;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1928,11 +1982,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_124;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1943,11 +1997,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_125;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 11666.666666666666+8888.888888888889j;
+	constant_power_12 11666.666666666666+8888.888888888889j;
 }
 
 object transformer {
@@ -1958,11 +2012,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_126;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1973,11 +2027,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_127;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -1988,11 +2042,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_128;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2003,11 +2057,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_129;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2018,11 +2072,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_130;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2033,11 +2087,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_131;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2048,11 +2102,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_132;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2063,11 +2117,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_133;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 10000+7142.857142857143j;
+	constant_power_12 10000+7142.857142857143j;
 }
 
 object transformer {
@@ -2078,11 +2132,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_134;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2093,11 +2147,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_135;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2108,11 +2162,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_136;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2123,11 +2177,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_137;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2138,11 +2192,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_138;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2153,11 +2207,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_139;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2168,11 +2222,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_140;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2183,11 +2237,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_141;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2198,11 +2252,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_142;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2213,11 +2267,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_143;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2228,11 +2282,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_144;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2243,11 +2297,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_145;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2258,11 +2312,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_146;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2273,11 +2327,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_147;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2288,11 +2342,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_148;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2303,11 +2357,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_149;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2318,11 +2372,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_150;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2333,11 +2387,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_151;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2348,11 +2402,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_152;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2363,11 +2417,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_153;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2378,11 +2432,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_154;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2393,11 +2447,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_155;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2408,11 +2462,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_156;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2423,11 +2477,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_157;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2438,11 +2492,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_158;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2453,11 +2507,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_159;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2468,11 +2522,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_160;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2483,11 +2537,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_161;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2498,11 +2552,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_162;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2513,11 +2567,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_163;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2528,11 +2582,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_164;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2543,11 +2597,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_165;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2558,11 +2612,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_166;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2573,11 +2627,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_167;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2588,11 +2642,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_168;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2603,11 +2657,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_169;
 	nominal_voltage 120.00;
 	phases CS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2618,11 +2672,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_170;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2633,11 +2687,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_171;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2648,11 +2702,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_172;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2663,11 +2717,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_173;
 	nominal_voltage 120.00;
 	phases BS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2678,11 +2732,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_174;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2693,11 +2747,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_175;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2708,11 +2762,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_176;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2723,11 +2777,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_177;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {
@@ -2738,11 +2792,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_178;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2753,11 +2807,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_179;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 8000+4000j;
+	constant_power_12 8000+4000j;
 }
 
 object transformer {
@@ -2768,11 +2822,11 @@ object transformer {
 	configuration house_transformer;
 }
 
-object triplex_node {
+object triplex_load {
 	name tn_180;
 	nominal_voltage 120.00;
 	phases AS;
-	power_12 5000+2500j;
+	constant_power_12 5000+2500j;
 }
 
 object transformer {

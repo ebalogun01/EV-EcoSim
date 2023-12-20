@@ -28,7 +28,7 @@
 
           
           
-          <a href="../../contents.html" class="icon icon-home">
+          <a href="../../index.html" class="icon icon-home">
             EV-Ecosim
           </a>
 <div role="search">
@@ -39,9 +39,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction/welcome.html">Introduction</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Packages</a></li>
 </ul>
 
@@ -51,14 +56,14 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../contents.html">EV-Ecosim</a>
+          <a href="../../index.html">EV-Ecosim</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
       <li class="breadcrumb-item active">charging_sim.simulate</li>
       <li class="wy-breadcrumbs-aside">
@@ -76,174 +81,278 @@
 <span class="sd">propagated post optimization to fully characterize what would have occurred if in-situ optimization was done.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;./charging_sim&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">orchestrator</span> <span class="kn">import</span> <span class="n">ChargingSim</span>
+<span class="kn">from</span> <span class="nn">charging_sim.orchestrator</span> <span class="kn">import</span> <span class="n">ChargingSim</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">month_days</span>
+<span class="kn">from</span> <span class="nn">charging_sim.utils</span> <span class="kn">import</span> <span class="n">month_days</span>
+
+
+<span class="c1"># if running app and uploading data, the system must load the different classes with the right temp datasets.</span>
+
+
+<div class="viewcode-block" id="create_temp_configs"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.create_temp_configs">[docs]</a><span class="k">def</span> <span class="nf">create_temp_configs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates temporary configuration files used by the simulator for running the app.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="validate_options"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.validate_options">[docs]</a><span class="k">def</span> <span class="nf">validate_options</span><span class="p">(</span><span class="n">front_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates the user-input options to ensure that the options selected matches the required workflow by the backend.</span>
+
+<span class="sd">    :return: None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validating user input options...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="create_results_folder"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.create_results_folder">[docs]</a><span class="k">def</span> <span class="nf">create_results_folder</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a results dir if one does not exist</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s1">&#39;analysis/results&#39;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;analysis/results&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_default_input"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.load_default_input">[docs]</a><span class="k">def</span> <span class="nf">load_default_input</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads the default user input skeleton.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;default_user_input.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">validate_options</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>  <span class="c1"># todo: Finish implementing this part later.</span>
+    <span class="k">return</span> <span class="n">user_input</span></div>
+
+
+<div class="viewcode-block" id="change_run_date"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.change_run_date">[docs]</a><span class="k">def</span> <span class="nf">change_run_date</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Changes the run date for the simulation.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="make_month_str"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.make_month_str">[docs]</a><span class="k">def</span> <span class="nf">make_month_str</span><span class="p">(</span><span class="n">month_int</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a month string from the month integer. Adds 0 if the month is less than 10.</span>
+
+<span class="sd">    :param month_int: 1 - January, 2 - February, etc.</span>
+<span class="sd">    :return: String of the month.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">month_int</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">month_int</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;0</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">month_int</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
 
 <span class="c1"># GET THE PATH PREFIX FOR SAVING THE INPUTS</span>
-<span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-<span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[:</span> <span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span>
-<span class="c1"># month = 6  # month index starting from 1. e.g. 1: January, 2: February, 3: March etc.</span>
-
-<span class="n">day_minutes</span> <span class="o">=</span> <span class="mi">1440</span>
-<span class="n">opt_time_res</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># minutes</span>
-<span class="n">num_days</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># determines optimization horizon</span>
-<span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="n">day_minutes</span> <span class="o">//</span> <span class="n">opt_time_res</span>  <span class="c1"># number of steps to initialize variables for opt</span>
-
-<span class="c1"># PRELOAD</span>
-<span class="n">station_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s1">&#39;/test_cases/battery/feeder_population/config.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">param_dict</span> <span class="o">=</span> <span class="n">station_config</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="n">station_config</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">param_dict</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">param_dict</span><span class="p">)</span>
-<span class="n">L2_station_cap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;l2_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]</span>
-<span class="n">dcfc_station_cap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;dcfc_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">param_dict</span><span class="p">[</span>
-    <span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]</span>
-<span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span>
-                <span class="mi">1</span><span class="p">])</span>  <span class="c1"># month index starting from 1. e.g. 1: January, 2: February, 3: March etc.</span>
-<span class="n">month_str</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">month_days</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-
-<span class="c1"># Load DCFC locations txt file.</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;...loading charging bus nodes&#39;</span><span class="p">)</span>
-<span class="n">dcfc_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../test_cases/battery/dcfc_bus.txt&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># This is for DC FAST charging.</span>
-<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dcfc_nodes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="n">dcfc_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dcfc_nodes</span><span class="p">]</span>
-<span class="n">dcfc_dicts_list</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dcfc_nodes</span><span class="p">:</span>
-    <span class="n">dcfc_dicts_list</span> <span class="o">+=</span> <span class="p">{</span><span class="s2">&quot;DCFC&quot;</span><span class="p">:</span> <span class="n">dcfc_station_cap</span><span class="p">,</span> <span class="s2">&quot;L2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">},</span>
-
-<span class="n">L2_charging_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../test_cases/battery/L2charging_bus.txt&#39;</span><span class="p">,</span>
-                               <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># this is for L2 charging</span>
-<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">L2_charging_nodes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="n">L2_charging_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">L2_charging_nodes</span><span class="p">]</span>
-<span class="n">l2_dicts_list</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">L2_charging_nodes</span><span class="p">:</span>
-    <span class="n">l2_dicts_list</span> <span class="o">+=</span> <span class="p">{</span><span class="s2">&quot;DCFC&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;L2&quot;</span><span class="p">:</span> <span class="n">L2_station_cap</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">},</span>
-<span class="n">num_charging_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dcfc_nodes</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span>
-    <span class="n">L2_charging_nodes</span><span class="p">)</span>  <span class="c1"># needs to come in as input initially &amp; should be initialized prior from the feeder population</span>
-
-<span class="c1">#   RUN TYPE</span>
-<span class="n">sequential_run</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">parallel_run</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">single_run</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="c1"># BATTERY SCENARIOS</span>
-<span class="n">num_vars</span> <span class="o">=</span> <span class="mi">6</span>
-<span class="n">min_power</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">max_power</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">power_ratings</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># this should be redundant for max_c_rate</span>
-<span class="n">energy_ratings</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5e4</span><span class="p">,</span> <span class="mf">10e4</span><span class="p">,</span> <span class="mf">20e4</span><span class="p">,</span> <span class="mf">40e4</span><span class="p">,</span> <span class="mf">80e4</span><span class="p">]</span>
-<span class="c1"># ENERGY_RATINGS = [0]</span>
-<span class="c1"># MAX_C_RATES = [0.00001]</span>
-<span class="n">max_c_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">min_SOCs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
-<span class="n">max_SOCs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+<span class="c1"># user_inputs = load_default_input()</span>
 
 
-<div class="viewcode-block" id="make_scenarios"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.make_scenarios">[docs]</a><span class="k">def</span> <span class="nf">make_scenarios</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is used to make the list of scenarios (dicts) that are used to run the simulations.</span>
-<span class="sd">    No inputs. However, it uses preloaded global functions from a `config.txt` file.</span>
+<div class="viewcode-block" id="simulate"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.simulate">[docs]</a><span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">user_inputs</span><span class="p">,</span> <span class="n">sequential_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel_run</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1"># Updating the user inputs based on frontend inputs.</span>
+    <span class="n">create_results_folder</span><span class="p">()</span>  <span class="c1"># Make a results folder if it does not exist.</span>
 
-<span class="sd">    :return: None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="c1"># Change below to name of the repo.</span>
+    <span class="n">results_folder_path</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[:</span> <span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation/analysis/results&#39;</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[:</span> <span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span>
 
-    <span class="n">scenarios_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">Er</span> <span class="ow">in</span> <span class="n">energy_ratings</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">c_rate</span> <span class="ow">in</span> <span class="n">max_c_rates</span><span class="p">:</span>
-            <span class="n">scenario</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pack_energy_cap&#39;</span><span class="p">:</span> <span class="n">Er</span><span class="p">,</span> <span class="s1">&#39;max_c_rate&#39;</span><span class="p">:</span> <span class="n">c_rate</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;opt_solver&#39;</span><span class="p">:</span> <span class="s1">&#39;GUROBI&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;oneshot&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_month&#39;</span><span class="p">:</span> <span class="n">month</span><span class="p">}</span>
-            <span class="n">scenarios_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
-            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">scenarios_list</span></div>
+    <span class="c1"># PRELOAD</span>
+    <span class="n">station_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s1">&#39;/test_cases/battery/feeder_population/config.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">param_dict</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">station_config</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">station_config</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">param_dict</span><span class="p">))</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">][:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">make_month_str</span><span class="p">(</span><span class="n">user_inputs</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">][</span><span class="mi">8</span><span class="p">:]</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">][:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">make_month_str</span><span class="p">(</span><span class="n">user_inputs</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">][</span><span class="mi">8</span><span class="p">:]</span>
 
+    <span class="n">charging_station_config</span> <span class="o">=</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s2">&quot;charging_station&quot;</span><span class="p">]</span>
+    <span class="n">battery_config</span> <span class="o">=</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s2">&quot;battery&quot;</span><span class="p">]</span>
+    <span class="n">solar_config</span> <span class="o">=</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s2">&quot;solar&quot;</span><span class="p">]</span>
+    <span class="n">DAY_MINUTES</span> <span class="o">=</span> <span class="mi">1440</span>
+    <span class="n">OPT_TIME_RES</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># minutes</span>
+    <span class="n">NUM_DAYS</span> <span class="o">=</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s2">&quot;num_days&quot;</span><span class="p">]</span>  <span class="c1"># determines optimization horizon</span>
+    <span class="n">NUM_STEPS</span> <span class="o">=</span> <span class="n">NUM_DAYS</span> <span class="o">*</span> <span class="n">DAY_MINUTES</span> <span class="o">//</span> <span class="n">OPT_TIME_RES</span>  <span class="c1"># number of steps to initialize variables for opt</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;basic configs done...&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">scenario</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.</span>
+    <span class="c1"># Modify configs based on user inputs.</span>
+    <span class="c1"># Modify the config file in feeder population based on the user inputs.</span>
+    <span class="c1"># Append to list of capacities as the user adds more scenarios. Limit the max user scenarios that can be added.</span>
 
-<span class="sd">    :param scenario: The scenario dictionary that would be run.</span>
-<span class="sd">    :return: None. Runs the `scenario`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">EV_charging_sim</span> <span class="o">=</span> <span class="n">ChargingSim</span><span class="p">(</span><span class="n">num_charging_nodes</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="n">path_prefix</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">)</span>
-    <span class="n">save_folder_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;oneshot_</span><span class="si">{</span><span class="n">month_str</span><span class="si">}{</span><span class="nb">str</span><span class="p">(</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/&#39;</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">save_folder_prefix</span><span class="p">)</span>
-    <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">dcfc_dicts_list</span> <span class="o">+</span> <span class="n">l2_dicts_list</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="n">scenario</span><span class="p">)</span>
-    <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">multistep</span><span class="p">()</span>
-    <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">load_results_summary</span><span class="p">(</span><span class="n">save_folder_prefix</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_folder_prefix</span><span class="si">}</span><span class="s1">scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+    <span class="c1"># Modify param dict.</span>
+    <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s1">&#39;</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="n">charging_station_config</span><span class="p">)</span>
+    <span class="c1"># Control user inputs for charging stations.</span>
+    <span class="k">if</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;num_l2_stalls_per_node&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;num_dcfc_stalls_per_node&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot have both L2 and DCFC charging stations at the same time.&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="run_scenarios_parallel"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.run_scenarios_parallel">[docs]</a><span class="k">def</span> <span class="nf">run_scenarios_parallel</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Runs the scenarios in parallel using the `multiprocessing` library. User should have enough cores and RAM,</span>
-<span class="sd">    otherwise, this may lead to entire process freezing.</span>
+    <span class="c1"># Updating initial param dict with user inputs, new param dict will be written to the config.txt file.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">charging_station_config</span><span class="p">)</span>
 
-<span class="sd">    :return: None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">scenarios</span> <span class="o">=</span> <span class="n">make_scenarios</span><span class="p">()</span>
-    <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">end_idx</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">num_cores</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">num_cores</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">use_cores_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_cores</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span>  <span class="c1"># leave one out</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">use_cores_count</span><span class="si">}</span><span class="s2"> parallel scenarios...&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;spawn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">use_cores_count</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-            <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="p">[</span><span class="n">scenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">use_cores_count</span> <span class="o">+</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))])</span></div>
+    <span class="k">if</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]:</span>
+        <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;dcfc_charging_stall_base_rating&quot;</span><span class="p">]:</span>
+            <span class="n">param_dict</span><span class="p">[</span>
+                <span class="s1">&#39;dcfc_charging_stall_base_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;dcfc_charging_stall_base_rating&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">_kW&#39;</span>
 
+    <span class="k">if</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]:</span>
+        <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;l2_power_cap&quot;</span><span class="p">]:</span>
+            <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;l2_charging_stall_base_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">charging_station_config</span><span class="p">[</span><span class="s2">&quot;l2_power_cap&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">_kW&#39;</span>
 
-<div class="viewcode-block" id="run_scenarios_sequential"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.run_scenarios_sequential">[docs]</a><span class="k">def</span> <span class="nf">run_scenarios_sequential</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,</span>
-<span class="sd">    which is a combination of all the capacities and c-rates.</span>
+    <span class="c1"># Obtaining the charging station capacities.</span>
+    <span class="n">dcfc_station_cap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;dcfc_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">param_dict</span><span class="p">[</span>
+        <span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]</span>
+    <span class="n">L2_station_cap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;l2_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">param_dict</span><span class="p">[</span>
+        <span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.</span>
+    <span class="n">month_str</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">month_days</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
-<span class="sd">    :return: None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">energy_ratings</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_c_rates</span><span class="p">)</span>
-    <span class="n">idx_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))</span>
-    <span class="n">scenarios_list</span> <span class="o">=</span> <span class="n">make_scenarios</span><span class="p">()</span>
-    <span class="n">scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">scenarios_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_list</span><span class="p">]</span>
-    <span class="c1"># d = 1</span>
-    <span class="k">for</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="p">:</span>
-        <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;L2_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">L2_charging_nodes</span>
-        <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;dcfc_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcfc_nodes</span>
-        <span class="k">if</span> <span class="n">dcfc_dicts_list</span><span class="p">:</span>
-            <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;dcfc_caps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">station</span><span class="p">[</span><span class="s2">&quot;DCFC&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">dcfc_dicts_list</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">l2_dicts_list</span><span class="p">:</span>
-            <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;l2_caps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">station</span><span class="p">[</span><span class="s2">&quot;L2&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">l2_dicts_list</span><span class="p">]</span>
-        <span class="n">run</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span></div>
-        <span class="c1"># d += 1</span>
+    <span class="c1"># Save the new param_dict to the config file.</span>
+    <span class="n">station_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_prefix</span> <span class="o">+</span> <span class="s1">&#39;/test_cases/battery/feeder_population/config.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">station_config</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="s1">&#39;, </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param_dict</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
+    <span class="n">station_config</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
+    <span class="c1"># Load DCFC locations txt file.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;...loading charging bus nodes&#39;</span><span class="p">)</span>
+    <span class="n">dcfc_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;test_cases/battery/dcfc_bus.txt&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># This is for DC FAST charging.</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dcfc_nodes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">dcfc_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dcfc_nodes</span><span class="p">]</span>
+    <span class="n">dcfc_dicts_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dcfc_nodes</span><span class="p">:</span>
+        <span class="n">dcfc_dicts_list</span> <span class="o">+=</span> <span class="p">{</span><span class="s2">&quot;DCFC&quot;</span><span class="p">:</span> <span class="n">dcfc_station_cap</span><span class="p">,</span> <span class="s2">&quot;L2&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">},</span>
 
-<div class="viewcode-block" id="run_scenario_single"><a class="viewcode-back" href="../../charging_sim.html#charging_sim.simulate.run_scenario_single">[docs]</a><span class="k">def</span> <span class="nf">run_scenario_single</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Runs a single scenario dict.</span>
+    <span class="n">L2_charging_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;test_cases/battery/L2charging_bus.txt&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># this is for L2</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">L2_charging_nodes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">L2_charging_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">L2_charging_nodes</span><span class="p">]</span>
+    <span class="n">l2_dicts_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">L2_charging_nodes</span><span class="p">:</span>
+        <span class="n">l2_dicts_list</span> <span class="o">+=</span> <span class="p">{</span><span class="s2">&quot;DCFC&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;L2&quot;</span><span class="p">:</span> <span class="n">L2_station_cap</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="n">node</span><span class="p">},</span>
+    <span class="n">num_charging_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dcfc_nodes</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">L2_charging_nodes</span><span class="p">)</span>
+    <span class="c1"># Needs to come in as input initially &amp; should be initialized prior from the feeder population.</span>
 
-<span class="sd">    :return: None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Keep changing this for each run</span>
-    <span class="n">Er_idx</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">c_rate_idx</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">scenario</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pack_energy_cap&#39;</span><span class="p">:</span> <span class="n">energy_ratings</span><span class="p">[</span><span class="n">Er_idx</span><span class="p">],</span>
-                <span class="s1">&#39;max_c_rate&#39;</span><span class="p">:</span> <span class="n">max_c_rates</span><span class="p">[</span><span class="n">c_rate_idx</span><span class="p">],</span>
-                <span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;opt_solver&#39;</span><span class="p">:</span> <span class="s1">&#39;GUROBI&#39;</span><span class="p">,</span> <span class="s1">&#39;oneshot&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-    <span class="n">run</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span></div>
+    <span class="c1">#   RUN TYPE - User may be able to choose parallel or sequential run. Will need to stress-test the parallel run.</span>
+    <span class="c1">#   (Does not work currently)</span>
+
+    <span class="c1"># Battery scenarios.</span>
+    <span class="n">energy_ratings</span> <span class="o">=</span> <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;pack_energy_cap&quot;</span><span class="p">]</span>  <span class="c1"># kWh</span>
+    <span class="n">max_c_rates</span> <span class="o">=</span> <span class="n">battery_config</span><span class="p">[</span><span class="s2">&quot;max_c_rate&quot;</span><span class="p">]</span>  <span class="c1"># kW</span>
+
+    <span class="k">def</span> <span class="nf">make_scenarios</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used to make the list of scenarios (dicts) that are used to run the simulations.</span>
+<span class="sd">        No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user</span>
+<span class="sd">        settings and inputs.</span>
+
+<span class="sd">        :return: List of scenario dicts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scenarios_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">voltage_idx</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="c1"># Seems like we don&#39;t get list[int] for voltages</span>
+        <span class="k">for</span> <span class="n">Er</span> <span class="ow">in</span> <span class="n">energy_ratings</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c_rate</span> <span class="ow">in</span> <span class="n">max_c_rates</span><span class="p">:</span>
+                <span class="n">scenario</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span>
+                    <span class="s1">&#39;oneshot&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;start_month&#39;</span><span class="p">:</span> <span class="n">month</span><span class="p">,</span>
+                    <span class="s1">&#39;opt_solver&#39;</span><span class="p">:</span> <span class="s1">&#39;GUROBI&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;battery&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;pack_energy_cap&#39;</span><span class="p">:</span> <span class="n">Er</span><span class="p">,</span>
+                        <span class="s1">&#39;max_c_rate&#39;</span><span class="p">:</span> <span class="n">c_rate</span><span class="p">,</span>
+                        <span class="s1">&#39;pack_max_voltage&#39;</span><span class="p">:</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s1">&#39;battery&#39;</span><span class="p">][</span><span class="s1">&#39;pack_max_voltage&#39;</span><span class="p">][</span><span class="n">voltage_idx</span><span class="p">]</span>
+                    <span class="p">},</span>
+                    <span class="s1">&#39;charging_station&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;dcfc_power_cap&#39;</span><span class="p">:</span> <span class="n">dcfc_station_cap</span>
+                    <span class="p">},</span>
+                    <span class="s1">&#39;solar&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;start_month&#39;</span><span class="p">:</span> <span class="n">month</span><span class="p">,</span>
+                        <span class="s1">&#39;efficiency&#39;</span><span class="p">:</span> <span class="n">solar_config</span><span class="p">[</span><span class="s2">&quot;efficiency&quot;</span><span class="p">],</span>
+                        <span class="s1">&#39;rating&#39;</span><span class="p">:</span> <span class="n">solar_config</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">],</span>
+                        <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="n">solar_config</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+                    <span class="p">},</span>
+                    <span class="s1">&#39;load&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s1">&#39;load&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                    <span class="p">},</span>
+                    <span class="s1">&#39;elec_prices&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;start_month&#39;</span><span class="p">:</span> <span class="n">month</span><span class="p">,</span>
+                        <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="n">user_inputs</span><span class="p">[</span><span class="s1">&#39;elec_prices&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="n">scenarios_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">voltage_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">scenarios_list</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">scenario</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.</span>
+
+<span class="sd">        :param scenario: The scenario dictionary that would be run.</span>
+<span class="sd">        :return: None. Runs the `scenario`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">EV_charging_sim</span> <span class="o">=</span> <span class="n">ChargingSim</span><span class="p">(</span><span class="n">num_charging_nodes</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="n">path_prefix</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="n">NUM_STEPS</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">)</span>
+        <span class="n">save_folder_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">results_folder_path</span><span class="si">}</span><span class="s1">/oneshot_</span><span class="si">{</span><span class="n">month_str</span><span class="si">}{</span><span class="nb">str</span><span class="p">(</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">/&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_folder_prefix</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">save_folder_prefix</span><span class="p">)</span>
+        <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">dcfc_dicts_list</span> <span class="o">+</span> <span class="n">l2_dicts_list</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;multistep&#39;</span><span class="p">)</span>
+        <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">multistep</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;multistep done&#39;</span><span class="p">)</span>
+        <span class="n">EV_charging_sim</span><span class="o">.</span><span class="n">load_results_summary</span><span class="p">(</span><span class="n">save_folder_prefix</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_folder_prefix</span><span class="si">}</span><span class="s1">scenario.json&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run_scenarios_sequential</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,</span>
+<span class="sd">        which is a combination of all the capacities and c-rates.</span>
+
+<span class="sd">        :return: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">energy_ratings</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_c_rates</span><span class="p">)</span>
+        <span class="n">idx_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;making scenarios&#39;</span><span class="p">)</span>
+        <span class="n">scenarios_list</span> <span class="o">=</span> <span class="n">make_scenarios</span><span class="p">()</span>
+        <span class="n">scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">scenarios_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_list</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+            <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;L2_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">L2_charging_nodes</span>
+            <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;dcfc_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcfc_nodes</span>
+            <span class="k">if</span> <span class="n">dcfc_dicts_list</span><span class="p">:</span>
+                <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;dcfc_caps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">station</span><span class="p">[</span><span class="s2">&quot;DCFC&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">dcfc_dicts_list</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">l2_dicts_list</span><span class="p">:</span>
+                <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;l2_caps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">station</span><span class="p">[</span><span class="s2">&quot;L2&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">l2_dicts_list</span><span class="p">]</span>
+            <span class="n">run</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sequential_run</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running scenarios sequentially...&quot;</span><span class="p">)</span>
+        <span class="n">run_scenarios_sequential</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation complete!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">sequential_run</span><span class="p">:</span>
-        <span class="n">run_scenarios_sequential</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">single_run</span><span class="p">:</span>
-        <span class="n">run_scenario_single</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">run_scenarios_parallel</span><span class="p">()</span>
+    <span class="n">USER_INPUTS</span> <span class="o">=</span> <span class="n">load_default_input</span><span class="p">()</span>
+    <span class="n">simulate</span><span class="p">(</span><span class="n">USER_INPUTS</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -253,7 +362,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Emmanuel Balogun, Stanford University S3L Lab.</p>
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

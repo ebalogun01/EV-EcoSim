@@ -1,7 +1,9 @@
 """
+**Overview**
+
 Module for offline (non-MPC) mode. Very similar program with event_handlers.py. This file is the main power-horse for
-the EV-Ecosim. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
-EV-Ecosim.
+the `EV-EcoSim`. It includes the modules that allow GridLabD to interact with all the custom-built modules developed in
+`EV-EcoSim`.
 
 This module imports all simulated objects and their children, which is then run in the co-simulation environment.
 This file is only used when offline battery optimization is done, after which a user wants to simulate the effects on
@@ -17,6 +19,9 @@ import time
 import gblvar
 import json
 import pandas as pd
+from transformer import OilTypeTransformer
+from clock import Clock
+
 
 sys.path.append('../../charging_sim')
 
@@ -59,15 +64,26 @@ for root, dirs, files, in os.walk('', topdown=True):
 
 os.chdir(current_dir)  # switch back into current directory
 print("done loading loads.")
-# make a list of nodes and a list of the corresponding net_loads for that node
+# make a list of nodes and a list of the corresponding net_loads for that node_name
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
-simulation_month = gblvar.scenario['start_month']  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
+simulation_month = gblvar.scenario['start_month']  # Months are indexed starting from 1.
 temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 global tic, toc  # used to time simulation
 tic = time.time()
+#####
+
+# Load the clock from its JSON file and instantiate the global clock object (from charging_sim, NOT GridLAB-D).
+with open('../../charging_sim/configs/clock.json') as f:
+    clock_config = json.load(f)
+global_clock = Clock(clock_config)
+
+# Load the transformer configuration prototype JSON file.
+with open('../../charging_sim/configs/transformer.json') as f:
+    transformer_config = json.load(f)
+trans_map = {}  # Dictionary of transformer objects.
 
 
 def on_init(t):
@@ -81,7 +97,7 @@ def on_init(t):
     print("Gridlabd Init Begin...")
     gridlabd.output("timestamp,x")
     gridlabd.set_value("voltdump", "filename", f'{save_folder_prefix}volt_dump.csv')
-    gblvar.node_list = find("class=node")
+    gblvar.node_list = find("class=node_name")
     gblvar.load_list = find("class=load")
     gblvar.sim_file_path = save_folder_prefix
     gblvar.tn_list = find("class=triplex_node")
@@ -124,15 +140,35 @@ def on_precommit(t):
         gblvar.vp = np.concatenate((gblvar.vp, vp_array.reshape(1, -1)), axis=0)
 
     # get transformer ratings and possibly other properties if first timestep
-    if gblvar.it == 0:
-        gblvar.trans_rated_s = []
+    # get transformer ratings and possibly other properties if first timestep
+    if global_clock.it == 0:
+        """
+        This is where the transformers get initially instantiated. Done only once.
+        """
         gblvar.trans_loading_percent = []
-        for name in gblvar.trans_list:
+        for i in range(len(gblvar.trans_list)):
+            name = gblvar.trans_list[i]  # Gets one transformer from this list of transformers.
             data = gridlabd.get_object(name)  # USE THIS TO GET ANY OBJECT NEEDED
             trans_config_name = data['configuration']
             data = gridlabd.get_object(trans_config_name)
-            gblvar.trans_rated_s.append(float(data['power_rating'].split(' ')[0]))
-        gblvar.trans_rated_s_np = np.array(gblvar.trans_rated_s).reshape(1, -1)
+            power_rating = float(data['power_rating'].split(' ')[0])
+            transformer_config['name'] = name
+            transformer_config['rated-power'] = power_rating
+            trans = OilTypeTransformer(transformer_config, global_clock=global_clock,
+                                       temperature_data=temperature_data)
+            trans_map[name] = trans  # Add the transformer to the transformer map.
+
+    # get transformer power from previous timestep
+    gblvar.trans_power = []
+    #   Here we simulate the thermal dynamics of all transformers, however we can speed up by only simulated a subset
+    for i in range(len(gblvar.trans_list)):
+        name = gblvar.trans_list[i]
+        data = gridlabd.get_object(name)
+        trans_power_str = data[
+            'power_in']  # This gets the power flowing through the transformer at the current time step.
+        pmag, pdeg = get_trans_power(trans_power_str)
+        trans_power_kVA = pmag / 1000  # in units kVA
+        trans_map[name].thermal_dynamics(trans_power_kVA)  # Propagate the transformer state forward.
 
     # get transformer power from previous timestep
     gblvar.trans_power = []
@@ -172,7 +208,7 @@ def on_precommit(t):
     for i in range(len(name_list_base_power)):
         name = name_list_base_power[i]
         total_node_load = 0
-        # If ev node is power node, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
+        # If ev node_name is power node_name, add ev_charging power to the set value for power vec (ONLY L2 CHARGING).
         if name in L2_charging_nodes:
             node_index = L2_charging_nodes.index(name)
             total_node_load = l2_net_loads[node_index][gblvar.it // control_res] * 1000  # for L2
@@ -225,7 +261,7 @@ def find(criteria):
     """
     Finds and returns objects in gridlabd that satisfy certain criteria.
 
-    :param str criteria: the criterion for returning gridlabd objects e.g. node, load, etc.
+    :param str criteria: the criterion for returning gridlabd objects e.g. node_name, load, etc.
     :return: list of objects that satisfy the criteria.
     """
     finder = criteria.split("=")

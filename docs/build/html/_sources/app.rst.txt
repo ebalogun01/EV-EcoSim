@@ -1,0 +1,7 @@
+App - runs the platform
+==========
+
+.. automodule:: app
+   :members:
+   :undoc-members:
+   :show-inheritance:

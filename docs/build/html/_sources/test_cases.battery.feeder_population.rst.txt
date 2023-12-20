@@ -1,21 +1,21 @@
-test\_cases.battery.feeder\_population package
+Battery test case feeder population
 ==============================================
 
 Submodules
 ----------
 
-test\_cases.battery.feeder\_population.feeder\_population module
-----------------------------------------------------------------
+test\_cases.battery.feeder\_population.feeder\_population\_centralized module
+-----------------------------------------------------------------------------
 
-.. automodule:: test_cases.battery.feeder_population.feeder_population
+.. automodule:: test_cases.battery.feeder_population.feeder_population_centralized
    :members:
    :undoc-members:
    :show-inheritance:
 
-test\_cases.battery.feeder\_population.feeder\_population\_old module
----------------------------------------------------------------------
+test\_cases.battery.feeder\_population.feeder\_population\_collocated module
+----------------------------------------------------------------------------
 
-.. automodule:: test_cases.battery.feeder_population.feeder_population_old
+.. automodule:: test_cases.battery.feeder_population.feeder_population_collocated
    :members:
    :undoc-members:
    :show-inheritance:

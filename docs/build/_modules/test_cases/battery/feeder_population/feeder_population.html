@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>test_cases.battery.feeder_population.feeder_population &mdash; EV-Ecosim 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EV-Ecosim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Introduction/welcome.html">Introduction</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Packages</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EV-Ecosim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">test_cases.battery.feeder_population.feeder_population</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for test_cases.battery.feeder_population.feeder_population</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Introduction**\n</span>
+<span class="sd">This is the feeder population module within the battery test case. This file performs the pre-simulation step for</span>
+<span class="sd">running EV-Ecosim.\n\n</span>
+<span class="sd">It takes in a base Gridlab-D Model (GLM) file (for example, `IEEE123.glm`), and modifies that file by including</span>
+<span class="sd">secondary distribution, home loads, and EV Charging station and transformers.</span>
+
+
+<span class="sd">Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and</span>
+<span class="sd">&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the</span>
+<span class="sd">simulation. These files are saved in the &#39;test_case_dir&#39; field specified in config.txt.</span>
+
+
+<span class="sd">**Input file description** \n</span>
+<span class="sd">Config `config.txt`: configuration file describing the pre-simulation parameters.</span>
+<span class="sd">This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module</span>
+<span class="sd">are files that are read in to run the EV-Ecosim environment.</span>
+
+
+<span class="sd">**Output file description**\n</span>
+<span class="sd">`real_power.csv` - Real power; this is residential real load timeseries file per node/bus</span>
+<span class="sd">`reactive_power.csv` - Reactive power; this is residential reactive load timeseries file per node/bus</span>
+<span class="sd">`dcfc_bus.txt` - DC fast charging bus locations; this is used in co-simulation</span>
+<span class="sd">`L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># import glm_mod_functions</span>
+<span class="c1"># import os</span>
+<span class="c1"># import pandas</span>
+<span class="c1"># import datetime</span>
+<span class="c1"># import numpy as np</span>
+<span class="c1"># import ast</span>
+<span class="c1"># import pickle</span>
+<span class="c1"># import random</span>
+
+
+<span class="c1"># TODO: check all capacitor banks on and voltage</span>
+<span class="c1">#  regulators</span>
+<span class="c1"># all the caps are set to manual and they should be automatic</span>
+<span class="c1"># Check if the nominal voltages are correct for the regulator dead bands</span>
+<span class="c1"># what is most normal for simulating the 123 network</span>
+<span class="c1">#</span>
+
+<span class="c1"># read config file</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../../test_cases.battery.feeder_population.html#test_cases.battery.feeder_population.feeder_population.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,</span>
+<span class="sd">    `IEEE123.glm`), and modifies that file by including secondary distribution, home loads, and EV Charging station and</span>
+<span class="sd">    transformers.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path_prefix</span><span class="p">)</span>  <span class="c1"># change directory</span>
+    <span class="n">path_prefix</span> <span class="o">=</span> <span class="n">path_prefix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">path_prefix</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;EV50_cosimulation&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">&#39;EV50_cosimulation&#39;</span>
+    <span class="n">path_prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;config.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">param_dict</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">param_dict</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">param_dict</span><span class="p">)</span>
+
+    <span class="n">feeder_name</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;feeder_name&#39;</span><span class="p">]</span>
+    <span class="n">set_sd</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;set_sd&#39;</span><span class="p">]</span>  <span class="c1"># what is sd?</span>
+    <span class="n">mean_scale</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;mean_scale&#39;</span><span class="p">]</span>
+    <span class="n">base_file_dir</span> <span class="o">=</span> <span class="n">path_prefix</span> <span class="o">+</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;base_file_dir&#39;</span><span class="p">]</span>
+    <span class="n">test_case_dir</span> <span class="o">=</span> <span class="n">path_prefix</span> <span class="o">+</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;test_case_dir&#39;</span><span class="p">]</span>
+    <span class="n">load_data_dir</span> <span class="o">=</span> <span class="n">path_prefix</span> <span class="o">+</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;load_data_dir&#39;</span><span class="p">]</span>
+    <span class="n">box_pts</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;box_pts&#39;</span><span class="p">]</span>
+    <span class="n">starttime_str</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span>
+    <span class="n">endtime_str</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span>
+    <span class="n">python_module</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;python_module&#39;</span><span class="p">]</span>
+    <span class="n">safety_factor</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;safety_factor&#39;</span><span class="p">]</span>  <span class="c1"># this helps to account with loading</span>
+    <span class="n">pf_min</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;min_power_factor&#39;</span><span class="p">]</span>  <span class="c1"># minimum power factor</span>
+    <span class="n">pf_max</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;max_power_factor&#39;</span><span class="p">]</span>  <span class="c1"># maximum power factor</span>
+
+    <span class="n">base_glm_file</span> <span class="o">=</span> <span class="n">feeder_name</span> <span class="o">+</span> <span class="s1">&#39;.glm&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading original glm&#39;</span><span class="p">)</span>
+    <span class="n">glm_dict_base</span><span class="p">,</span> <span class="n">obj_type_base</span><span class="p">,</span> <span class="n">globals_list_base</span><span class="p">,</span> <span class="n">include_list_base</span><span class="p">,</span> <span class="n">sync_list_base</span> <span class="o">=</span> <span class="n">glm_mod_functions</span><span class="o">.</span><span class="n">load_base_glm</span><span class="p">(</span>
+        <span class="n">base_file_dir</span><span class="p">,</span> <span class="n">base_glm_file</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Modifying glm properties...&#39;</span><span class="p">)</span>
+    <span class="n">spot_load_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bus_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bus_list_voltage</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prop_voltage</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nominal_voltage</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">load_phases</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+
+            <span class="c1"># modify load objects</span>
+            <span class="k">if</span> <span class="s1">&#39;load&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s1">&#39;constant_power_A&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">spot_load_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;constant_power_A&#39;</span><span class="p">]))</span>
+                    <span class="n">bus_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+                    <span class="n">nominal_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;nominal_voltage&#39;</span><span class="p">])</span>
+                    <span class="n">load_phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_A&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;constant_power_B&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">spot_load_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;constant_power_B&#39;</span><span class="p">]))</span>
+                    <span class="n">bus_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+                    <span class="n">nominal_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;nominal_voltage&#39;</span><span class="p">])</span>
+                    <span class="n">load_phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;B&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_B&#39;</span><span class="p">)</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="s1">&#39;constant_power_C&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">spot_load_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;constant_power_C&#39;</span><span class="p">]))</span>
+                    <span class="n">bus_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+                    <span class="n">nominal_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;nominal_voltage&#39;</span><span class="p">])</span>
+                    <span class="n">load_phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_C&#39;</span><span class="p">)</span>
+
+            <span class="c1"># get rid of regulator control</span>
+            <span class="k">elif</span> <span class="s1">&#39;regulator_configuration&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s1">&#39;Control&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;Control&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;MANUAL&#39;</span>
+
+            <span class="c1"># get rid of capacitor control</span>
+            <span class="k">elif</span> <span class="s1">&#39;capacitor&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s1">&#39;control&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;control&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;MANUAL&#39;</span>
+                <span class="k">if</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases_connected&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_A&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;B&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases_connected&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_B&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases_connected&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_C&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;node&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="c1"># print(glm_dict_base[i][&#39;phases&#39;])</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_A&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;B&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_B&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                    <span class="n">bus_list_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                    <span class="n">prop_voltage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;voltage_C&#39;</span><span class="p">)</span>
+
+    <span class="c1"># change all load objects to meters (change property names throughout and delete load properties) todo: add rationale</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;load&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="n">glm_dict_base</span> <span class="o">=</span> <span class="n">glm_mod_functions</span><span class="o">.</span><span class="n">replace_load_w_meter</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">,</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                                                       <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span>
+                                                                                                        <span class="s1">&#39;meter&#39;</span><span class="p">),</span>
+                                                                       <span class="n">obj_type_base</span><span class="p">)</span>
+
+    <span class="n">include_list_base</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#include &quot;&#39;</span> <span class="o">+</span> <span class="n">feeder_name</span> <span class="o">+</span> <span class="s1">&#39;_secondary.glm&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># delete existing recorders</span>
+    <span class="n">rec_del_index</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;recorder&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="n">rec_del_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rec_del_index</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># add dummy player class</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy&#39;</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;double&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;player&#39;</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;double&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;player&#39;</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy_player&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;dummy.player&quot;&#39;</span><span class="p">}</span>
+
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy&#39;</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy_obj&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;dummy_player.value&#39;</span><span class="p">}</span>
+
+    <span class="c1"># add tape module if not already there</span>
+    <span class="n">tape_bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;tape&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]:</span>
+                <span class="n">tape_bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tape_bool</span><span class="p">:</span>
+        <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;tape&#39;</span><span class="p">}</span>
+        <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># add python module</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="n">python_module</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># add script on term statement</span>
+    <span class="c1"># sync_list_base.append(&#39;script on_term &quot;python3 voltdump2.py&quot;;&#39;)</span>
+
+    <span class="c1"># add voltdump</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">obj_type_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;voltdump&#39;</span><span class="p">}</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;voltdump&quot;&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;filemode&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;a&quot;&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;volt_dump.csv&quot;&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;interval&#39;</span><span class="p">:</span> <span class="s1">&#39;60&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">}</span>
+
+    <span class="c1"># check if minimum timestep is already set</span>
+    <span class="k">if</span> <span class="s1">&#39;#set minimum_timestep=60&#39;</span> <span class="ow">in</span> <span class="n">globals_list_base</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">globals_list_base</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#set minimum_timestep=60&#39;</span><span class="p">)</span>
+
+    <span class="c1"># delete clock object</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;clock&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">clock_del_index</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">del</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">clock_del_index</span><span class="p">]</span>
+
+    <span class="c1"># add new clock object</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">clock_del_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="n">starttime_str</span><span class="p">,</span>
+                                      <span class="s1">&#39;stoptime&#39;</span><span class="p">:</span> <span class="n">endtime_str</span><span class="p">}</span>
+
+    <span class="c1"># remove powerflow object</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;powerflow&#39;</span> <span class="ow">in</span> <span class="n">obj_type_base</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]:</span>
+                <span class="n">pf_del_index</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">del</span> <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">pf_del_index</span><span class="p">]</span>
+
+    <span class="c1"># add new powerflow object that outputs NR solver information</span>
+    <span class="n">glm_dict_base</span><span class="p">[</span><span class="n">pf_del_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;solver_method&#39;</span><span class="p">:</span> <span class="s1">&#39;NR&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;line_capacitance&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;convergence_error_handling&#39;</span><span class="p">:</span> <span class="s1">&#39;IGNORE&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;solver_profile_enable&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;solver_profile_filename&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;solver_nr_out.csv&quot;&#39;</span><span class="p">}</span>
+
+    <span class="c1"># write new glm file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing new glm file...&#39;</span><span class="p">)</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">test_case_dir</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">feeder_name</span> <span class="o">+</span> <span class="s1">&#39;_populated.glm&#39;</span>
+    <span class="n">glm_mod_functions</span><span class="o">.</span><span class="n">write_base_glm</span><span class="p">(</span><span class="n">glm_dict_base</span><span class="p">,</span> <span class="n">obj_type_base</span><span class="p">,</span> <span class="n">globals_list_base</span><span class="p">,</span> <span class="n">include_list_base</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span>
+                                     <span class="n">file_name</span><span class="p">,</span>
+                                     <span class="n">sync_list_base</span><span class="p">)</span>
+
+    <span class="c1"># write voltage objects and property lists</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">test_case_dir</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;voltage_obj.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">bus_list_voltage</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;voltage_prop.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">prop_voltage</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+    <span class="c1"># % load residential load data</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">load_data_dir</span><span class="p">)</span>
+    <span class="n">data_use</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data_2015_use.csv&#39;</span><span class="p">)</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="mi">2018</span>
+
+    <span class="n">timestamp_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_use</span><span class="o">.</span><span class="n">month</span><span class="p">))]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamp_list</span><span class="p">)):</span>
+        <span class="n">timestamp_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">data_use</span><span class="o">.</span><span class="n">month</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                              <span class="n">data_use</span><span class="o">.</span><span class="n">day</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">data_use</span><span class="o">.</span><span class="n">hour</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                              <span class="n">data_use</span><span class="o">.</span><span class="n">minute</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">data_use</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;%m-</span><span class="si">%d</span><span class="s2">-%Y %H:%M:%S&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">timestamp_list</span><span class="p">]</span>
+    <span class="n">data_use</span> <span class="o">=</span> <span class="n">data_use</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">pandas</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">data_use</span><span class="o">.</span><span class="n">timestamp</span><span class="p">))</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">starttime_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">starttime_str</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">starttime_str</span><span class="p">[</span><span class="mi">9</span><span class="p">:</span><span class="mi">11</span><span class="p">]),</span>
+                                   <span class="nb">int</span><span class="p">(</span><span class="n">starttime_str</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">starttime_str</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">17</span><span class="p">]))</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">endtime_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">endtime_str</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">endtime_str</span><span class="p">[</span><span class="mi">9</span><span class="p">:</span><span class="mi">11</span><span class="p">]),</span>
+                                 <span class="nb">int</span><span class="p">(</span><span class="n">endtime_str</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">endtime_str</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">17</span><span class="p">]))</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">data_use_filt</span> <span class="o">=</span> <span class="n">data_use</span><span class="p">[</span><span class="n">data_use</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">start_time</span><span class="p">]</span>
+    <span class="n">data_use_filt</span> <span class="o">=</span> <span class="n">data_use_filt</span><span class="p">[</span><span class="n">data_use_filt</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">end_time</span><span class="p">]</span>
+    <span class="n">data_use</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># clean up memory</span>
+
+    <span class="n">data_use_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data_use_filt</span><span class="p">[</span><span class="n">data_use_filt</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">agg_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data_use_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">admd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">agg_power</span><span class="p">)</span>
+    <span class="n">admd</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># After diversity maximum demand</span>
+
+    <span class="c1"># % generate glm for homes</span>
+
+    <span class="c1"># Initialize dictionaries and lists</span>
+    <span class="n">glm_house_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">obj_type</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">globals_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">include_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sync_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">key_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;tape&#39;</span><span class="p">}</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Triplex line conductor</span>
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;c1/0 AA triplex&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.97&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;geometric_mean_radius&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0111&#39;</span><span class="p">}</span>
+
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;triplex_line_conductor&#39;</span><span class="p">}</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Triplex line configuration todo: where are these from?</span>
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;triplex_line_config&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;conductor_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;c1/0 AA triplex&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;conductor_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;c1/0 AA triplex&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;conductor_N&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;c1/0 AA triplex&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;insulation_thickness&#39;</span><span class="p">:</span> <span class="s1">&#39;0.08&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;diameter&#39;</span><span class="p">:</span> <span class="s1">&#39;0.368&#39;</span><span class="p">}</span>
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;triplex_line_configuration&#39;</span><span class="p">}</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># TODO: model two cases for this work. One with 120/240 V and one with</span>
+    <span class="c1"># TODO: find the source for these</span>
+    <span class="c1">#  House Transformer configuration (NOTE: the nominal voltage should depend on the voltage at the node of</span>
+    <span class="c1">#  the spot-load so a future task will be to automate this.</span>
+    <span class="c1">#  For now, the code doesn&#39;t break because the voltages are the same everywhere</span>
+
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;house_transformer&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;connect_type&#39;</span><span class="p">:</span> <span class="s1">&#39;SINGLE_PHASE_CENTER_TAPPED&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;install_type&#39;</span><span class="p">:</span> <span class="s1">&#39;PADMOUNT&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;primary_voltage&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nominal_voltage</span><span class="p">))[</span><span class="mi">0</span><span class="p">]),</span>
+                                 <span class="c1"># update to include possibly multiple transformer configurations</span>
+                                 <span class="s1">&#39;secondary_voltage&#39;</span><span class="p">:</span> <span class="s1">&#39;120 V&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;power_rating&#39;</span><span class="p">:</span> <span class="s1">&#39;20.0&#39;</span><span class="p">,</span>  <span class="c1"># units in kVA</span>
+                                 <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00600&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;reactance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00400&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;shunt_impedance&#39;</span><span class="p">:</span> <span class="s1">&#39;339.610+336.934j&#39;</span><span class="p">}</span>
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;transformer_configuration&#39;</span><span class="p">}</span>
+    <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1">####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION STARTS HERE ####</span>
+
+    <span class="c1"># Fast charging station transformer configuration</span>
+    <span class="c1"># find only meters with ABC phases (3-phase) for DCFC connection</span>
+    <span class="n">standard_rating</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># use standard transformer ratings, not arbitrary</span>
+    <span class="n">glm_subset_dict_dcfc</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">subdict</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">subdict</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span>
+                            <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;meter&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;ABC&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]}</span>
+    <span class="n">num_fast_charging_nodes</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_dcfc_nodes&#39;</span><span class="p">]</span>
+    <span class="n">num_charging_stalls_per_node</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_dcfc_stalls_per_node&#39;</span><span class="p">]</span>  <span class="c1"># int</span>
+    <span class="n">charging_stall_base_rating</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;dcfc_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># kW</span>
+    <span class="n">trans_standard_ratings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">37.5</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mf">112.5</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>  <span class="c1"># units in kVA # TODO: get references for these</span>
+    <span class="n">DCFC_voltage</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;dcfc_voltage&#39;</span><span class="p">]</span>  <span class="c1"># volts (480 volts is the most common DCFC transformer Secondary now)</span>
+    <span class="n">DCFC_trans_power_rating_kW</span> <span class="o">=</span> <span class="n">charging_stall_base_rating</span> <span class="o">*</span> <span class="mi">1</span>  <span class="c1"># kw base rating X number of stalls will oversize it for load</span>
+    <span class="n">load_pf</span> <span class="o">=</span> <span class="mf">0.95</span>  <span class="c1"># this can be &gt;= and many EVSE can have pf close to 1. In initial simulation, they will be unity</span>
+    <span class="n">DCFC_trans_power_rating_kVA</span> <span class="o">=</span> <span class="n">DCFC_trans_power_rating_kW</span> <span class="o">/</span> <span class="n">load_pf</span>
+    <span class="n">proximal_std_rating</span> <span class="o">=</span> <span class="n">trans_standard_ratings</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">trans_standard_ratings</span> <span class="o">-</span> <span class="n">DCFC_trans_power_rating_kVA</span><span class="p">))]</span>  <span class="c1"># find the closest transformer rating</span>
+    <span class="k">if</span> <span class="n">standard_rating</span><span class="p">:</span>
+        <span class="n">DCFC_trans_power_rating_kVA</span> <span class="o">=</span> <span class="n">proximal_std_rating</span>
+    <span class="n">charging_bus_subset_list</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">glm_subset_dict_dcfc</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">num_fast_charging_nodes</span><span class="p">)</span>
+
+    <span class="c1">#   TODO: verify these or get more configs</span>
+    <span class="c1">#   This is the transformer configuration that is inherited for DCFC</span>
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dcfc_transformer&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;connect_type&#39;</span><span class="p">:</span> <span class="s1">&#39;WYE_WYE&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;install_type&#39;</span><span class="p">:</span> <span class="s1">&#39;PADMOUNT&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;primary_voltage&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nominal_voltage</span><span class="p">))[</span><span class="mi">0</span><span class="p">]),</span>
+                                 <span class="s1">&#39;secondary_voltage&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">DCFC_voltage</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; V&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;power_rating&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">DCFC_trans_power_rating_kVA</span><span class="p">),</span>
+                                 <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00600&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;reactance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00400&#39;</span>
+                                 <span class="p">}</span>
+
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;transformer_configuration&#39;</span><span class="p">}</span>
+    <span class="n">key_index</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># this populates a list of all the objects and configs</span>
+
+    <span class="c1">##########</span>
+    <span class="n">fast_charging</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">fast_charging</span><span class="p">:</span>
+        <span class="c1"># Not implemented yet, but we want to automate the creation of dedicated transformers if scenario is fast-charging</span>
+        <span class="k">pass</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">fast_charging_bus_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># getting the 3-phase meters (nodes) that were stored in the charging_bus_subset_list</span>
+    <span class="k">for</span> <span class="n">meter_dict</span> <span class="ow">in</span> <span class="n">charging_bus_subset_list</span><span class="p">:</span>
+        <span class="c1"># load object</span>
+        <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dcfc_load_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                     <span class="s1">&#39;load_class&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+                                     <span class="s1">&#39;nominal_voltage&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">DCFC_voltage</span><span class="p">),</span>
+                                     <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="s1">&#39;ABCN&#39;</span><span class="p">,</span>
+                                     <span class="c1"># this phase is currently</span>
+                                     <span class="c1"># hard-coded because we know we want to only connect to 3-phase connection</span>
+                                     <span class="s1">&#39;constant_power_A&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0+0.0j&#39;</span><span class="p">,</span>
+                                     <span class="s1">&#39;constant_power_B&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0+0.0j&#39;</span><span class="p">,</span>
+                                     <span class="s1">&#39;constant_power_C&#39;</span><span class="p">:</span> <span class="s1">&#39;0.0+0.0j&#39;</span><span class="p">}</span>  <span class="c1"># the powers get populated in simulation</span>
+
+        <span class="c1"># need to check the phase of the load object to determine how to choose the transformer phase</span>
+
+        <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;load&#39;</span><span class="p">}</span>
+        <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1">#   Transformer (DCFC transformer)</span>
+        <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;dcfc_trans_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                     <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="n">meter_dict</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">],</span>
+                                     <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="n">meter_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                     <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;dcfc_load_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                     <span class="s1">&#39;configuration&#39;</span><span class="p">:</span> <span class="s1">&#39;dcfc_transformer&#39;</span><span class="p">}</span>
+        <span class="n">fast_charging_bus_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dcfc_load_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;transformer&#39;</span><span class="p">}</span>
+        <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">test_case_dir</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;dcfc_bus.txt&#39;</span><span class="p">,</span> <span class="n">fast_charging_bus_list</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># this stores all the nodes in which there is dcfc</span>
+
+    <span class="c1"># todo: level 2 is 208/240 V so need to reflect that as well (done)</span>
+
+    <span class="c1">####  CONFIGURE LOAD OBJECTS AND TRANSFORMERS FOR DCFC SIMULATION ENDS HERE ####</span>
+
+    <span class="c1">######### L2 STARTS HERE ###########</span>
+    <span class="c1">#   This is the transformer configuration that is inherited for L2 208-240V</span>
+    <span class="n">standard_rating</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">glm_subset_dict_L2</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">subdict</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">subdict</span> <span class="ow">in</span> <span class="n">glm_dict_base</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span>
+                          <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;meter&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;ABC&#39;</span> <span class="ow">in</span> <span class="n">subdict</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]}</span>
+    <span class="n">num_L2_charging_nodes</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_l2_nodes&#39;</span><span class="p">]</span>
+    <span class="n">num_charging_stalls_per_node</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;num_l2_stalls_per_node&#39;</span><span class="p">]</span>  <span class="c1"># make param later</span>
+    <span class="n">charging_stall_base_rating</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;l2_charging_stall_base_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># kW (make param later)</span>
+    <span class="n">L2_voltage</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;l2_voltage&#39;</span><span class="p">]</span>  <span class="c1"># Volts (usually 208 - 240V)</span>
+    <span class="n">L2_trans_power_rating_kW</span> <span class="o">=</span> <span class="n">charging_stall_base_rating</span> <span class="o">*</span> <span class="n">num_charging_stalls_per_node</span>  <span class="c1"># kw</span>
+    <span class="n">load_pf</span> <span class="o">=</span> <span class="mf">0.95</span>  <span class="c1"># this can be &gt;= and many EVSE can have pf close to 1. In initial simulation, they will be unity</span>
+    <span class="n">L2_trans_power_rating_kVA</span> <span class="o">=</span> <span class="n">L2_trans_power_rating_kW</span> <span class="o">/</span> <span class="n">load_pf</span>
+    <span class="n">proximal_std_rating</span> <span class="o">=</span> <span class="n">trans_standard_ratings</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">trans_standard_ratings</span> <span class="o">-</span> <span class="n">L2_trans_power_rating_kVA</span><span class="p">))]</span>  <span class="c1"># find the closest transformer rating</span>
+    <span class="k">if</span> <span class="n">standard_rating</span><span class="p">:</span>
+        <span class="n">L2_trans_power_rating_kVA</span> <span class="o">=</span> <span class="n">proximal_std_rating</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using standard </span><span class="si">{</span><span class="n">L2_trans_power_rating_kVA</span><span class="si">}</span><span class="s1"> kVA rating for L2 chargers&#39;</span><span class="p">)</span>
+
+    <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;L2_transformer&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;connect_type&#39;</span><span class="p">:</span> <span class="s1">&#39;SINGLE_PHASE_CENTER_TAPPED&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;install_type&#39;</span><span class="p">:</span> <span class="s1">&#39;PADMOUNT&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;primary_voltage&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nominal_voltage</span><span class="p">))[</span><span class="mi">0</span><span class="p">]),</span>
+                                 <span class="c1"># update to include possibly multiple transformer configurations</span>
+                                 <span class="s1">&#39;secondary_voltage&#39;</span><span class="p">:</span> <span class="s1">&#39;240 V&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;power_rating&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">L2_trans_power_rating_kVA</span><span class="p">),</span>  <span class="c1"># units in kVA</span>
+                                 <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00600&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;reactance&#39;</span><span class="p">:</span> <span class="s1">&#39;0.00400&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;shunt_impedance&#39;</span><span class="p">:</span> <span class="s1">&#39;339.610+336.934j&#39;</span>
+                                 <span class="p">}</span>
+    <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;transformer_configuration&#39;</span><span class="p">}</span>
+
+    <span class="n">key_index</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># this populates a list of all the objects and configs</span>
+
+    <span class="c1">######### L2 ENDS (initial trans config ends) HERE ###########</span>
+
+    <span class="n">num_transformers_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fraction_commercial_sec_node</span> <span class="o">=</span> <span class="mf">0.3</span>
+    <span class="c1"># CALCULATE LOAD MAGNITUDE FOR EACH SPOT LOAD</span>
+    <span class="n">spot_load_magnitude</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1000</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">))]</span>
+    <span class="n">commercial_load_indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">contains_commercial_load</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">num_L2_charging_nodes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">commercial_load_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">))</span> <span class="k">if</span>
+                                   <span class="n">spot_load_magnitude</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">L2_trans_power_rating_kVA</span><span class="p">]</span>
+        <span class="n">contains_commercial_load</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">commercial_load_indices</span><span class="p">,</span>
+                                                 <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fraction_commercial_sec_node</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">commercial_load_indices</span><span class="p">)),</span>
+                                                     <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># select (sample) triplex node that will have L2 charging in addition to commercial load (e.g. work buildings/hotels)</span>
+    <span class="n">L2_charging_node_options</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">real_power_df</span><span class="p">,</span> <span class="n">reactive_power_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bus_list</span><span class="p">)):</span>
+        <span class="n">commercial_load</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">contains_commercial_load</span><span class="p">:</span>
+            <span class="n">commercial_load</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">num_transformers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">L2_trans_power_rating_kVA</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)))</span>  <span class="c1"># np.floor because of higher kVA leads to no transformers and causes downstream errors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_transformers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="mi">20</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)))</span>  <span class="c1"># need to discuss this a bit more todo: 20 was used here because of the tranformer rating is 20</span>
+        <span class="n">num_transformers_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num_transformers</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_transformers</span><span class="p">):</span>  <span class="c1"># number of transformers per bus</span>
+            <span class="c1"># Triplex node</span>
+            <span class="k">if</span> <span class="n">commercial_load</span><span class="p">:</span>
+                <span class="c1"># todo: is there a way to initially set loading?</span>
+                <span class="n">num_houses</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">L2_trans_power_rating_kVA</span> <span class="o">*</span> <span class="n">pf_min</span><span class="p">)</span> <span class="o">*</span> <span class="n">safety_factor</span> <span class="o">/</span> <span class="n">admd</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_houses</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">20</span> <span class="o">*</span> <span class="n">pf_min</span><span class="p">)</span> <span class="o">*</span> <span class="n">safety_factor</span> <span class="o">/</span> <span class="n">admd</span><span class="p">)</span>  <span class="c1"># admd is the max power. 0.85 is the worst pf</span>
+            <span class="n">real_power_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">data_use_mat</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data_use_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">num_houses</span><span class="p">,))],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">pf_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">pf_min</span><span class="p">,</span> <span class="n">pf_max</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">real_power_trans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># sample power factor</span>
+            <span class="n">reactive_power_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">real_power_trans</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">pf_trans</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">real_power_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">real_power_trans</span><span class="p">)})</span>
+                <span class="n">reactive_power_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">reactive_power_trans</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">real_power_df</span><span class="p">[</span><span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">real_power_trans</span>
+                <span class="n">reactive_power_df</span><span class="p">[</span><span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">reactive_power_trans</span>
+
+            <span class="k">if</span> <span class="n">commercial_load</span><span class="p">:</span>
+                <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;nominal_voltage&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">L2_voltage</span><span class="si">}</span><span class="s1">.00&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">load_phases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+                                             <span class="s1">&#39;power_12&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_transformers</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">,</span>
+                                                                                                                 <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                                                 <span class="s1">&#39;)&#39;</span><span class="p">,</span>
+                                                 <span class="s1">&#39;&#39;</span><span class="p">)}</span>  <span class="c1"># +3 is an ad-hoc way to make base case run normally</span>
+                <span class="n">L2_charging_node_options</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;tn_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>  <span class="c1"># add this into options for L2 charging site for sim</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;nominal_voltage&#39;</span><span class="p">:</span> <span class="s1">&#39;120.00&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">load_phases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+                                             <span class="s1">&#39;power_12&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">spot_load_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_transformers</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">,</span>
+                                                                                                                 <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                                                 <span class="s1">&#39;)&#39;</span><span class="p">,</span>
+                                                 <span class="s1">&#39;&#39;</span><span class="p">)}</span>  <span class="c1"># +3 is an ad-hoc way to make base case run normally</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;triplex_node&#39;</span><span class="p">}</span>
+            <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># TODO: reduced the above based on num transformers to ensure that things run normally.</span>
+
+            <span class="c1">#   Transformer (triplex transformer)</span>
+            <span class="k">if</span> <span class="n">commercial_load</span><span class="p">:</span>
+                <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;trip_trans_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">load_phases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">bus_list</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                                             <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;configuration&#39;</span><span class="p">:</span> <span class="s1">&#39;L2_transformer&#39;</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">glm_house_dict</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;trip_trans_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">load_phases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">bus_list</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                                             <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;tn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                                             <span class="s1">&#39;configuration&#39;</span><span class="p">:</span> <span class="s1">&#39;house_transformer&#39;</span><span class="p">}</span>
+            <span class="n">obj_type</span><span class="p">[</span><span class="n">key_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;transformer&#39;</span><span class="p">}</span>
+            <span class="n">key_index</span> <span class="o">=</span> <span class="n">key_index</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Now get the desired L2 charging locs and save them for simulation</span>
+    <span class="n">L2_charging_bus_subset_list</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">L2_charging_node_options</span><span class="p">,</span> <span class="n">num_L2_charging_nodes</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">test_case_dir</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;L2charging_bus.txt&#39;</span><span class="p">,</span> <span class="n">L2_charging_bus_subset_list</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># write out glm file for secondary distribution</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">test_case_dir</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">feeder_name</span> <span class="o">+</span> <span class="s1">&#39;_secondary.glm&#39;</span>
+    <span class="n">glm_mod_functions</span><span class="o">.</span><span class="n">write_base_glm</span><span class="p">(</span><span class="n">glm_house_dict</span><span class="p">,</span> <span class="n">obj_type</span><span class="p">,</span> <span class="n">globals_list</span><span class="p">,</span> <span class="n">include_list</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span>
+                                     <span class="n">sync_list</span><span class="p">)</span>
+
+    <span class="c1"># save load data (THESE ARE TYPICALLY UNCONTROLLABLE LOADS)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">test_case_dir</span><span class="p">)</span>
+    <span class="n">real_power_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;real_power.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">reactive_power_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;reactive_power.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Emmanuel Balogun.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

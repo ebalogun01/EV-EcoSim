@@ -43,7 +43,7 @@ class Optimization:
         self.solar = solar
         self.controller = controller  # update this somewhere else in simulation
         self.problem = None
-        self.market_constraints = None
+        self.market_constraints = []
         self.battery_constraints = controller.get_battery_constraints(power_demand)
         self.cost_per_opt = []
         self.solver = getattr(cp, solver)

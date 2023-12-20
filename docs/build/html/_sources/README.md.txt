@@ -3,11 +3,7 @@
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging stations. 
 Paper: https://doi.org/10.36227/techrxiv.23596725.v2
 
-[//]: # (<img src="doc_images/sim_control_diagram.png">)
-
 ![sim_frame.png](doc_images%2Fsim_frame.png)
-
-[//]: # (<img src="doc_images/sim_frame.png" alt="EV-Ecosim Framework Description" width="3000" height="400" title="EV-Ecosim Framework Description">)
 
 ## Authors
 Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
@@ -15,9 +11,10 @@ Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
 ## Requirements
 
-GiSMo SLAC GridLAB-D installation (master branch): https://github.com/arras-energy/gridlabd. 
-This GridLAB-D version is required for the python co-simulation functionality. Recommended use with AWS EC2 SLAC 
-GiSMo HiPAS GridLAB-D AMI (beauharnois-X).
+GiSMo SLAC GridLAB-D installation (master branch): [here](https://github.com/arras-energy/gridlabd). 
+This GridLAB-D version is required for the python co-simulation functionality. 
+
+Recommended use with AWS EC2 SLAC GiSMo HiPAS GridLAB-D AMI (beauharnois-X) - Update this.
 
 ## Folder descriptions
 
@@ -31,12 +28,9 @@ transformers, charging stations.
 
 Includes existing base case building/home load (usually uncontrollable) within the distribution grid. This work uses 
 proprietary Pecan Street Data. Below is an exmaple data prototype for the base load data. Note that column fields are
-case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation. ``
+case-sensitive. The data used in the original paper has a minute resolution, as is the power system simulation.
 
 <img src="doc_images/baseload_data_proto.png" width="800" alt="Base load data prototype.">
-
-[//]: # (![baseload_data_proto.png]&#40;doc_images%2Fbaseload_data_proto.png&#41;)
-
 
 ### batt_sys_identification
 Battery system identification module. Hosts the class for generating battery system identification parameters
@@ -58,17 +52,28 @@ be modified so the model runs using the new custom parameters.
 ### charging_sim
 
 This contains the `configs` folder which includes the configuration files for all the relevant modules.Hosts the implementation of the physical modules, including:
-##### `battery.py` - Battery cell module. 
-##### `batterypack.py` - Battery pack module.
-##### `batteryAgingSim.py` - Battery aging module.
-##### `controller.py` - Controller module.
-##### `chargingStation.py` - Charging station module.
-##### `electricityPrices.py` - Electricity prices module. 
-##### `optimization.py` - Optimization module.
-##### `orchestrator.py` - Simulation orchestrator module.
-##### `solar.py` - Solar PV module.
-##### `utils.py` - Hosts utility functions used by some modules.
-##### `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
+
+`battery.py` - Battery cell module. 
+
+`batterypack.py` - Battery pack module.
+
+`batteryAgingSim.py` - Battery aging module.
+
+`controller.py` - Controller module.
+
+`chargingStation.py` - Charging station module.
+
+`electricityPrices.py` - Electricity prices module. 
+
+`optimization.py` - Optimization module.
+
+`orchestrator.py` - Simulation orchestrator module.
+
+`solar.py` - Solar PV module.
+
+`utils.py` - Hosts utility functions used by some modules.
+
+`simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
 
 
 ### DLMODELS
