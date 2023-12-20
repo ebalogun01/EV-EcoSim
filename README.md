@@ -1,4 +1,5 @@
-# EV-EcoSim
+<img src="doc_images/EV-EcoSimLogo2.png" width="500">
+
 [![Basic Module Tests](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml)
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
@@ -7,7 +8,7 @@ Paper: https://doi.org/10.1109/TSG.2023.3339374
 ![sim_frame.png](doc_images%2Fsim_frame.png)
 
 ## Authors
-Emmanuel Balogun: ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
+Emmanuel Balogun (Project lead): ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
 ## Correspondence
 For any questions, related bugs, assistance or suggestions that cannot be made through a github pull request, please reach out to Emmanuel Balogun at ebalogun@stanford.edu.
@@ -193,3 +194,5 @@ For base case:
 ## Post-simulation analysis
  * This is done with the modules in the `analysis` folder. Please see the `analysis` folder section  for more details.
 
+## Acknowledgements
+This work was supported in part by Stanford Bitts and Watts, Chevron Energy Fellowship, and Siemens Technology.

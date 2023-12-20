@@ -11,6 +11,12 @@ class MyTestCase(unittest.TestCase):
 
     """
     def test_initialization(self):
+        """
+        Simple basic test to ensure that the clock module can be initialized to a valid object. This test will fail if
+        the module cannot be initialized.
+
+        :return: None.
+        """
         # Load the JSON config file.
         with open('../../charging_sim/configs/clock.json', 'r') as f:
             config = json.load(f)
