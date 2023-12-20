@@ -10,6 +10,10 @@ Paper: https://doi.org/10.1109/TSG.2023.3339374
 ## Authors
 Emmanuel Balogun (Project lead): ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
 
+## Contribution
+We welcome all contributions to the project, including documentation and feature improvements, etc. 
+Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details.
+
 ## Correspondence
 For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to project lead.
 
