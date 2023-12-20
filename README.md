@@ -52,8 +52,8 @@ The data prototype is shown below. Note that column fields are case-sensitive.
 ![batt_sys_data_proto.png](doc_images%2Fbatt_sys_data_proto.png)
 
 <br />
-<div style="text-align: center" xml:space="default">
-  <img src="doc_images/ECM.png" width="600" alt="Battery ECM">
+<div style="text-align: center">
+  <img src="doc_images/ECM.png" width="500" alt="Battery ECM">
   <figcaption>Equivalent circuit model (ECM) for battery system identification</figcaption>
 </div>
 <br />
