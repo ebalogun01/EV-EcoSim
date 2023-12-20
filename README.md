@@ -165,7 +165,8 @@ Ensure gridlabd is installed by following recommended installation method if usi
 For offline (One-shot) optimization simulation:
 * Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
   fields can be modified. Once the fields are modified as desired, navigate to `app.py` which is also in the root directory. Make sure the *test* is set to *False* (see below) in the `app.py` file. 
-  <img src="doc_images/app_run_readme.png" width="200">
+  
+  <img src="doc_images/app_run_readme.png" width="300">
 
   Then run `app.py`. This will run the simulation and generate the results in the `results` folder under the `analysis` directory. To perform post-simulation cost 
   analysis, navigate to the `analysis` folder and run `load_post_opt_costs.py`. This will generate the cost analysis plots and tables in the `analysis` folder.
