@@ -51,6 +51,13 @@ The data prototype is shown below. Note that column fields are case-sensitive.
 
 ![batt_sys_data_proto.png](doc_images%2Fbatt_sys_data_proto.png)
 
+<br />
+<div style="text-align: center" xml:space="default">
+  <img src="doc_images/ECM.png" width="300" alt="Battery ECM">
+  <figcaption>Equivalent circuit model (ECM) for battery system identification</figcaption>
+</div>
+<br />
+
 The module will save a new `.csv` file with an additional field for the corrected open circuit voltage (OCV) values;
 this field (column) will be labelled `ocv_corr` within the new battery data csv, including the existing columns as shown
 in the data prototype above.
@@ -66,30 +73,23 @@ genetic algorithm with a population of 10.
 <img src="doc_images/battery_model_error_mape.png" width="500">
 
 ### charging_sim
-This contains the `configs` folder which includes the configuration files for all the relevant modules. Hosts the implementation of the physical modules, including:
+This contains the `configs` folder which includes the configuration files for all the relevant modules, such as battery,
+battery aging, solar modules, etc. It encompasses the implementation of the physical modules, including:
 
-`battery.py` - Battery cell module. 
-
-`batterypack.py` - Battery pack module.
-
-`batteryAgingSim.py` - Battery aging module.
-
-`controller.py` - Controller module.
-
-`chargingStation.py` - Charging station module.
-
-`electricityPrices.py` - Electricity prices module. 
-
-`optimization.py` - Optimization module.
-
-`orchestrator.py` - Simulation orchestrator module.
-
-`solar.py` - Solar PV module.
-
-`utils.py` - Hosts utility functions used by some modules.
-
-`simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
-
+ * `battery.py` - Battery cell module.
+ * `batteryAgingSim.py` - Battery aging module.
+ * `batterypack.py` - Battery pack module.
+ * `chargingStation.py` - Charging station module.
+ * `clock.py` - Clock module.
+ * `controller.py` - Controller module.
+ * `electricityPrices.py` - Electricity prices module
+ * `node.py` - Node module (for centralized DER control and optimization).
+ * `optimization.py` - Optimization module.
+ * `orchestrator.py` - Simulation orchestrator module.
+ * `simulate.py` - Offline DER control optimization for cost minimization (this is run for offline mode (no state feedback)).
+ * `solar.py` - Solar PV module.
+ * `transformer.py` - Transformer module.
+ * `utils.py` - Hosts utility functions used by some modules.
 
 ### DLMODELS
 This includes legacy load forecasts models developed (not needed).
