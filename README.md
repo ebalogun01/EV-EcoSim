@@ -5,7 +5,7 @@
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
 Paper: https://doi.org/10.1109/TSG.2023.3339374 
 
-![sim_frame.png](doc_images%2Fsim_frame.png)
+[//]: # (![sim_frame.png]&#40;doc_images%2Fsim_frame.png&#41;)
 
 ## Authors
 Emmanuel Balogun (Project lead): ebalogun@stanford.edu, Lily Buechler: ebuech@stanford.edu
