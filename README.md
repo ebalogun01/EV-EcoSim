@@ -1,4 +1,4 @@
-<img src="doc_images/EV-EcoSimLogo2.png" width="500">
+<img src="doc_images/EV-EcoSimLogo.png" width="500">
 
 [![Basic Module Tests](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml)
 
