@@ -1,5 +1,4 @@
-<img src="doc_images/EV-EcoSimLogo.png" width="500">
-
+![EV-EcoSimLogo.png](doc_images%2FEV-EcoSimLogo.png)
 [![Basic Module Tests](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ebalogun01/EV-EcoSim/actions/workflows/module-tests.yml)
 
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
