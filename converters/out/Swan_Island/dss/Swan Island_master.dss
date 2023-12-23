@@ -1,26 +1,5 @@
 clear
 redirect Swan Island_1.sub
 redirect Swan Island_catalog.dss
-redirect 101L1_network.dss
-redirect 101L1_loads.dss
-redirect 101L2_network.dss
-redirect 101L2_loads.dss
-redirect 101L3_network.dss
-redirect 101L3_loads.dss
-redirect 101L4_network.dss
-redirect 101L4_loads.dss
-redirect 101L5_network.dss
-redirect 101L5_loads.dss
-redirect 101L6_network.dss
-redirect 101L6_loads.dss
-redirect 101L7_network.dss
-redirect 101L7_loads.dss
-redirect 101L8_network.dss
-redirect 101L8_loads.dss
-redirect Swan Island.edits
-Set VoltageBases = [46.0, 13.2, 4.16, 0.208]
-CalcVoltageBases
-SetLoadAndGenKv
-buscoords Swan Island_xy.dat
-solve mode=snap
-batchedit energymeter..* action=take
+redirect SWAN ISLAND-BASIN_network.dss
+redirect SWAN ISLAND-BASIN_loads.dss

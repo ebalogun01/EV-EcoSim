@@ -39,7 +39,7 @@ class Inverter:
     :returns: Inverter object.
     """
 
-    def __init__(self, node=None, config=None, controller=None):
+    def __init__(self, config, node=None, controller=None):
         self.node = node  # This is used for inverter location.
         self.controller = controller
         self.To = 273.15 + 23  # ambient temperature
