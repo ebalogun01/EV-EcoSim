@@ -6,6 +6,7 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import sys
+import argparse
 sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
@@ -46,7 +47,7 @@ def create_results_folder():
     os.mkdir('analysis/results')
 
 
-def load_default_input():
+def load_input():
     """
     Loads the default user input skeleton.
 
@@ -84,7 +85,7 @@ def make_month_str(month_int: int):
 # user_inputs = load_default_input()
 
 
-def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
+def simulate(user_inputs, sequential_run=True, parallel_run=False, testing=False):
     # Updating the user inputs based on frontend inputs.
     create_results_folder()  # Make a results folder if it does not exist.
 
@@ -221,11 +222,11 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
             voltage_idx += 1
         return scenarios_list
 
-    def run(scenario, testing=False):
+    def run(scenario, is_test=False):
         """
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
-        :param testing:
+        :param is_test:
         :param scenario: The scenario dictionary that would be run.
         :return: None.
         """
@@ -234,17 +235,17 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
         if not os.path.exists(save_folder_prefix):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
-        print('multistep')
-        if testing:
+        if is_test:
             print("Basic testing passed!")
             return True
+        print('multistep begin...')
         EV_charging_sim.multistep()
         print('multistep done')
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
             json.dump(scenario, outfile, indent=1)
 
-    def run_scenarios_sequential(testing=False):
+    def run_scenarios_sequential(is_test=testing):
         """
         Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
         which is a combination of all the capacities and c-rates.
@@ -265,17 +266,24 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False, test=False):
                 scenario["dcfc_caps"] = [station["DCFC"] for station in dcfc_dicts_list]
             if l2_dicts_list:
                 scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
-            run(scenario, testing=testing)
+            print(is_test)
+            run(scenario, is_test=is_test)
 
     if sequential_run:
         print("Running scenarios sequentially...")
-        run_scenarios_sequential(testing=test)
+        run_scenarios_sequential(is_test=test)
         print("Simulation complete!")
 
     return
 
 
 if __name__ == '__main__':
-    test = False
-    USER_INPUTS = load_default_input()
-    simulate(USER_INPUTS, test=test)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test', type=bool, default=False,
+                        help='This flag only included for testing deployment, do not change.')
+
+    args = parser.parse_args()
+    test = args.test
+
+    USER_INPUTS = load_input()
+    simulate(USER_INPUTS, testing=test)
