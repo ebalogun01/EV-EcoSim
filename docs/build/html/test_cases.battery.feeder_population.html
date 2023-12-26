@@ -102,72 +102,11 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-test_cases.battery.feeder_population.feeder_population_centralized">
-<span id="test-cases-battery-feeder-population-feeder-population-centralized-module"></span><h2>test_cases.battery.feeder_population.feeder_population_centralized module<a class="headerlink" href="#module-test_cases.battery.feeder_population.feeder_population_centralized" title="Permalink to this heading"></a></h2>
-<p><strong>Introduction</strong></p>
-<p>This is the feeder population module within the battery test case. This file performs the pre-simulation step for
-running EV-EcoSim.</p>
-<p>It takes in a base Gridlab-D Model (GLM) file (for example, <cite>IEEE123.glm</cite>), and modifies that file by including
-secondary distribution, home loads, and EV Charging station and transformers.</p>
-<p>Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and
-&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the
-simulation. These files are saved in the ‘test_case_dir’ field specified in config.txt.</p>
-<p><strong>Input file description</strong></p>
-<p>Config <cite>config.txt</cite>: configuration file describing the pre-simulation parameters.
-This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
-are files that are read in to run the EV-EcoSim environment.</p>
-<p><strong>Output file description</strong></p>
-<p><cite>real_power.csv</cite> - Real power; this is residential real load timeseries file per node_name/bus</p>
-<p><cite>reactive_power.csv</cite> - Reactive power; this is residential reactive load timeseries file per node_name/bus</p>
-<p><cite>dcfc_bus.txt</cite> - DC fast charging bus locations; this is used in co-simulation</p>
-<p><cite>L2charging_bus.txt</cite> - L2 charging bus locations; this is used in co-simulation</p>
-<p>This will be used for the centralized DER.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="test_cases.battery.feeder_population.feeder_population_centralized.main">
-<span class="sig-prename descclassname"><span class="pre">test_cases.battery.feeder_population.feeder_population_centralized.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.feeder_population.feeder_population_centralized.main" title="Permalink to this definition"></a></dt>
-<dd><p>Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
-<cite>IEEE123.glm</cite>), and modifies that file by including secondary distribution, home loads, and EV Charging station and
-transformers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="test-cases-battery-feeder-population-feeder-population-centralized-module">
+<h2>test_cases.battery.feeder_population.feeder_population_centralized module<a class="headerlink" href="#test-cases-battery-feeder-population-feeder-population-centralized-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-test_cases.battery.feeder_population.feeder_population_collocated">
-<span id="test-cases-battery-feeder-population-feeder-population-collocated-module"></span><h2>test_cases.battery.feeder_population.feeder_population_collocated module<a class="headerlink" href="#module-test_cases.battery.feeder_population.feeder_population_collocated" title="Permalink to this heading"></a></h2>
-<p><strong>Introduction</strong></p>
-<p>This is the feeder population module within the battery test case. This file performs the pre-simulation step for
-running EV-EcoSim.</p>
-<p>It takes in a base Gridlab-D Model (GLM) file (for example, <cite>IEEE123.glm</cite>), and modifies that file by including
-secondary distribution, home loads, and EV Charging station and transformers.</p>
-<p>Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and
-&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the
-simulation. These files are saved in the ‘test_case_dir’ field specified in config.txt.</p>
-<p><strong>Input file description</strong></p>
-<p>Config <cite>config.txt</cite>: configuration file describing the pre-simulation parameters.
-This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
-are files that are read in to run the EV-EcoSim environment.</p>
-<p><strong>Output file description</strong></p>
-<p><cite>real_power.csv</cite> - Real power; this is residential real load timeseries file per node_name/bus</p>
-<p><cite>reactive_power.csv</cite> - Reactive power; this is residential reactive load timeseries file per node_name/bus</p>
-<p><cite>dcfc_bus.txt</cite> - DC fast charging bus locations; this is used in co-simulation</p>
-<p><cite>L2charging_bus.txt</cite> - L2 charging bus locations; this is used in co-simulation</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="test_cases.battery.feeder_population.feeder_population_collocated.main">
-<span class="sig-prename descclassname"><span class="pre">test_cases.battery.feeder_population.feeder_population_collocated.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.battery.feeder_population.feeder_population_collocated.main" title="Permalink to this definition"></a></dt>
-<dd><p>Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
-<cite>IEEE123.glm</cite>), and modifies that file by including secondary distribution, home loads, and EV Charging station and
-transformers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="test-cases-battery-feeder-population-feeder-population-collocated-module">
+<h2>test_cases.battery.feeder_population.feeder_population_collocated module<a class="headerlink" href="#test-cases-battery-feeder-population-feeder-population-collocated-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-test_cases.battery.feeder_population.glm_mod_functions">
 <span id="test-cases-battery-feeder-population-glm-mod-functions-module"></span><h2>test_cases.battery.feeder_population.glm_mod_functions module<a class="headerlink" href="#module-test_cases.battery.feeder_population.glm_mod_functions" title="Permalink to this heading"></a></h2>
@@ -341,6 +280,23 @@ transformers.</p>
 </section>
 <section id="module-test_cases.battery.feeder_population">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-test_cases.battery.feeder_population" title="Permalink to this heading"></a></h2>
+<p><strong>Introduction</strong></p>
+<p>This is the feeder population module within the battery test case. This file performs the pre-simulation step for
+running EV-Ecosim.</p>
+<p>It takes in a base Gridlab-D Model (GLM) file (for example, <cite>IEEE123.glm</cite>), and modifies that file by including
+secondary distribution, home loads, and EV Charging station and transformers.</p>
+<p>Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and
+&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the
+simulation. These files are saved in the ‘test_case_dir’ field specified in config.txt.</p>
+<p><strong>Input file description</strong></p>
+<p>Config <cite>config.txt</cite>: configuration file describing the pre-simulation parameters.
+This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
+are files that are read in to run the EV-Ecosim environment.</p>
+<p><strong>Output file description</strong></p>
+<p><cite>real_power.csv</cite> - Real power; this is residential real load timeseries file per node_name/bus
+<cite>reactive_power.csv</cite> - Reactive power; this is residential reactive load timeseries file per node_name/bus
+<cite>dcfc_bus.txt</cite> - DC fast charging bus locations; this is used in co-simulation
+<cite>L2charging_bus.txt</cite> - L2 charging bus locations; this is used in co-simulation.</p>
 </section>
 </section>
 

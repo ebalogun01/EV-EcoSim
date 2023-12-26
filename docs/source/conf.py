@@ -8,7 +8,7 @@
 
 import os
 import sys
-# import shutil
+import shutil
 sys.path.insert(0, os.path.abspath("../.."))
 
 # sys.path.append('../../EV-EcoSim')
@@ -48,7 +48,7 @@ master_doc = "index"
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_show_sourcelink = False
-
+#
 # def copy_examples(app, docname):
 #     if app.builder.name == 'html':
 #         output_dir = os.path.join(app.outdir, 'readme', 'doc_images')

@@ -43,7 +43,7 @@ class CostEstimator:
         self.trans_cost_per_kVA = None  # create a non-linear cost curve for these prices (I sense batteries are the same)
         self.trans_normal_life = 180000  # hours
         self.resolution = 15
-        self.TOU_rates = np.loadtxt('../elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[:96 * self.num_days]  # change this to referenced property
+        self.TOU_rates = np.loadtxt('../data/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[:96 * self.num_days]  # change this to referenced property
         # todo: cannot find good source for 2400/240V transformer prices
 
     def calculate_battery_cost(self, result_dir):

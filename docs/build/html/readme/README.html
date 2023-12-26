@@ -65,6 +65,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#how-to-run">How to run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#post-simulation-analysis">Post-simulation analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
 </ul>
 </li>
 </ul>
@@ -228,22 +229,30 @@ from the simulation.</p>
 <section id="how-to-run">
 <h2>How to run<a class="headerlink" href="#how-to-run" title="Permalink to this heading"></a></h2>
 <p>Create a new environment using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">&lt;your</span> <span class="pre">env</span> <span class="pre">name&gt;</span> <span class="pre">-f</span> <span class="pre">environment.yml</span></code>OR
-install packages listed in the environment manually (RECOMMENDED)
-Ensure gridlabd is installed by following recommended installation method.</p>
-<p>For battery test case:</p>
-<ul class="simple">
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code>. This uses the
-<code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary
-distribution network with time-varying base loads, EV charging stations, with the required transformers.</p></li>
-<li><p>Once confirmed that <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code> has run successfully and generates the required <code class="docutils literal notranslate"><span class="pre">IEEE123_secondary.glm</span></code> and
-<code class="docutils literal notranslate"><span class="pre">IEEE123_populated.glm</span></code> files, you are done with the initial pre-simulation run prep.</p></li>
-<li><p>Now navigate one level of out <code class="docutils literal notranslate"><span class="pre">/feeder_population</span></code> and run scenarios.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scenarios.py</span></code></p></li>
+install packages listed in the environment manually. You can also use the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file to install the required packages.</p>
+<p>Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.</p>
+<p>For offline (One-shot) optimization simulation (Does not require GridLAB-D install):</p>
+<ul>
+<li><p>Open the <code class="docutils literal notranslate"><span class="pre">default_user_inputs.json</span></code> file in the root folder and modify the parameters as needed. The prepopulated
+fields can be modified. Once the fields are modified as desired, navigate to <code class="docutils literal notranslate"><span class="pre">app.py</span></code> which is also in the root directory. Make sure the <em>test</em> is set to <em>False</em> (see below) in the <code class="docutils literal notranslate"><span class="pre">app.py</span></code> file.</p>
+<img src="../../../doc_images/app_run_readme.png" width="300"><p>Then run <code class="docutils literal notranslate"><span class="pre">app.py</span></code>. This will run the simulation and generate the results in the <code class="docutils literal notranslate"><span class="pre">results</span></code> folder under the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> directory. To perform post-simulation cost
+analysis, navigate to the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">load_post_opt_costs.py</span></code>. This will generate the cost analysis plots and tables in the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder.</p>
+</li>
 </ul>
-<p>For base case:</p>
+<p>For online MPC battery test case (Requires GridLAB-D install):</p>
 <ul class="simple">
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">EV50_cosimulation/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code>. This uses the
-<code class="docutils literal notranslate"><span class="pre">./feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary distribution network <br />with time-varying base loads</p></li>
-<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">test_cases/base_case</span></code> and run master_sim.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">master_sim.py</span></code></p></li>
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population_collocated.py</span></code> for collocated (DEFAULT) case or <code class="docutils literal notranslate"><span class="pre">feeder_population_centralized.py</span></code>. This uses the
+<code class="docutils literal notranslate"><span class="pre">test_cases/battery/feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary
+distribution network with time-varying base loads, EV charging stations, Distributed Energy Resources (DERs - Solar, Storage), and required transformers.</p></li>
+<li><p>Once confirmed that <code class="docutils literal notranslate"><span class="pre">feeder_population_&lt;CASE_TYPE&gt;.py</span></code> (CASE_TYPE is either collocated or centralized) has run successfully and generates the required <code class="docutils literal notranslate"><span class="pre">IEEE123_secondary.glm</span></code> and
+<code class="docutils literal notranslate"><span class="pre">IEEE123_populated.glm</span></code> files, you are done with the initial pre-simulation run preparation.</p></li>
+<li><p>Now navigate one level of out <code class="docutils literal notranslate"><span class="pre">/feeder_population</span></code> and run scenarios.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scenarios.py</span></code> or <code class="docutils literal notranslate"><span class="pre">gridlabd</span> <span class="pre">python</span> <span class="pre">scenarios.py</span></code> (recommended).</p></li>
+</ul>
+<p>For base case (Requires GridLAB-D install):</p>
+<ul class="simple">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">./test_cases/base_case/feeder_population</span></code> and run <code class="docutils literal notranslate"><span class="pre">feeder_population.py</span></code>. This uses the
+<code class="docutils literal notranslate"><span class="pre">./test_cases/base_case/feeder_population/config.txt</span></code> settings to prepare the power system and populate the secondary distribution network <br />with time-varying base loads</p></li>
+<li><p>Navigate back one directory to <code class="docutils literal notranslate"><span class="pre">./test_cases/base_case</span></code> and run master_sim.py using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">master_sim.py</span></code></p></li>
 </ul>
 </section>
 <section id="post-simulation-analysis">
@@ -251,6 +260,10 @@ distribution network with time-varying base loads, EV charging stations, with th
 <ul class="simple">
 <li><p>This is done with the modules in the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder. Please see the <code class="docutils literal notranslate"><span class="pre">analysis</span></code> folder section  for more details.</p></li>
 </ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading"></a></h2>
+<p>This work was supported in part by Stanford Bitts and Watts, Chevron Energy Fellowship, and Siemens Technology.</p>
 </section>
 </section>
 

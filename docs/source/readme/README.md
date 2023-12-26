@@ -153,23 +153,35 @@ from the simulation.
 
 ## How to run
 Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
-install packages listed in the environment manually (RECOMMENDED)
-Ensure gridlabd is installed by following recommended installation method.
+install packages listed in the environment manually. You can also use the `requirements.txt` file to install the required packages.
 
-For battery test case:
-* Navigate to `test_cases/battery/feeder_population` and run `feeder_population.py`. This uses the 
+Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
+
+For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
+* Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
+  fields can be modified. Once the fields are modified as desired, navigate to `app.py` which is also in the root directory. Make sure the *test* is set to *False* (see below) in the `app.py` file. 
+  
+  <img src="../../../doc_images/app_run_readme.png" width="300">
+
+  Then run `app.py`. This will run the simulation and generate the results in the `results` folder under the `analysis` directory. To perform post-simulation cost 
+  analysis, navigate to the `analysis` folder and run `load_post_opt_costs.py`. This will generate the cost analysis plots and tables in the `analysis` folder.
+ 
+For online MPC battery test case (Requires GridLAB-D install):
+* Navigate to `test_cases/battery/feeder_population` and run `feeder_population_collocated.py` for collocated (DEFAULT) case or `feeder_population_centralized.py`. This uses the 
   `test_cases/battery/feeder_population/config.txt` settings to prepare the power system and populate the secondary
-  distribution network with time-varying base loads, EV charging stations, with the required transformers.
-* Once confirmed that `feeder_population.py` has run successfully and generates the required `IEEE123_secondary.glm` and
-  `IEEE123_populated.glm` files, you are done with the initial pre-simulation run prep.
-* Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py`
+  distribution network with time-varying base loads, EV charging stations, Distributed Energy Resources (DERs - Solar, Storage), and required transformers.
+* Once confirmed that `feeder_population_<CASE_TYPE>.py` (CASE_TYPE is either collocated or centralized) has run successfully and generates the required `IEEE123_secondary.glm` and
+  `IEEE123_populated.glm` files, you are done with the initial pre-simulation run preparation.
+* Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
 
-For base case:
-* Navigate to `EV50_cosimulation/feeder_population` and run `feeder_population.py`. This uses the 
-  `./feeder_population/config.txt` settings to prepare the power system and populate the secondary distribution network \
+For base case (Requires GridLAB-D install):
+* Navigate to `./test_cases/base_case/feeder_population` and run `feeder_population.py`. This uses the 
+  `./test_cases/base_case/feeder_population/config.txt` settings to prepare the power system and populate the secondary distribution network \
   with time-varying base loads
-* Navigate to `test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
+* Navigate back one directory to `./test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
 
 ## Post-simulation analysis
  * This is done with the modules in the `analysis` folder. Please see the `analysis` folder section  for more details.
 
+## Acknowledgements
+This work was supported in part by Stanford Bitts and Watts, Chevron Energy Fellowship, and Siemens Technology.

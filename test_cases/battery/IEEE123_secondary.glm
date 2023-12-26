@@ -50,10 +50,29 @@ object load {
 
 object transformer {
 	name dcfc_trans_0;
-	phases "ABCD";
-	from "meter_35";
+	phases "ABCN";
+	from "meter_29";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_0;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_29_DER0;
+	phases ABC;
+	from "meter_29";
+	to DER_load_0;
+	length 100;
+	configuration ug_line_config_12_ABC;
 }
 
 object load {
@@ -69,9 +88,28 @@ object load {
 object transformer {
 	name dcfc_trans_1;
 	phases "ABCN";
-	from "meter_51";
+	from "meter_29";
 	to dcfc_load_1;
 	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_1;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_29_DER1;
+	phases ABC;
+	from "meter_29";
+	to DER_load_1;
+	length 100;
+	configuration ug_line_config_12_ABC;
 }
 
 object load {
@@ -87,9 +125,28 @@ object load {
 object transformer {
 	name dcfc_trans_2;
 	phases "ABCN";
-	from "meter_48";
+	from "meter_29";
 	to dcfc_load_2;
 	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_2;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_29_DER2;
+	phases ABC;
+	from "meter_29";
+	to DER_load_2;
+	length 100;
+	configuration ug_line_config_12_ABC;
 }
 
 object load {
@@ -104,10 +161,621 @@ object load {
 
 object transformer {
 	name dcfc_trans_3;
-	phases "ABCD";
-	from "meter_65";
+	phases "ABCN";
+	from "meter_29";
 	to dcfc_load_3;
 	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_3;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_29_DER3;
+	phases ABC;
+	from "meter_29";
+	to DER_load_3;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_4;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_4;
+	phases "ABCN";
+	from "meter_29";
+	to dcfc_load_4;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_4;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_29_DER4;
+	phases ABC;
+	from "meter_29";
+	to DER_load_4;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_5;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_5;
+	phases "ABCN";
+	from "meter_55";
+	to dcfc_load_5;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_5;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_55_DER5;
+	phases ABC;
+	from "meter_55";
+	to DER_load_5;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_6;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_6;
+	phases "ABCN";
+	from "meter_55";
+	to dcfc_load_6;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_6;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_55_DER6;
+	phases ABC;
+	from "meter_55";
+	to DER_load_6;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_7;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_7;
+	phases "ABCN";
+	from "meter_55";
+	to dcfc_load_7;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_7;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_55_DER7;
+	phases ABC;
+	from "meter_55";
+	to DER_load_7;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_8;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_8;
+	phases "ABCN";
+	from "meter_55";
+	to dcfc_load_8;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_8;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_55_DER8;
+	phases ABC;
+	from "meter_55";
+	to DER_load_8;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_9;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_9;
+	phases "ABCN";
+	from "meter_55";
+	to dcfc_load_9;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_9;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_55_DER9;
+	phases ABC;
+	from "meter_55";
+	to DER_load_9;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_10;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_10;
+	phases "ABCN";
+	from "meter_49";
+	to dcfc_load_10;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_10;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_49_DER10;
+	phases ABC;
+	from "meter_49";
+	to DER_load_10;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_11;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_11;
+	phases "ABCN";
+	from "meter_49";
+	to dcfc_load_11;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_11;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_49_DER11;
+	phases ABC;
+	from "meter_49";
+	to DER_load_11;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_12;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_12;
+	phases "ABCN";
+	from "meter_49";
+	to dcfc_load_12;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_12;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_49_DER12;
+	phases ABC;
+	from "meter_49";
+	to DER_load_12;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_13;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_13;
+	phases "ABCN";
+	from "meter_49";
+	to dcfc_load_13;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_13;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_49_DER13;
+	phases ABC;
+	from "meter_49";
+	to DER_load_13;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_14;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_14;
+	phases "ABCN";
+	from "meter_49";
+	to dcfc_load_14;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_14;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_49_DER14;
+	phases ABC;
+	from "meter_49";
+	to DER_load_14;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_15;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_15;
+	phases "ABCN";
+	from "meter_28";
+	to dcfc_load_15;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_15;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_28_DER15;
+	phases ABC;
+	from "meter_28";
+	to DER_load_15;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_16;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_16;
+	phases "ABCN";
+	from "meter_28";
+	to dcfc_load_16;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_16;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_28_DER16;
+	phases ABC;
+	from "meter_28";
+	to DER_load_16;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_17;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_17;
+	phases "ABCN";
+	from "meter_28";
+	to dcfc_load_17;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_17;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_28_DER17;
+	phases ABC;
+	from "meter_28";
+	to DER_load_17;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_18;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_18;
+	phases "ABCN";
+	from "meter_28";
+	to dcfc_load_18;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_18;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_28_DER18;
+	phases ABC;
+	from "meter_28";
+	to DER_load_18;
+	length 100;
+	configuration ug_line_config_12_ABC;
+}
+
+object load {
+	name dcfc_load_19;
+	load_class C;
+	nominal_voltage 480;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object transformer {
+	name dcfc_trans_19;
+	phases "ABCN";
+	from "meter_28";
+	to dcfc_load_19;
+	configuration dcfc_transformer;
+}
+
+object load {
+	name DER_load_19;
+	load_class C;
+	nominal_voltage 2401.7771;
+	phases ABCN;
+	constant_power_A 0.0+0.0j;
+	constant_power_B 0.0+0.0j;
+	constant_power_C 0.0+0.0j;
+}
+
+object underground_line {
+	name ugl_meter_28_DER19;
+	phases ABC;
+	from "meter_28";
+	to DER_load_19;
+	length 100;
+	configuration ug_line_config_12_ABC;
 }
 
 object transformer_configuration {

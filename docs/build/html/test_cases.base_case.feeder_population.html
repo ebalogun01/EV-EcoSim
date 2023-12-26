@@ -121,39 +121,8 @@ are files that are read in to run the EV-Ecosim environment.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-test_cases.base_case.feeder_population.feeder_population">
-<span id="test-cases-base-case-feeder-population-feeder-population-module"></span><h2>test_cases.base_case.feeder_population.feeder_population module<a class="headerlink" href="#module-test_cases.base_case.feeder_population.feeder_population" title="Permalink to this heading"></a></h2>
-<p><strong>Introduction</strong></p>
-<p>This is the feeder population module for the base test case. This file performs the pre-simulation step for
-running EV-Ecosim.</p>
-<p>It takes in a base Gridlab-D Model (GLM) file (for example, <cite>IEEE123.glm</cite>), and modifies that file by including
-secondary distribution, home loads, and EV Charging station and transformers.</p>
-<p><strong>Details</strong></p>
-<p>Once this script is done running, it reads and writes new GLM as &lt;initial_glm_name&gt;_populated.glm and
-&lt;initial_glm_name&gt;_secondary.glm, and saves them within the test case folder. These saved files are used to run the
-simulation. These files are saved in the ‘test_case_dir’ field specified in config.txt.</p>
-<p><strong>Input file description</strong></p>
-<p>Config <cite>config.txt</cite>: configuration file describing the pre-simulation parameters.
-This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
-are files that are read in to run the EV-Ecosim environment.</p>
-<p><strong>Output file description</strong></p>
-<p><cite>real_power.csv</cite> - Real power; this is residential real load timeseries file per node_name/bus</p>
-<p><cite>reactive_power.csv</cite> - Reactive power; this is residential reactive load timeseries file per node_name/bus.</p>
-<p><cite>XXXX.glm</cite> - GridLabD model files. These are usually the synthetic feeders.</p>
-<p>Settings for collocated vs. centralized charging stations are included in this branch.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="test_cases.base_case.feeder_population.feeder_population.main">
-<span class="sig-prename descclassname"><span class="pre">test_cases.base_case.feeder_population.feeder_population.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_cases.base_case.feeder_population.feeder_population.main" title="Permalink to this definition"></a></dt>
-<dd><p>This is the main function for the feeder population module. It reads in the config file, and then calls the
-functions to modify the GLM file and write the new GLM file. It also saves the load data for the homes. The
-function also saves the voltage objects and properties for the homes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="test-cases-base-case-feeder-population-feeder-population-module">
+<h2>test_cases.base_case.feeder_population.feeder_population module<a class="headerlink" href="#test-cases-base-case-feeder-population-feeder-population-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-test_cases.base_case.feeder_population.glm_mod_functions">
 <span id="test-cases-base-case-feeder-population-glm-mod-functions-module"></span><h2>test_cases.base_case.feeder_population.glm_mod_functions module<a class="headerlink" href="#module-test_cases.base_case.feeder_population.glm_mod_functions" title="Permalink to this heading"></a></h2>

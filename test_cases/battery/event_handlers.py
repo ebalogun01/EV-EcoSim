@@ -65,7 +65,7 @@ num_charging_nodes = len(dcfc_nodes) + len(
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = gblvar.scenario[
     'start_month']  # Months are indexed starting from 1.
-temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
+temperature_data = pd.read_csv('../../data/ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 global tic, toc  # used to time simulation

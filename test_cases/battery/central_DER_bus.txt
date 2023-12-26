@@ -1,4 +1,4 @@
-{'name': '"meter_7"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}
-{'name': '"meter_76"', 'phases': '"ABCD"', 'nominal_voltage': '2401.7771'}
-{'name': '"meter_48"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}
 {'name': '"meter_29"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}
+{'name': '"meter_55"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}
+{'name': '"meter_49"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}
+{'name': '"meter_28"', 'phases': '"ABCN"', 'nominal_voltage': '2401.7771'}

@@ -475,7 +475,7 @@ class BatteryParams:
 
 
 if __name__ == '__main__':
-    data_path = 'batt_sys_identification/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
+    data_path = 'batt_sys_identification/data/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)
     # Toggle initial population on or off. Set to ``False`` to toggle off.

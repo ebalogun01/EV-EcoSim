@@ -15,9 +15,11 @@
 **.json
 **results
 source
+/**.pyc
+/**__pycache__
 charging_sim/__pycache__
 **.Identifier
-battery_data
+data/battery_data
 CP_ProjectData
 Datasets-CP
 Datasets
@@ -34,5 +36,4 @@ mosek
 **.vscode/
 **.git
 .github
-base_load_data
-base_load_data/data_use.csv
+data/base_load_data/data_2015_use.csv
