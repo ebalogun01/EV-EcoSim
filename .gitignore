@@ -11,7 +11,6 @@
 **.glm
 **.xls
 **.npy
-**.glm
 **.json
 **results
 source
@@ -31,7 +30,6 @@ test_cases/**.csv/
 mosek
 .idea
 **.idea/
-.idea
 .vscode
 **.vscode/
 **.git
