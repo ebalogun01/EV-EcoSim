@@ -23,6 +23,8 @@ class MPC:
     """This class uses an MPC control scheme for producing control currents to the BESS."""
 
     def __init__(self, config, storage=None, solar=None):
+        self.current_testdata = None
+        self.charge_history = None
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
 

@@ -386,10 +386,10 @@ class Battery:
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
             current -= (self.voltage - self.max_voltage) / self.R_pack  # changed from just Ro
             self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
-            print("max testing voltage is: ", self.voltage)
+            # print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
-            print("max testing voltage is: ",
-                  self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
+            # print("max testing voltage is: ",
+            #       self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
             self.currents[-1] = current
             self.power = self.max_voltage * self.current / 1000
             self.true_power[-1] = self.power

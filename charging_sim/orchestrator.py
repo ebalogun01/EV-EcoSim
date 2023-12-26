@@ -43,6 +43,7 @@ class ChargingSim:
         self.controller_config = None
         self.num_evs = num_evs
         self.month = month
+        self.custom_ev_data = custom_ev_data
         if solar:
             self.solar = True  # to be initialized with module later
 
@@ -50,7 +51,7 @@ class ChargingSim:
             charge_data = np.loadtxt(f'{path_prefix}/{custom_ev_data_path}')    # Check this to ensure correct path.
             print('*** Custom charging load data loaded ***')
         else:
-            charge_data = np.loadtxt(f'{path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')
+            charge_data = np.loadtxt(f'{path_prefix}/data/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv')
             print('*** SpeechData loaded ***')
         if centralized:
             if central_der_dict is None:
@@ -119,12 +120,10 @@ class ChargingSim:
         """
         params_list = [key for key in self.battery_config.keys() if "params_" in key]
         for params_key in params_list:
-            self.battery_config[params_key] = np.loadtxt(
-                self.path_prefix + self.battery_config[params_key])  # Replace path with true value.
+            self.battery_config[params_key] = np.loadtxt(f'{self.path_prefix}/{self.battery_config[params_key]}') # Replace path with true value.
         # Reverse directionality is important for numpy.interp function.
-        self.battery_config["OCV_map_voltage"] = np.loadtxt(self.path_prefix + self.battery_config["OCV_map_voltage"])[
-                                                 ::-1]
-        self.battery_config["OCV_map_SOC"] = np.loadtxt(self.path_prefix + self.battery_config["OCV_map_SOC"])[::-1]
+        self.battery_config["OCV_map_voltage"] = np.loadtxt(f'{self.path_prefix}/{self.battery_config["OCV_map_voltage"]}')[::-1]
+        self.battery_config["OCV_map_SOC"] = np.loadtxt(f'{self.path_prefix}/{self.battery_config["OCV_map_SOC"]}')[::-1]
 
     def create_battery_object(self, idx, node_name, controller=None):
         """
@@ -163,7 +162,9 @@ class ChargingSim:
             self.charging_config['locator_index'], self.charging_config['location'] = i, node_name
             self.charging_config['L2'] = loc_list[i]['L2']
             self.charging_config['DCFC'] = loc_list[i]['DCFC']
-            self.charging_config['data_path'] = f'{self.path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'  # This can be changed if you have your own data.
+            # todo: check if load data the default speech data is being used or not.
+            if not self.custom_ev_data:
+                self.charging_config['data_path'] = f'{self.path_prefix}/data/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'  # This can be changed if you have your own data.
             charging_station = ChargingStation(self.charging_config, controller=controller,
                                                storage=battery, solar=solar)
             self.charging_sites[node_name] = charging_station
@@ -198,7 +199,9 @@ class ChargingSim:
             self.charging_config['locator_index'], self.charging_config['location'] = i, charging_nodes_list[i]['node_name']
             self.charging_config['L2'] = charging_nodes_list[i]['L2']
             self.charging_config['DCFC'] = charging_nodes_list[i]['DCFC']
-            self.charging_config['data_path'] = f'{self.path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'
+            if not self.custom_ev_data:
+                self.charging_config[
+                    'data_path'] = f'{self.path_prefix}/data/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'
             charging_station = ChargingStation(self.charging_config)
             self.charging_sites[charging_nodes_list[i]['node_name']] = charging_station  # Dictionary of charging stations.
         self.stations_list = list(self.charging_sites.values())     # Might remove this later if not needed.
@@ -224,7 +227,8 @@ class ChargingSim:
             self.charging_config['locator_index'], self.charging_config['location'] = i, node_name
             self.charging_config['L2'] = loc_list[i]['L2']
             self.charging_config['DCFC'] = loc_list[i]['DCFC']
-            self.charging_config['data_path'] = f'{self.path_prefix}/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'
+            if not self.custom_ev_data:
+                self.charging_config['data_path'] = f'{self.path_prefix}/data/SPEECh_load_data/speechWeekdayLoad{self.num_evs}.csv'
             charging_station = ChargingStation(self.charging_config, controller=controller,
                                                storage=battery, solar=solar)
             self.charging_sites[node_name] = charging_station

@@ -44,7 +44,7 @@ class PriceLoader:
         """
         self.path_prefix = path_prefix
         self.config = config
-        self.data = pd.read_csv(path_prefix + self.config["data_path"])
+        self.data = pd.read_csv(f'{path_prefix}/{self.config["data_path"]}')
         self.data_np = self.data.to_numpy()
         self.month_start_idx = {1: 0, 2: 31, 3: 59, 4: 90, 5: 120, 6: 151, 7: 181, 8: 243, 9: 273, 10: 304, 11: 334,
                                 12: 365}
@@ -96,7 +96,8 @@ class PriceLoader:
         self.data = pd.DataFrame(data=temp_data)
         self.data_np = temp_data
         # IMPORTANT: Change the paths below to save new data.
-        np.savetxt(self.path_prefix + "/elec_rates/PGE_BEV2_S_annual_TOU_rate_{}min.csv".format(output_res), temp_data)
+        np.savetxt(self.path_prefix + "/data/elec_rates/PGE_BEV2_S_annual_TOU_rate_{}min.csv".format(output_res),
+                   temp_data)
 
 
 # def main():

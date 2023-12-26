@@ -1,5 +1,5 @@
 {
-  "data_path": "/CP_ProjectData/power_data_2015.csv",
+  "data_path": "data/SPEECh_load_data/speechWeekdayLoad1600.csv",
   "collocated": true,
   "num_central_sites": 1,
   "charge_types": "normal",
