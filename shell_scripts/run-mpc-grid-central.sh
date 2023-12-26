@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-cd ../test_cases/battery/feeder_population || exit
+cd test_cases/battery/feeder_population || exit
 
 python_file="feeder_population_centralized.py"
 text_file="config.txt"

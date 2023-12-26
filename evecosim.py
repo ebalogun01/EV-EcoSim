@@ -8,17 +8,17 @@ import argparse
 
 
 def run_mpc_grid_centralized():
-    subprocess.call(['sh', './run-mpc-grid-central.sh'])
+    subprocess.call(['sh', './shell_scripts/run-mpc-grid-central.sh'])
     return
 
 
 def run_mpc_grid_collocated():
-    subprocess.call(['sh', './run-mpc-grid.sh'])
+    subprocess.call(['sh', './shell_scripts/run-mpc-grid.sh'])
     return
 
 
 def run_oneshot_opt():
-    subprocess.call(['sh', './run-oneshot.sh'])
+    subprocess.call(['sh', './shell_scripts/run-oneshot.sh'])
     return
 
 
