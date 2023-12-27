@@ -1,4 +1,6 @@
 import unittest
+import sys
+sys.path.append('../..')    # For Ubuntu compatibility.
 from charging_sim.transformer import OilTypeTransformer as Transformer
 from charging_sim.clock import Clock
 import pandas as pd
@@ -21,10 +23,24 @@ class MyTestCase(unittest.TestCase):
     """
 
     def test_initialization(self):
+        """
+        Tests that the transformer module can be initialized to a valid object.
+
+        :return: None.
+        """
         module = Transformer(config)
         self.assertTrue(module is not None)
 
     def test_dynamics(self):
+        """
+        Tests the thermal dynamics of the transformer module. This test will fail if the transformer thermal dynamics
+        do not run to completion. It also checks that the states of the transformer are updated correctly and are of the
+        consistent length. This does not check the accuracy of the state propagation model, but a basic sanity check is
+        performed to ensure that the transformer is at least at ambient temperature (steady state), else the dynamics
+        cannot be correct.
+
+        :return: None
+        """
         # Read transformer test load data from data/trans_test_load.csv
         trans_load = pd.read_csv('../data/trans_test_load.csv')['station_net_grid_load_kW']
 

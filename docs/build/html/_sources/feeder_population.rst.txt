@@ -1,5 +1,16 @@
-Feeder population
+Feeder Population
 ==========================
+
+Module contents
+---------------
+
+.. automodule:: feeder_population
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
 
 feeder\_population.feeder\_population module
 --------------------------------------------

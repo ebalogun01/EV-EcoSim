@@ -131,10 +131,12 @@ class BatteryParams:
 
         :return list gene_space_range: List of dicts providing the range for each gene.
         """
+        # todo: Include option to change the bounds for the parameters.
         lb2 = [-0.1, -0.1, -5, 0.0001, 100, 0.0004, 4000]
         ub2 = [0.1, 0.1, 0, 0.02, 10000, 0.01, 10000]
 
-        lb3 = [-10, -10, -10, 0.00004, 0.03, 0.0004, 600]  # change the range for testing capacitance variation with SOC if any
+        lb3 = [-10, -10, -10, 0.00004, 0.03, 0.0004, 600]  # change the range for testing capacitance variation with SOC
+        # if any
         ub3 = [10, 10, 10, 0.01, 0.06, 0.01, 10000]
 
         lb = [0.02, 0.0001, 100, 0.00004, 900]
@@ -142,7 +144,7 @@ class BatteryParams:
         gene_space_range = [{'low': low, 'high': high} for low, high in zip(lb2, ub2)]
         return gene_space_range
 
-    def ga(self, num_generations=100, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
+    def ga(self, num_generations=40, num_parents_mating=2, sol_per_pop=10, num_genes=7, crossover_type="single_point",
            mutation_type="adaptive", parent_selection_type="sss", mutation_percent_genes=60,
            mutation_prob=(0.3, 0.1), crossover_prob=None):
         """
@@ -181,7 +183,7 @@ class BatteryParams:
                                    crossover_probability=crossover_prob,
                                    stop_criteria=["reach_0.05", "saturate_20"],
                                    gene_space=gene_space_range,
-                                   parallel_processing=8)
+                                   parallel_processing=4)
         else:
             ga_instance = pygad.GA(num_generations=num_generations,
                                    num_parents_mating=num_parents_mating,
@@ -197,7 +199,7 @@ class BatteryParams:
                                    crossover_probability=crossover_prob,
                                    stop_criteria=["reach_0.05", "saturate_20"],
                                    gene_space=gene_space_range,
-                                   parallel_processing=8)
+                                   parallel_processing=4)
 
         ga_instance.run()
         solution, solution_fitness, solution_idx = ga_instance.best_solution()
@@ -206,7 +208,9 @@ class BatteryParams:
         print(f"Fitness value of the best solution = {solution_fitness}")
         return solution
 
-    def run_sys_identification(self, cell_name=0, diagn=0, use_initial_pop=True, quadratic_bias=True):
+    def run_sys_identification(self, cell_name='0', diagn: int = 0, use_initial_pop: bool = True,
+                               quadratic_bias: bool = True, save: bool = False, error_stats: bool = False,
+                               generations=2) -> None:
         """
         Runs the GA for system identification.
 
@@ -214,17 +218,19 @@ class BatteryParams:
         """
         if use_initial_pop:
             self._init_population()
-        self.params = self.ga()
+        self.params = self.ga(num_generations=generations)
 
         if quadratic_bias:
-            self.run_ocv_correction(use_quadratic=True)
+            self.run_ocv_correction(cell_name=cell_name, use_quadratic=True)
         else:
-            self.run_ocv_correction()   # Uses simple linear bias correction.
+            self.run_ocv_correction(cell_name=cell_name)   # Uses simple linear bias correction.
         # Run again.
-        self.params = self.ga()     # New params.
+        self.params = self.ga(num_generations=generations)     # New params.
         np.savetxt(f'battery_params_{cell_name}_{diagn}.csv', self.params, delimiter=',')
+        if error_stats:
+            self._calculate_error(save=save, cell_name=cell_name, diagn=diagn)
 
-    def run_ocv_correction(self, use_quadratic=False, cell_name=0, diagn=0):
+    def run_ocv_correction(self, use_quadratic=False, cell_name='0', diagn=0):
         """
         Fits the parameters for the open circuit voltage correction scheme. Updates the ocv attribute. The open circuit
         voltage correction scheme can be quadratic or linear. The quadratic scheme was used in the original paper.
@@ -267,10 +273,57 @@ class BatteryParams:
         print("OCV correction beta: ",  beta.value)
         print("OCV correction const. bias: ", const_bias.value)
         ocv_bias_correction_vector = np.array([beta.value, const_bias.value])
-        np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn), ocv_bias_correction_vector)
+        np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn),
+                   ocv_bias_correction_vector)
         self.ocv = ocv_corr.value
         self.data['ocv_corr'] = self.ocv
-        self.data.to_csv('input_data_with_ocv_corr_voltage.csv')    # adds corrected ocv as field and writes the input data
+        self.data.to_csv('input_data_with_ocv_corr_voltage_{}_{}.csv'.
+                         format(cell_name, diagn))
+        #    Adds corrected ocv as field and writes the input data
+
+    def _calculate_error(self, save=True, cell_name: str = '0', diagn: int = 0, trial: int = 0):
+        """
+        Calculates the error between the model and the training data.
+
+        :param int trial: Trial number.
+        :param int diagn: Diagnosis number.
+        :param str cell_name: Cell name.
+        :param bool save: Whether to save the error statistics to file.
+
+        :return: Error.
+        """
+        x = self.params
+        V_data = self.voltage
+        A_Ro = x[0]
+        B_Ro = x[1]
+        C_Ro = x[2]
+        R1 = x[3]
+        C1 = x[4]
+        R2 = x[5]
+        C2 = x[6]
+        dt = 1
+
+        Ro = B_Ro * np.exp(C_Ro * self.soc) + A_Ro * np.exp(self.soc)
+        I_t = -self.current
+        I_R1 = np.zeros((I_t.shape[0],))
+        I_R2 = np.zeros((I_t.shape[0],))
+
+        for j in range(1, len(I_R1)):
+            I_R1[j] = np.round(np.exp(-dt / (R1 * C1)) * I_R1[j - 1] + (1 - np.exp(-dt / (R1 * C1))) * I_t[j - 1], 10)
+            I_R2[j] = np.round(np.exp(-dt / (R2 * C2)) * I_R2[j - 1] + (1 - np.exp(-dt / (R2 * C2))) * I_t[j - 1], 10)
+        V_t = self.ocv - np.multiply(I_t, Ro) - np.multiply(I_R1, R1) - np.multiply(I_R2, R2)
+        assert V_t.shape == self.voltage.shape
+        data_len = V_data.shape[0]
+        MAPE = (np.sum(np.abs(V_t - V_data) / V_data)) / data_len
+        MSE = np.sqrt(np.sum(np.square(V_t - V_data)) / data_len)
+        max_APE = (np.max(np.abs(V_t - V_data) / V_data))
+        if save:
+            print("Saving error statistics...")
+            np.savetxt('../batt_sys_identification/{}_MAPE_{}_{}.csv'.format(trial, cell_name, diagn), [MAPE])
+            np.savetxt('../batt_sys_identification/{}_MSE_{}_{}.csv'.format(trial, cell_name, diagn), [MSE])
+            np.savetxt('../batt_sys_identification/{}_max_APE_{}_{}.csv'.format(trial, cell_name, diagn), [max_APE])
+            print('Done saving error statistics.')
+        return MSE, MAPE*100, max_APE*100
 
     def _validate_params(self):
         """
@@ -365,18 +418,32 @@ class BatteryParams:
         C_Ro = self.params[2]
         return B_Ro * np.exp(C_Ro * self.soc) + A_Ro * np.exp(self.soc)
 
-    def plot_Ro(self):
+    def plot_Ro(self, grid=False):
         """
         Plots the high frequency resistance (Ro) of the battery.
 
         :return: None.
         """
-        Ro = self.get_Ro() + self.params[3] + self.params[5]
-        fig, ax = plt.subplots(1, 1)
-        ax.plot(self.soc, Ro)
-        plt.title("Ro vs. SoC plot")
-        plt.xlabel('State of charge')
-        plt.ylabel('Ro (Resistance)')
+        Ro = self.get_Ro()
+
+        # Create a figure and axis with custom size
+        fig, ax = plt.subplots()
+
+        # Plot Ro vs. SoC with markers and line
+        ax.plot(self.soc, Ro, linestyle='-', linewidth=4, label='Internal Resistance (Ro)')
+
+        # Add labels and title with increased font size
+        ax.set_xlabel('State of Charge (SoC)', fontsize=14)
+        ax.set_ylabel('Internal Resistance $R_o$ (Ohm)', fontsize=14)
+        ax.set_title('$R_o$ vs. State of Charge', fontsize=14)
+
+        # Add a grid for better readability (optional)
+        if grid:
+            ax.grid(True, linestyle='--', alpha=0.7)
+
+        plt.tight_layout()
+        plt.savefig('../batt_sys_identification/Ro_vs_SoC.png', dpi=300)
+
         plt.show()
 
     def simulate_response(self):
@@ -385,8 +452,8 @@ class BatteryParams:
 
         :return:
         """
-        voltage = self.get_uncorrected_voltages()
-        # todo: complete later
+        # voltage = self.get_uncorrected_voltages()
+        return NotImplementedError("Method has not been implemented yet!")
 
     def run_pre_checks(self):
         """
@@ -408,12 +475,9 @@ class BatteryParams:
 
 
 if __name__ == '__main__':
-    import os
-    # List all the csv files in current directory and let user choose one.
-    # User uploaded data will be saved in the current directory as a temp_data.csv file.
-    data_path = os.path.join(os.getcwd(), 'temp_data.csv')
+    data_path = 'batt_sys_identification/data/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)
-    # Create button option to toggle initial population on or off.
-    module.run_sys_identification(use_initial_pop=True)
+    # Toggle initial population on or off. Set to ``False`` to toggle off.
+    module.run_sys_identification(use_initial_pop=False)
     module.plot_correction_scheme_comparison()

@@ -94,18 +94,16 @@ def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power
     return subscription_cost + penalty_cost + TOU_cost + smoothness_pen * smoothness_alpha
 
 
-def emissions_cost(controller, load, emissions_data=1, cost_of_carbon=118):
-    """Basic emissions cost function, cost of carbon in dollars per tCO2"""
-    # TODO add emissions data, cost of carbon to setup config
-    # Source for carbon cost: https://www.nature.com/articles/s41586-022-05224-9
-    net_grid_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
-    net_emissions = cp.sum(cp.multiply(emissions_data, net_grid_load)) * cost_of_carbon
-    return net_emissions * cost_of_carbon
-
-
-def build_objective(mode, electricity_cost, battery_degradation_cost, transformer_cost=0):
+def build_objective(mode, electricity_cost, battery_degradation_cost, emissions_cost=0, transformer_cost=0):
     """Builds the objective function that we will minimize."""
     lambdas = objectives[mode]
+    if emissions_cost:
+        return cp.sum(
+            electricity_cost * lambdas[0]
+            + battery_degradation_cost * lambdas[1]
+            + emissions_cost * lambdas[2]
+            + transformer_cost * lambdas[3]
+        )
     return cp.sum(
         electricity_cost * lambdas[0]
         + battery_degradation_cost * lambdas[1]

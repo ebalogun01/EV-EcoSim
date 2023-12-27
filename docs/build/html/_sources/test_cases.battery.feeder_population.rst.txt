@@ -1,18 +1,21 @@
-Battery feeder population
+Battery test case feeder population
 ==============================================
 
-test\_cases.battery.feeder\_population.feeder\_population module
-----------------------------------------------------------------
+Submodules
+----------
 
-.. automodule:: test_cases.battery.feeder_population.feeder_population
+test\_cases.battery.feeder\_population.feeder\_population\_centralized module
+-----------------------------------------------------------------------------
+
+.. automodule:: test_cases.battery.feeder_population.feeder_population_centralized
    :members:
    :undoc-members:
    :show-inheritance:
 
-test\_cases.battery.feeder\_population.feeder\_population\_old module
----------------------------------------------------------------------
+test\_cases.battery.feeder\_population.feeder\_population\_collocated module
+----------------------------------------------------------------------------
 
-.. automodule:: test_cases.battery.feeder_population.feeder_population_old
+.. automodule:: test_cases.battery.feeder_population.feeder_population_collocated
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,3 +28,10 @@ test\_cases.battery.feeder\_population.glm\_mod\_functions module
    :undoc-members:
    :show-inheritance:
 
+Module contents
+---------------
+
+.. automodule:: test_cases.battery.feeder_population
+   :members:
+   :undoc-members:
+   :show-inheritance:

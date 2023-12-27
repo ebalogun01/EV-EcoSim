@@ -12,7 +12,6 @@ def load_base_glm(base_file_dir,base_glm_file):
     :param base_glm_file: file name for the base glm model
     :return: dictionary of gridlabd objects from base glm model, dictionary of object types associated with glm_dict, list of globals from base model, list of include statements from base model, list of script statements
     """
-    
     os.chdir(base_file_dir)
     f = open(base_glm_file, 'r')
     glm=f.readlines()
@@ -110,8 +109,7 @@ def write_base_glm(glm_dict,obj_type,globals_list,include_list,out_dir,file_name
     """
     os.chdir(out_dir)    
     glm_out = open(file_name,"w+")
-    
-    
+
     for i in range(len(globals_list)):
         glm_out.write(globals_list[i]+'\n\n')
         

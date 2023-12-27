@@ -2,7 +2,7 @@
 **Overview**\n
 This module is used post-simulation to parse the voltages from the power-simulation to calculate the percentage
 voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
-``SIMULATION_FOLDER`` variable which is the string of the path where the powerflow simulation output voltages at each node
+``SIMULATION_FOLDER`` variable which is the string of the path where the powerflow simulation output voltages at each node_name
 exist.
 """
 
@@ -17,7 +17,7 @@ def run():
     This function is used to parse the voltages from the power-simulation to calculate the percentage
     voltage violations per ANSI C84.1. The file also generates voltage distribution plots. A user can modify the
     SIMULATION_FOLDER variable which is the string of the path where the powerflow simulation output voltages at each
-    node exist. The function will iterate through all the folders in the SIMULATION_FOLDER and generate the plots for
+    node_name exist. The function will iterate through all the folders in the SIMULATION_FOLDER and generate the plots for
     each folder. The plots will be saved in the same folder as the voltages.csv file.
 
     :return: None

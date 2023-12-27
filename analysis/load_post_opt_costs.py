@@ -2,6 +2,12 @@
 **Overview**\n
 This module calculates the levelized cost of energy and populates into tables/cost matrices, which are saved in the
 respective files and folders.
+\n
+
+**User Specifications**\n
+`USER_INPUT_PATH`: Path to the user_input.json file or any modified user input JSON which includes all the specified
+fields for the scenarios that have been simulated/run.
+\n
 """
 
 import os
@@ -16,16 +22,14 @@ import matplotlib
 from charging_sim.utils import MONTHS_LIST
 
 
-# Load the user_input dict state.
+# Load the user_input dict state and other GLOBAL variables
 
 USR_INPUT_PATH = '../user_input.json'
 with open(USR_INPUT_PATH, "r") as f:
     USR_INPUT_DICT = json.load(f)
 
 ENERGY_RATINGS = USR_INPUT_DICT['battery']['pack_energy_cap']
-# ENERGY_RATINGS = [ENERGY_RATINGS_WH[i]/1000 for i in range(len(ENERGY_RATINGS_WH))]
 MAX_C_RATES = USR_INPUT_DICT['battery']['max_c_rate']
-print(ENERGY_RATINGS, MAX_C_RATES)
 PLOT_FONT_SIZE = 16
 matplotlib.rc('font', **{'size': PLOT_FONT_SIZE})
 

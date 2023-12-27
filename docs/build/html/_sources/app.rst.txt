@@ -1,4 +1,4 @@
-App module
+App - runs the platform
 ==========
 
 .. automodule:: app

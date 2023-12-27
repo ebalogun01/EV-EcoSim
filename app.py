@@ -6,11 +6,11 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import sys
-
+import argparse
 sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
-import multiprocessing as mp
+# import multiprocessing as mp
 import numpy as np
 import json
 import ast
@@ -31,6 +31,7 @@ def validate_options(front_input: dict):
 
     :return: None.
     """
+    # TODO: finish validation options.
     print("Validating user input options...")
     return None
 
@@ -46,7 +47,7 @@ def create_results_folder():
     os.mkdir('analysis/results')
 
 
-def load_default_input():
+def load_input():
     """
     Loads the default user input skeleton.
 
@@ -84,14 +85,16 @@ def make_month_str(month_int: int):
 # user_inputs = load_default_input()
 
 
-def simulate(user_inputs, sequential_run=True, parallel_run=False):
+def simulate(user_inputs, sequential_run=True, parallel_run=False, testing=False):
     # Updating the user inputs based on frontend inputs.
     create_results_folder()  # Make a results folder if it does not exist.
 
-    path_prefix = os.getcwd()
+    path_prefix = os.getcwd()   # TODO WORK ON THIS
+    # repo_name = path_prefix.split('\\')[-1]
+    # print("path_prefix is ", path_prefix)
+    # print(path_prefix.split('\\'))
     # Change below to name of the repo.
-    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
-    path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    results_folder_path = path_prefix + '/analysis/results'
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
@@ -119,28 +122,28 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
     print(charging_station_config)
     # Control user inputs for charging stations.
-    if charging_station_config["num_l2_stalls_per_node"] and charging_station_config["num_dcfc_stalls_per_node"]:
+    if charging_station_config["num_l2_stalls_per_station"] and charging_station_config["num_dcfc_stalls_per_station"]:
         raise ValueError("Cannot have both L2 and DCFC charging stations at the same time.")
 
     # Updating initial param dict with user inputs, new param dict will be written to the config.txt file.
     print(charging_station_config)
 
-    if charging_station_config['num_dcfc_stalls_per_node']:
-        param_dict['num_dcfc_stalls_per_node'] = charging_station_config['num_dcfc_stalls_per_node']
+    if charging_station_config['num_dcfc_stalls_per_station']:
+        param_dict['num_dcfc_stalls_per_station'] = charging_station_config['num_dcfc_stalls_per_station']
         if charging_station_config["dcfc_charging_stall_base_rating"]:
             param_dict[
-                'dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}_kW'
+                'dcfc_charging_stall_base_rating'] = f'{charging_station_config["dcfc_charging_stall_base_rating"]}'
 
-    if charging_station_config['num_l2_stalls_per_node']:
+    if charging_station_config['num_l2_stalls_per_station']:
         param_dict['num_l2_stalls_per_node'] = charging_station_config['num_l2_stalls_per_node']
         if charging_station_config["l2_power_cap"]:
             param_dict['l2_charging_stall_base_rating'] = f'{charging_station_config["l2_power_cap"]}_kW'
 
     # Obtaining the charging station capacities.
     dcfc_station_cap = float(param_dict['dcfc_charging_stall_base_rating'].split('_')[0]) * param_dict[
-        'num_dcfc_stalls_per_node']
+        'num_dcfc_stalls_per_station']
     L2_station_cap = float(param_dict['l2_charging_stall_base_rating'].split('_')[0]) * param_dict[
-        'num_l2_stalls_per_node']
+        'num_l2_stalls_per_station']
     month = int(str(param_dict['starttime']).split('-')[1])
     # Month index starting from 1. e.g. 1: January, 2: February, 3: March etc.
     month_str = list(month_days.keys())[month - 1]
@@ -157,14 +160,14 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
         dcfc_nodes = [dcfc_nodes]
     dcfc_dicts_list = []
     for node in dcfc_nodes:
-        dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node": node},
+        dcfc_dicts_list += {"DCFC": dcfc_station_cap, "L2": 0, "node_name": node},
 
     L2_charging_nodes = np.loadtxt('test_cases/battery/L2charging_bus.txt', dtype=str).tolist()  # this is for L2
     if type(L2_charging_nodes) is not list:
         L2_charging_nodes = [L2_charging_nodes]
     l2_dicts_list = []
     for node in L2_charging_nodes:
-        l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node": node},
+        l2_dicts_list += {"DCFC": 0, "L2": L2_station_cap, "node_name": node},
     num_charging_nodes = len(dcfc_nodes) + len(L2_charging_nodes)
     # Needs to come in as input initially & should be initialized prior from the feeder population.
 
@@ -177,9 +180,8 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
 
     def make_scenarios():
         """
-        This is used to make the list of scenarios (dicts) that are used to run the simulations.
-        No inputs. However, it uses preloaded global functions from a `config.txt` file based on the user
-        settings and inputs.
+        Function to make the list of scenarios (dicts) that are used to run the simulations. Each scenario is fully
+        specified by a dict. The dict produced is used by the orchestrator to run the simulation.
 
         :return: List of scenario dicts.
         """
@@ -192,7 +194,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                     'index': idx,
                     'oneshot': True,
                     'start_month': month,
-                    'opt_solver': 'GUROBI',
+                    'opt_solver': user_inputs['opt_solver'],
                     'battery': {
                         'pack_energy_cap': Er,
                         'max_c_rate': c_rate,
@@ -220,26 +222,30 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
             voltage_idx += 1
         return scenarios_list
 
-    def run(scenario):
+    def run(scenario, is_test=False):
         """
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
+        :param is_test:
         :param scenario: The scenario dictionary that would be run.
-        :return: None. Runs the `scenario`.
+        :return: None.
         """
         EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
         save_folder_prefix = f'{results_folder_path}/oneshot_{month_str}{str(scenario["index"])}/'
         if not os.path.exists(save_folder_prefix):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
-        print('multistep')
+        if is_test:
+            print("Basic testing passed!")
+            return True
+        print('multistep begin...')
         EV_charging_sim.multistep()
         print('multistep done')
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
             json.dump(scenario, outfile, indent=1)
 
-    def run_scenarios_sequential():
+    def run_scenarios_sequential(is_test=testing):
         """
         Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
         which is a combination of all the capacities and c-rates.
@@ -260,16 +266,24 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                 scenario["dcfc_caps"] = [station["DCFC"] for station in dcfc_dicts_list]
             if l2_dicts_list:
                 scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
-            run(scenario)
+            print(is_test)
+            run(scenario, is_test=is_test)
 
     if sequential_run:
         print("Running scenarios sequentially...")
-        run_scenarios_sequential()
+        run_scenarios_sequential(is_test=test)
         print("Simulation complete!")
 
     return
 
 
 if __name__ == '__main__':
-    USER_INPUTS = load_default_input()
-    simulate(USER_INPUTS)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test', type=bool, default=False,
+                        help='This flag only included for testing deployment, do not change.')
+
+    args = parser.parse_args()
+    test = args.test
+
+    USER_INPUTS = load_input()
+    simulate(USER_INPUTS, testing=test)

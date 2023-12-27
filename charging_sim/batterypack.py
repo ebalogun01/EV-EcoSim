@@ -42,7 +42,7 @@ class Battery:
         * Ambient temperature (Celsius).
 
     :param battery_type: Type of battery (inconsequential to current dynamics).
-    :param node: The node/bus in the distribution network in which the battery resides.
+    :param node: The node_name/bus in the distribution network in which the battery resides.
     :param config: Battery configuration file containing the main attributes of the battery.
     :param controller: Controller for the battery.
     :returns: Battery object.
@@ -386,10 +386,10 @@ class Battery:
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
             current -= (self.voltage - self.max_voltage) / self.R_pack  # changed from just Ro
             self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
-            print("max testing voltage is: ", self.voltage)
+            # print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
-            print("max testing voltage is: ",
-                  self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
+            # print("max testing voltage is: ",
+            #       self.voltage)  # when you come back, test and DOUBLE CHECK THIS. Getting closer to full simulation.
             self.currents[-1] = current
             self.power = self.max_voltage * self.current / 1000
             self.true_power[-1] = self.power
@@ -508,7 +508,7 @@ class Battery:
 #     buffer_battery = Battery(config=battery_config)
 #     buffer_battery.battery_setup()
 #     buffer_battery.load_pack_props()
-#     buffer_battery.id, buffer_battery.node = 0, 0
+#     buffer_battery.id, buffer_battery.node_name = 0, 0
 #
 #     # test dynamics here
 #     c = -20  # discharging first
