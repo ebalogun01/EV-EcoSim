@@ -61,9 +61,10 @@ def main():
     feeder_name = param_dict['feeder_name']
     set_sd = param_dict['set_sd']
     mean_scale = param_dict['mean_scale']
-    base_file_dir = path_prefix + param_dict['base_file_dir']
-    test_case_dir = path_prefix + param_dict['test_case_dir']
-    load_data_dir = path_prefix + param_dict['load_data_dir']
+    base_file_dir = f'{path_prefix}/{param_dict["base_file_dir"]}'
+    test_case_dir = f'{path_prefix}/{param_dict["test_case_dir"]}'
+    load_data_dir = f'{path_prefix}/{param_dict["load_data_dir"]}'
+    base_load_file = f'{param_dict["base_load_file"]}'
     box_pts = param_dict['box_pts']
     starttime_str = param_dict['starttime']
     endtime_str = param_dict['endtime']
@@ -263,7 +264,7 @@ def main():
     # % load residential load data
 
     os.chdir(load_data_dir)
-    data_use = pandas.read_csv('data_2015_use.csv')
+    data_use = pandas.read_csv(base_load_file)
 
     year = 2018
 

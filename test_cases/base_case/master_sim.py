@@ -4,7 +4,7 @@ Runs the base_case simulation without any EV charging station/DER within the pow
 
 import gridlabd
 import sys
-sys.path.append('../../../EV50_cosimulation/charging_sim')
+sys.path.append('../../charging_sim')
 
 print('Starting GridLAB-D')
 gridlabd.command("IEEE123_populated.glm")

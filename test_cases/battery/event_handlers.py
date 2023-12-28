@@ -18,7 +18,7 @@ from clock import Clock
 
 path_prefix = str(os.getcwd())
 os.chdir(path_prefix)  # change directory
-# Splitting the path is different for Windows and Linux/MacOS. Need condition to deal with both OS file path styles.
+# Splitting the path is different for Windows and Linux/MacOS.
 if '\\' in path_prefix:
     path_prefix = "/".join(
         path_prefix.split('\\')[:-2])  # Gets absolute path to the root of the project to get the desired files.

@@ -50,8 +50,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_0;
-	phases "ABCD";
-	from "meter_76";
+	phases "ABCN";
+	from "meter_55";
 	to dcfc_load_0;
 	configuration dcfc_transformer;
 }
@@ -69,7 +69,7 @@ object load {
 object transformer {
 	name dcfc_trans_1;
 	phases "ABCN";
-	from "meter_79";
+	from "meter_80";
 	to dcfc_load_1;
 	configuration dcfc_transformer;
 }
@@ -86,8 +86,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_2;
-	phases "ABC";
-	from "meter_62";
+	phases "ABCN";
+	from "meter_60";
 	to dcfc_load_2;
 	configuration dcfc_transformer;
 }
@@ -104,8 +104,8 @@ object load {
 
 object transformer {
 	name dcfc_trans_3;
-	phases "ABCN";
-	from "meter_86";
+	phases "ABC";
+	from "meter_62";
 	to dcfc_load_3;
 	configuration dcfc_transformer;
 }

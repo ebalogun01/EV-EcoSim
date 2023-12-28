@@ -22,20 +22,28 @@ def run_oneshot_opt():
     return
 
 
+def run_grid_base_case():
+    subprocess.call(['sh', './shell_scripts/run-basecase-grid.sh'])
+    return
+
+
 def main(mode):
     if mode == 'oneshot':
         run_oneshot_opt()
     elif mode == 'mpc-grid':
         run_mpc_grid_collocated()
+    elif mode == 'base-case-grid':
+        run_grid_base_case()
     elif mode == 'mpc-grid-central':
         raise NotImplementedError
     else:
-        raise ValueError(f'Invalid mode: {mode}. Please choose from: oneshot, mpc-grid')
+        raise ValueError(f'Invalid mode: {mode}. Please choose from: oneshot, mpc-grid, base-case-grid')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='oneshot',
-                        help='This flag only included for testing deployment, do not change.')
+                        help='Oneshot (offline) optimization mode is default. '
+                             'Choose from: oneshot, mpc-grid, base-case-grid')
     args = parser.parse_args()
     main(args.mode)

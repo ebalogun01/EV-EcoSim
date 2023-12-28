@@ -1,11 +1,13 @@
 #!/bin/sh
 
-cd test_cases/battery/feeder_population || exit
+#!/bin/sh
 
-python_file="feeder_population_collocated.py"
+cd test_cases/base_case/feeder_population || exit
+
+python_file="feeder_population.py"
 text_file="config.txt"
 
-timestamp_file="exec_timestamp_coll.txt"
+timestamp_file="exec_timestamp.txt"
 
 # Function to get the last run time
 get_last_run_time() {
@@ -32,4 +34,4 @@ else
 fi
 
 cd .. || exit
-gridlabd python scenarios.py
+gridlabd python master_sim.py

@@ -176,27 +176,35 @@ from the simulation.
 
 ## How to run
 
+For quick-run, it is recommended to use MacOS or Linux. All Native Windows from windows 11 come with WSL2. Older windows 
+users can install WSL2. See [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10) for more details.
+
 1. If you do not have conda installed and want to use conda, please follow the instructions [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install conda.
 
 2. Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
-install packages listed in the environment manually. You can also use the `requirements.txt` file to install the required packages or use [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/).
+install packages listed in the environment manually. You can also use the `requirements.txt` file and [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) to install the required packages.
 
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
 4. For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
-   * Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
-     fields can be modified. Once the fields are modified as desired, navigate to `app.py` which is also in the root directory. Make sure the *test* is set to *False* (see below) in the `app.py` file. 
-  
-     <img src="doc_images/app_run_readme.png" width="300">
-
-     Then run `app.py`. This will run the simulation and generate the results in the `results` folder under the `analysis` directory. To perform post-simulation cost 
-     analysis, navigate to the `analysis` folder and run `load_post_opt_costs.py`. This will generate the cost analysis plots and tables in the `analysis` folder.
+   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
+     fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
+     fields are modified as desired, run `python3 evecosim.py --mode=oneshot` or `python3 evecosim.py --mode oneshot` or 
+     `python3 evecosim.py` in the root directory. This will run the simulation and generate the results in the `results` 
+     folder under the `analysis` directory. After which the platform will generate the cost analysis plots and tables in 
+     the `analysis` folder.
+   * **If using Native Windows**: TODO
  
 5. For online MPC battery test case (Requires GridLAB-D install):
-   * Navigate to `test_cases/battery/feeder_population` and run `feeder_population_collocated.py` for collocated (DEFAULT) case or `feeder_population_centralized.py`. This uses the 
+   * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
+     fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl`. Once the 
+     fields are modified as desired, and you are in the project root directory, in the terminal, 
+     type: `python3 evecosim.py --mode=mpc-grid` or `python3 evecosim.py --mode mpc-grid` and let the simulation run.
+   
+   * **If using Native Windows**: Navigate to `test_cases/battery/feeder_population` and run `feeder_population_collocated.py` for collocated (DEFAULT) case or `feeder_population_centralized.py`. This uses the 
      `test_cases/battery/feeder_population/config.txt` settings to prepare the power system and populate the secondary
      distribution network with time-varying base loads, EV charging stations, Distributed Energy Resources (DERs - Solar, Storage), and required transformers.
-   * Once confirmed that `feeder_population_<CASE_TYPE>.py` (CASE_TYPE is either collocated or centralized) has run successfully and generates the required `IEEE123_secondary.glm` and
+   * Once confirmed that `feeder_population_<CASE_TYPE>.py` (CASE_TYPE is either collocated or centralized but only collocated is supported at this time) has run successfully and generates the required `IEEE123_secondary.glm` and
      `IEEE123_populated.glm` files, you are done with the initial pre-simulation run preparation.
    * Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
 

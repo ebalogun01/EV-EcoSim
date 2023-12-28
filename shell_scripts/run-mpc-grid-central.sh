@@ -33,4 +33,4 @@ else
 fi
 
 cd .. || exit
-gridlabd python scenarios.py --scenario 1
+gridlabd python scenarios.py
