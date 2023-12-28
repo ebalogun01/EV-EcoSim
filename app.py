@@ -33,7 +33,22 @@ def validate_options(front_input: dict):
     """
     # TODO: finish validation options.
     print("Validating user input options...")
-    return None
+    # Check if the battery pack energy capacity has the same length as the voltage list.
+    if len(front_input['battery']['pack_energy_cap']) != len(front_input['battery']['pack_max_voltage']):
+        raise ValueError("Battery pack energy capacity and voltage list must have the same length.")
+    # check if SOC_min and SOC_max is between 0 and 1.
+    if front_input['battery']['SOC_min'] < 0 or front_input['battery']['SOC_min'] > 1:
+        raise ValueError("Battery pack minimum state of charge must be between 0 and 1.")
+    if front_input['battery']['SOC_max'] < 0 or front_input['battery']['SOC_max'] > 1:
+        raise ValueError("Battery pack maximum state of charge must be between 0 and 1.")
+    # check if SOC_min is less than SOC_max.
+    if front_input['battery']['SOC_min'] > front_input['battery']['SOC_max']:
+        raise ValueError("Battery pack minimum state of charge must be less than the maximum state of charge.")
+    # check if number of dcfc nodes and l2 nodes are not 0.
+    if front_input['charging_station']['num_dcfc_stalls_per_station'] == 0 and \
+            front_input['charging_station']['num_l2_stalls_per_station'] == 0:
+        raise ValueError("Number of DCFC and L2 charging stations cannot both be zero.")
+    # todo: check if the number of dcfc nodes is not greater than the number of dcfc nodes in the feeder population.
 
 
 def create_results_folder():
@@ -53,11 +68,21 @@ def load_input():
 
     :return:
     """
-    with open('default_user_input.json', "r") as f:
+    with open('user_input.json', "r") as f:
         user_input = json.load(f)
     validate_options(user_input)  # todo: Finish implementing this part later.
     return user_input
 
+
+def load_default_input():
+    """
+    Loads the default user input skeleton.
+
+    :return:
+    """
+    with open('default_user_input.json', "r") as f:
+        user_input = json.load(f)
+    return user_input
 
 def change_run_date():
     """
@@ -286,4 +311,5 @@ if __name__ == '__main__':
     test = args.test
 
     USER_INPUTS = load_input()
+    validate_options(USER_INPUTS)   # Validate the user inputs.
     simulate(USER_INPUTS, testing=test)
