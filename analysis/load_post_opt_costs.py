@@ -12,7 +12,6 @@ fields for the scenarios that have been simulated/run.
 
 import os
 import sys
-
 import copy
 import numpy as np
 import pandas as pd
