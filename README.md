@@ -179,12 +179,12 @@ from the simulation.
 ## How to run
 
 For quick-run, it is recommended to use MacOS or Linux. All Native Windows from windows 11 come with WSL2. Older windows 
-users can install WSL2. See [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10) for more details.
+users can install WSL2. See [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10) for more details. Read [requirements](#requirements) for how to setup the environment and skip to item #3.
 
 1. If you do not have conda installed and want to use conda, please follow the instructions [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install conda.
 
 2. Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
-install packages listed in the environment manually. You can also use the `requirements.txt` file and [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) to install the required packages Some users may find pip to be more convenient.
+install packages listed in the environment manually. You can also use the `requirements.txt` file and [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) to install the required packages using the command `pip install -r requirements.txt`.
 
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
