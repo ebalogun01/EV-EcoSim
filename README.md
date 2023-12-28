@@ -187,7 +187,7 @@ install packages listed in the environment manually. You can also use the `requi
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
 4. For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
-   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
+   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
      fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
      fields are modified as desired, run `python3 evecosim.py --mode=oneshot` or `python3 evecosim.py --mode oneshot` or 
      `python3 evecosim.py` in the root directory. This will run the simulation and generate the results in the `results` 
@@ -196,7 +196,7 @@ install packages listed in the environment manually. You can also use the `requi
    * **If using Native Windows**: TODO
  
 5. For online MPC battery test case (Requires GridLAB-D install):
-   * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Open the `default_user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
+   * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Open the `user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
      fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl`. Once the 
      fields are modified as desired, and you are in the project root directory, in the terminal, 
      type: `python3 evecosim.py --mode=mpc-grid` or `python3 evecosim.py --mode mpc-grid` and let the simulation run.
