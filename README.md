@@ -211,10 +211,13 @@ install packages listed in the environment manually. You can also use the `requi
       * Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
 
 6. For base case (Requires GridLAB-D install):
-   * Navigate to `./test_cases/base_case/feeder_population` and run `feeder_population.py`. This uses the 
-     `./test_cases/base_case/feeder_population/config.txt` settings to prepare the power system and populate the secondary distribution network \
-     with time-varying base loads
-   * Navigate back one directory to `./test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
+   * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Make sure you are in the project root directory and run `python3 evecosim.py --mode base-case-grid` or `python3 evecosim.py --mode=base-case-grid`. The base-case simulation without any EV Charging nor Distrbuted Energy Resources will run. Results will be in the `test_cases/base_case` folder.
+
+   * **If using Native Windows**
+      * Navigate to `./test_cases/base_case/feeder_population` and run `feeder_population.py`. This uses the 
+        `./test_cases/base_case/feeder_population/config.txt` settings to prepare the power system and populate the secondary distribution network \
+        with time-varying base loads
+      * Navigate back one directory to `./test_cases/base_case` and run master_sim.py using `python3 master_sim.py`
 
 ## Post-simulation analysis
  * This is done with the modules in the `analysis` folder. Please see the `analysis` folder section  for more details.
