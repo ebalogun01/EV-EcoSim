@@ -206,9 +206,9 @@ install packages listed in the environment manually. You can also use the `requi
    * **If using Native Windows**: Navigate to `test_cases/battery/feeder_population` and run `feeder_population_collocated.py` for collocated (DEFAULT) case or `feeder_population_centralized.py`. This uses the 
      `test_cases/battery/feeder_population/config.txt` settings to prepare the power system and populate the secondary
      distribution network with time-varying base loads, EV charging stations, Distributed Energy Resources (DERs - Solar, Storage), and required transformers.
-   * Once confirmed that `feeder_population_<CASE_TYPE>.py` (CASE_TYPE is either collocated or centralized but only collocated is supported at this time) has run successfully and generates the required `IEEE123_secondary.glm` and
-     `IEEE123_populated.glm` files, you are done with the initial pre-simulation run preparation.
-   * Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
+      * Once confirmed that `feeder_population_<CASE_TYPE>.py` (CASE_TYPE is either collocated or centralized but only collocated is supported at this time) has run successfully and generates the required `IEEE123_secondary.glm` and
+        `IEEE123_populated.glm` files, you are done with the initial pre-simulation run preparation.
+      * Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
 
 6. For base case (Requires GridLAB-D install):
    * Navigate to `./test_cases/base_case/feeder_population` and run `feeder_population.py`. This uses the 
