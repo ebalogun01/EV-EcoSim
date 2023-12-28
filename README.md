@@ -22,17 +22,14 @@ Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details.
 For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to our email.
 
 ## Requirements
-1. See `requirements.txt` for **required** packages. The `environment.yml` file can be used to create a new conda environment with the required packages. 
-   The `environment.yml` file can be used to create a new conda environment with the required packages. 
-   To create a new environment using `conda env create --name <your env name> -f environment.yml` OR 
-   install packages listed in the environment manually. You can also use the `requirements.txt` file to install the required packages.
+1. See `requirements.txt` or `environment.yml` for **required** packages. The `environment.yml` file can be used to create a new conda environment with the required packages. To create a new environment using `conda env create --name <your env name> -f environment.yml` OR if using pip, use `pip install -r requirements.txt`. If both do not work, then install packages listed in the environment manually.
 
 2. Arras-energy (SLAC) GridLAB-D installation (master branch). See repository [here](https://github.com/arras-energy/gridlabd) for details. This is required for the power grid co-simulation functionality. 
    This is not necessary if one does not consider the power system voltage impacts.
 
 3. Gurobi License [recommended]. Free (educational) or commercial Gurobi Licenses can be obtained [here](https://www.gurobi.com/)
 
-4. MOSEK License [optional]. Free (educational) or commercial MOSEK License can be obtained [here](https://www.mosek.com/products/academic-licenses/)
+4. MOSEK License [optional if Gurobi is installed]. Free (educational) or commercial MOSEK License can be obtained [here](https://www.mosek.com/products/academic-licenses/)
 
 
 ## Folder descriptions
