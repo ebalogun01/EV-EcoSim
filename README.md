@@ -19,7 +19,7 @@ We welcome all contributions to the project, including documentation and feature
 Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details.
 
 ## Correspondence
-For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to project lead.
+For more detailed questions, potential collaborations, suggestions and discussions, or assistance that cannot be done directly on github, please reach out to our email.
 
 ## Requirements
 1. See `requirements.txt` for **required** packages. The `environment.yml` file can be used to create a new conda environment with the required packages. 
@@ -187,7 +187,7 @@ users can install WSL2. See [here](https://docs.microsoft.com/en-us/windows/wsl/
 1. If you do not have conda installed and want to use conda, please follow the instructions [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install conda.
 
 2. Create a new environment using `conda env create --name <your env name> -f environment.yml`OR 
-install packages listed in the environment manually. You can also use the `requirements.txt` file and [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) to install the required packages.
+install packages listed in the environment manually. You can also use the `requirements.txt` file and [pip](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) to install the required packages Some users may find pip to be more convenient.
 
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
