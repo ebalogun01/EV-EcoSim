@@ -1,5 +1,6 @@
 {
     "sim_mode": "offline",
+    "opt_solver": "GUROBI",
     "central": false,
     "feeder_pop": false,
     "only_batt_sys": false,
@@ -13,9 +14,9 @@
     },
     "battery": {
         "data": null,
-        "max_c_rate": [1],
-        "pack_max_voltage": [400, 400, 400, 400, 400],
-        "pack_energy_cap": [5e4, 10e4, 20e4, 40e4, 80e4],
+        "max_c_rate": [0.1, 0.2],
+        "pack_max_voltage": [400, 400],
+        "pack_energy_cap": [5e4, 10e4],
         "pack_max_Ah": [250, 400],
         "SOC_min": 0.2,
         "SOC_max": 0.9,
@@ -34,8 +35,7 @@
         "num_l2_nodes": 0,
         "num_dcfc_stalls_per_station": 5,
         "num_l2_stalls_per_station": 0,
-        "commercial_building_trans": 75,
-        "num_charging_stations_per_node": 5
+        "commercial_building_trans": 75
     },
     "load": {
         "data": null
@@ -44,5 +44,4 @@
         "data": null,
         "month": 7
     }
-
 }

@@ -82,6 +82,7 @@ def load_default_input():
         user_input = json.load(f)
     return user_input
 
+
 def change_run_date():
     """
     Changes the run date for the simulation.
