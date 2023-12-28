@@ -5,6 +5,10 @@
 A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure. 
 Paper: https://doi.org/10.1109/TSG.2023.3339374 
 
+## Quickstart
+Jump to [requirements](#requirements).\
+Jump to [how to run](#how-to-run).
+
 [//]: # (![sim_frame.png]&#40;doc_images%2Fsim_frame.png&#41;)
 
 ## Authors
@@ -29,6 +33,7 @@ For more detailed questions, potential collaborations, suggestions and discussio
 3. Gurobi License [recommended]. Free (educational) or commercial Gurobi Licenses can be obtained [here](https://www.gurobi.com/)
 
 4. MOSEK License [optional]. Free (educational) or commercial MOSEK License can be obtained [here](https://www.mosek.com/products/academic-licenses/)
+
 
 ## Folder descriptions
 
