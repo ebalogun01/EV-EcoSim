@@ -31,8 +31,6 @@ def validate_options(front_input: dict):
 
     :return: None.
     """
-    # TODO: finish validation options.
-    print("Validating user input options...")
     # Check if the battery pack energy capacity has the same length as the voltage list.
     if len(front_input['battery']['pack_energy_cap']) != len(front_input['battery']['pack_max_voltage']):
         raise ValueError("Battery pack energy capacity and voltage list must have the same length.")
