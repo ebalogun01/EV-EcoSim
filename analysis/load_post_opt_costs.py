@@ -279,6 +279,7 @@ def run():
             result_dir = f'results/{desired_month}{i}'
         run_results(result_dir, days, trans_cost=include_trans, oneshot=oneshot)
     collate_results(desired_month, trans=include_trans, oneshot=oneshot)
+    print('Post-optimization cost analysis complete!')
 
 
 # RUN THIS FILE
