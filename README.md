@@ -188,18 +188,19 @@ install packages listed in the environment manually. You can also use the `requi
 
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
-4. For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
-   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `user_inputs.json` file in the root folder and change
-     the `opt_solver` field to your either `GUROBI` or `MOSEK`, depending on the solver
-     you have installed and have a license for. You can modify the other parameters as needed.
-     The prepopulated fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
+4. Open the `user_inputs.json` file in the root folder and change the `opt_solver` field to your either `GUROBI` or `MOSEK`, depending on the solver
+     you have installed and have a license for.
+
+5. For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
+   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Modify the fields in the `user_inputs.json` file as needed.
+     To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
      fields are modified as desired, run `python3 evecosim.py --mode=oneshot` or `python3 evecosim.py --mode oneshot` or 
      `python3 evecosim.py` in the root directory. This will run the simulation and generate the results in the `results` 
      folder under the `analysis` directory. After which the platform will generate the cost analysis plots and tables in 
      the `analysis` folder.
    * **If using Native Windows**: TODO
  
-5. For online MPC battery test case (Requires GridLAB-D install):
+6. For online MPC battery test case (Requires GridLAB-D install):
    * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Open the `user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
      fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl`. Once the 
      fields are modified as desired, and you are in the project root directory, in the terminal, 
@@ -212,7 +213,7 @@ install packages listed in the environment manually. You can also use the `requi
         `IEEE123_populated.glm` files, you are done with the initial pre-simulation run preparation.
       * Now navigate one level of out `/feeder_population` and run scenarios.py using `python3 scenarios.py` or `gridlabd python scenarios.py` (recommended).
 
-6. For base case (Requires GridLAB-D install):
+7. For base case (Requires GridLAB-D install):
    * **If using Unix based system or Windows Subsystem for Linux (WSL) [RECOMMENDED]**: Make sure you are in the project root directory and run `python3 evecosim.py --mode base-case-grid` or `python3 evecosim.py --mode=base-case-grid`. The base-case simulation without any EV Charging nor Distrbuted Energy Resources will run. Results will be in the `test_cases/base_case` folder.
 
    * **If using Native Windows**
