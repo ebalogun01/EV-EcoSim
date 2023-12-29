@@ -189,8 +189,10 @@ install packages listed in the environment manually. You can also use the `requi
 3. Ensure gridlabd is installed by following recommended installation method if using the online (MPC) power system co-simulation functionality.
 
 4. For offline (One-shot) optimization simulation (Does not require GridLAB-D install):
-   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `user_inputs.json` file in the root folder and modify the parameters as needed. The prepopulated
-     fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
+   * **If using Unix based system or Windows Subsystem for Linux (WSL)**: Open the `user_inputs.json` file in the root folder and change
+     the `opt_solver` field to your either `GUROBI` or `MOSEK`, depending on the solver
+     you have installed and have a license for. You can modify the other parameters as needed.
+     The prepopulated fields can be modified. To open WSL, you can open the command line interface or terminal and type `wsl` Once the 
      fields are modified as desired, run `python3 evecosim.py --mode=oneshot` or `python3 evecosim.py --mode oneshot` or 
      `python3 evecosim.py` in the root directory. This will run the simulation and generate the results in the `results` 
      folder under the `analysis` directory. After which the platform will generate the cost analysis plots and tables in 
