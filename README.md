@@ -178,7 +178,7 @@ from the simulation.
 
 ## How to run
 
-For quick-run, it is recommended to use MacOS or Linux. All Native Windows from windows 11 come with WSL2. Older windows 
+For quick-run, it is recommended to use WSL2 (Linux) or MacOS All Native Windows from windows 11 come with WSL2 and you can install your preferred distro (Ubuntu recommended). Older windows 
 users can install WSL2. See [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10) for more details. Read [requirements](#requirements) for how to setup the environment and skip to item #3.
 
 1. If you do not have conda installed and want to use conda, please follow the instructions [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install conda.
