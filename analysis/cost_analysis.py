@@ -46,7 +46,8 @@ class CostEstimator:
         self.trans_cost_per_kVA = None  # create a non-linear cost curve for these prices (I sense batteries are the same)
         self.trans_normal_life = 180000  # hours
         self.resolution = 15
-        self.TOU_rates = np.loadtxt('../data/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[:96 * self.num_days]  # change this to referenced property
+        self.TOU_rates = np.loadtxt('../data/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[
+                         :96 * self.num_days]  # change this to referenced property
         # todo: cannot find good source for 2400/240V transformer prices
 
     def calculate_battery_cost(self, result_dir):
@@ -70,7 +71,7 @@ class CostEstimator:
                 if 'battery' in path_lst and 'plot.png' not in path_lst:
                     battery_LOL = 1 - pd.read_csv(file)['SOH'].to_numpy()[-1]
                     avg_daily_energy_thruput = np.abs(pd.read_csv(file)['power_kW'].to_numpy()[1:]).sum() \
-                                                  * self.resolution / 60 * 1 / self.num_days
+                                               * self.resolution / 60 * 1 / self.num_days
                     expected_life_days = 0.2 / (battery_LOL / self.num_days)
                     expected_energy_thruput_over_lifetime = avg_daily_energy_thruput * expected_life_days
                     capital_loss_to_aging = (battery_LOL / 0.2 * capital_cost)
@@ -144,6 +145,12 @@ class CostEstimator:
 
         # Calculate cost
         cost = length * cost_per_m
+
+        # Add excavation costs if underground
+        # Source for 8.28 miles in DC: https://oca.dc.gov/sites/default/files/dc/sites/oca/page_content/attachments/Study%20of%20the%20Feasibility%20&%20Reliability%20of%20Undergrounding%20Electric%20Distribution%20Lines%20in%20DC%20(July%201,%202010)%20-%20ShawConsultantsforPSC.pdf
+        # TODO: check excavation costs other sources
+        if underground:
+            cost = cost + length * (2166296 / (8.28 / 1609.344))
 
         if not eur:
             cost = cost * 1.1  # adjustment from EUR to USD
@@ -324,8 +331,9 @@ class CostEstimator:
         """
         if prefix is None:
             raise ValueError("Prefix must be specified. Please specify a prefix path for the plot file.")
-        error_abs_mean = np.mean(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)     # Note 1e-6 is added for numerical stability.
-        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)    # Note 1e-6 is added for numerical stability.
+        error_abs_mean = np.mean(
+            np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)  # Note 1e-6 is added for numerical stability.
+        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)  # Note 1e-6 is added for numerical stability.
         np.savetxt('abs_percent_err_soc.csv', [error_abs_mean])
         np.savetxt('MAPE_soc.csv', [MAPE])
         plt.close('all')
