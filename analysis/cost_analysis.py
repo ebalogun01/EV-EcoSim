@@ -9,6 +9,8 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 
+import pytest
+
 # Defaults.
 PLOT_FONT_SIZE = 16
 plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
@@ -24,6 +26,7 @@ class CostEstimator:
 
     :param num_days: The number of days for which the calculation is run.
     """
+
     def __init__(self, num_days):
         """
         Constructor method.
@@ -43,7 +46,8 @@ class CostEstimator:
         self.trans_cost_per_kVA = None  # create a non-linear cost curve for these prices (I sense batteries are the same)
         self.trans_normal_life = 180000  # hours
         self.resolution = 15
-        self.TOU_rates = np.loadtxt('../data/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[:96 * self.num_days]  # change this to referenced property
+        self.TOU_rates = np.loadtxt('../data/elec_rates/PGE_BEV2_S_annual_TOU_rate_15min.csv')[
+                         :96 * self.num_days]  # change this to referenced property
         # todo: cannot find good source for 2400/240V transformer prices
 
     def calculate_battery_cost(self, result_dir):
@@ -67,7 +71,7 @@ class CostEstimator:
                 if 'battery' in path_lst and 'plot.png' not in path_lst:
                     battery_LOL = 1 - pd.read_csv(file)['SOH'].to_numpy()[-1]
                     avg_daily_energy_thruput = np.abs(pd.read_csv(file)['power_kW'].to_numpy()[1:]).sum() \
-                                                  * self.resolution / 60 * 1 / self.num_days
+                                               * self.resolution / 60 * 1 / self.num_days
                     expected_life_days = 0.2 / (battery_LOL / self.num_days)
                     expected_energy_thruput_over_lifetime = avg_daily_energy_thruput * expected_life_days
                     capital_loss_to_aging = (battery_LOL / 0.2 * capital_cost)
@@ -80,12 +84,123 @@ class CostEstimator:
                                                                  "battery_total_cost": self.battery_cost,
                                                                  "total_cost_per_day": self.battery_cost / expected_life_days,
                                                                  'lcoe': self.battery_cost / expected_energy_thruput_over_lifetime,
-                                                                 'lcoe_aging': capital_loss_to_aging /expected_energy_thruput_over_lifetime
+                                                                 'lcoe_aging': capital_loss_to_aging / expected_energy_thruput_over_lifetime
                                                                  }
         with open("postopt_cost_batt.json", 'w') as config_file_path:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
+
+    def calculate_cable_cost(self, length, metric=True, underground=True, voltage="HV", cores=3, core_girth=250,
+                             eur=False):
+        """
+        Default table values are pulled from the DACE Price booklet
+        Ref: https://www.dacepricebooklet.com/table-costs/high-and-low-voltage-underground-electrical-power-cables-0
+
+        Options considered:
+            High voltage cable VG-YLK - 10 kV - Cu.
+            Low voltage braided cable, YMvKas 750 V - Cu.
+            3- or 4-core.
+
+        Included:
+            supply and install cable in the ground.
+        Excluded:
+            excavation and paving.
+
+        :param length: length of cable
+        :param metric: metric or imperial units, metric is default, imperial in feet
+        :param underground: underground or overhead cable, underground is default
+        :param voltage: HV or LV, HV is default
+        :param cores: number of cores, 3 is default
+        :param core_girth: core girth in mm2, 250 is default
+        :param eur: units requested in euros? Defaults to False and converts to USD.
+        :return: Assumed transformer cost in USD.
+        """
+
+        if not underground:
+            raise NotImplementedError("Overhead cable cost not implemented yet.")
+
+        if not metric:
+            length = length / 0.3048  # adjustment from feet to m
+
+        # Find suitable cost per meter
+        costs = pd.read_csv("configs/cable-prices.csv")
+        # Filter relevant voltage part of input table
+        if voltage == "HV":
+            costs = costs.loc[costs['Cable type'] == 'High Voltage cable']
+        elif voltage == "LV":
+            costs = costs.loc[costs['Cable type'] == 'Low Voltage cable']
+        else:
+            raise ValueError("Voltage must be either HV or LV.")
+
+        # Filter relevant cores part of input table
+        costs = costs.loc[costs['Number of cores'] == cores].reset_index(drop=True)
+
+        # Find cost per meter for given girth
+        cost_per_m = costs.at[0, 'Cost per m']
+        for index, row in costs.iterrows():
+            if core_girth < row['Core in mm2']:
+                break
+            cost_per_m = row['Cost per m']
+
+        # Calculate cost
+        cost = length * cost_per_m
+
+        # Add excavation costs if underground
+        # Source for 8.28 miles in DC: https://oca.dc.gov/sites/default/files/dc/sites/oca/page_content/attachments/Study%20of%20the%20Feasibility%20&%20Reliability%20of%20Undergrounding%20Electric%20Distribution%20Lines%20in%20DC%20(July%201,%202010)%20-%20ShawConsultantsforPSC.pdf
+        # TODO: check excavation costs other sources
+        if underground:
+            cost = cost + length * (2166296 / (8.28 / 1609.344))
+
+        if not eur:
+            cost = cost * 1.1  # adjustment from EUR to USD
+
+        return cost
+
+    def calculate_transformer_cost(self, capacity, type="oil", eur=False):
+        """
+        Values are pulled from the DACE Price booklet
+        Ref: https://www.dacepricebooklet.com/table-costs/standard-transformers-10-kv-400-v-oil-cooled-0
+
+        Oil cooled transformers for indoor installation. Installed and connected. Capacity: 10 kV to 400 V.
+
+        Included:
+            conservator;
+            gas relay or nitrogen blanket.
+            temperature monitoring.
+
+        Excluded:
+            architectural facilities;
+            discounts;
+            cable work.
+
+        :param capacity: Capacity in kVA
+        :param eur: units requested in euros? Defaults to False and converts to USD.
+        :return: Assumed transformer cost in USD.
+        """
+
+        costs = pd.read_csv("configs/transformer-prices.csv")
+
+        # Filter relevant transformer type of input table
+        if type == "oil":
+            costs = costs.loc[costs['Type'] == 'Oil cooled']
+        elif type == "dry":
+            costs = costs.loc[costs['Type'] == 'Cast resin dry']
+        else:
+            raise ValueError("Transformer type must be either oil or dry.")
+
+        costs.reset_index(drop=True, inplace=True)
+
+        # Find cost for given capacity
+        cost = costs.at[0, 'Price from']
+        for index, row in costs.iterrows():
+            if capacity < row['Capacity in kVA']:
+                break
+            cost = row['Price from']
+
+        if not eur:
+            cost = cost * 1.1  # adjustment from EUR to USD
+        return cost
 
     def calculate_solar_cost(self):
         """
@@ -119,7 +234,7 @@ class CostEstimator:
                     net_ev_grid_load_plusbatt = total_grid_load - pd.read_csv(file)['station_solar_load_ev'].to_numpy()[
                                                                   1:] + pd.read_csv(file)['battery_power'].to_numpy()[
                                                                         1:]
-                    total_energy = total_grid_load.sum() * self.resolution/60
+                    total_energy = total_grid_load.sum() * self.resolution / 60
                     max_load = total_grid_load.max()
                     average_load = total_grid_load.mean()
                     self.plot_loads(total_grid_load, net_ev_grid_load_plusbatt, prefix=f'{file.split(".")[0]}_',
@@ -130,7 +245,8 @@ class CostEstimator:
                         block_subscription = int(pd.read_csv(file)['PGE_power_blocks'].to_numpy()[1])
                     subscription_cost = block_subscription * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
                     penalty_cost = max((np.max(net_grid_load) - 50 * block_subscription), 0) * overage_fee  # ($)
-                    TOU_cost = np.sum(self.TOU_rates[0:net_grid_load.shape[0]] * net_grid_load) * self.resolution / 60  # ($)
+                    TOU_cost = np.sum(
+                        self.TOU_rates[0:net_grid_load.shape[0]] * net_grid_load) * self.resolution / 60  # ($)
                     electricity_cost = TOU_cost + penalty_cost + subscription_cost
                     result_dict[f'charging_station_sim_{path_lst[3]}'] = {"TOU_cost": TOU_cost,
                                                                           "subscription_cost": subscription_cost,
@@ -139,7 +255,7 @@ class CostEstimator:
                                                                           "cost_per_day": electricity_cost / self.num_days,
                                                                           "max_load": max_load,
                                                                           "avg_load": average_load,
-                                                                          "cost_per_kWh": electricity_cost/total_energy}
+                                                                          "cost_per_kWh": electricity_cost / total_energy}
                 elif 'battery' in path_lst and 'plot.png' not in path_lst:
                     power = pd.read_csv(file)['power_kW'].to_numpy()[1:]
                     power_pred = pd.read_csv(file)['pred_power_kW'].to_numpy()[1:]
@@ -154,10 +270,6 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
-
-    def transformer_cost(self):
-        """Cannot find good resource data for this yet."""
-        return NotImplementedError
 
     @staticmethod
     def plot_loads(total_load, net_load, prefix=None, labels: list = None, total_load_color='blue',
@@ -219,8 +331,9 @@ class CostEstimator:
         """
         if prefix is None:
             raise ValueError("Prefix must be specified. Please specify a prefix path for the plot file.")
-        error_abs_mean = np.mean(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)     # Note 1e-6 is added for numerical stability.
-        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)    # Note 1e-6 is added for numerical stability.
+        error_abs_mean = np.mean(
+            np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)  # Note 1e-6 is added for numerical stability.
+        MAPE = np.max(np.abs((soc - soc_pred) / (soc + 1e-6)) * 100)  # Note 1e-6 is added for numerical stability.
         np.savetxt('abs_percent_err_soc.csv', [error_abs_mean])
         np.savetxt('MAPE_soc.csv', [MAPE])
         plt.close('all')
@@ -333,3 +446,31 @@ class CostEstimator:
             json.dump(result_dict, config_file_path, indent=1)  # save to JSON
         os.chdir(current_dir)  # go back to initial dir
         return result_dict
+
+
+class TestCostEstimator:
+    # TODO make dynamically load config file
+    @pytest.mark.parametrize("cap, type, eur, expected", [(100, "oil", False, 5500),
+                                                          (1600, "oil", False, 16500),
+                                                          (4000, "oil", False, 27500),
+                                                          (4000, "oil", True, 25000),
+                                                          (100, "dry", True, 5000),
+                                                          (4000, "dry", True, 17000),
+                                                          ])
+    def test_calculate_transformer_cost(self, cap, type, eur, expected):
+        costEst = CostEstimator(1)
+        assert costEst.calculate_transformer_cost(cap, type, eur) == pytest.approx(expected)
+
+    @pytest.mark.parametrize("length, metric, underground, voltage, cores, core_girth, eur, expected",
+                             [(10, True, True, "HV", 3, 25, False, 314.6),
+                              (10, True, True, "HV", 3, 25, True, 286),
+                              (10, True, True, "HV", 3, 120, True, 710),
+                              (10, True, True, "HV", 3, 200, True, 890),
+                              (10, True, True, "LV", 3, 120, True, 843),
+                              (10, True, True, "LV", 4, 120, True, 1070),
+                              (10, True, True, "LV", 4, 1200, True, 2070),
+                              ])
+    def test_calculate_cable_cost(self, length, metric, underground, voltage, cores, core_girth, eur, expected):
+        costEst = CostEstimator(1)
+        assert costEst.calculate_cable_cost(length, metric, underground, voltage, cores, core_girth,
+                                            eur) == pytest.approx(expected)

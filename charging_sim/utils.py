@@ -77,21 +77,17 @@ def build_electricity_cost(controller, load, energy_prices_TOU, demand_charge=Fa
     return cost_electricity
 
 
-def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power=True, max_power_pen=1000,
-                          use_smoothness=False, smoothness_alpha=0.1):
-    # print(energy_prices_TOU, 'TOUU')
+def build_cost_PGE_BEV2S(controller, load, energy_prices_TOU, penalize_max_power=True, max_power_pen=1000):
     """This will need to use a heuristic and take the average conservative estimate for gamma"""
     net_grid_load = load + controller.battery_power - controller.solar.battery_power - controller.solar.ev_power
-    TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_grid_load)) * controller.resolution/60     # ($)
-    if use_smoothness:
-        smoothness_pen = cp.sum(cp.abs(controller.battery_power[:-1] - controller.battery_power[1:]))
-    else:
-        smoothness_pen = 0
+    TOU_cost = cp.sum(cp.multiply(energy_prices_TOU, net_grid_load)) * controller.resolution / 60  # ($)
+    smoothness_pen = np.mean(cp.abs(controller.battery_power[:-1] - controller.battery_power[1:]))
+    smoothness_alpha = 0
     price_per_block = 95.56  # ($/Block)
     overage_fee = 3.82  # ($/kW)
     charging_block = controller.pge_gamma * 50  # gamma is an integer variable that's at least 1
     subscription_cost = controller.pge_gamma * price_per_block  # This is in blocks of 50kW which makes it very convenient ($/day)
-    penalty_cost = cp.max(cp.neg(charging_block - net_grid_load) * overage_fee)     # ($)
+    penalty_cost = cp.max(cp.neg(charging_block - net_grid_load) * overage_fee)  # ($)
     if penalize_max_power:
         return subscription_cost + penalty_cost + TOU_cost + max_power_pen * cp.max(cp.abs(net_grid_load))
         # return subscription_cost + penalty_cost + TOU_cost + max_power_pen*cp.max(net_grid_load)

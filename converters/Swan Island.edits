@@ -1,0 +1,5 @@
+
+// This is included after the feeder backbone has been created, and before calculating voltage bases in OpenDSS. 
+// You can start with an empty file. 
+// Typical contents include control and protection settings, parameter adjustments, and creation of DER for study. 
+// This file is not over-written if you run the converter again.
