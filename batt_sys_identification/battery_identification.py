@@ -209,7 +209,8 @@ class BatteryParams:
         return solution
 
     def run_sys_identification(self, cell_name='0', diagn: int = 0, use_initial_pop: bool = True,
-                               quadratic_bias: bool = True, save: bool = True, error_stats: bool=True) -> None:
+                               quadratic_bias: bool = True, save: bool = False, error_stats: bool = False,
+                               generations=2) -> None:
         """
         Runs the GA for system identification.
 
@@ -217,14 +218,14 @@ class BatteryParams:
         """
         if use_initial_pop:
             self._init_population()
-        self.params = self.ga()
+        self.params = self.ga(num_generations=generations)
 
         if quadratic_bias:
             self.run_ocv_correction(cell_name=cell_name, use_quadratic=True)
         else:
             self.run_ocv_correction(cell_name=cell_name)   # Uses simple linear bias correction.
         # Run again.
-        self.params = self.ga()     # New params.
+        self.params = self.ga(num_generations=generations)     # New params.
         np.savetxt(f'battery_params_{cell_name}_{diagn}.csv', self.params, delimiter=',')
         if error_stats:
             self._calculate_error(save=save, cell_name=cell_name, diagn=diagn)
@@ -272,11 +273,11 @@ class BatteryParams:
         print("OCV correction beta: ",  beta.value)
         print("OCV correction const. bias: ", const_bias.value)
         ocv_bias_correction_vector = np.array([beta.value, const_bias.value])
-        np.savetxt('../batt_sys_identification/OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn),
+        np.savetxt('OCV_bias_correction_params_{}_{}.csv'.format(cell_name, diagn),
                    ocv_bias_correction_vector)
         self.ocv = ocv_corr.value
         self.data['ocv_corr'] = self.ocv
-        self.data.to_csv('../batt_sys_identification/input_data_with_ocv_corr_voltage_{}_{}.csv'.
+        self.data.to_csv('input_data_with_ocv_corr_voltage_{}_{}.csv'.
                          format(cell_name, diagn))
         #    Adds corrected ocv as field and writes the input data
 
@@ -353,7 +354,7 @@ class BatteryParams:
         plt.ylabel("Voltage")
         plt.legend()
         plt.tight_layout()
-        plt.savefig('../batt_sys_identification/model_comparison_ocv_correction_scheme.png')
+        plt.savefig('model_comparison_ocv_correction_scheme.png')
 
     def get_uncorrected_voltages(self):
         """
@@ -474,7 +475,7 @@ class BatteryParams:
 
 
 if __name__ == '__main__':
-    data_path = 'batt_sys_identification/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
+    data_path = 'batt_sys_identification/data/batt_iden_test_data_W8_1.csv'  # Change this to the path of your data file.
     batt_data = pd.read_csv(data_path)
     module = BatteryParams(batt_data)
     # Toggle initial population on or off. Set to ``False`` to toggle off.

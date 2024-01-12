@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App module &mdash; EV-EcoSim 1.0.0 documentation</title>
+  <title>App - runs the platform &mdash; EV-EcoSim 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,8 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Post-simulation Analysis" href="analysis.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,8 +51,15 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial.html">Tutorial</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Packages</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Packages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="charging_sim.html">Charging Sim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batt_sys_identification.html">Battery System Identification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_cases.html">Test cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Post-simulation Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">App - runs the platform</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -68,7 +76,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">App module</li>
+          <li class="breadcrumb-item"><a href="modules.html">Packages</a></li>
+      <li class="breadcrumb-item active">App - runs the platform</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -77,89 +86,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-app">
-<span id="app-module"></span><h1>App module<a class="headerlink" href="#module-app" title="Permalink to this heading"></a></h1>
-<p>Runs the EV-EcoSim application. This is the main file that is run to start the application.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="app.change_run_date">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">change_run_date</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.change_run_date" title="Permalink to this definition"></a></dt>
-<dd><p>Changes the run date for the simulation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.create_results_folder">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">create_results_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.create_results_folder" title="Permalink to this definition"></a></dt>
-<dd><p>Creates a results dir if one does not exist</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.create_temp_configs">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">create_temp_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.create_temp_configs" title="Permalink to this definition"></a></dt>
-<dd><p>Creates temporary configuration files used by the simulator for running the app.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.load_default_input">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">load_default_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.load_default_input" title="Permalink to this definition"></a></dt>
-<dd><p>Loads the default user input skeleton.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.make_month_str">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">make_month_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">month_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.make_month_str" title="Permalink to this definition"></a></dt>
-<dd><p>Makes a month string from the month integer. Adds 0 if the month is less than 10.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>month_int</strong> – 1 - January, 2 - February, etc.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>String of the month.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.simulate">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.simulate" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="app.validate_options">
-<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">validate_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">front_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.validate_options" title="Permalink to this definition"></a></dt>
-<dd><p>Validates the user-input options to ensure that the options selected matches the required workflow by the backend.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="app-runs-the-platform">
+<h1>App - runs the platform<a class="headerlink" href="#app-runs-the-platform" title="Permalink to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Post-simulation Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

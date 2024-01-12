@@ -6,11 +6,11 @@ propagated post optimization to fully characterize what would have occurred if i
 """
 
 import sys
-
+import argparse
 sys.path.append('./charging_sim')
 import os
 from charging_sim.orchestrator import ChargingSim
-import multiprocessing as mp
+# import multiprocessing as mp
 import numpy as np
 import json
 import ast
@@ -31,8 +31,22 @@ def validate_options(front_input: dict):
 
     :return: None.
     """
-    print("Validating user input options...")
-    return None
+    # Check if the battery pack energy capacity has the same length as the voltage list.
+    if len(front_input['battery']['pack_energy_cap']) != len(front_input['battery']['pack_max_voltage']):
+        raise ValueError("Battery pack energy capacity and voltage list must have the same length.")
+    # check if SOC_min and SOC_max is between 0 and 1.
+    if front_input['battery']['SOC_min'] < 0 or front_input['battery']['SOC_min'] > 1:
+        raise ValueError("Battery pack minimum state of charge must be between 0 and 1.")
+    if front_input['battery']['SOC_max'] < 0 or front_input['battery']['SOC_max'] > 1:
+        raise ValueError("Battery pack maximum state of charge must be between 0 and 1.")
+    # check if SOC_min is less than SOC_max.
+    if front_input['battery']['SOC_min'] > front_input['battery']['SOC_max']:
+        raise ValueError("Battery pack minimum state of charge must be less than the maximum state of charge.")
+    # check if number of dcfc nodes and l2 nodes are not 0.
+    if front_input['charging_station']['num_dcfc_stalls_per_station'] == 0 and \
+            front_input['charging_station']['num_l2_stalls_per_station'] == 0:
+        raise ValueError("Number of DCFC and L2 charging stations cannot both be zero.")
+    # todo: check if the number of dcfc nodes is not greater than the number of dcfc nodes in the feeder population.
 
 
 def create_results_folder():
@@ -46,6 +60,18 @@ def create_results_folder():
     os.mkdir('analysis/results')
 
 
+def load_input():
+    """
+    Loads the default user input skeleton.
+
+    :return:
+    """
+    with open('user_input.json', "r") as f:
+        user_input = json.load(f)
+    validate_options(user_input)  # todo: Finish implementing this part later.
+    return user_input
+
+
 def load_default_input():
     """
     Loads the default user input skeleton.
@@ -54,7 +80,6 @@ def load_default_input():
     """
     with open('default_user_input.json', "r") as f:
         user_input = json.load(f)
-    validate_options(user_input)  # todo: Finish implementing this part later.
     return user_input
 
 
@@ -84,14 +109,16 @@ def make_month_str(month_int: int):
 # user_inputs = load_default_input()
 
 
-def simulate(user_inputs, sequential_run=True, parallel_run=False):
+def simulate(user_inputs, sequential_run=True, parallel_run=False, testing=False):
     # Updating the user inputs based on frontend inputs.
     create_results_folder()  # Make a results folder if it does not exist.
 
-    path_prefix = os.getcwd()
+    path_prefix = os.getcwd()   # TODO WORK ON THIS
+    # repo_name = path_prefix.split('\\')[-1]
+    # print("path_prefix is ", path_prefix)
+    # print(path_prefix.split('\\'))
     # Change below to name of the repo.
-    results_folder_path = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation/analysis/results'
-    path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
+    results_folder_path = path_prefix + '/analysis/results'
 
     # PRELOAD
     station_config = open(path_prefix + '/test_cases/battery/feeder_population/config.txt', 'r')
@@ -191,7 +218,7 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                     'index': idx,
                     'oneshot': True,
                     'start_month': month,
-                    'opt_solver': 'GUROBI',
+                    'opt_solver': user_inputs['opt_solver'],
                     'battery': {
                         'pack_energy_cap': Er,
                         'max_c_rate': c_rate,
@@ -219,26 +246,30 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
             voltage_idx += 1
         return scenarios_list
 
-    def run(scenario):
+    def run(scenario, is_test=False):
         """
         Runs a scenario and updates the scenario JSON to reflect main properties of that scenario.
 
+        :param is_test:
         :param scenario: The scenario dictionary that would be run.
-        :return: None. Runs the `scenario`.
+        :return: None.
         """
         EV_charging_sim = ChargingSim(num_charging_nodes, path_prefix=path_prefix, num_steps=NUM_STEPS, month=month)
         save_folder_prefix = f'{results_folder_path}/oneshot_{month_str}{str(scenario["index"])}/'
         if not os.path.exists(save_folder_prefix):
             os.mkdir(save_folder_prefix)
         EV_charging_sim.setup(dcfc_dicts_list + l2_dicts_list, scenario=scenario)
-        print('multistep')
+        if is_test:
+            print("Basic testing passed!")
+            return True
+        print('multistep begin...')
         EV_charging_sim.multistep()
         print('multistep done')
         EV_charging_sim.load_results_summary(save_folder_prefix)
         with open(f'{save_folder_prefix}scenario.json', "w") as outfile:
             json.dump(scenario, outfile, indent=1)
 
-    def run_scenarios_sequential():
+    def run_scenarios_sequential(is_test=testing):
         """
         Creates scenarios based on the energy and c-rate lists/vectors and runs each of the scenarios,
         which is a combination of all the capacities and c-rates.
@@ -259,16 +290,25 @@ def simulate(user_inputs, sequential_run=True, parallel_run=False):
                 scenario["dcfc_caps"] = [station["DCFC"] for station in dcfc_dicts_list]
             if l2_dicts_list:
                 scenario["l2_caps"] = [station["L2"] for station in l2_dicts_list]
-            run(scenario)
+            print(is_test)
+            run(scenario, is_test=is_test)
 
     if sequential_run:
         print("Running scenarios sequentially...")
-        run_scenarios_sequential()
+        run_scenarios_sequential(is_test=test)
         print("Simulation complete!")
 
     return
 
 
 if __name__ == '__main__':
-    USER_INPUTS = load_default_input()
-    simulate(USER_INPUTS)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test', type=bool, default=False,
+                        help='This flag only included for testing deployment, do not change.')
+
+    args = parser.parse_args()
+    test = args.test
+
+    USER_INPUTS = load_input()
+    validate_options(USER_INPUTS)   # Validate the user inputs.
+    simulate(USER_INPUTS, testing=test)

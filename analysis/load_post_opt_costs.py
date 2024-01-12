@@ -11,6 +11,7 @@ fields for the scenarios that have been simulated/run.
 """
 
 import os
+import sys
 import copy
 import numpy as np
 import pandas as pd
@@ -19,6 +20,7 @@ from cost_analysis import CostEstimator
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
+sys.path.append('../')
 from charging_sim.utils import MONTHS_LIST
 
 
@@ -277,6 +279,7 @@ def run():
             result_dir = f'results/{desired_month}{i}'
         run_results(result_dir, days, trans_cost=include_trans, oneshot=oneshot)
     collate_results(desired_month, trans=include_trans, oneshot=oneshot)
+    print('Post-optimization cost analysis complete!')
 
 
 # RUN THIS FILE

@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the accompanied paper and as below."
+message: "If you use this software, copy code or reference any code herein, you must cite the EV-EcoSim paper and as below."
 authors:
 - family-names: "Balogun"
   given-names: "Emmanuel"
@@ -9,6 +9,6 @@ authors:
   orcid: "https://orcid.org/0000-0000-0000-0000"
 title: "EV-EcoSim: A grid-aware co-simulation platform for the design and optimization of electric vehicle charging infrastructure"
 version: 1.0.0
-// doi: 10.5281/zenodo.1234
+// doi: doi.org/10.1109/TSG.2023.3339374
 date-released: 2023-11-30
-url: "https://github.com/ebalogun01/EV-EcoSim/"
+url: "https://ieeexplore.ieee.org/document/10342763"

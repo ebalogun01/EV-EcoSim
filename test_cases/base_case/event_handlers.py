@@ -14,16 +14,22 @@ from orchestrator import ChargingSim
 #   will later remove some import flags but leaving here for potential debugging
 
 # get the desired path prefix
-path_prefix = os.getcwd()
-path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-path_prefix.replace('\\', '/')
+path_prefix = str(os.getcwd())
+os.chdir(path_prefix)  # change directory
+# Splitting the path is different for Windows and Linux/MacOS.
+if '\\' in path_prefix:
+    path_prefix = "/".join(
+        path_prefix.split('\\')[:-2])  # Gets absolute path to the root of the project to get the desired files.
+else:
+    path_prefix = "/".join(path_prefix.split('/')[:-2])
+
 save_folder_prefix = 'June_test/'
 num_charging_nodes = 0  # needs to come in as input initially & should be initialized prior from the feeder population
 central_storage = False  # toggle for central vs. decentralized storage
 
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = 6  # Months are indexed starting from 1 - CHANGE MONTH (TO BE AUTOMATED LATER)
-temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
+temperature_data = pd.read_csv('../../data/ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 

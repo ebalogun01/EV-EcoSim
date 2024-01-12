@@ -14,7 +14,7 @@ import cvxpy as cp
 # Battery_state should include: Estimate SOH corrected from previous day, SOC,
 
 path_prefix = os.getcwd()
-path_prefix = (path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation')
+path_prefix = (path_prefix[: path_prefix.index('EV-EcoSim')] + 'EV-EcoSim') # This needs to be fixed
 path_prefix.replace('\\', '/')
 OCV_SOC_linear_params = 0
 
@@ -23,6 +23,8 @@ class MPC:
     """This class uses an MPC control scheme for producing control currents to the BESS."""
 
     def __init__(self, config, storage=None, solar=None):
+        self.current_testdata = None
+        self.charge_history = None
         self.config = config
         self.resolution = config["resolution"]  # should match object interval? not necessary
 
@@ -53,7 +55,10 @@ class MPC:
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
-            self.pge_gamma = cp.Variable(1, integer=True)
+            if self.config['opt_solver'].lower() == 'gurobi':
+                self.pge_gamma = cp.Variable(1, integer=True)   # Only Gurobi is proven to be reliable with mixed-integers
+            else:
+                self.pge_gamma = cp.Variable(1, integer=False)
             self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)
@@ -212,7 +217,10 @@ class Oneshot:
             # controller should be estimating this from time to time. Or decide how it is updated?
 
         if self.config["electricity_rate_plan"] == "PGEBEV2S":
-            self.pge_gamma = cp.Variable(1, integer=True)
+            if self.config['opt_solver'].lower() == 'gurobi':
+                self.pge_gamma = cp.Variable(1, integer=True)  # Only Gurobi is proven to be reliable with mixed-integers
+            else:
+                self.pge_gamma = cp.Variable(1, integer=False)
             self.pge_gamma_constraint = [self.pge_gamma >= 1]
         self.battery_power = cp.Variable((num_steps, 1))
         self.battery_current_grid = cp.Variable((num_steps, 1), nonneg=True)

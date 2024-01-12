@@ -1,5 +1,7 @@
-"""This file comprises the functions for parsing the voltages at every single timestep from the powerflow simulation
-into a readable, clean csv."""
+"""
+Functions for parsing the voltages at every single timestep from the powerflow simulation
+into a readable, clean csv.
+"""
 
 import csv
 import glmptime as glmptime

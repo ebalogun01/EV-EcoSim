@@ -1,7 +1,7 @@
 """
 **Introduction**\n
 This is the feeder population module within the battery test case. This file performs the pre-simulation step for
-running EV-Ecosim.\n\n
+running EV-EcoSim.\n\n
 It takes in a base Gridlab-D Model (GLM) file (for example, `IEEE123.glm`), and modifies that file by including
 secondary distribution, home loads, and EV Charging station and transformers.
 
@@ -14,7 +14,7 @@ simulation. These files are saved in the 'test_case_dir' field specified in conf
 **Input file description** \n
 Config `config.txt`: configuration file describing the pre-simulation parameters.
 This can be modified directly or with the help of our Graphic User Interface (GUI). The return outputs of this module
-are files that are read in to run the EV-Ecosim environment.
+are files that are read in to run the EV-EcoSim environment.
 
 
 **Output file description**\n
@@ -24,9 +24,7 @@ are files that are read in to run the EV-Ecosim environment.
 `L2charging_bus.txt` - L2 charging bus locations; this is used in co-simulation \n
 
 This will be used for the centralized DER.
-
 """
-
 import glm_mod_functions
 import os
 import pandas
@@ -38,19 +36,22 @@ import random
 import json
 
 
-# read config file
-def run():
+def main():
     """
     Runs the feeder population module. It takes in a base Gridlab-D Model (GLM) file (for example,
     `IEEE123.glm`), and modifies that file by including secondary distribution, home loads, and EV Charging station and
     transformers.
 
-    :return:
+    :return: None.
     """
-    path_prefix = os.getcwd()
+    path_prefix = str(os.getcwd())
     os.chdir(path_prefix)  # change directory
-    path_prefix = path_prefix[0:path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-    path_prefix.replace('\\', '/')
+    # Splitting the path is different for Windows and Linux/MacOS. Need condition to deal with both OS file path styles.
+    if '\\' in path_prefix:
+        path_prefix = "/".join(
+            path_prefix.split('\\')[:-3])  # Gets absolute path to the root of the project to get the desired files.
+    else:
+        path_prefix = "/".join(path_prefix.split('/')[:-3])
 
     f = open('config.txt', 'r')
     param_dict = f.read()
@@ -60,9 +61,10 @@ def run():
     feeder_name = param_dict['feeder_name']
     set_sd = param_dict['set_sd']  # what is sd?
     mean_scale = param_dict['mean_scale']
-    base_file_dir = path_prefix + param_dict['base_file_dir']
-    test_case_dir = path_prefix + param_dict['test_case_dir']
-    load_data_dir = path_prefix + param_dict['load_data_dir']
+    base_file_dir = f'{path_prefix}/{param_dict["base_file_dir"]}'
+    test_case_dir = f'{path_prefix}/{param_dict["test_case_dir"]}'
+    load_data_dir = f'{path_prefix}/{param_dict["load_data_dir"]}'
+    base_load_file = f'{param_dict["base_load_file"]}'
     box_pts = param_dict['box_pts']
     starttime_str = param_dict['starttime']
     endtime_str = param_dict['endtime']
@@ -263,9 +265,12 @@ def run():
 
     # % load residential load data
     os.chdir(load_data_dir)
-    data_use = pandas.read_csv('data_2015_use.csv')
+    if len(os.listdir(os.getcwd())) == 0:
+        raise FileNotFoundError('No data files in directory: ', os.getcwd(), 'Please check the directory to '
+                                                                             'ensure data file exists.')
+    data_use = pandas.read_csv(base_load_file)  # User can specify file within config.txt
 
-    year = 2018
+    year = 2018     # Somewhat arbitrary. This is just to get the timestamp.
 
     timestamp_list = [[] for k in range(len(data_use.month))]
     for i in range(len(timestamp_list)):
@@ -604,11 +609,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
-
-# TODO: check all capacitor banks on and voltage - Done
-#  regulators
-# all the caps are set to manual and they should be automatic
-# Check if the nominal voltages are correct for the regulator dead bands
-# what is most normal for simulating the 123 network
-#
+    main()

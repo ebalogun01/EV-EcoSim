@@ -1,7 +1,7 @@
 """
 **Overview**
-This module is the main power-horse for the `EV-Ecosim`. It includes the modules that allow GridLabD to interact
-with all the custom-built modules developed in `EV-Ecosim`. This file imports all simulated objects and their children,
+This module is the main power-horse for the `EV-EcoSim`. It includes the modules that allow GridLabD to interact
+with all the custom-built modules developed in `EV-EcoSim`. This file imports all simulated objects and their children,
 which is then run in the co-simulation environment.
 """
 
@@ -16,10 +16,15 @@ from orchestrator import ChargingSim
 from transformer import OilTypeTransformer
 from clock import Clock
 
-# get the desired path prefix
-path_prefix = os.getcwd()
-path_prefix = path_prefix[: path_prefix.index('EV50_cosimulation')] + 'EV50_cosimulation'
-path_prefix.replace('\\', '/')
+path_prefix = str(os.getcwd())
+os.chdir(path_prefix)  # change directory
+# Splitting the path is different for Windows and Linux/MacOS.
+if '\\' in path_prefix:
+    path_prefix = "/".join(
+        path_prefix.split('\\')[:-2])  # Gets absolute path to the root of the project to get the desired files.
+else:
+    path_prefix = "/".join(path_prefix.split('/')[:-2])
+
 save_folder_prefix = f'{gblvar.scenario["month_str"]}{gblvar.scenario["index"]}/'  # how can I permanently save this state?
 
 # SET OPTIMIZATION SOLVER
@@ -60,7 +65,7 @@ num_charging_nodes = len(dcfc_nodes) + len(
 # AMBIENT CONDITIONS FOR TRANSFORMER SIMULATION
 simulation_month = gblvar.scenario[
     'start_month']  # Months are indexed starting from 1.
-temperature_data = pd.read_csv('../../ambient_data/trans_ambientT_timeseries.csv')
+temperature_data = pd.read_csv('../../data/ambient_data/trans_ambientT_timeseries.csv')
 temperature_data = temperature_data[temperature_data['Month'] == simulation_month]['Temperature'].values
 
 global tic, toc  # used to time simulation

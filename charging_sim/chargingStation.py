@@ -160,9 +160,9 @@ class ChargingStation:
         """
         import pandas as pd
         save_file_base = f'{str(self.id)}_{self.loc}'
-        print(len(self.pge_blocks), len(self.controller.actions), len(self.storage.voltages), len(self.loads),
-              len(self.total_load), len(self.solar_power_ev), len(self.solar_power_grid), len(self.solar_power_battery),
-              len(self.storage.true_power), len(self.controller.costs))
+        # print(len(self.pge_blocks), len(self.controller.actions), len(self.storage.voltages), len(self.loads),
+        #       len(self.total_load), len(self.solar_power_ev), len(self.solar_power_grid), len(self.solar_power_battery),
+        #       len(self.storage.true_power), len(self.controller.costs))
         data = {'Control_current': self.controller.actions,
                 'battery_voltage': self.storage.voltages,
                 'station_net_grid_load_kW': self.loads,
@@ -174,7 +174,7 @@ class ChargingStation:
                 'average_cost_per_interval': self.controller.costs
                 }
         if len(self.pge_blocks) > 2:
-            print(len(self.pge_blocks))
+            # print(len(self.pge_blocks))
             data['PGE_power_blocks'] = self.pge_blocks
         elif len(self.pge_blocks) >= 1:
             np.savetxt(f'{save_prefix}/PGE_block_charging_station_sim_{save_file_base}.csv', self.pge_blocks)
@@ -382,7 +382,7 @@ class ChargingStationCentralized:
                 'average_cost_per_interval': self.controller.costs
                 }
         if len(self.pge_blocks) > 2:
-            print(len(self.pge_blocks))
+            # print(len(self.pge_blocks))
             data['PGE_power_blocks'] = self.pge_blocks
         elif len(self.pge_blocks) >= 1:
             np.savetxt(f'{save_prefix}/PGE_block_charging_station_sim_{save_file_base}.csv', self.pge_blocks)

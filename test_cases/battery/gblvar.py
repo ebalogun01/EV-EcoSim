@@ -55,7 +55,6 @@ nom_vmag = None
 trans_dt = 10.0  # integration timestep [seconds]?
 trans_Ta = 20.0  # ambient temperature[C] {SLIGHTLY HIGHER THAN JUNE AVERAGE IN 2018}
 
-# TODO: find where all these transformer values were obtained from
 # Transformer has various cooling modes that determine m and n for transformer.
 
 # ONAF: Natural convection flow of oil through windings and radiators. Forced convection flow of air over radiators by

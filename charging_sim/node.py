@@ -102,7 +102,7 @@ class Node:
                 'average_cost_per_interval': self.controller.costs
                 }
         if len(self.pge_blocks) > 2:
-            print(len(self.pge_blocks))
+            # print(len(self.pge_blocks))
             data['PGE_power_blocks'] = self.pge_blocks
         elif len(self.pge_blocks) >= 1:
             np.savetxt(f'{save_prefix}/PGE_block_charging_station_sim_{save_file_base}.csv', self.pge_blocks)
