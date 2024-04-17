@@ -226,4 +226,4 @@ install packages listed in the environment manually. You can also use the `requi
  * This is done with the modules in the `analysis` folder. Please see the `analysis` folder section  for more details.
 
 ## Acknowledgements
-This work was supported in part by Stanford Bits and Watts, Chevron Energy Fellowship, and Siemens Technology.
+This work was supported in part by Stanford Bits and Watts, Portland General Electric, Chevron Energy Fellowship, and Siemens Technology.
