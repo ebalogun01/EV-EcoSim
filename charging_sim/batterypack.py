@@ -385,7 +385,7 @@ class Battery:
             # we de-rate the current if voltage is too high (exceeds max prescribed v)
             # voltage can exceed desirable range if c-rate is too high, even when SoC isn't at max
             current -= (self.voltage - self.max_voltage) / self.R_pack  # changed from just Ro
-            self.voltage = self.max_voltage  # WHY AM I SETTING THE MAX VOLTAGE HERE INSTEAD OF JUST LETTING STATE EQN DETERMINE THE VALUE
+            self.voltage = self.max_voltage 
             # print("max testing voltage is: ", self.voltage)
             self.state_eqn(current, append=False)
             # print("max testing voltage is: ",
